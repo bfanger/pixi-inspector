@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "pixi-spine": "^1.0.3",
+    "pixi.js": "^3.0.7",
+    "react": "^0.13.3"
+  },
+  "devDependencies": {
+    "babel-core": "^5.6.17",
+    "babel-loader": "^5.3.1",
+    "gulp": "^3.9.0",
+    "gulp-util": "^3.0.6",
+    "node-libs-browser": "^0.5.2",
+    "webpack": "^1.10.1",
+    "webpack-dev-server": "^1.10.1"
+  }
+}
