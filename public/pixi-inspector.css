@@ -1,0 +1,31 @@
+.pixi-inspector {
+  cursor: default;
+  font-family: Lucida Grande, sans-serif;
+  font-size: 12px;
+}
+
+.tree-view {
+	color: #808;
+}
+.tree-view:hover:not(.tree-view--selected) {
+	background: #eaf1fb;
+}
+.tree-view--selected {
+	background: #d4d4d4;
+}
+.tree-view--selected:focus {
+	background: #3879d9;
+	color: white;
+	outline: none;
+}
+.detail-view__label {
+	color: #c00;
+	margin-right: 5px;
+}
+.detail-view__label:after {
+	content: ':';
+	color: #000;
+}
+.detail-view__value {
+	color: #333;
+}

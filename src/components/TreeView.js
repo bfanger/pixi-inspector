@@ -35,9 +35,10 @@ var TreeView = React.createClass({
 		if (!this.collapsed) {
 			nodes = <div style={{paddingLeft: 12}}>{this.props.renderChildren()}</div>;
 		}
+		var className = 'tree-view' + (this.props.selected ? ' tree-view--selected' : '');
 		return <div>
-			<div ref="node" onMouseDown={this.click} tabIndex="1" onKeyUp={this.keyup}>
-				{this.getIcon()}{this.props.title} {this.props.selected ? '[SEL]' : ''}
+			<div ref="node" className={ className } onMouseDown={this.click} tabIndex="1" onKeyUp={this.keyup}>
+				{this.getIcon()}{this.props.title}
 			</div>
 			{nodes}
 		</div>
