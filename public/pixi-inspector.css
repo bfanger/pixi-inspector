@@ -1,31 +1,57 @@
 .pixi-inspector {
   cursor: default;
-  font-family: Lucida Grande, sans-serif;
-  font-size: 12px;
+  /*font-family: Lucida Grande, sans-serif;
+  font-size: 12px;*/
+  font-size: 11px !important;
+  font-family: Menlo, monospace;
 }
 
-.tree-view {
+/* TreeView */
+
+.treeview {
 	color: #808;
+	white-space: nowrap;
+	padding: 1px;
 }
-.tree-view:hover:not(.tree-view--selected) {
+.treeview:hover:not(.treeview--selected) {
 	background: #eaf1fb;
 }
-.tree-view--selected {
+.treeview--selected {
 	background: #d4d4d4;
 }
-.tree-view--selected:focus {
+.treeview--selected:focus {
 	background: #3879d9;
 	color: white;
 	outline: none;
 }
-.detail-view__label {
-	color: #c00;
-	margin-right: 5px;
+
+/* DetaiView */ 
+
+.detailview {
+	white-space: nowrap;
 }
-.detail-view__label:after {
+.detailview__label {
+	display: inline-block;
+	color: #c00;
+	padding: 1px 5px 1px 0;
+}
+.detailview__label:after {
 	content: ':';
 	color: #000;
 }
-.detail-view__value {
+.detailview__value {
 	color: #333;
+	margin-bottom: 2px;
+}
+
+/* SplitView */
+
+.splitview {
+	display: flex;
+}
+.splitview__item {
+	padding: 5px;
+}
+.splitview__item:not(:first-child) {
+	border-left: 1px solid #ccc;
 }

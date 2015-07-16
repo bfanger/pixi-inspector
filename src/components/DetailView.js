@@ -16,7 +16,6 @@ var DetailView = React.createClass({
 			} else if (value === null) {
 				formatted[property] = 'null';
 			} else if (type === 'object') {
-				console.log(type, value);
 				Object.keys(value).forEach( _property => {
 					var _value = value[_property];
 					var _type = typeof _value;
@@ -36,11 +35,11 @@ var DetailView = React.createClass({
 		for (var label in formatted) {
 			var value = formatted[label]; 
 			fields.push(<div key={label}>
-				<span className="detail-view__label">{label}</span>
-				<span className="detail-view__value">{value}</span>
+				<span className="detailview__label">{label}</span>
+				<span className="detailview__value">{value}</span>
 			</div>);
 		}
-		return <div className="detail-view">{fields}</div> 
+		return <div className="detailview">{fields}</div> 
 	}
 });
 module.exports = DetailView;

@@ -14,6 +14,9 @@ var agentProxy = {
 	selection: function () {
 		return this._exec('selection');
 	},
+	context: function (id) {
+		return this._exec('context', [id]);
+	},
 	_exec: function(method, args) {
 		args = args || [];
 		if (window.pixiAgent) {

@@ -3,11 +3,18 @@ var agent = require("../agentProxy");
 var TreeView = require("./TreeView");
 
 var PixiTree = React.createClass({
+	propTypes: {
+		tree: React.PropTypes.object,
+		// onRefresh: React.PropTypes.function
+	},
 
 	render: function () {
-		return <span>
-			{this.subtree(this.props.tree)}
-		</span>
+		var nodes = this.subtree(this.props.tree);
+		if (nodes.length === 1) {
+			return nodes[0]
+		} else {
+			return <span>{nodes}</span>
+		}
 	},
 	subtree: function (node) {
 		if (!node.children) {
@@ -25,6 +32,9 @@ var PixiTree = React.createClass({
 				onExpand={this.expand.bind(this, node)} 
 				onCollapse={this.collapse.bind(this, node)} 
 				onSelect={this.select.bind(this, node)} 
+				onSelectParent={this.selectParent.bind(this, node)}
+				onSelectPrevious={this.selectPrevious.bind(this, node)}
+				onSelectNext={this.selectNext.bind(this, node)}
 			/>
 		})
 	},
@@ -39,6 +49,30 @@ var PixiTree = React.createClass({
 	select: function (node) {
 		agent.select(node.id);
 		this.props.onRefresh();
-	}
+	},
+	selectParent: function (node, e) {
+		var context = agent.context(node.id);
+		if (context.parent) {
+			agent.select(context.parent);
+			e.preventDefault()
+			this.props.onRefresh();
+		}
+	},
+	selectPrevious: function (node, e) {
+		var context = agent.context(node.id);
+		if (context.prev) {
+			agent.select(context.prev);
+			e.preventDefault()
+			this.props.onRefresh();
+		}
+	},
+	selectNext: function (node, e) {
+		var context = agent.context(node.id);
+		if (context.next) {
+			agent.select(context.next);
+			e.preventDefault()
+			this.props.onRefresh();
+		}
+	},
 });
 module.exports = PixiTree;

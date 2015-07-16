@@ -2,6 +2,9 @@ var React = require("react");
 var agent = require("../agentProxy");
 var PixiTree = require("./PixiTree");
 var DetailView = require("./DetailView");
+var SplitView = require("./SplitView");
+
+// require('../pixiAgent'); // Enable for livereload
 
 var PixiInspector = React.createClass({
 
@@ -14,14 +17,10 @@ var PixiInspector = React.createClass({
 	},
 	render: function () {
 		var selectedId = this.state.selected ? this.state.selected._inspector.id : false;
-		return <span>
-			<div style={{float:'left', padding: 10}}>
-				<PixiTree tree={this.state.tree} selectedId={selectedId} onRefresh={this.refresh} />
-			</div>
-			<div style={{float:'left', border:'1px solid black', padding: 10}}>
+		return <SplitView>
+			<PixiTree tree={this.state.tree} selectedId={selectedId} onRefresh={this.refresh} />
 			{this.state.selected ? <DetailView data={this.state.selected} />: ''}
-			</div>
-		</span>
+		</SplitView>
 	},
 	componentDidMount: function () {
 		window.addEventListener('PIXI.refresh', this.refresh)

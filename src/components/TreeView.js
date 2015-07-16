@@ -14,7 +14,13 @@ var TreeView = React.createClass({
 	propTypes: {
 		title: React.PropTypes.any.isRequired,
 		collapsed: React.PropTypes.bool.isRequired,
+		selected: React.PropTypes.bool,
 		leaf: React.PropTypes.bool
+	},
+	componentDidUpdate: function (prevProps) {
+		if (!prevProps.selected && this.props.selected) {
+			this.refs.node.getDOMNode().focus();
+		}
 	},
 	getDefaultProps: function () {
 		var noop = function () {};
@@ -33,11 +39,11 @@ var TreeView = React.createClass({
 	render: function () {
 		var nodes = [];
 		if (!this.collapsed) {
-			nodes = <div style={{paddingLeft: 12}}>{this.props.renderChildren()}</div>;
+			nodes = <div style={{paddingLeft: 14}}>{this.props.renderChildren()}</div>;
 		}
-		var className = 'tree-view' + (this.props.selected ? ' tree-view--selected' : '');
+		var className = 'treeview' + (this.props.selected ? ' treeview--selected' : '');
 		return <div>
-			<div ref="node" className={ className } onMouseDown={this.click} tabIndex="1" onKeyUp={this.keyup}>
+			<div ref="node" className={ className } onMouseDown={this.click} tabIndex="1" onKeyDown={this.keyup}>
 				{this.getIcon()}{this.props.title}
 			</div>
 			{nodes}

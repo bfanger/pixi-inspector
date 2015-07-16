@@ -24,7 +24,6 @@ var pixiAgent = {
 			collapsed: false
 		}
 	},
-	selected: false,
 	
 	/**
 	 * Detect if the page uses PIXI
@@ -95,10 +94,53 @@ var pixiAgent = {
 		}
 	},
 	select: function (id) {
-		this.selected = this.find(id);
+		window.$pixi = this.find(id);
 	},
 	selection: function () {
-		return this.selected;
+		return window.$pixi;
+	},
+	/**
+	 * Get the surounding nodes (prev, next, parent. For tree keyboard navigation)
+	 */
+	context: function (id, tree) {
+		tree = tree || this.tree();
+		var context = {};
+		if (tree.id === id) {
+			if (!tree.collapsed && !tree.leaf) {
+				context.next = tree.children[0].id;
+			}
+			return context;
+		}
+		if (!tree.collapsed && !tree.leaf) {
+			var found = false;
+			var prev = tree;
+			for (var i in tree.children) {
+				var node = tree.children[i];
+				if (found) {
+					context.next = node.id;
+					return context;
+				}
+				context = this.context(id, node);
+				if (context) {
+					if (!context.parent && tree.type !== 'root') {
+						context.parent = tree.id;
+					}
+					if (!context.prev && prev.type !== 'root') {
+						context.prev = prev.id;
+					}
+					if (context.next) {
+						return context;
+					}
+					found = true;
+					continue; // collect context.next id
+				}
+				prev = node
+			}
+			if (found) {
+				return context;
+			}
+		}
+		return false;
 	},
 	find: function (id, node) {
 		if (!node) {
