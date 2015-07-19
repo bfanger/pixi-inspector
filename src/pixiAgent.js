@@ -33,18 +33,12 @@ var pixiAgent = {
 		if (window.PIXI) {
 			self.patch(window.PIXI);
 		} else {
-			document.addEventListener('DOMContentLoaded', function () {
+			var interval = setInterval(function () {
 				if (window.PIXI) {
+					clearInterval(interval);
 					self.patch(window.PIXI);
-				} else {
-					var interval = setInterval(function () {
-						if (window.PIXI) {
-							clearInterval(interval);
-							self.patch(window.PIXI);
-						}
-					}, self.detectInterval);
 				}
-			}, false);
+			}, self.detectInterval);
 		}
 	},
 	/**

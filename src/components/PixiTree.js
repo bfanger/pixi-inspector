@@ -51,7 +51,7 @@ var PixiTree = React.createClass({
 		this.props.onRefresh();
 	},
 	selectParent: function (node, e) {
-		var context = agent.context(node.id);
+		var context = this.props.context;
 		if (context.parent) {
 			agent.select(context.parent);
 			e.preventDefault()
@@ -59,7 +59,7 @@ var PixiTree = React.createClass({
 		}
 	},
 	selectPrevious: function (node, e) {
-		var context = agent.context(node.id);
+		var context = this.props.context;
 		if (context.prev) {
 			agent.select(context.prev);
 			e.preventDefault()
@@ -67,7 +67,7 @@ var PixiTree = React.createClass({
 		}
 	},
 	selectNext: function (node, e) {
-		var context = agent.context(node.id);
+		var context = this.props.context;
 		if (context.next) {
 			agent.select(context.next);
 			e.preventDefault()
