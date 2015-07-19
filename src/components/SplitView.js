@@ -1,4 +1,5 @@
-var React = require('react');
+require("./SplitView.scss");
+var React = require("react");
 
 var SplitView = React.createClass({
 	render: function () {

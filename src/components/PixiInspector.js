@@ -1,3 +1,4 @@
+require("./PixiInspector.scss");
 var React = require("react");
 var agent = require("../agentProxy");
 var PixiTree = require("./PixiTree");
@@ -16,11 +17,16 @@ var PixiInspector = React.createClass({
 		return state;
 	},
 	render: function () {
-		var selectedId = this.state.selected ? this.state.selected._inspector.id : false;
-		return <SplitView>
-			<PixiTree tree={this.state.tree} selectedId={selectedId} onRefresh={this.refresh} />
-			{this.state.selected ? <DetailView data={this.state.selected} />: ''}
-		</SplitView>
+		var tree = this.state.tree;
+		if (!tree) {
+			return <div className="pixi-inspector__error"><span onClick={this.reboot}>[reboot]</span> Pixi.js not detected.</div>
+		}
+		var selected = this.state.selected;
+		var selectedId = selected ? selected._inspector.id : false;
+		return <span className="pixi-inspector"><span onClick={this.reboot}>[reboot]</span><SplitView>
+			<PixiTree tree={tree} selectedId={selectedId} onRefresh={this.refresh} />
+			{selected ? <DetailView data={selected} />: ''}
+		</SplitView></span>
 	},
 	componentDidMount: function () {
 		window.addEventListener('PIXI.refresh', this.refresh)
@@ -38,6 +44,9 @@ var PixiInspector = React.createClass({
 			state.selected = agent.selection();
 		}
 		this.setState(state);
+	},
+	reboot: function () {
+		location.reload();
 	}
 });
 module.exports = PixiInspector;

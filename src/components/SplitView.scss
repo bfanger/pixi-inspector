@@ -1,0 +1,9 @@
+.splitview {
+	display: flex;
+}
+.splitview__item {
+	padding: 5px;
+	&:not(:first-child) {
+		border-left: 1px solid #ccc;
+	}
+}

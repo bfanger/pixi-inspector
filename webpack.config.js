@@ -2,8 +2,8 @@ module.exports = {
     entry: './src/bootstrap.js',
     devtool: "source-map",
     output: {
-        filename: 'bundle.js',
-        path: __dirname + '/public/build'
+        filename: 'pixi-inspector.js',
+        path: __dirname + '/build'
     },
     module: {
         loaders: [
@@ -14,6 +14,10 @@ module.exports = {
                 query: {
                     cacheDirectory: true
                 }
+            },
+            {
+                test: /\.scss$/,
+                loader: 'style!css!sass'
             }
         ]
     },

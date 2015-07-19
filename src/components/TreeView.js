@@ -1,3 +1,4 @@
+require("./TreeView.scss");
 var React = require("react");
 
 var KEYS = {

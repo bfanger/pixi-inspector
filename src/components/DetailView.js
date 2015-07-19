@@ -1,4 +1,6 @@
+require("./DetailView.scss");
 var React = require("react");
+
 var DetailView = React.createClass({
 	render: function () {
 		var data = this.props.data;

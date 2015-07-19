@@ -1,0 +1,16 @@
+.treeview {
+	color: #808;
+	white-space: nowrap;
+	padding: 1px;
+	&:hover:not(.treeview--selected) {
+		background: #eaf1fb;
+	}
+}
+.treeview--selected {
+	background: #d4d4d4;
+	&:focus {
+		background: #3879d9;
+		color: white;
+		outline: none;
+	}
+}
