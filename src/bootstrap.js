@@ -1,4 +1,4 @@
 var React = require("react");
-var PixiInspector = require('./components/PixiInspector');
+var PixiPanel = require('./components/PixiPanel');
 
-React.render(<PixiInspector />, document.getElementById('devpanel'));
+React.render(<PixiPanel />, document.getElementById('devpanel'));

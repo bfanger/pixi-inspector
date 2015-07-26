@@ -8,7 +8,7 @@ var buildSuffix = false;
 
 gulp.task("build", function(done) {
     // Copy 
-    gulp.src(['src/chrome-extension/*', 'src/pixiAgent.js', 'node_modules/react/dist/react-with-addons.min.js']).pipe(gulp.dest('build/')).on('end', function () {
+    gulp.src(['src/chrome-extension/*', 'src/pixi.inspector.js', 'node_modules/react/dist/react-with-addons.min.js']).pipe(gulp.dest('build/')).on('end', function () {
         if (buildSuffix) {
             buildSuffix++;
             var manifest = JSON.parse(fs.readFileSync('src/chrome-extension/manifest.json'));
@@ -39,7 +39,7 @@ gulp.task("webpack-dev-server", function(done) {
         if (err) {
             throw new gutil.PluginError("webpack-dev-server", err);
         }
-        gutil.log("[webpack-dev-server]", "http://localhost:8090/webpack-dev-server/index.html");
+        gutil.log("[webpack-dev-server]", "http://localhost:8090/webpack-dev-server/");
         done();
     });
 });

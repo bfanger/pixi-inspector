@@ -2,7 +2,7 @@ module.exports = {
     entry: './src/bootstrap.js',
     devtool: "source-map",
     output: {
-        filename: 'pixi-inspector.js',
+    filename: 'pixi-panel.js',
         path: __dirname + '/build'
     },
     module: {

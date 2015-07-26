@@ -1,7 +1,7 @@
 {
-  "name": "PIXI Inspector",
+  "name": "Pixi Inspector",
   "version": "0.1",
-  "description": "Extends the Developer Tools, adding a tools for debugging PIXI applications.",
+  "description": "Tool for debugging games written with pixi.js",
   "icons": {
     "16": "img/webstore-icon.png",
     "48": "img/webstore-icon.png",
@@ -13,6 +13,6 @@
     "<all_urls>"
   ],
   "web_accessible_resources": [
-    "pixiAgent.js"
+    "pixi.inspector.js"
   ]
 }

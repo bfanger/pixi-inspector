@@ -1,5 +1,5 @@
 var React = require("react");
-var agent = require("../agentProxy");
+var inspector = require("../inspectorProxy");
 var TreeView = require("./TreeView");
 
 var PixiTree = React.createClass({
@@ -39,21 +39,21 @@ var PixiTree = React.createClass({
 		})
 	},
 	expand: function (node) {
-		agent.expand(node.id);
+		inspector.expand(node.id);
 		this.props.onRefresh();
 	},
 	collapse: function (node) {
-		agent.collapse(node.id);
+		inspector.collapse(node.id);
 		this.props.onRefresh();
 	},
 	select: function (node) {
-		agent.select(node.id);
+		inspector.select(node.id);
 		this.props.onRefresh();
 	},
 	selectParent: function (node, e) {
 		var context = this.props.context;
 		if (context.parent) {
-			agent.select(context.parent);
+			inspector.select(context.parent);
 			e.preventDefault()
 			this.props.onRefresh();
 		}
@@ -61,7 +61,7 @@ var PixiTree = React.createClass({
 	selectPrevious: function (node, e) {
 		var context = this.props.context;
 		if (context.prev) {
-			agent.select(context.prev);
+			inspector.select(context.prev);
 			e.preventDefault()
 			this.props.onRefresh();
 		}
@@ -69,7 +69,7 @@ var PixiTree = React.createClass({
 	selectNext: function (node, e) {
 		var context = this.props.context;
 		if (context.next) {
-			agent.select(context.next);
+			inspector.select(context.next);
 			e.preventDefault()
 			this.props.onRefresh();
 		}
