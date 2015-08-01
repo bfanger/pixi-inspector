@@ -35,6 +35,7 @@ var PixiPanel = React.createClass({
 		</SplitView></span>
 	},
 	componentDidMount: function () {
+		this.detectTimeout = 500;
 		this.timeout = this.detectPixi();
 	},
 	componentWillUnmount: function () {
@@ -52,7 +53,10 @@ var PixiPanel = React.createClass({
 					this.setState({pixiDetected: true});
 					this.poll(); 
 				} else {
-					this.timeout = setTimeout(this.detectPixi, 3000); // Check for PIXI every x miliseconds
+					this.timeout = setTimeout(this.detectPixi, this.detectTimeout); // Check for PIXI every x miliseconds
+					if (this.detectTimeout < 3000) {
+						this.detectTimeout += 250;
+					}
 				}
 			}
 		});
@@ -73,7 +77,7 @@ var PixiPanel = React.createClass({
 	},
 	poll: function () {
 		this.refresh();
-		this.timeout = setTimeout(this.poll, 500);
+		this.timeout = setTimeout(this.poll, 250);
 	},
 	refresh: function (e) {
 		inspector.refresh().then( (state) => {
@@ -90,6 +94,7 @@ var PixiPanel = React.createClass({
 				if (detected === 'INSPECTOR')  {
 					this.setState({error: error});
 				} else {
+					this.detectTimeout = 250;
 					this.detectPixi();
 				}
 			});

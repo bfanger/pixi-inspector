@@ -82,7 +82,7 @@ PIXI.inspector = {
 			_inspector: window.$pixi._inspector
 		};
 		Object.keys(window.$pixi).forEach(function (property) {
-			if (property[0] === '_' || ['children', 'parent', 'worldTransform', 'stage', 'texture'].indexOf(property) !== -1) {
+			if (property[0] === '_' || ['children', 'parent'].indexOf(property) !== -1) {
 				return;
 			}
 			var value = window.$pixi[property];
@@ -93,7 +93,7 @@ PIXI.inspector = {
 				formatted[property] = value ? 'true' : 'false'
 			} else if (value === null) {
 				formatted[property] = 'null';
-			} else if (type === 'object') {
+			} else if (type === 'object' && value.constructor === PIXI.Point) {
 				Object.keys(value).forEach(function (_property) {
 					var _value = value[_property];
 					var _type = typeof _value;
@@ -306,7 +306,7 @@ PIXI.inspector = {
 			case PIXI.CrossHatchFilter: return "PIXI.CrossHatchFilter";
 			case PIXI.RGBSplitFilter: return "PIXI.RGBSplitFilter";
 		}
-		if (PIXI.meash) {
+		if (PIXI.mesh) {
 			switch (node.constructor) {
 				case PIXI.mesh.Mesh: return 'PIXI.mesh.Mesh';
 				case PIXI.mesh.Rope: return 'PIXI.mesh.Rope';
@@ -325,6 +325,58 @@ PIXI.inspector = {
 			switch (node.constructor) {
 				case PIXI.spine.Spine: return 'PIXI.spine.Spine';
 				case PIXI.spine.SpineRuntime: return 'PIXI.spine.SpineRuntime';
+			}
+		}
+		if (window.Phaser) {
+			switch (node.constructor) {
+				case Phaser.Sprite: return 'Phaser.Sprite';
+				case Phaser.Image: return 'Phaser.Image';
+				case Phaser.Stage: return 'Phaser.Stage';
+				case Phaser.Group: return 'Phaser.Group';
+				case Phaser.Animation: return 'Phaser.Animation';
+				case Phaser.Video: return 'Phaser.Video';
+				case Phaser.Circle: return 'Phaser.Circle';
+				case Phaser.Ellipse: return 'Phaser.Ellipse';
+				case Phaser.Line: return 'Phaser.Line';
+				case Phaser.Point: return 'Phaser.Point';
+				case Phaser.Polygon: return 'Phaser.Polygon';
+				case Phaser.Rectangle: return 'Phaser.Rectangle';
+				case Phaser.RoundedRectangle: return 'Phaser.RoundedRectangle';
+				case Phaser.Camera: return 'Phaser.Camera';
+				case Phaser.World: return 'Phaser.World';
+				case Phaser.FlexGrid: return 'Phaser.FlexGrid';
+				case Phaser.FlexLayer: return 'Phaser.FlexLayer';
+				case Phaser.Component: return 'Phaser.Component';
+				case Phaser.TileSprite: return 'Phaser.TileSprite';
+				case Phaser.Rope: return 'Phaser.Rope';
+				case Phaser.Button: return 'Phaser.Button';
+				case Phaser.SpriteBatch: return 'Phaser.SpriteBatch';
+				case Phaser.Particle: return 'Phaser.Particle';
+				case Phaser.BitmapData: return 'Phaser.BitmapData';
+				case Phaser.Graphics: return 'Phaser.Graphics';
+				case Phaser.RenderTexture: return 'Phaser.RenderTexture';
+				case Phaser.Text: return 'Phaser.Text';
+				case Phaser.BitmapText: return 'Phaser.BitmapText';
+				case Phaser.RetroFont: return 'Phaser.RetroFont';
+				case Phaser.Device: return 'Phaser.Device';
+				case Phaser.DOM: return 'Phaser.DOM';
+				case Phaser.Canvas: return 'Phaser.Canvas';
+				case Phaser.RequestAnimationFrame: return 'Phaser.RequestAnimationFrame';
+				case Phaser.Math: return 'Phaser.Math';
+				case Phaser.RandomDataGenerator: return 'Phaser.RandomDataGenerator';
+				case Phaser.QuadTree: return 'Phaser.QuadTree';
+				case Phaser.Frame: return 'Phaser.Frame';
+				case Phaser.FrameData: return 'Phaser.FrameData';
+				case Phaser.AudioSprite: return 'Phaser.AudioSprite';
+				case Phaser.Sound: return 'Phaser.Sound';
+				case Phaser.Color: return 'Phaser.Color';
+				case Phaser.LinkedList: return 'Phaser.LinkedList';
+				case Phaser.ImageCollection: return 'Phaser.ImageCollection';
+				case Phaser.Tile: return 'Phaser.Tile';
+				case Phaser.Tilemap: return 'Phaser.Tilemap';
+				case Phaser.TilemapLayer: return 'Phaser.TilemapLayer';
+				case Phaser.Tileset: return 'Phaser.Tileset';
+				case Phaser.Particles: return 'Phaser.Particles';
 			}
 		}
 		return 'Unknown';
