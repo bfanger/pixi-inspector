@@ -3,7 +3,7 @@ if (!window.PIXI) {
 }
 PIXI.inspector = {
 	
-	highlight: new PIXI.Graphics(),
+	highlight: PIXI.Graphics ? new PIXI.Graphics() : false, // Only supported in PIXI v3
 
 	/**
 	 * Root of the Pixi object tree.
@@ -40,8 +40,8 @@ PIXI.inspector = {
 			}
 			// @todo remove stages after an idle period
 		}
-		if (window.$pixi && $pixi.parent) {
-			var hl = this.highlight;
+		var hl = this.highlight;
+		if (hl && window.$pixi && $pixi.parent && $pixi.getBounds) {
 			hl.clear();
 			hl.beginFill(0x00007eff, 0.3);
 			hl.lineStyle(1, 0x00007eff, 0.6);
@@ -59,7 +59,7 @@ PIXI.inspector = {
 		}
 	},
 	afterRender: function (stage, renderer, retval) {
-		if (this.highlight._inspectorAdded) {
+		if (this.highlight && this.highlight._inspectorAdded) {
 			stage.removeChild(this.highlight);
 			this.highlight._inspectorAdded = false;
 		}
