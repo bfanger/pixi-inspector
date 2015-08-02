@@ -406,6 +406,72 @@ PIXI.inspector = {
 				case Phaser.Particles: return 'Phaser.Particles';
 			}
 		}
+		if (window.game) { // Panda.js
+			switch (node.constructor) {
+				case game.Class: return 'game.Class';
+				case game.Fader: return 'game.Fader';
+				case game.Analytics: return 'game.Analytics';
+				case game.Camera: return 'game.Camera';
+				case game.Audio: return 'game.Audio';
+				case game.Particle: return 'game.Particle';
+				case game.Emitter: return 'game.Emitter';
+				case game.Pool: return 'game.Pool';
+				case game.World: return 'game.World';
+				case game.Body: return 'game.Body';
+				case game.Rectangle: return 'game.Rectangle';
+				case game.Circle: return 'game.Circle';
+				case game.Line: return 'game.Line';
+				case game.Vector: return 'game.Vector';
+				case game.Scene: return 'game.Scene';
+				case game.Storage: return 'game.Storage';
+				case game.System: return 'game.System';
+				case game.SceneStage01: return 'game.SceneStage01';
+				case game.SceneStage06: return 'game.SceneStage06';
+				case game.SceneStage11: return 'game.SceneStage11';
+				case game.SceneStage16: return 'game.SceneStage16';
+				case game.SceneStage02: return 'game.SceneStage02';
+				case game.SceneStage07: return 'game.SceneStage07';
+				case game.SceneStage12: return 'game.SceneStage12';
+				case game.SceneStage17: return 'game.SceneStage17';
+				case game.SceneStage03: return 'game.SceneStage03';
+				case game.SceneStage08: return 'game.SceneStage08';
+				case game.SceneStage13: return 'game.SceneStage13';
+				case game.SceneStage18: return 'game.SceneStage18';
+				case game.SceneStage04: return 'game.SceneStage04';
+				case game.SceneStage09: return 'game.SceneStage09';
+				case game.SceneStage14: return 'game.SceneStage14';
+				case game.SceneStage19: return 'game.SceneStage19';
+				case game.SceneStage05: return 'game.SceneStage05';
+				case game.SceneStage10: return 'game.SceneStage10';
+				case game.SceneStage15: return 'game.SceneStage15';
+				case game.SceneStage20: return 'game.SceneStage20';
+				case game.SceneEndtro: return 'game.SceneEndtro';
+				case game.Debug: return 'game.Debug';
+				case game.DebugDraw: return 'game.DebugDraw';
+				case game.AssetLoader: return 'game.AssetLoader';
+				case game.Text: return 'game.Text';
+				case game.HitRectangle: return 'game.HitRectangle';
+				case game.HitCircle: return 'game.HitCircle';
+				case game.HitEllipse: return 'game.HitEllipse';
+				case game.HitPolygon: return 'game.HitPolygon';
+				case game.TextureCache: return 'game.TextureCache';
+				case game.RenderTexture: return 'game.RenderTexture';
+				case game.Point: return 'game.Point';
+				case game.Stage: return 'game.Stage';
+				case game.BaseTexture: return 'game.BaseTexture';
+				case game.Sprite: return 'game.Sprite';
+				case game.SpriteSheet: return 'game.SpriteSheet';
+				case game.Graphics: return 'game.Graphics';
+				case game.BitmapText: return 'game.BitmapText';
+				case game.Spine: return 'game.Spine';
+				case game.Container: return 'game.Container';
+				case game.Texture: return 'game.Texture';
+				case game.TilingSprite: return 'game.TilingSprite';
+				case game.Animation: return 'game.Animation';
+				case game.Video: return 'game.Video';
+				case game.SceneMain: return 'game.SceneMain';
+			}
+		}
 		return 'Unknown';
 
 	}
