@@ -2,6 +2,8 @@ if (!window.PIXI) {
 	throw new Error('PIXI must be loaded before pixi.inspector.js')
 }
 PIXI.inspector = {
+	
+	highlight: new PIXI.Graphics(),
 
 	/**
 	 * Root of the Pixi object tree.
@@ -22,21 +24,46 @@ PIXI.inspector = {
 		var _render = renderer.prototype.render;
 		var self = this;
 		renderer.prototype.render = function (stage) {
-			self.render(stage, renderer);
-			return _render.apply(this, arguments);
+			self.beforeRender(stage, renderer);
+			var retval = _render.apply(this, arguments);
+			return self.afterRender(stage, renderer, retval);
 		}
 	},
 	/**
 	 * An intercepted render call
 	 */
-	render: function (stage, renderer) {
+	beforeRender: function (stage, renderer) {
 		if (this.root.children.indexOf(stage) === -1) {
 			this.root.children.push(stage);
 			if (!window.$pixi) {
 				window.$pixi = stage;
 			}
+			// @todo remove stages after an idle period
 		}
-		// @todo remove stages after an idle period
+		if (window.$pixi && $pixi.parent) {
+			var hl = this.highlight;
+			hl.clear();
+			hl.beginFill(0x00007eff, 0.3);
+			hl.lineStyle(1, 0x00007eff, 0.6);
+			var bounds = $pixi.getBounds();
+			// Using localBounds gives rotation to the highlight, but needs to take the container transformations into account to work propertly.
+			// var bounds = $pixi.getLocalBounds(); 
+			// hl.position = $pixi.position.clone();
+			// hl.rotation = $pixi.rotation;
+			// hl.scale = $pixi.scale.clone();
+			// var parentBounds = $pixi.parent.getBounds();
+			hl.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
+			hl.endFill();
+			stage.addChild(hl);
+			hl._inspectorAdded = true;
+		}
+	},
+	afterRender: function (stage, renderer, retval) {
+		if (this.highlight._inspectorAdded) {
+			stage.removeChild(this.highlight);
+			this.highlight._inspectorAdded = false;
+		}
+		return retval;
 	},
 	/**
 	 * Agregate results needed for a PixiPanel.refresh()
