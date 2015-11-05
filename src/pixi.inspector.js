@@ -216,7 +216,7 @@ PIXI.inspector = {
 			id: inspector.id,
 			type: inspector.type,
 			leaf: (!node.children || node.children.length === 0),
-            name: !!node.name ? node.name : " : ",
+			name: node.name,
 			collapsed: inspector.collapsed,
 		};
 
