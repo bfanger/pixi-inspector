@@ -1,4 +1,4 @@
-var React = require("react");
+var {render} = require("react-dom");
 var PixiPanel = require('./components/PixiPanel');
 
-React.render(<PixiPanel />, document.getElementById('devpanel'));
+render(<PixiPanel />, document.getElementById('devpanel'));
