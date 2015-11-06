@@ -1,5 +1,6 @@
 require("./TreeView.scss");
 var React = require("react");
+var {findDOMNode} = require("react-dom");
 
 var KEYS = {
 	LEFT: 37,
@@ -20,7 +21,7 @@ var TreeView = React.createClass({
 	},
 	componentDidUpdate: function (prevProps) {
 		if (!prevProps.selected && this.props.selected) {
-			this.refs.node.getDOMNode().focus();
+			findDOMNode(this).firstChild.focus();
 		}
 	},
 	getDefaultProps: function () {
@@ -43,8 +44,9 @@ var TreeView = React.createClass({
 			nodes = <div style={{paddingLeft: 14}}>{this.props.renderChildren()}</div>;
 		}
 		var className = 'treeview' + (this.props.selected ? ' treeview--selected' : '');
+		 
 		return <div>
-			<div ref="node" className={ className } onMouseDown={this.click} tabIndex="1" onKeyDown={this.keyup}>
+			<div className={ className } onMouseDown={this.click} tabIndex="1" onKeyDown={this.keyup}>
 				{this.getIcon()}{this.props.title}
 			</div>
 			{nodes}
@@ -97,6 +99,5 @@ var TreeView = React.createClass({
 			}
 		}
 	}
-
 });
 module.exports = TreeView;
