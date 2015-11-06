@@ -22,9 +22,13 @@ var PixiTree = React.createClass({
 		}
 
 		return node.children.map(node => {
+            var title = node.name;
+            if (title == undefined) {
+                title = node.type
+            }
 			return <TreeView 
 				key={node.id} 
-				title={node.type} 
+				title={title}
 				leaf={node.leaf}
 				collapsed={node.collapsed} 
 				selected={node.id === this.props.selectedId} 

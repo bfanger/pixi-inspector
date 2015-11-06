@@ -13,12 +13,11 @@ var DEBUG = false;
 var PixiPanel = React.createClass({
 
 	getInitialState: function () {
-		var state = {
+        return {
 			tree: false,
 			selected: false,
 			pixiDetected: false
-		}
-		return state;
+		};
 	},
 	render: function () {
 		var tree = this.state.tree;

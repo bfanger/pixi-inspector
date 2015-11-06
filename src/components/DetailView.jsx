@@ -1,4 +1,5 @@
 require("./DetailView.scss");
+var DetailRow = require("./DetailRow.jsx");
 var React = require("react");
 
 var DetailView = React.createClass({
@@ -35,11 +36,8 @@ var DetailView = React.createClass({
 		});
 		var fields = [];
 		for (var label in formatted) {
-			var value = formatted[label]; 
-			fields.push(<div key={label}>
-				<span className="detailview__label">{label}</span>
-				<span className="detailview__value">{value}</span>
-			</div>);
+			var value = formatted[label];
+			fields.push(<DetailRow label={label} value={value} />);
 		}
 		return <div className="detailview">{fields}</div> 
 	}
