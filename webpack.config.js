@@ -1,6 +1,6 @@
 module.exports = {
     entry: './src/bootstrap.js',
-    devtool: "source-map",
+    devtool: process.env.NODE_ENV !== 'production' ? 'source-map' : '',
     output: {
     filename: 'pixi-panel.js',
         path: __dirname + '/build'

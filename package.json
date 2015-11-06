@@ -1,4 +1,10 @@
 {
+  "scripts": {
+    "prebuild": "rm -rf build && mkdir build",
+    "prebuildProduction": "rm -rf build && mkdir build",
+    "build": "webpack",
+    "buildProduction": "NODE_ENV=production webpack"
+  },
   "dependencies": {
     "pixi-spine": "^1.0.3",
     "pixi.js": "^3.0.7",
