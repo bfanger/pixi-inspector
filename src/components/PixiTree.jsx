@@ -1,5 +1,5 @@
 var React = require("react");
-var inspector = require("../inspectorProxy");
+var inspector = require("../services/inspectorProxy");
 var TreeView = require("./TreeView");
 
 var PixiTree = React.createClass({

@@ -1,12 +1,12 @@
 require("./PixiPanel.scss");
 var React = require("react");
-var inspector = require("../inspectorProxy");
+var inspector = require("../services/inspectorProxy");
 var PixiTree = require("./PixiTree");
 var DetailView = require("./DetailView");
 var SplitView = require("./SplitView");
-var proxy = require("../proxy");
+var proxy = require("../services/proxy");
 
-proxy.BASE = 'http://localhost/pixi-inspector/build/';
+proxy.BASE = 'http://localhost/pixi-inspector/src/';
 // require('../pixi.inspector'); // Enable for livereload
 var DEBUG = false;
 

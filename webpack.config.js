@@ -5,14 +5,18 @@ module.exports = {
     filename: 'pixi-panel.js',
         path: __dirname + '/build'
     },
+    resolve: {
+        extensions: ['', '.jsx', '.webpack.js', '.web.js', '.js']
+    },
     module: {
         loaders: [
             {
-                test: /\.js$/,
+                test: /\.js(x)?$/,
                 exclude: /(node_modules|bower_components)/,
                 loader: 'babel-loader',
                 query: {
-                    cacheDirectory: true
+                    cacheDirectory: true,
+                    presets:['es2015', 'react']
                 }
             },
             {
@@ -24,6 +28,7 @@ module.exports = {
     externals: {
         //don't bundle the 'react' npm package with our bundle.js
         //but get it from a global 'React' variable
-        'react': 'React'
+        'react': 'React',
+        'rx': 'Rx'
     }
 }
