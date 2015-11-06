@@ -73,7 +73,7 @@ PIXI.inspector = {
 			return {
 				tree: this.tree(),
 				selected: false,
-				context: {},	
+				context: {}
 			};
 		}
 		return {
@@ -135,7 +135,7 @@ PIXI.inspector = {
 			} else {
 				formatted[property] = '...' + type
 			}
-		})
+		});
 		return formatted;
 	},
 	/**
@@ -194,7 +194,7 @@ PIXI.inspector = {
 		if (node.children) {
 			var length = node.children.length;
 			for (var i = 0; i < length; i++) {
-				var found = this.find(id, node.children[i])
+				var found = this.find(id, node.children[i]);
 				if (found) {
 					return found;
 				}
@@ -217,7 +217,7 @@ PIXI.inspector = {
 			type: inspector.type,
 			leaf: (!node.children || node.children.length === 0),
 			name: node.name,
-			collapsed: inspector.collapsed,
+			collapsed: inspector.collapsed
 		};
 
 		if (result.leaf === false && inspector.collapsed === false) {
@@ -249,7 +249,6 @@ PIXI.inspector = {
 			case PIXI.Polygon: return 'PIXI.Polygon';
 			case PIXI.Rectangle: return 'PIXI.Rectangle';
 			case PIXI.RoundedRectangle: return 'PIXI.RoundedRectangle';
-			case PIXI.DisplayObject: return 'PIXI.DisplayObject';
 			case PIXI.ParticleContainer: return 'PIXI.ParticleContainer';
 			case PIXI.SpriteRenderer: return 'PIXI.SpriteRenderer';
 			case PIXI.ParticleRenderer: return 'PIXI.ParticleRenderer';
@@ -275,7 +274,6 @@ PIXI.inspector = {
 			case PIXI.AssetLoader: return 'PIXI.AssetLoader';
 			// Deprecated (PIXI v2)
 			case PIXI.Stage: return 'PIXI.Stage';
-			case PIXI.Rope: return 'PIXI.Rope';
 			case PIXI.DisplayObjectContainer: return 'PIXI.DisplayObjectContainer';
 			case PIXI.MovieClip: return "PIXI.MovieClip";
 			case PIXI.BitmapText: return "PIXI.BitmapText";
