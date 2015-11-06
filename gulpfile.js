@@ -8,7 +8,13 @@ var buildSuffix = false;
 
 gulp.task("build", function(done) {
     // Copy 
-    gulp.src(['src/chrome-extension/*', 'src/pixi.inspector.js', 'node_modules/react/dist/react-with-addons.min.js', 'node_modules/rx/dist/rx.all.min.js']).pipe(gulp.dest('build/')).on('end', function () {
+    gulp.src([
+        'src/chrome-extension/*',
+        'src/pixi.inspector.js',
+        'node_modules/react/dist/react-with-addons.min.js',
+        'node_modules/react-dom/dist/react-dom.min.js',
+        'node_modules/rx/dist/rx.all.min.js'
+    ]).pipe(gulp.dest('build/')).on('end', function () {
         if (buildSuffix) {
             buildSuffix++;
             var manifest = JSON.parse(fs.readFileSync('src/chrome-extension/manifest.json'));
@@ -32,7 +38,7 @@ gulp.task("continuous-build", ['build'], function() {
 
 gulp.task("webpack-dev-server", function(done) {
     new WebpackDevServer(webpack(webpackConfig), {
-        contentBase: __dirname + '/tests',
+        contentBase: __dirname + '/',
         progress: true, 
         stats: { colors: true }
     }).listen(8090, "localhost", function(err) {

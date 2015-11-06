@@ -21,7 +21,7 @@ var TreeView = React.createClass({
 	},
 	componentDidUpdate: function (prevProps) {
 		if (!prevProps.selected && this.props.selected) {
-			findDOMNode(this).firstChild.focus();
+			this.refs.node.focus();
 		}
 	},
 	getDefaultProps: function () {
@@ -46,7 +46,7 @@ var TreeView = React.createClass({
 		var className = 'treeview' + (this.props.selected ? ' treeview--selected' : '');
 		 
 		return <div>
-			<div className={ className } onMouseDown={this.click} tabIndex="1" onKeyDown={this.keyup}>
+			<div ref="node" className={ className } onMouseDown={this.click} tabIndex="1" onKeyDown={this.keyup}>
 				{this.getIcon()}{this.props.title}
 			</div>
 			{nodes}

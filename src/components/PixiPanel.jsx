@@ -1,12 +1,14 @@
 require("./PixiPanel.scss");
 var React = require("react");
-var inspector = require("../services/inspectorProxy");
+var {Observable} = require("rx");
 var PixiTree = require("./PixiTree");
 var DetailView = require("./DetailView");
 var SplitView = require("./SplitView");
+var scene = require("../services/scene");
+var refresh = require("../services/refresh");
+var detectPixi = require("../services/detectPixi");
 var proxy = require("../services/proxy");
 
-proxy.BASE = 'http://localhost/pixi-inspector/src/';
 // require('../pixi.inspector'); // Enable for livereload
 var DEBUG = false;
 
@@ -35,70 +37,32 @@ var PixiPanel = React.createClass({
 		</SplitView></span>
 	},
 	componentDidMount: function () {
-		this.detectTimeout = 500;
-		this.timeout = this.detectPixi();
+		this.subscriptions = [
+			scene.subscribe( (scene) => {
+				this.setState(scene);
+			}, error => {
+				proxy.eval('typeof window.__PIXI_INSPECTOR_GLOBAL_HOOK__').then(function (type) {
+					if (type === 'object') {
+						console.error(error);
+				 	} else { // page refresh?
+					 		location.reload();
+					}
+				})
+				
+			}),
+			detectPixi.subscribe( (path) => {
+				this.setState({pixiDetected: path });
+			}),
+			Observable.interval(500).subscribe(refresh)
+		];
 	},
 	componentWillUnmount: function () {
-		clearTimeout(this.timeout);
-	},
-	detectPixi: function () {
-		proxy.eval('window.PIXI ? (PIXI.inspector ? "INSPECTOR": "PIXI") : false').then( (detected) => {
-			if (this.isMounted()) {
-				if (detected === 'PIXI') {
-					this.setState({pixiDetected: true});
-					proxy.injectScript('pixi.inspector.js').then( () => {
-						this.detectInspector();
-					});
-				} else if (detected === 'INSPECTOR') {
-					this.setState({pixiDetected: true});
-					this.poll(); 
-				} else {
-					this.timeout = setTimeout(this.detectPixi, this.detectTimeout); // Check for PIXI every x miliseconds
-					if (this.detectTimeout < 3000) {
-						this.detectTimeout += 250;
-					}
-				}
-			}
+		this.subscriptions.forEach( (subscription) => {
+			subscription.dispose();
 		});
-	},
-	/**
-	 * Check if the injected script is loaded.
-	 */
-	detectInspector: function () {
-		proxy.eval('!!window.PIXI.inspector').then( (injected) => {
-			if (this.isMounted()) {
-				if (injected) {
-					this.poll();
-				} else {
-					this.timeout = setTimeout(this.detectInspector, 25);
-				}
-			}
-		});
-	},
-	poll: function () {
-		this.refresh();
-		this.timeout = setTimeout(this.poll, 250);
 	},
 	refresh: function (e) {
-		inspector.refresh().then( (state) => {
-			this.setState(state);
-		}, (error) => {
-			// Probably a page-refresh
-			this.setState({
-				pixiDetected: false,
-				tree: false,
-				selected: false
-			});
-			clearTimeout(this.timeout);
-			proxy.eval('window.PIXI ? (PIXI.inspector ? "INSPECTOR": "PIXI") : false').then( (detected) => {
-				if (detected === 'INSPECTOR')  {
-					this.setState({error: error});
-				} else {
-					this.detectTimeout = 250;
-					this.detectPixi();
-				}
-			});
-		})
+		refresh.onNext('update');
 	},
 	reboot: function () {
 		location.reload();

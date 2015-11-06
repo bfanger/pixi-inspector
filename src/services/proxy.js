@@ -5,7 +5,7 @@
  */
 var proxy = {
 	
-	BASE: '',
+	BASE: 'http://localhost:8090/src/',
 
 	/**
 	 * Proxy to console.log() 
