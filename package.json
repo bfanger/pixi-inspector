@@ -1,9 +1,9 @@
 {
+  "name": "pixi-inspector",
+  "version": "0.0.0",
   "scripts": {
-    "prebuild": "rm -rf build && mkdir build",
-    "prebuildProduction": "rm -rf build && mkdir build",
-    "build": "webpack",
-    "buildProduction": "NODE_ENV=production webpack"
+    "clean": "rm -rf build && mkdir build",
+    "build": "./node_modules/.bin/gulp build"
   },
   "dependencies": {
     "pixi-spine": "^1.0.3",
