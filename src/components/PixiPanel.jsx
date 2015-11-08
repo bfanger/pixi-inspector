@@ -32,7 +32,7 @@ var PixiPanel = React.createClass({
 		var selectedId = selected ? selected._inspector.id : false;
 		var context = this.state.context || {};
 		return <span className="pixi-panel">{reboot}<SplitView>
-			<PixiTree tree={tree} selectedId={selectedId} context={context} onRefresh={this.refresh} />
+			<PixiTree tree={tree} selectedId={selectedId} context={context} />
 			{selected ? <DetailView data={selected} />: ''}
 		</SplitView></span>
 	},
@@ -45,7 +45,7 @@ var PixiPanel = React.createClass({
 					if (type === 'object') {
 						console.error(error);
 				 	} else { // page refresh?
-					 		location.reload();
+					 	location.reload();
 					}
 				})
 				
@@ -60,9 +60,6 @@ var PixiPanel = React.createClass({
 		this.subscriptions.forEach( (subscription) => {
 			subscription.dispose();
 		});
-	},
-	refresh: function (e) {
-		refresh.onNext('update');
 	},
 	reboot: function () {
 		location.reload();

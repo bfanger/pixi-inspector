@@ -5,7 +5,6 @@ var TreeView = require("./TreeView");
 var PixiTree = React.createClass({
 	propTypes: {
 		tree: React.PropTypes.object,
-		// onRefresh: React.PropTypes.function
 	},
 
 	render: function () {
@@ -40,22 +39,18 @@ var PixiTree = React.createClass({
 	},
 	expand: function (node) {
 		inspector.expand(node.id);
-		this.props.onRefresh();
 	},
 	collapse: function (node) {
 		inspector.collapse(node.id);
-		this.props.onRefresh();
 	},
 	select: function (node) {
 		inspector.select(node.id);
-		this.props.onRefresh();
 	},
 	selectParent: function (node, e) {
 		var context = this.props.context;
 		if (context.parent) {
 			inspector.select(context.parent);
 			e.preventDefault()
-			this.props.onRefresh();
 		}
 	},
 	selectPrevious: function (node, e) {
@@ -63,7 +58,6 @@ var PixiTree = React.createClass({
 		if (context.prev) {
 			inspector.select(context.prev);
 			e.preventDefault()
-			this.props.onRefresh();
 		}
 	},
 	selectNext: function (node, e) {
@@ -71,7 +65,6 @@ var PixiTree = React.createClass({
 		if (context.next) {
 			inspector.select(context.next);
 			e.preventDefault()
-			this.props.onRefresh();
 		}
 	},
 });
