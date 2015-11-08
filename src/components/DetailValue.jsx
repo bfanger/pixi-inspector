@@ -4,15 +4,8 @@ var DetailValue = React.createClass({
 	getInitialState: function () {
 		return {}
 	},
-	shouldComponentUpdate: function (props) {
-		if (document.hasFocus(this.refs.input)) {
-			this.updatedValue = props.value;
-			return false;
-		}
-		return true;
-	},
-	render: function () { 
-		return <span ref="input" contentEditable={true} onInput={this.onInput} onKeyDown={this.onKeyUp} onBlur={this.onBlur} dangerouslySetInnerHTML={{__html: this.props.value}}></span>
+	render: function () {	 
+		return <span ref="input" contentEditable={true} onInput={this.onInput} onKeyDown={this.onKeyUp} dangerouslySetInnerHTML={{__html: this.props.value}}></span>
 	},
 	onInput: function (e) { 
 		var value = e.target.innerText;
@@ -43,9 +36,6 @@ var DetailValue = React.createClass({
 			e.target.innerText = value;
 			this.props.onChange(value);
 		}
-	},
-	onBlur: function(e) {
-		this.refs.input.innerText = this.updatedValue;
 	}
 });
 module.exports = DetailValue;

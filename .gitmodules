@@ -1,3 +1,0 @@
-[submodule "typings/pixi"]
-	path = typings/pixi
-	url = https://github.com/pixijs/pixi-typescript.git
