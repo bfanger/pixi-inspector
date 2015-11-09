@@ -1,6 +1,6 @@
 {
   "name": "pixi-inspector",
-  "version": "0.0.0",
+  "version": "0.3.0",
   "scripts": {
     "clean": "rm -rf build && mkdir build",
     "build": "./node_modules/.bin/gulp build"
