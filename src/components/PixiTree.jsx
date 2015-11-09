@@ -4,7 +4,7 @@ var TreeView = require("./TreeView");
 
 var PixiTree = React.createClass({
 	propTypes: {
-		tree: React.PropTypes.object,
+		tree: React.PropTypes.object
 	},
 
 	render: function () {
@@ -70,6 +70,6 @@ var PixiTree = React.createClass({
 			inspector.select(context.next);
 			e.preventDefault()
 		}
-	},
+	}
 });
 module.exports = PixiTree;

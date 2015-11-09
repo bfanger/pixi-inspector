@@ -9,18 +9,17 @@ var refresh = require("../services/refresh");
 var detectPixi = require("../services/detectPixi");
 var proxy = require("../services/proxy");
 
-// require('../pixi.inspector'); // Enable for livereload
+// require('../pixi.inspector'); // Enable for live reload
 var DEBUG = false;
 
 var PixiPanel = React.createClass({
 
 	getInitialState: function () {
-		var state = {
+		return {
 			tree: false,
 			selected: false,
 			pixiDetected: false
-		}
-		return state;
+		};
 	},
 	render: function () {
 		var tree = this.state.tree;

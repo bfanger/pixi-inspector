@@ -91,7 +91,7 @@
 				return {
 					tree: this.tree(),
 					selected: false,
-					context: {},	
+					context: {}
 				};
 			}
 			return {
@@ -153,7 +153,7 @@
 				} else {
 					formatted[property] = '...' + type
 				}
-			})
+			});
 			return formatted;
 		},
 		/**
@@ -212,7 +212,7 @@
 			if (node.children) {
 				var length = node.children.length;
 				for (var i = 0; i < length; i++) {
-					var found = this.find(id, node.children[i])
+					var found = this.find(id, node.children[i]);
 					if (found) {
 						return found;
 					}
@@ -267,7 +267,6 @@
 				case PIXI.Polygon: return 'PIXI.Polygon';
 				case PIXI.Rectangle: return 'PIXI.Rectangle';
 				case PIXI.RoundedRectangle: return 'PIXI.RoundedRectangle';
-				case PIXI.DisplayObject: return 'PIXI.DisplayObject';
 				case PIXI.ParticleContainer: return 'PIXI.ParticleContainer';
 				case PIXI.SpriteRenderer: return 'PIXI.SpriteRenderer';
 				case PIXI.ParticleRenderer: return 'PIXI.ParticleRenderer';
@@ -324,7 +323,6 @@
 					case PIXI.CanvasMaskManager: return "PIXI.CanvasMaskManager";
 					case PIXI.CanvasTinter: return "PIXI.CanvasTinter";
 					case PIXI.Strip: return "PIXI.Strip";
-					case PIXI.Rope: return "PIXI.Rope";
 					case PIXI.TilingSprite: return "PIXI.TilingSprite";
 					case PIXI.AnimCache: return "PIXI.AnimCache";
 					case PIXI.Spine: return "PIXI.Spine";

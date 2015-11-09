@@ -24,11 +24,11 @@ var DetailValue = React.createClass({
 				e.preventDefault();
 				break;
 			case 'ArrowUp':
-				update = !isNaN(value)
+				update = !isNaN(value);
 				value = value + size;
 				break;
 			case 'ArrowDown':
-				update = !isNaN(value)
+				update = !isNaN(value);
 				value = value - size;
 				break;
 		}
