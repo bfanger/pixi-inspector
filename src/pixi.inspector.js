@@ -235,6 +235,7 @@
 				type: inspector.type,
 				leaf: (!node.children || node.children.length === 0),
 				collapsed: inspector.collapsed,
+				name: node.name
 			};
 	
 			if (result.leaf === false && inspector.collapsed === false) {
