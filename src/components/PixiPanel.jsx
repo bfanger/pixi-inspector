@@ -23,6 +23,8 @@ var PixiPanel = React.createClass({
 	},
 	render: function () {
 		var tree = this.state.tree;
+		var findWithMouseOn = !!window.$pixi && !!window.$pixi.findWithMouse;
+		var findElement = <span onClick={this.findElement}>{findWithMouseOn ? "finding element": "find pixi item"}</span>;
 		var reboot = DEBUG ? <span onClick={this.reboot}>[ reboot {this.state.error} ]</span> : <span>{this.state.error}</span>;
 		if (!tree) {
 			return <div className="pixi-panel__error">{reboot} {this.state.pixiDetected ? 'No stages rendered.' : 'Pixi.js not detected.'}</div>
@@ -30,7 +32,7 @@ var PixiPanel = React.createClass({
 		var selected = this.state.selected;
 		var selectedId = selected ? selected._inspector.id : false;
 		var context = this.state.context || {};
-		return <span className="pixi-panel">{reboot}<SplitView>
+		return <span className="pixi-panel">{reboot} {findElement}<SplitView>
 			<PixiTree tree={tree} selectedId={selectedId} context={context} />
 			{selected ? <DetailView data={selected} />: ''}
 		</SplitView></span>
@@ -59,6 +61,9 @@ var PixiPanel = React.createClass({
 		this.subscriptions.forEach( (subscription) => {
 			subscription.dispose();
 		});
+	},
+	findElement: function () {
+		proxy.eval('window.$pixi.findWithMouse = true');
 	},
 	reboot: function () {
 		location.reload();

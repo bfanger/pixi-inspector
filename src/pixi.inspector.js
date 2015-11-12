@@ -20,9 +20,9 @@
 	}
 
 	var inspector = {
-		
+
 		highlight: PIXI.Graphics ? new PIXI.Graphics() : false, // Only supported in PIXI v3
-	
+
 		/**
 		* Root of the Pixi object tree.
 		*/
@@ -34,7 +34,7 @@
 				collapsed: false
 			}
 		},
-		
+
 		/**
 		* Path the Renderer.render method to get a hold of the stage object(s)
 		*/
@@ -47,6 +47,20 @@
 				return self.afterRender(stage, renderer, retval);
 			}
 		},
+
+		addListeners: function (children) {
+			for (var i = 0; i < children.length; i++) {
+				this.addListeners(children[i].children);
+				children[i].interactive = true;
+				children[i].click = function(mouseData) {
+					window.$pixi = mouseData.target;
+				}.bind(this);
+				children[i].mouseover = function(mouseData) {
+					window.$pixi = mouseData.target;
+				}.bind(this);
+			}
+		},
+
 		/**
 		* An intercepted render call
 		*/
@@ -58,6 +72,10 @@
 				}
 				// @todo remove stages after an idle period
 			}
+			if (!!window.$pixi.findWithMouse) {
+				stage.interactive = true;
+				this.addListeners(stage.children);
+			}
 			var hl = this.highlight;
 			if (hl && window.$pixi && $pixi.parent && $pixi.getBounds) {
 				hl.clear();
@@ -65,7 +83,7 @@
 				hl.lineStyle(1, 0x00007eff, 0.6);
 				var bounds = $pixi.getBounds();
 				// Using localBounds gives rotation to the highlight, but needs to take the container transformations into account to work propertly.
-				// var bounds = $pixi.getLocalBounds(); 
+				// var bounds = $pixi.getLocalBounds();
 				// hl.position = $pixi.position.clone();
 				// hl.rotation = $pixi.rotation;
 				// hl.scale = $pixi.scale.clone();
@@ -91,6 +109,13 @@
 				return {
 					tree: this.tree(),
 					selected: false,
+					context: {}
+				};
+			}
+			if (!window.$pixi._inspector) {
+				return {
+					tree: this.tree(),
+					selected: this.selection(),
 					context: {}
 				};
 			}
@@ -225,7 +250,7 @@
 			if (!inspector) {
 				inspector = {
 					id: this.generateId(),
-					collapsed: true,
+					collapsed: false,
 					type: this.detectType(node)
 				};
 				node._inspector = inspector;
