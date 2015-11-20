@@ -132,20 +132,14 @@
 				}
 				var value = window.$pixi[property];
 				var type = typeof value;
-				if (type === 'string' || type === 'number') {
+				if (type === 'string' || type === 'number' || type === 'boolean' || value === null) {
 					formatted[property] = value
-				} else if (type === 'boolean') {
-					formatted[property] = value ? 'true' : 'false'
-				} else if (value === null) {
-					formatted[property] = 'null';
 				} else if (type === 'object' && value.constructor === PIXI.Point) {
 					Object.keys(value).forEach(function (_property) {
 						var _value = value[_property];
 						var _type = typeof _value;
-						if (_type === 'string' || _type === 'number') {
+						if (_type === 'string' || _type === 'number' || _type === 'boolean' || _value === null) {
 							formatted[property + '.' + _property] = _value
-						} else if (_type === 'boolean') {
-							formatted[property + '.' + _property] = _value ? 'true' : 'false'
 						} else {
 							formatted[property + '.' + _property] = '...' + _type
 						}

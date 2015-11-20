@@ -32,7 +32,7 @@ class TreeView extends Component {
 		var className = 'treeview' + (this.props.selected ? ' treeview--selected' : '');
 		 
 		return <div>
-			<div ref="node" className={ className } onMouseDown={this.click} tabIndex="1" onKeyDown={this.keyDown}>
+			<div ref="node" className={ className } onMouseDown={this.click} tabIndex="1" onKeyDown={this.keyDown} onFocus={this.props.onSelect}>
 				{this.getIcon()}{this.props.title}
 			</div>
 			{nodes}

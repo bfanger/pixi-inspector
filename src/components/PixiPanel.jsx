@@ -25,7 +25,7 @@ class PixiPanel extends Component {
 		var tree = this.state.tree;
 		var reboot = DEBUG ? <span onClick={this.reboot}>[ reboot {this.state.error} ]</span> : <span>{this.state.error}</span>;
 		if (!tree) {
-			return <div className="pixi-panel__error">{reboot} {this.state.pixiDetected ? 'No stages rendered.' : 'Pixi.js not detected.'}</div>
+			return <div className="pixi-panel__message">{reboot} {this.state.pixiDetected ? 'Connecting to Pixi...' : 'Looking for Pixi...'}</div>
 		}
 		var selected = this.state.selected;
 		var selectedId = selected ? selected._inspector.id : false;

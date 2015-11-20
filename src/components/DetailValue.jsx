@@ -7,8 +7,14 @@ class DetailValue extends Component {
 		this.onInput = this.onInput.bind(this);
 		this.onKeyDown = this.onKeyDown.bind(this);
 	}
-	render() {	 
-		return <span ref="input" contentEditable={true} onInput={this.onInput} onKeyDown={this.onKeyDown} dangerouslySetInnerHTML={{__html: this.props.value}}></span>
+	render() {
+		var value = this.props.value;
+		if (typeof value === 'boolean') {
+			value = value ? 'true' : 'false'
+		} else if (value === null) {
+			value = 'null';
+		}
+		return <span ref="input" contentEditable={true} onInput={this.onInput} onKeyDown={this.onKeyDown} dangerouslySetInnerHTML={{__html: value}}></span>
 	}
 	onInput(e) { 
 		var value = e.target.innerText;
