@@ -1,5 +1,4 @@
 require("./SplitView.scss");
-var React = require("react");
 
 function SplitView(props) {
 	return <div className="splitview">

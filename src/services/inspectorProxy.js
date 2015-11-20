@@ -36,5 +36,18 @@ class InspectorProxy {
 			return value;
 		});
 	}
+	hover(id) {
+		return proxy.apply('__PIXI_INSPECTOR_GLOBAL_HOOK__', 'hover', [id]).then(function (value) {
+			refresh.onNext('hover');
+			return value;
+		});
+	}
+	selectMode(value) {
+		return proxy.eval('__PIXI_INSPECTOR_GLOBAL_HOOK__.selectMode = ' + JSON.stringify(value)).then(function (value) {
+			refresh.onNext('selectMode');
+			return value;
+		});
+	}
+
 };
 module.exports = new InspectorProxy();

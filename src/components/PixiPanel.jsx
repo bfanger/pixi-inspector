@@ -4,10 +4,13 @@ var {Observable} = require("rx");
 var PixiTree = require("./PixiTree");
 var DetailView = require("./DetailView");
 var SplitView = require("./SplitView");
+var Toggle = require("./Toggle");
+var Toolbar = require("./Toolbar");
 var scene = require("../services/scene");
 var refresh = require("../services/refresh");
 var detectPixi = require("../services/detectPixi");
 var proxy = require("../services/proxy");
+var inspectorProxy = require("../services/inspectorProxy");
 
 // require('../pixi.inspector'); // Enable for live reload
 var DEBUG = false;
@@ -17,6 +20,7 @@ class PixiPanel extends Component {
 		super(props)
 		this.state = {
 			tree: false,
+			mode: 'NORMAL',
 			selected: false,
 			pixiDetected: false
 		};
@@ -30,10 +34,13 @@ class PixiPanel extends Component {
 		var selected = this.state.selected;
 		var selectedId = selected ? selected._inspector.id : false;
 		var context = this.state.context || {};
-		return <span className="pixi-panel">{reboot}<SplitView>
-			<PixiTree tree={tree} selectedId={selectedId} context={context} />
-			{selected ? <DetailView data={selected} />: ''}
-		</SplitView></span>
+		return <span className="pixi-panel">{reboot}
+			<Toolbar><Toggle icon="node-search" value={this.state.selectMode} onChange={this.toggleSelectMode.bind(this)} /></Toolbar>
+			<SplitView>
+				<PixiTree tree={tree} selectedId={selectedId} context={context} />
+				{selected ? <DetailView data={selected} />: ''}
+			</SplitView>
+		</span>
 	}
 	componentDidMount() {
 		this.subscriptions = [
@@ -59,6 +66,9 @@ class PixiPanel extends Component {
 		this.subscriptions.forEach( (subscription) => {
 			subscription.dispose();
 		});
+	}
+	toggleSelectMode(value) {
+		inspectorProxy.selectMode(value);
 	}
 	reboot() {
 		location.reload();

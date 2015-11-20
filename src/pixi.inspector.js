@@ -21,8 +21,15 @@
 
 	var inspector = {
 		
-		highlight: PIXI.Graphics ? new PIXI.Graphics() : false, // Only supported in PIXI v3
-	
+		selectMode: false,
+
+		highlight: {
+			node: false,
+			stage: false,
+			hover: false,
+			graphic: PIXI.Graphics ? new PIXI.Graphics() : false, // Only supported in PIXI v3
+		},
+
 		/**
 		* Root of the Pixi object tree.
 		*/
@@ -34,19 +41,20 @@
 				collapsed: false
 			}
 		},
-		
+
 		/**
 		* Path the Renderer.render method to get a hold of the stage object(s)
 		*/
-		patch: function (renderer) {
-			var _render = renderer.prototype.render;
+		patch: function (Renderer) {
+			var _render = Renderer.prototype.render;
 			var self = this;
-			renderer.prototype.render = function (stage) {
-				self.beforeRender(stage, renderer);
+			Renderer.prototype.render = function (stage) {
+				self.beforeRender(stage, this);
 				var retval = _render.apply(this, arguments);
-				return self.afterRender(stage, renderer, retval);
+				return self.afterRender(stage, this, retval);
 			}
 		},
+
 		/**
 		* An intercepted render call
 		*/
@@ -56,16 +64,53 @@
 				if (!window.$pixi) {
 					window.$pixi = stage;
 				}
-				// @todo remove stages after an idle period
 			}
-			var hl = this.highlight;
-			if (hl && window.$pixi && $pixi.parent && $pixi.getBounds) {
+			var canvas = renderer.view;
+			if (!canvas._inspector) {
+				canvas._inspector = {
+					id: this.generateId()
+				};
+				canvas.addEventListener('click', (e) => {
+					if (!this.selectMode) {
+						return;
+					}
+					e.preventDefault();
+					e.stopPropagation();
+					var rect = e.target.getBoundingClientRect();
+					this.selectMode = false;
+					this.highlight.hover = false;
+					this.selectAt(stage, new PIXI.Point(
+						( ( e.clientX - rect.left ) * (canvas.width  / rect.width  ) ) / renderer.resolution,
+						( ( e.clientY - rect.top ) * (canvas.height  / rect.height  ) ) / renderer.resolution
+					));
+				}, true);
+				canvas.addEventListener('mousemove', (e) => {
+					if (!this.selectMode) {
+						return;
+					}
+					var rect = e.target.getBoundingClientRect();
+					this.highlight.hover = new PIXI.Point(
+						( ( e.clientX - rect.left ) * (canvas.width  / rect.width  ) ) / renderer.resolution,
+						( ( e.clientY - rect.top ) * (canvas.height  / rect.height  ) ) / renderer.resolution
+					);
+				}, false)
+				canvas.addEventListener('mouseleave', (e) => {
+					this.highlight.hover = false;
+				}, false);
+			}
+			// @todo remove stages after an idle period
+			if (this.highlight.hover) {
+				this.highlight.node = this.hoverAt(stage, this.highlight.hover);
+			}
+			var hover = this.highlight.node;  
+			if (this.highlight.graphic && hover && hover.getBounds) {
+				var hl = this.highlight.graphic;
 				hl.clear();
-				hl.beginFill(0x00007eff, 0.3);
-				hl.lineStyle(1, 0x00007eff, 0.6);
-				var bounds = $pixi.getBounds();
+				hl.beginFill(0x007eff, 0.3);
+				hl.lineStyle(1, 0x007eff, 0.6);
+				var bounds = hover.getBounds();
 				// Using localBounds gives rotation to the highlight, but needs to take the container transformations into account to work propertly.
-				// var bounds = $pixi.getLocalBounds(); 
+				// var bounds = $pixi.getLocalBounds();
 				// hl.position = $pixi.position.clone();
 				// hl.rotation = $pixi.rotation;
 				// hl.scale = $pixi.scale.clone();
@@ -73,13 +118,13 @@
 				hl.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
 				hl.endFill();
 				stage.addChild(hl);
-				hl._inspectorAdded = true;
+				hl.dirty = true;
 			}
 		},
 		afterRender: function (stage, renderer, retval) {
-			if (this.highlight && this.highlight._inspectorAdded) {
+			if (this.highlight.graphics && this.highlight.dirty) {
 				stage.removeChild(this.highlight);
-				this.highlight._inspectorAdded = false;
+				this.highlight.dirty = false;
 			}
 			return retval;
 		},
@@ -87,18 +132,23 @@
 		* Aggregate results  for services/scene.js
 		*/
 		scene: function () {
-			if (!window.$pixi) {
-				return {
-					tree: this.tree(),
-					selected: false,
-					context: {}
-				};
-			}
-			return {
+			var scene = {
 				tree: this.tree(),
-				selected: this.selection(),
-				context: this.context(window.$pixi._inspector.id)
+				selectMode: this.selectMode,
+				selected: false,
+				hover: false,
+				context: {}
 			};
+			if (this.highlight.node && this.highlight.node._inspector) {
+				scene.hover = this.highlight.node._inspector.id;
+			}
+			if (window.$pixi) {
+				scene.selected = this.selection();
+				if (window.$pixi._inspector) {
+					scene.context =  this.context(window.$pixi._inspector.id);
+				}
+			}
+			return scene;
 		},
 		tree: function () {
 			return this.node(this.root);
@@ -118,6 +168,48 @@
 		select: function (id) {
 			window.$pixi = this.find(id);
 			return this.selection();
+		},
+		selectAt: function (node, point) {
+			if (node === this.highlight.graphic) {
+				return false;
+			}
+            if (node.containsPoint) {
+                if (node.containsPoint(point)) {
+					this.node(node);
+					window.$pixi = node;
+					return node;
+				}
+            } else if (node.children && node.children.length){
+				for (var i = node.children.length - 1; i >= 0; i--) {
+					var result = this.selectAt(node.children[i], point);
+					if (result) {
+						this.node(node);
+						node._inspector.collapsed = false;
+						return result;
+					}	
+				}
+			}
+		},
+		hover: function (id) {
+			this.highlight.node = this.find(id);
+		},
+		hoverAt: function (node, point) {
+			if (node === this.highlight.graphic) {
+				return false;
+			}
+            if (node.containsPoint) {
+                if (node.containsPoint(point)) {
+					return node;
+				}
+            } else if (node.children && node.children.length){
+				for (var i = node.children.length - 1; i >= 0; i--) {
+					var hit = this.hoverAt(node.children[i], point);
+					if (hit) {
+						return hit;
+					}
+				}
+			}
+			return false;
 		},
 		selection: function () {
 			if (!window.$pixi) {
@@ -238,10 +330,8 @@
 				for (var i = 0; i < length; i++) {
 					result.children.push(this.node(node.children[i]));
 				}
-	
 			}
 			return result;
-	
 		},
 		_autoincrement: 1,
 		generateId: function () {

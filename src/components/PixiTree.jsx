@@ -35,6 +35,7 @@ class PixiTree extends Component {
 				onSelectParent={this.selectParent.bind(this, node)}
 				onSelectPrevious={this.selectPrevious.bind(this, node)}
 				onSelectNext={this.selectNext.bind(this, node)}
+				onHover={this.hover.bind(this, node)}
 			/>
 		})
 	}
@@ -67,6 +68,9 @@ class PixiTree extends Component {
 			inspector.select(context.next);
 			e.preventDefault()
 		}
+	}
+	hover(node) {
+		inspector.hover(node.id);
 	}
 };
 PixiTree.propTypes = {
