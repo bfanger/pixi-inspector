@@ -3,33 +3,31 @@
  *
  * Has convenience wrappers for console methods. `proxy.log('a example message')`   
  */
-var proxy = {
+class Proxy {
 	
-	BASE: 'http://localhost:8090/src/',
-
 	/**
 	 * Proxy to console.log() 
 	 * @param {String} message 
 	 */
-	log: function (message) {
+	log(message) {
 		return this.apply('console', 'log', arguments);
-	},
+	}
 
 	/**
 	 * Proxy to console.warn() 
 	 * @param {String} message 
 	 */
-	warn: function (message) {
+	warn(message) {
 		return this.apply('console', 'warn', arguments);
-	},
+	}
 
 	/**
 	 * Proxy to console.error() 
 	 * @param {String} message 
 	 */
-	error: function (message) {
+	error(message) {
 		return this.apply('console', 'error', arguments);
-	},
+	}
 	
 	/**
 	 * @param {String} object
@@ -37,7 +35,7 @@ var proxy = {
 	 * @param {Array} [args]
 	 * @returns Promise  
 	 */
-	apply: function(object, method, args) {
+	apply(object, method, args) {
 		args = args || [];
 		var code = object + '.' + method + '(';
 		for (var i in args) {
@@ -48,13 +46,14 @@ var proxy = {
 		}
 		code += ')';
 		return this.eval(code);
-	},
+	}
+
 	/**
 	 * @param {Function} fn
 	 * @param {Object} tplvars
 	 * @returns Promise
 	 */
-	evalFn: function (fn, constants) {
+	evalFn(fn, constants) {
 		var code = fn;
 		if (typeof code === 'function') {
 			code = '(' + fn.toString() + '());';
@@ -65,13 +64,13 @@ var proxy = {
 			}
 		}
 		return this.eval(code);
-	},
+	}
 
 	/**
 	 * @param {String} code
 	 * @returns Promise
 	 */
-	eval: function (code) {
+	eval(code) {
 		return new Promise(function (resolve, reject) {
 			if (chrome.devtools) {
 				chrome.devtools.inspectedWindow.eval(code, function (result, exceptionInfo) {
@@ -95,17 +94,17 @@ var proxy = {
 				resolve(eval(code));
 			}
 		});
-	},
+	}
 
 	/**
 	 * @param {String} url 
 	 */
-	injectScript: function (url) {
+	injectScript(url) {
 		var SCRIPT_URL = url;/* make linters happy */
 		if (chrome.extension) {
 			url = chrome.extension.getURL(url);	
 		} else {
-			url = this.BASE + url;
+			url = 'http://localhost:8090/src/' + url;
 		}
 		return this.evalFn(function () {
 			var script = window.document.createElement('script');
@@ -118,6 +117,5 @@ var proxy = {
 	}
 };
 
-if (typeof module !== 'undefined') {
-	module.exports = proxy;
-}
+
+module.exports = new Proxy()

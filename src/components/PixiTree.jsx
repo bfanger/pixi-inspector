@@ -1,21 +1,18 @@
-var React = require("react");
+var {Component, PropTypes} = require("react");
 var inspector = require("../services/inspectorProxy");
 var TreeView = require("./TreeView");
 
-var PixiTree = React.createClass({
-	propTypes: {
-		tree: React.PropTypes.object
-	},
+class PixiTree extends Component {
 
-	render: function () {
+	render() {
 		var nodes = this.subtree(this.props.tree);
 		if (nodes.length === 1) {
 			return nodes[0]
 		} else {
 			return <span>{nodes}</span>
 		}
-	},
-	subtree: function (node) {
+	}
+	subtree(node) {
 		if (!node.children) {
 			return [];
 		}
@@ -40,36 +37,39 @@ var PixiTree = React.createClass({
 				onSelectNext={this.selectNext.bind(this, node)}
 			/>
 		})
-	},
-	expand: function (node) {
+	}
+	expand(node) {
 		inspector.expand(node.id);
-	},
-	collapse: function (node) {
+	}
+	collapse(node) {
 		inspector.collapse(node.id);
-	},
-	select: function (node) {
+	}
+	select(node) {
 		inspector.select(node.id);
-	},
-	selectParent: function (node, e) {
+	}
+	selectParent(node, e) {
 		var context = this.props.context;
 		if (context.parent) {
 			inspector.select(context.parent);
 			e.preventDefault()
 		}
-	},
-	selectPrevious: function (node, e) {
+	}
+	selectPrevious(node, e) {
 		var context = this.props.context;
 		if (context.prev) {
 			inspector.select(context.prev);
 			e.preventDefault()
 		}
-	},
-	selectNext: function (node, e) {
+	}
+	selectNext(node, e) {
 		var context = this.props.context;
 		if (context.next) {
 			inspector.select(context.next);
 			e.preventDefault()
 		}
 	}
-});
+};
+PixiTree.propTypes = {
+	tree: PropTypes.object
+};
 module.exports = PixiTree;

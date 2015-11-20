@@ -1,5 +1,5 @@
 require("./TreeView.scss");
-var React = require("react");
+var {Component, PropTypes} = require("react");
 var {findDOMNode} = require("react-dom");
 
 var KEYS = {
@@ -11,34 +11,20 @@ var KEYS = {
 /**
  * "dumb" TreeView component.
  */
-var TreeView = React.createClass({
+class TreeView extends Component {
 
-	propTypes: {
-		title: React.PropTypes.any.isRequired,
-		collapsed: React.PropTypes.bool.isRequired,
-		selected: React.PropTypes.bool,
-		leaf: React.PropTypes.bool
-	},
-	componentDidUpdate: function (prevProps) {
+	constructor(props) {
+		super(props);
+		this.click = this.click.bind(this);
+		this.keyDown = this.keyDown.bind(this);
+	}
+
+	componentDidUpdate(prevProps) {
 		if (!prevProps.selected && this.props.selected) {
 			this.refs.node.focus();
 		}
-	},
-	getDefaultProps: function () {
-		var noop = function () {};
-		return  {
-			leaf: false,
-			selected: false,
-
-			onExpand: noop,
-			onCollapse: noop,
-			onSelect: noop,
-			onSelectParent: noop,
-			onSelectPrevious: noop,
-			onSelectNext: noop,
-		}
-	},
-	render: function () {
+	}
+	render() {
 		var nodes = [];
 		if (!this.collapsed) {
 			nodes = <div style={{paddingLeft: 14}}>{this.props.renderChildren()}</div>;
@@ -46,13 +32,13 @@ var TreeView = React.createClass({
 		var className = 'treeview' + (this.props.selected ? ' treeview--selected' : '');
 		 
 		return <div>
-			<div ref="node" className={ className } onMouseDown={this.click} tabIndex="1" onKeyDown={this.keyup}>
+			<div ref="node" className={ className } onMouseDown={this.click} tabIndex="1" onKeyDown={this.keyDown}>
 				{this.getIcon()}{this.props.title}
 			</div>
 			{nodes}
 		</div>
-	},
-	getIcon: function () {
+	}
+	getIcon() {
 		var style = {
 			display: "inline-block",
 			width: 12
@@ -64,8 +50,8 @@ var TreeView = React.createClass({
 		} else {
 			return <span className="tree-toggle tree-toggle--collapse" style={style} onClick={this.props.onCollapse}>-</span>
 		}
-	},
-	click: function (e) {
+	}
+	click(e) {
 		if (e.target.classList.contains('tree-toggle')) {
 			return;
 		}
@@ -76,8 +62,8 @@ var TreeView = React.createClass({
 		} else {
 			this.props.onSelect(e);
 		}
-	},
-	keyup: function (e) {
+	}
+	keyDown(e) {
 		var key = e.which;
 		if (key === KEYS.UP) {
 			this.props.onSelectPrevious(e);
@@ -99,5 +85,23 @@ var TreeView = React.createClass({
 			}
 		}
 	}
-});
+};
+TreeView.propTypes = {
+	title: React.PropTypes.any.isRequired,
+	collapsed: React.PropTypes.bool.isRequired,
+	selected: React.PropTypes.bool,
+	leaf: React.PropTypes.bool
+};
+var noop = function () {};
+TreeView.defaultProps = {
+	leaf: false,
+	selected: false,
+
+	onExpand: noop,
+	onCollapse: noop,
+	onSelect: noop,
+	onSelectParent: noop,
+	onSelectPrevious: noop,
+	onSelectNext: noop,
+}
 module.exports = TreeView;

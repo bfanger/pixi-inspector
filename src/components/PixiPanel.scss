@@ -3,6 +3,9 @@ body {
   font-family: Lucida Grande, sans-serif;
   font-size: 12px;
 }
+[contenteditable] {
+  cursor: text;
+}
 .pixi-panel {
   cursor: default;
   font-size: 11px !important;

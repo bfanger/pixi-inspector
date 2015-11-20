@@ -1,5 +1,5 @@
 require("./PixiPanel.scss");
-var React = require("react");
+var {Component} = require("react");
 var {Observable} = require("rx");
 var PixiTree = require("./PixiTree");
 var DetailView = require("./DetailView");
@@ -12,16 +12,16 @@ var proxy = require("../services/proxy");
 // require('../pixi.inspector'); // Enable for live reload
 var DEBUG = false;
 
-var PixiPanel = React.createClass({
-
-	getInitialState: function () {
-		return {
+class PixiPanel extends Component {
+	constructor(props) {
+		super(props)
+		this.state = {
 			tree: false,
 			selected: false,
 			pixiDetected: false
 		};
-	},
-	render: function () {
+	}
+	render() {
 		var tree = this.state.tree;
 		var reboot = DEBUG ? <span onClick={this.reboot}>[ reboot {this.state.error} ]</span> : <span>{this.state.error}</span>;
 		if (!tree) {
@@ -34,8 +34,8 @@ var PixiPanel = React.createClass({
 			<PixiTree tree={tree} selectedId={selectedId} context={context} />
 			{selected ? <DetailView data={selected} />: ''}
 		</SplitView></span>
-	},
-	componentDidMount: function () {
+	}
+	componentDidMount() {
 		this.subscriptions = [
 			scene.subscribe( (scene) => {
 				this.setState(scene);
@@ -54,14 +54,14 @@ var PixiPanel = React.createClass({
 			}),
 			Observable.interval(500).subscribe(refresh)
 		];
-	},
-	componentWillUnmount: function () {
+	}
+	componentWillUnmount() {
 		this.subscriptions.forEach( (subscription) => {
 			subscription.dispose();
 		});
-	},
-	reboot: function () {
+	}
+	reboot() {
 		location.reload();
 	}
-});
+};
 module.exports = PixiPanel;

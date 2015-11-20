@@ -1,11 +1,11 @@
 require("./DetailView.scss");
-var React = require("react");
+var {Component} = require("react");
 var DetailValue = require('./DetailValue');
 var proxy = require('../services/proxy');
 var refresh = require('../services/refresh');
 
-var DetailView = React.createClass({
-	render: function () {
+class DetailView extends Component {
+	render() {
 		var data = this.props.data;
 		var formatted = {};
 		Object.keys(data).forEach( property => {
@@ -45,9 +45,9 @@ var DetailView = React.createClass({
 			</div>);
 		}
 		return <div className="detailview">{fields}</div> 
-	},
-	updateValue: function (property, value) {
+	}
+	updateValue(property, value) {
         proxy.eval("$pixi." + property + " = " + value);
 	}
-});
+};
 module.exports = DetailView;
