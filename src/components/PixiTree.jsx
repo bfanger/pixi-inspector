@@ -18,9 +18,13 @@ class PixiTree extends Component {
 		}
 
 		return node.children.map(node => {
-			var title = node.name;
-			if (title == undefined) {
-				title = node.type
+			var title = node.type;
+			if (typeof node.name !== 'undefined' && node.name !== null && node.name != '') {
+				if (node.type === 'Unknown') {
+					title = node.name;
+				} else {
+					title = node.type + ' (' + node.name + ')';
+				}
 			}
 			return <TreeView 
 				key={node.id} 

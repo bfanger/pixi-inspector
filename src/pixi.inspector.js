@@ -12,10 +12,9 @@
 	var game = false;
 	if (path.substr(-5) === '.PIXI') {
 		var windowPath = path.substr(0, path.length - 5);
+		Phaser = eval(windowPath + '.Phaser || false');
 		if (windowPath.substr(-5) === '.game') {
 			game = eval(windowPath);
-		} else {
-			Phaser = eval(windowPath + '.Phaser || false');	
 		}
 	}
 
@@ -27,7 +26,7 @@
 			node: false,
 			stage: false,
 			hover: false,
-			graphic: PIXI.Graphics ? new PIXI.Graphics() : false, // Only supported in PIXI v3
+			graphics: PIXI.Graphics ? new PIXI.Graphics() : false, // Only supported in PIXI v3
 		},
 
 		/**
@@ -103,8 +102,8 @@
 				this.highlight.node = this.hoverAt(stage, this.highlight.hover);
 			}
 			var hover = this.highlight.node;  
-			if (this.highlight.graphic && hover && hover.getBounds) {
-				var hl = this.highlight.graphic;
+			if (this.highlight.graphics && hover && hover.getBounds) {
+				var hl = this.highlight.graphics;
 				hl.clear();
 				hl.beginFill(0x007eff, 0.3);
 				hl.lineStyle(1, 0x007eff, 0.6);
@@ -118,13 +117,13 @@
 				hl.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
 				hl.endFill();
 				stage.addChild(hl);
-				hl.dirty = true;
+				this.highlight.shouldRemove = true;
 			}
 		},
 		afterRender: function (stage, renderer, retval) {
-			if (this.highlight.graphics && this.highlight.dirty) {
-				stage.removeChild(this.highlight);
-				this.highlight.dirty = false;
+			if (this.highlight.shouldRemove) {
+				stage.removeChild(this.highlight.graphics);
+				this.highlight.shouldRemove = false;
 			}
 			return retval;
 		},
@@ -170,7 +169,7 @@
 			return this.selection();
 		},
 		selectAt: function (node, point) {
-			if (node === this.highlight.graphic) {
+			if (node === this.highlight.graphics) {
 				return false;
 			}
             if (node.containsPoint) {
@@ -189,12 +188,16 @@
 					}	
 				}
 			}
+			if (node.getBounds && node.getBounds().contains(point.x, point.y)) {
+				window.$pixi = node;
+				return node;
+			}
 		},
 		hover: function (id) {
 			this.highlight.node = this.find(id);
 		},
 		hoverAt: function (node, point) {
-			if (node === this.highlight.graphic) {
+			if (node === this.highlight.graphics) {
 				return false;
 			}
             if (node.containsPoint) {
@@ -208,6 +211,9 @@
 						return hit;
 					}
 				}
+			}
+			if (node.getBounds && node.getBounds().contains(point.x, point.y)) {
+				return node;
 			}
 			return false;
 		},
