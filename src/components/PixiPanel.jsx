@@ -33,11 +33,12 @@ class PixiPanel extends Component {
 		}
 		var selected = this.state.selected;
 		var selectedId = selected ? selected._inspector.id : false;
+		var hoverId = this.state.hover;
 		var context = this.state.context || {};
 		return <span className="pixi-panel">{reboot}
-			<Toolbar><Toggle icon="node-search" value={this.state.selectMode} onChange={this.toggleSelectMode.bind(this)} /></Toolbar>
+			<Toolbar><Toggle icon="node-search" value={this.state.selectMode} onChange={this.toggleSelectMode.bind(this)} title="Select a node in the scene to inspect it"/></Toolbar>
 			<SplitView>
-				<PixiTree tree={tree} selectedId={selectedId} context={context} />
+				<PixiTree tree={tree} selectedId={selectedId} hoverId={hoverId} context={context} />
 				{selected ? <DetailView data={selected} />: ''}
 			</SplitView>
 		</span>

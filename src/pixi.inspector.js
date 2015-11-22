@@ -78,6 +78,7 @@
 					var rect = e.target.getBoundingClientRect();
 					this.selectMode = false;
 					this.highlight.hover = false;
+					this.highlight.node = false;
 					this.selectAt(stage, new PIXI.Point(
 						( ( e.clientX - rect.left ) * (canvas.width  / rect.width  ) ) / renderer.resolution,
 						( ( e.clientY - rect.top ) * (canvas.height  / rect.height  ) ) / renderer.resolution
@@ -95,6 +96,7 @@
 				}, false)
 				canvas.addEventListener('mouseleave', (e) => {
 					this.highlight.hover = false;
+					this.highlight.node = false;
 				}, false);
 			}
 			// @todo remove stages after an idle period
@@ -194,7 +196,12 @@
 			}
 		},
 		hover: function (id) {
-			this.highlight.node = this.find(id);
+			if (id === false) {
+				this.highlight.node = false;
+				this.highlight.hover = false;
+			} else {
+				this.highlight.node = this.find(id);
+			}
 		},
 		hoverAt: function (node, point) {
 			if (node === this.highlight.graphics) {

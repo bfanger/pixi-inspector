@@ -1,6 +1,5 @@
 require("./TreeView.scss");
 var {Component, PropTypes} = require("react");
-var {findDOMNode} = require("react-dom");
 
 var KEYS = {
 	LEFT: 37,
@@ -29,10 +28,9 @@ class TreeView extends Component {
 		if (!this.collapsed) {
 			nodes = <div style={{paddingLeft: 14}}>{this.props.renderChildren()}</div>;
 		}
-		var className = 'treeview' + (this.props.selected ? ' treeview--selected' : '');
-		 
+		var className = 'treeview' + (this.props.selected ? ' treeview--selected' : '') + (this.props.hovered ? ' treeview--hovered' : '');
 		return <div>
-			<div ref="node" className={ className } onMouseDown={this.click} tabIndex="1" onKeyDown={this.keyDown} onFocus={this.props.onSelect} onMouseEnter={this.props.onHover}>
+			<div ref="node" className={ className } onMouseDown={this.click} tabIndex="1" onKeyDown={this.keyDown} onFocus={this.props.onSelect} onMouseEnter={this.props.onMouseEnter} onMouseLeave={this.props.onMouseLeave}>
 				{this.getIcon()}{this.props.title}
 			</div>
 			{nodes}
@@ -103,6 +101,7 @@ TreeView.defaultProps = {
 	onSelectParent: noop,
 	onSelectPrevious: noop,
 	onSelectNext: noop,
-	onHover: noop
+	onMouseEnter: noop,
+	onMouseLeave: noop
 }
 module.exports = TreeView;

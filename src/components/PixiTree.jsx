@@ -32,6 +32,7 @@ class PixiTree extends Component {
 				leaf={node.leaf}
 				collapsed={node.collapsed} 
 				selected={node.id === this.props.selectedId} 
+				hovered={node.id === this.props.hoverId}
 				renderChildren={this.subtree.bind(this, node)}
 				onExpand={this.expand.bind(this, node)} 
 				onCollapse={this.collapse.bind(this, node)} 
@@ -39,7 +40,8 @@ class PixiTree extends Component {
 				onSelectParent={this.selectParent.bind(this, node)}
 				onSelectPrevious={this.selectPrevious.bind(this, node)}
 				onSelectNext={this.selectNext.bind(this, node)}
-				onHover={this.hover.bind(this, node)}
+				onMouseEnter={this.mouseEnter.bind(this, node)}
+				onMouseLeave={this.mouseLeave.bind(this)}
 			/>
 		})
 	}
@@ -73,8 +75,11 @@ class PixiTree extends Component {
 			e.preventDefault()
 		}
 	}
-	hover(node) {
+	mouseEnter(node) {
 		inspector.hover(node.id);
+	}
+	mouseLeave(node) {
+		inspector.hover(false);
 	}
 };
 PixiTree.propTypes = {

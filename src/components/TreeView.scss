@@ -2,9 +2,10 @@
 	color: #808;
 	white-space: nowrap;
 	padding: 1px;
-	&:hover:not(.treeview--selected) {
-		background: #eaf1fb;
-	}
+}
+.treeview--hovered,
+.treeview:hover:not(.treeview--selected) {
+	background: #eaf1fb;	
 }
 .treeview--selected {
 	background: #d4d4d4;
