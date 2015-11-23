@@ -1,9 +1,10 @@
 {
   "name": "pixi-inspector",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "scripts": {
     "clean": "rm -rf build && mkdir build",
-    "build": "./node_modules/.bin/gulp build"
+    "build": "./node_modules/.bin/gulp build",
+    "dev": "./node_modules/.bin/gulp webpack-dev-server"
   },
   "dependencies": {
     "babel-core": "^6.2.1",
