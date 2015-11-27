@@ -30,7 +30,18 @@ class TreeView extends Component {
 		}
 		var className = 'treeview' + (this.props.selected ? ' treeview--selected' : '') + (this.props.hovered ? ' treeview--hovered' : '');
 		return <div>
-			<div ref="node" className={ className } onMouseDown={this.click} tabIndex="1" onKeyDown={this.keyDown} onFocus={this.props.onSelect} onMouseEnter={this.props.onMouseEnter} onMouseLeave={this.props.onMouseLeave}>
+			<div 
+				ref="node"
+				className={ className } 
+				onMouseDown={this.click}
+				tabIndex="1"
+				onKeyDown={this.keyDown}
+				onFocus={this.props.onSelect}
+				onMouseEnter={this.props.onMouseEnter}
+				onMouseLeave={this.props.onMouseLeave}
+				onFocus={this.props.onFocus}
+				onBlur={this.props.onBlur}
+				>
 				{this.getIcon()}{this.props.title}
 			</div>
 			{nodes}
@@ -102,6 +113,8 @@ TreeView.defaultProps = {
 	onSelectPrevious: noop,
 	onSelectNext: noop,
 	onMouseEnter: noop,
-	onMouseLeave: noop
+	onMouseLeave: noop,
+	onFocus: noop,
+	onBlur: noop
 }
 module.exports = TreeView;

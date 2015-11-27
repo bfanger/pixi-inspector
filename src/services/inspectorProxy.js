@@ -36,9 +36,9 @@ class InspectorProxy {
 			return value;
 		});
 	}
-	hover(id) {
-		return proxy.apply('__PIXI_INSPECTOR_GLOBAL_HOOK__', 'hover', [id]).then(function (value) {
-			refresh.onNext('hover');
+	highlight(id) {
+		return proxy.apply('__PIXI_INSPECTOR_GLOBAL_HOOK__', 'highlight', [id]).then(function (value) {
+			refresh.onNext('highlight');
 			return value;
 		});
 	}
