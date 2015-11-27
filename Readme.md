@@ -27,7 +27,7 @@ run `__PIXI_INSPECTOR_GLOBAL_HOOK__.use(frames[0].PIXI);` to point the inspector
  
 ### Development
 
-Run `npm run dev` and open http://localhost:8090/webpack-dev-server/tests/ (or http://localhost:8090/tests/)
+Run `npm start` and open http://localhost:8090/webpack-dev-server/tests/ (or http://localhost:8090/tests/)
 
 This loads the pixi-inspector into the same page as an example PIXI scene, which makes debugging easier. 
 However in the chrome-extension environment, you don't have direct access to the PIXI object or console.log (The injected pixi.inspector.js is the exception)

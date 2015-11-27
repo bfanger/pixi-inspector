@@ -42,6 +42,8 @@ class PixiTree extends Component {
 				onSelectNext={this.selectNext.bind(this, node)}
 				onMouseEnter={this.mouseEnter.bind(this, node)}
 				onMouseLeave={this.mouseLeave.bind(this)}
+				onFocus={this.focus.bind(this, node)}
+				onBlur={this.blur.bind(this)}
 			/>
 		})
 	}
@@ -76,10 +78,19 @@ class PixiTree extends Component {
 		}
 	}
 	mouseEnter(node) {
-		inspector.hover(node.id);
+		inspector.highlight(node.id);
 	}
-	mouseLeave(node) {
-		inspector.hover(false);
+	mouseLeave() {
+		inspector.highlight(false);
+	}
+	focus(node) {
+		inspector.highlight(node.id);
+		if (node.id !== this.props.selectedId) {
+			inspector.select(node.id);
+		}
+	}
+	blur() {
+		inspector.highlight(false);
 	}
 };
 PixiTree.propTypes = {
