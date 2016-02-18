@@ -584,7 +584,10 @@
 					case game.SceneMain: return 'game.SceneMain';
 				}
 			}
-			return 'Unknown';
+			if(!node.constructor.name){
+				return 'Unknown'
+			}
+			return node.constructor.name;
 	
 		},
 		
