@@ -19,7 +19,7 @@
 	}
 
 	var inspector = {
-		
+
 		selectMode: false,
 
 		_highlight: {
@@ -103,7 +103,7 @@
 			if (this._highlight.point) {
 				this._highlight.node = this.highlightAt(stage, this._highlight.point);
 			}
-			var highlightNode = this._highlight.node;  
+			var highlightNode = this._highlight.node;
 			if (this._highlight.graphics && highlightNode && highlightNode.getBounds) {
 				var box = this._highlight.graphics;
 				box.clear();
@@ -181,7 +181,7 @@
 						this.node(node);
 						node._inspector.collapsed = false;
 						return result;
-					}	
+					}
 				}
 			}
 			if (node.getBounds && node.getBounds().contains(point.x, point.y)) {
@@ -225,7 +225,14 @@
 			var formatted = {
 				_inspector: window.$pixi._inspector
 			};
-			Object.keys(window.$pixi).forEach(function (property) {
+
+			var properties = Object.keys(window.$pixi);
+
+			if (formatted._inspector !== undefined && formatted._inspector.whitelist !== undefined) {
+				properties = formatted._inspector.whitelist;
+			}
+
+			properties.forEach(function (property) {
 				if (property[0] === '_' || ['children', 'parent'].indexOf(property) !== -1) {
 					return;
 				}
@@ -314,15 +321,18 @@
 			return false;
 		},
 		node: function (node) {
-			var inspector = node._inspector;
-			if (!inspector) {
-				inspector = {
-					id: this.generateId(),
-					collapsed: true,
-					type: this.detectType(node)
-				};
-				node._inspector = inspector;
-			}
+			var inspector = node._inspector || {};
+
+			var defaultTo = function (obj, prop, value) {
+				if (obj[prop] === undefined) { obj[prop] = value; }
+			};
+
+			defaultTo(inspector, 'id', this.generateId());
+			defaultTo(inspector, 'collapsed', true);
+			defaultTo(inspector, 'type', this.detectType(node));
+
+			node._inspector = inspector;
+
 			var result = {
 				id: inspector.id,
 				type: inspector.type,
@@ -330,7 +340,7 @@
 				collapsed: inspector.collapsed,
 				name: node.name
 			};
-	
+
 			if (result.leaf === false && inspector.collapsed === false) {
 				result.children = [];
 				var length = node.children.length;
@@ -344,7 +354,7 @@
 		generateId: function () {
 			this._autoincrement++;
 			return this._autoincrement;
-		}, 
+		},
 		detectType: function (node) {
 			if (!node.constructor) {
 				return 'Unknown';
@@ -382,7 +392,7 @@
 				case PIXI.SpriteBatch: return 'PIXI.SpriteBatch';
 				case PIXI.AssetLoader: return 'PIXI.AssetLoader';
 			}
-			var versionMajor = parseInt(PIXI.VERSION, 10) || 1; 
+			var versionMajor = parseInt(PIXI.VERSION, 10) || 1;
 			if (versionMajor < 3) { // Deprecated (PIXI v2)
 				switch (node.constructor) {
 					case PIXI.Stage: return 'PIXI.Stage';
@@ -585,9 +595,9 @@
 				}
 			}
 			return 'Unknown';
-	
+
 		},
-		
+
 		use: function (_PIXI) {
 			PIXI = _PIXI;
 			inspector.patch(PIXI.CanvasRenderer);

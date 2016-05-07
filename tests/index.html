@@ -15,12 +15,13 @@
              view: document.getElementById('example')
          });
 
-        
-        
         // create an new instance of a pixi stage
         var stage = new PIXI.Container();
 
-
+        stage._inspector = {
+          type: 'stage',
+          whitelist: ['position']
+        };
 
         // create a background texture
         var pondFloorTexture = PIXI.Texture.fromImage("http://www.goodboydigital.com/pixijs/examples/17/BGrotate.jpg");
@@ -28,15 +29,15 @@
         var pondFloorSprite = new PIXI.Sprite(pondFloorTexture);
         stage.addChild(pondFloorSprite);
 
-        
+
         var dudesContainer = new PIXI.Container();
         stage.addChild(dudesContainer);
         // create an array to store a refference to the fish in the pond
         var dudeArray = [];
-         
+
         var totalDude = 10;
 
-        for (var i = 0; i < totalDude; i++) 
+        for (var i = 0; i < totalDude; i++)
         {
 
             // create a new Sprite that uses the image name that we just generated as its source
@@ -47,11 +48,11 @@
 
             // set a random scale for the dude - no point them all being the same size!
             dude.scale.x = dude.scale.y = 0.8 + Math.random() * 0.3;
-            
+
             // finally lets set the dude to be a random position..
             dude.position.x = Math.random() * viewWidth;
             dude.position.y = Math.random() * viewHeight;
-        
+
             // time to add the dude to the pond container!
             dudesContainer.addChild(dude);
 
@@ -66,21 +67,21 @@
             dude.turningSpeed = Math.random() - 0.8;
 
             // create a random speed for the dude between 0 - 2
-            dude.speed = 2 + Math.random() * 2; 
+            dude.speed = 2 + Math.random() * 2;
 
             // finally we push the dude into the dudeArray so it it can be easily accessed later
             dudeArray.push(dude);
 
         }
 
-        // create a bounding box box for the little dudes 
+        // create a bounding box box for the little dudes
         var dudeBoundsPadding = 100;
         var dudeBounds = new PIXI.Rectangle(-dudeBoundsPadding,
-                                            -dudeBoundsPadding, 
-                                            viewWidth + dudeBoundsPadding * 2, 
+                                            -dudeBoundsPadding,
+                                            viewWidth + dudeBoundsPadding * 2,
                                             viewHeight + dudeBoundsPadding * 2);
 
-        
+
 
         // create a displacment map
 
@@ -88,10 +89,10 @@
         var tick = 0;
         requestAnimationFrame(animate);
 
-        function animate() 
+        function animate()
         {
             // iterate through the dude and update the positiond
-            for (var i = 0; i < dudeArray.length; i++) 
+            for (var i = 0; i < dudeArray.length; i++)
             {
                 var dude = dudeArray[i];
                 dude.direction += dude.turningSpeed * 0.01;
@@ -102,19 +103,19 @@
                 // wrap the dudes by testing there bounds..
                 if(dude.position.x < dudeBounds.x)dude.position.x += dudeBounds.width;
                 else if(dude.position.x > dudeBounds.x + dudeBounds.width)dude.position.x -= dudeBounds.width
-                
+
                 if(dude.position.y < dudeBounds.y)dude.position.y += dudeBounds.height;
                 else if(dude.position.y > dudeBounds.y + dudeBounds.height)dude.position.y -= dudeBounds.height
             }
-            
+
             // increment the ticker
             tick += 0.1;
-            
-            
-            
+
+
+
             // time to render the state!
             renderer.render(stage);
-            
+
             // request another animation frame..
             requestAnimationFrame( animate );
         }
@@ -126,7 +127,7 @@
             <!-- this is where the root react component will get rendered -->
         </div>
     </div>
-    
+
     <script src="http://localhost:8090/node_modules/react/dist/react-with-addons.js"></script>
     <script src="http://localhost:8090/node_modules/react-dom/dist/react-dom.js"></script>
     <script src="http://localhost:8090/node_modules/rx/dist/rx.all.js"></script>
