@@ -1,5 +1,5 @@
-var proxy = require('./proxy');
-var refresh = require('./refresh');
+import proxy from './proxy';
+import refresh from './refresh';
 
 /**
  * Async access to the __PIXI_INSPECTOR_GLOBAL_HOOK__ which works in both browser and devtool panel environments.
@@ -50,4 +50,4 @@ class InspectorProxy {
 	}
 
 };
-module.exports = new InspectorProxy();
+export default new InspectorProxy();

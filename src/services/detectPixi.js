@@ -1,5 +1,5 @@
-var {Observable} = require('rx');
-var proxy = require('./proxy');
+import {Observable} from 'rx';
+import proxy from './proxy';
 
 var detectTimeout = 500;
 /**
@@ -7,7 +7,7 @@ var detectTimeout = 500;
  * Looks for PIXI in the inspected page and emit the path (Ex. 'window.PIXI') when found. 
  * Keeps checking when PIXI is not detected, but polling for PIXI slows down. 
  */
-var detectPixi = Observable.defer(function () {
+export default Observable.defer(function () {
 	return proxy.evalFn(function () {
 		var detect = function detect(window) {
 			if (window.PIXI) { // global variable
@@ -43,5 +43,3 @@ var detectPixi = Observable.defer(function () {
 		return Observable.timer(detectTimeout);
 	})
 }).share();
-
-module.exports = detectPixi;

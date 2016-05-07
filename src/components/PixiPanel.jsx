@@ -1,21 +1,22 @@
+import {Component} from "react";
+import {Observable} from "rx";
+import PixiTree from "./PixiTree";
+import DetailView from "./DetailView";
+import SplitView from "./SplitView";
+import Toggle from "./Toggle";
+import Toolbar from "./Toolbar";
+import scene from "../services/scene";
+import refresh from "../services/refresh";
+import detectPixi from "../services/detectPixi";
+import proxy from "../services/proxy";
+import inspectorProxy from "../services/inspectorProxy";
+
 require("./PixiPanel.scss");
-var {Component} = require("react");
-var {Observable} = require("rx");
-var PixiTree = require("./PixiTree");
-var DetailView = require("./DetailView");
-var SplitView = require("./SplitView");
-var Toggle = require("./Toggle");
-var Toolbar = require("./Toolbar");
-var scene = require("../services/scene");
-var refresh = require("../services/refresh");
-var detectPixi = require("../services/detectPixi");
-var proxy = require("../services/proxy");
-var inspectorProxy = require("../services/inspectorProxy");
 
 // require('../pixi.inspector'); // Enable for live reload
 var DEBUG = false;
 
-class PixiPanel extends Component {
+export default class PixiPanel extends Component {
 	constructor(props) {
 		super(props)
 		this.state = {
@@ -45,8 +46,8 @@ class PixiPanel extends Component {
 	}
 	componentDidMount() {
 		this.subscriptions = [
-			scene.subscribe( (scene) => {
-				this.setState(scene);
+			scene.subscribe( (_scene) => {
+				this.setState(_scene);
 			}, error => {
 				proxy.eval('typeof window.__PIXI_INSPECTOR_GLOBAL_HOOK__').then(function (type) {
 					if (type === 'object') {
@@ -75,4 +76,3 @@ class PixiPanel extends Component {
 		location.reload();
 	}
 };
-module.exports = PixiPanel;

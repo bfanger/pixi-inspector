@@ -355,6 +355,7 @@
 			this._autoincrement++;
 			return this._autoincrement;
 		},
+		_types: [],
 		detectType: function (node) {
 			if (!node.constructor) {
 				return 'Unknown';
@@ -368,7 +369,6 @@
 				case PIXI.Polygon: return 'PIXI.Polygon';
 				case PIXI.Rectangle: return 'PIXI.Rectangle';
 				case PIXI.RoundedRectangle: return 'PIXI.RoundedRectangle';
-				case PIXI.ParticleContainer: return 'PIXI.ParticleContainer';
 				case PIXI.SpriteRenderer: return 'PIXI.SpriteRenderer';
 				case PIXI.ParticleRenderer: return 'PIXI.ParticleRenderer';
 				case PIXI.Text: return 'PIXI.Text';
@@ -393,7 +393,12 @@
 				case PIXI.AssetLoader: return 'PIXI.AssetLoader';
 			}
 			var versionMajor = parseInt(PIXI.VERSION, 10) || 1;
-			if (versionMajor < 3) { // Deprecated (PIXI v2)
+			if (versionMajor <= 3) { // Deprecated (PIXI v3)
+				switch (node.constructor) {
+					case PIXI.ParticleContainer: return 'PIXI.ParticleContainer';
+				}
+			}
+			if (versionMajor <= 2) { // Deprecated (PIXI v2)
 				switch (node.constructor) {
 					case PIXI.Stage: return 'PIXI.Stage';
 					case PIXI.Rope: return 'PIXI.Rope';
@@ -461,6 +466,11 @@
 					case PIXI.mesh.Rope: return 'PIXI.mesh.Rope';
 					case PIXI.mesh.MeshRenderer: return 'PIXI.mesh.MeshRenderer';
 					case PIXI.mesh.MeshShader: return 'PIXI.mesh.MeshShader';
+				}
+			}
+			if (PIXI.particles) {
+				switch (node.constructor) {
+					case PIXI.particles.ParticleContainer: return 'PIXI.particles.ParticleContainer';
 				}
 			}
 			if (PIXI.extras) {

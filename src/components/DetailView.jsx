@@ -1,10 +1,11 @@
-require("./DetailView.scss");
-var {Component} = require("react");
-var DetailValue = require('./DetailValue');
-var proxy = require('../services/proxy');
-var refresh = require('../services/refresh');
+import {Component} from "react";
+import DetailValue from './DetailValue';
+import proxy from '../services/proxy';
+import refresh from '../services/refresh';
 
-class DetailView extends Component {
+require("./DetailView.scss");
+
+export default class DetailView extends Component {
 	render() {
 		var data = this.props.data;
 		var formatted = {};
@@ -50,4 +51,3 @@ class DetailView extends Component {
         proxy.eval("$pixi." + property + " = " + value);
 	}
 };
-module.exports = DetailView;

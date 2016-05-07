@@ -1,6 +1,6 @@
 {
   "name": "Pixi Inspector",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "Tool for debugging games written with pixi.js",
   "icons": {
     "16": "img/webstore-icon.png",

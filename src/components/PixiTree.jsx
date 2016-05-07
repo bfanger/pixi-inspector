@@ -1,8 +1,8 @@
-var {Component, PropTypes} = require("react");
-var inspector = require("../services/inspectorProxy");
-var TreeView = require("./TreeView");
+import {Component, PropTypes} from "react";
+import inspector from "../services/inspectorProxy";
+import TreeView from "./TreeView";
 
-class PixiTree extends Component {
+export default class PixiTree extends Component {
 
 	render() {
 		var nodes = this.subtree(this.props.tree);
@@ -96,4 +96,3 @@ class PixiTree extends Component {
 PixiTree.propTypes = {
 	tree: PropTypes.object
 };
-module.exports = PixiTree;

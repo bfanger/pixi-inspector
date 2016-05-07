@@ -1,4 +1,4 @@
-var {render} = require("react-dom");
-var PixiPanel = require('./components/PixiPanel');
+import {render} from "react-dom";
+import PixiPanel from "./components/PixiPanel";
 
 render(<PixiPanel />, document.getElementById('devpanel'));

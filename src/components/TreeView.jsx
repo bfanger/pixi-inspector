@@ -1,5 +1,5 @@
+import {Component, PropTypes} from "react";
 require("./TreeView.scss");
-var {Component, PropTypes} = require("react");
 
 var KEYS = {
 	LEFT: 37,

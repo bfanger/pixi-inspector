@@ -4,7 +4,7 @@
  * Has convenience wrappers for console methods. `proxy.log('a example message')`   
  */
 class Proxy {
-	
+
 	/**
 	 * Proxy to console.log() 
 	 * @param {String} message 
@@ -28,7 +28,7 @@ class Proxy {
 	error(message) {
 		return this.apply('console', 'error', arguments);
 	}
-	
+
 	/**
 	 * @param {String} object
 	 * @param {method} method
@@ -84,7 +84,7 @@ class Proxy {
 								proxy.warn(exceptionInfo.description.replace(/%s/, exceptionInfo.details[0]));
 								reject(exceptionInfo.description);
 							}
-						}	
+						}
 						reject(exceptionInfo);
 					} else {
 						resolve(result);
@@ -102,9 +102,9 @@ class Proxy {
 	injectScript(url) {
 		var SCRIPT_URL = url;/* make linters happy */
 		if (chrome.extension) {
-			url = chrome.extension.getURL(url);	
+			url = chrome.extension.getURL(url);
 		} else {
-			url = 'http://localhost:8090/src/' + url;
+			url = 'http://localhost:8080/src/' + url;
 		}
 		return this.evalFn(function () {
 			var script = window.document.createElement('script');
@@ -117,5 +117,4 @@ class Proxy {
 	}
 };
 
-
-module.exports = new Proxy()
+export default new Proxy();

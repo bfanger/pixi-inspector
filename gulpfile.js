@@ -41,11 +41,11 @@ gulp.task("webpack-dev-server", function(done) {
         contentBase: __dirname + '/',
         progress: true, 
         stats: { colors: true }
-    }).listen(8090, "localhost", function(err) {
+    }).listen(8080, "localhost", function(err) {
         if (err) {
             throw new gutil.PluginError("webpack-dev-server", err);
         }
-        gutil.log("[webpack-dev-server]", "http://localhost:8090/webpack-dev-server/");
+        gutil.log("[webpack-dev-server]", "http://localhost:8080/webpack-dev-server/");
         done();
     });
 });

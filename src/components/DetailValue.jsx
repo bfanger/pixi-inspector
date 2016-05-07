@@ -1,6 +1,6 @@
-var {Component} = require("react");
+import {Component} from "react";
 
-class DetailValue extends Component {
+export default class DetailValue extends Component {
 	constructor(props) {
 		super(props)
 		this.state = {};
@@ -47,4 +47,3 @@ class DetailValue extends Component {
 		}
 	}
 };
-module.exports = DetailValue;

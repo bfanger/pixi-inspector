@@ -1,20 +1,21 @@
-var {Observable} = require('rx');
-var detectPixi = require('./detectPixi')
-var proxy = require('./proxy')
+import {Observable} from 'rx';
+import detectPixi from './detectPixi';
+import proxy from './proxy';
+
 /**
  * @var {Observable}
  * - Wait for detected PIXI
  * - Inject inpector for the detected path
  * - Wait until injected script is executed
  */
-var injectInspector = detectPixi.flatMap(function (path) {
+export default detectPixi.flatMap(function (path) {
 	return proxy.eval('typeof window.__PIXI_INSPECTOR_GLOBAL_HOOK__').then(function (type) {
 		if (type !== 'object') {
 			return proxy.eval('window.__PIXI_INSPECTOR_GLOBAL_HOOK__ = "' + path + '"').then(function () {
 				return proxy.injectScript('pixi.inspector.js');
 			});
 		}
-	}).then (function () {
+	}).then(function () {
 		return path;
 	});
 }).delay(1).flatMap(function (path) {
@@ -27,6 +28,4 @@ var injectInspector = detectPixi.flatMap(function (path) {
 	}).retryWhen(function (errors) {
 		return errors.delay(25)
 	}).map(path);
-}).share()
-
-module.exports = injectInspector;
+}).share();
