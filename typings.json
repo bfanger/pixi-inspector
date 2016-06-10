@@ -1,13 +1,14 @@
 {
   "name": "pixi-inspector",
   "version": false,
-  "ambientDependencies": {
+  "globalDependencies": {
     "MediaStream": "github:DefinitelyTyped/DefinitelyTyped/webrtc/MediaStream.d.ts#f6c8ca47193fb67947944a3170912672ac3e908e",
     "chrome": "github:DefinitelyTyped/DefinitelyTyped/chrome/chrome.d.ts#f6c8ca47193fb67947944a3170912672ac3e908e",
     "pixi-spine": "registry:dt/pixi-spine#1.0.4+20160317120654",
     "pixi.js": "github:DefinitelyTyped/DefinitelyTyped/pixi.js/pixi.js.d.ts#421d6610bdb09e1015b71f5991d7a68d079eca21",
-    "react": "github:DefinitelyTyped/DefinitelyTyped/react/react.d.ts#977da240f263e88215a27cb44f2e31524ca07135",
-    "rx": "github:DefinitelyTyped/DefinitelyTyped/rx/rx.d.ts#35989a3ab4834b8e8b2b56788f1d4fc46a25dc8d",
-    "rx-lite": "github:DefinitelyTyped/DefinitelyTyped/rx/rx-lite.d.ts#35989a3ab4834b8e8b2b56788f1d4fc46a25dc8d"
+    "rx": "file:node_modules/rx/ts/rx.d.ts"
+  },
+  "dependencies": {
+    "react": "registry:npm/react#15.0.1+20160601175240"
   }
 }
