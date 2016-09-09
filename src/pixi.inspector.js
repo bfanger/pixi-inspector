@@ -8,6 +8,10 @@
 	}
 	var path = window.__PIXI_INSPECTOR_GLOBAL_HOOK__;
 	var PIXI = eval(path);
+	function MismatchConstructor() {};
+	var TransformBaseRef =  MismatchConstructor;
+	var ObservablePointRef = MismatchConstructor;
+
 	var inspector = {
 
 		selectMode: false,
@@ -226,8 +230,8 @@
 			if (formatted._inspector !== undefined && formatted._inspector.whitelist !== undefined) {
 				properties = formatted._inspector.whitelist;
 			}
-
-			properties.forEach(function (property) {
+			
+			properties.forEach(property => {
 				if (property[0] === '_' || ['children', 'parent'].indexOf(property) !== -1) {
 					return;
 				}
@@ -235,21 +239,43 @@
 				var type = typeof value;
 				if (type === 'string' || type === 'number' || type === 'boolean' || value === null) {
 					formatted[property] = value
-				} else if (type === 'object' && value.constructor === PIXI.Point) {
-					Object.keys(value).forEach(function (_property) {
-						var _value = value[_property];
-						var _type = typeof _value;
-						if (_type === 'string' || _type === 'number' || _type === 'boolean' || _value === null) {
-							formatted[property + '.' + _property] = _value
-						} else {
-							formatted[property + '.' + _property] = '...' + _type
-						}
-					})
+				} else if (type === 'object') {
+					if (value.constructor === PIXI.Point) {
+						this.selectionPartial(formatted, property + '.', value)
+					} else if (value instanceof TransformBaseRef) {
+						this.selectionPartial(formatted, property + '.position.', value.position)
+						formatted[property + '.rotation'] = value.rotation;
+						this.selectionPartial(formatted, property + '.skew.', value.skew)
+						this.selectionPartial(formatted, property + '.scale.', value.scale)
+					} else if (value instanceof ObservablePointRef) {
+						this.selectionPartial(formatted, property + '.', value)
+					} else {
+						formatted[property] = '...' + (typeof value.constructor ? value.constructor.name : type)
+					}
 				} else {
 					formatted[property] = '...' + type
 				}
 			});
 			return formatted;
+		},
+		selectionPartial(formatted, path, object) {
+			if (object instanceof ObservablePointRef) {
+				formatted[path + 'x'] = object.x;
+				formatted[path + 'y'] = object.y;
+				return;
+			}
+			Object.keys(object).forEach(function (property) {
+				if (property[0] === '_') {
+					return;
+				}
+				var value = object[property];
+				var type = typeof value;
+				if (type === 'string' || type === 'number' || type === 'boolean' || value === null) {
+					formatted[path + property] = value
+				} else {
+					formatted[path + property] = '...' + type
+				}
+			})
 		},
 		/**
 		 * Get the surounding nodes (prev, next, parent. For tree keyboard navigation)
@@ -381,6 +407,9 @@
 			PIXI = _PIXI;
 			inspector.patch(PIXI.CanvasRenderer);
 			inspector.patch(PIXI.WebGLRenderer);
+			// Prevent "Right-hand side of 'instanceof' is not an object" for older version of pixi
+			TransformBaseRef = typeof PIXI.TransformBase  === 'function' ? PIXI.TransformBase : MismatchConstructor;
+			ObservablePointRef = typeof PIXI.ObservablePoint  === 'function' ? PIXI.ObservablePoint : MismatchConstructor;
 		}
 	};
 	inspector.use(PIXI);
