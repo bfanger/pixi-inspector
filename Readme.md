@@ -35,4 +35,4 @@ Use the [proxy](src/services/proxy.js) service to interact with the inspected pa
 
 When the inspector works in the test environment run:  
 `gulp continuous-build`
-Set `var DEBUG = true;` in [PixiPanel](src/components/PixiPanel.js) which adds a button to load the changed code.
+Set `var DEBUG = true;` in [PixiPanel](src/components/PixiPanel.jsx) which adds a button to load the changed code.
