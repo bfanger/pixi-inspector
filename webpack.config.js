@@ -5,19 +5,16 @@ module.exports = {
     filename: 'pixi-panel.js',
         path: __dirname + '/build'
     },
-    resolve: {
-        extensions: ['', '.jsx', '.webpack.js', '.web.js', '.js']
-    },
     module: {
         loaders: [
             {
-                test: /\.js(x)?$/,
-                exclude: /(node_modules|bower_components)/,
+                test: /\.js$/,
                 loader: 'babel-loader',
                 query: {
                     cacheDirectory: true,
                     presets:['es2015', 'react']
-                }
+                },
+                include: __dirname +'/src'
             },
             {
                 test: /\.scss$/,
