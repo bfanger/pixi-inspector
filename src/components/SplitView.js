@@ -1,4 +1,5 @@
-require("./SplitView.scss");
+import React from 'react'
+import './SplitView.scss'
 
 export default function SplitView(props) {
 	return <div className="splitview">

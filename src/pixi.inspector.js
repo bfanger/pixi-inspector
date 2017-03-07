@@ -8,8 +8,9 @@
 	}
 	var path = window.__PIXI_INSPECTOR_GLOBAL_HOOK__;
 	var PIXI = eval(path);
-	function MismatchConstructor() {};
-	var TransformBaseRef =  MismatchConstructor;
+	function noop() { }
+	function MismatchConstructor() { };
+	var TransformBaseRef = MismatchConstructor;
 	var ObservablePointRef = MismatchConstructor;
 
 	var inspector = {
@@ -167,13 +168,13 @@
 			if (node === this._highlight.graphics) {
 				return false;
 			}
-            if (node.containsPoint) {
-                if (node.containsPoint(point)) {
+			if (node.containsPoint) {
+				if (node.containsPoint(point)) {
 					this.node(node);
 					window.$pixi = node;
 					return node;
 				}
-            } else if (node.children && node.children.length) {
+			} else if (node.children && node.children.length) {
 				for (var i = node.children.length - 1; i >= 0; i--) {
 					var result = this.selectAt(node.children[i], point);
 					if (result) {
@@ -200,11 +201,11 @@
 			if (node === this._highlight.graphics) {
 				return false;
 			}
-            if (node.containsPoint) {
-                if (node.containsPoint(point)) {
+			if (node.containsPoint) {
+				if (node.containsPoint(point)) {
 					return node;
 				}
-            } else if (node.children && node.children.length) {
+			} else if (node.children && node.children.length) {
 				for (var i = node.children.length - 1; i >= 0; i--) {
 					var hit = this.highlightAt(node.children[i], point);
 					if (hit) {
@@ -230,7 +231,7 @@
 			if (formatted._inspector !== undefined && formatted._inspector.whitelist !== undefined) {
 				properties = formatted._inspector.whitelist;
 			}
-			
+
 			properties.forEach(property => {
 				if (property[0] === '_' || ['children', 'parent'].indexOf(property) !== -1) {
 					return;
@@ -345,12 +346,12 @@
 			var inspector = node._inspector || {};
 
 			var defaultTo = function (obj, prop, callback) {
-				if (obj[prop] === undefined) { 
-					obj[prop] = callback(); 
+				if (obj[prop] === undefined) {
+					obj[prop] = callback();
 				}
 			};
 
-			defaultTo(inspector, 'id', () => this.generateId() );
+			defaultTo(inspector, 'id', () => this.generateId());
 			defaultTo(inspector, 'collapsed', () => true);
 			defaultTo(inspector, 'type', () => this.detectType(node));
 
@@ -408,11 +409,23 @@
 			inspector.patch(PIXI.CanvasRenderer);
 			inspector.patch(PIXI.WebGLRenderer);
 			// Prevent "Right-hand side of 'instanceof' is not an object" for older version of pixi
-			TransformBaseRef = typeof PIXI.TransformBase  === 'function' ? PIXI.TransformBase : MismatchConstructor;
-			ObservablePointRef = typeof PIXI.ObservablePoint  === 'function' ? PIXI.ObservablePoint : MismatchConstructor;
+			TransformBaseRef = typeof PIXI.TransformBase === 'function' ? PIXI.TransformBase : MismatchConstructor;
+			ObservablePointRef = typeof PIXI.ObservablePoint === 'function' ? PIXI.ObservablePoint : MismatchConstructor;
 		}
 	};
 	inspector.use(PIXI);
+
+	// Patch console.warn to hide
+	var targetWindow = window
+	var windowPath = path.match(/window.frames\[[0-9]+\]/)
+	if (windowPath !== null) {
+		targetWindow = eval(windowPath[0])
+	}
+	var _warn = targetWindow.console.warn
+	var _groupCollapsed = targetWindow.console.groupCollapsed
+	targetWindow.console.warn = function () { }
+	targetWindow.console.groupCollapsed = false
+
 	inspector.registerTypes('PIXI', PIXI, 2);
 	if (path.substr(-5) === '.PIXI') {
 		var windowPath = path.substr(0, path.length - 5);
@@ -421,5 +434,7 @@
 			inspector.registerTypes('game', eval(windowPath), 2); // Register Pandajs types
 		}
 	}
+	targetWindow.console.warn = _warn
+	targetWindow.console.warn = _groupCollapsed
 	__PIXI_INSPECTOR_GLOBAL_HOOK__ = inspector;
-} ());
+}());

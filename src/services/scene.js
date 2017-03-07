@@ -1,10 +1,10 @@
-import {Observable} from 'rx';
-import refresh  from './refresh';
+import { Observable } from 'rxjs/Observable';
+import refresh from './refresh';
 import injectInspector from './injectInspector';
 import inspectorProxy from './inspectorProxy';
 
 export default Observable
 	.combineLatest(injectInspector, refresh.startWith('inital'))
-	.flatMap(function (thing) {
+	.switchMap(function (thing) {
 		return inspectorProxy.scene();
 	});

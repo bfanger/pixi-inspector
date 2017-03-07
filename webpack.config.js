@@ -1,36 +1,47 @@
+var webpack = require('webpack')
+
 module.exports = {
-    entry: './src/bootstrap.js',
+    entry: {
+        'pixi-panel': './src/bootstrap.js',
+        common: './src/common.js'
+    },
     devtool: process.env.NODE_ENV !== 'production' ? 'source-map' : '',
     output: {
-    filename: 'pixi-panel.js',
+        filename: '[name].js',
         path: __dirname + '/build'
     },
     module: {
-        loaders: [
-            {
-                test: /\.js$/,
-                loader: 'babel-loader',
-                query: {
-                    cacheDirectory: true,
-                    presets:['es2015', 'react']
-                },
-                include: __dirname +'/src'
+        loaders: [{
+            test: /\.js$/,
+            loader: 'babel-loader',
+            options: {
+                presets: ['es2015', 'react']
             },
-            {
-                test: /\.scss$/,
-                loader: 'style!css!sass'
-            },
-            {
-                test: /\.png$/,
-                loader: 'url'
-            }
-        ]
+            include: __dirname + '/src'
+        }, {
+            test: /\.scss$/,
+            loaders: [
+                'style-loader',
+                'css-loader',
+                'sass-loader'
+            ]
+        }, {
+            test: /\.png$/,
+            loader: 'url-loader'
+        }]
     },
-    externals: {
-        //don't bundle the 'react' npm package with our bundle.js
-        //but get it from a global 'React' variable
-        'react': 'React',
-        'react-dom': 'ReactDOM',
-        'rx': 'Rx'
+    plugins: [
+        new webpack.optimize.CommonsChunkPlugin({ name: 'common' })
+    ],
+    devServer: {
+        // publicPath: __dirname + '/',
+        // progress: true,
+        stats: {
+            chunks: false,
+            version: false,
+            assets: false,
+            hash: false,
+            colors: true
+        }
     }
 }

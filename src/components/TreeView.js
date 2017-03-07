@@ -1,5 +1,5 @@
-import {Component, PropTypes} from "react";
-require("./TreeView.scss");
+import React, { Component, PropTypes } from "react"
+require("./TreeView.scss")
 
 var KEYS = {
 	LEFT: 37,
@@ -13,26 +13,26 @@ var KEYS = {
 class TreeView extends Component {
 
 	constructor(props) {
-		super(props);
-		this.click = this.click.bind(this);
-		this.keyDown = this.keyDown.bind(this);
+		super(props)
+		this.click = this.click.bind(this)
+		this.keyDown = this.keyDown.bind(this)
 	}
 
 	componentDidUpdate(prevProps) {
 		if (!prevProps.selected && this.props.selected) {
-			this.refs.node.focus();
+			this.refs.node.focus()
 		}
 	}
 	render() {
-		var nodes = [];
+		var nodes = []
 		if (!this.collapsed) {
-			nodes = <div style={{paddingLeft: 14}}>{this.props.renderChildren()}</div>;
+			nodes = <div style={{ paddingLeft: 14 }}>{this.props.renderChildren()}</div>
 		}
-		var className = 'treeview' + (this.props.selected ? ' treeview--selected' : '') + (this.props.hovered ? ' treeview--hovered' : '');
+		var className = 'treeview' + (this.props.selected ? ' treeview--selected' : '') + (this.props.hovered ? ' treeview--hovered' : '')
 		return <div>
-			<div 
+			<div
 				ref="node"
-				className={ className } 
+				className={className}
 				onMouseDown={this.click}
 				tabIndex="1"
 				onKeyDown={this.keyDown}
@@ -41,7 +41,7 @@ class TreeView extends Component {
 				onMouseLeave={this.props.onMouseLeave}
 				onFocus={this.props.onFocus}
 				onBlur={this.props.onBlur}
-				>
+			>
 				{this.getIcon()}{this.props.title}
 			</div>
 			{nodes}
@@ -62,46 +62,46 @@ class TreeView extends Component {
 	}
 	click(e) {
 		if (e.target.classList.contains('tree-toggle')) {
-			return;
+			return
 		}
 		if (this.props.selected) {
 			if (this.props.collapsed) {
-				this.props.onExpand(e);
+				this.props.onExpand(e)
 			}
 		} else {
-			this.props.onSelect(e);
+			this.props.onSelect(e)
 		}
 	}
 	keyDown(e) {
-		var key = e.which;
+		var key = e.which
 		if (key === KEYS.UP) {
-			this.props.onSelectPrevious(e);
+			this.props.onSelectPrevious(e)
 		} else if (key === KEYS.DOWN) {
-			this.props.onSelectNext(e); 
+			this.props.onSelectNext(e)
 		} else if (key === KEYS.LEFT) {
 			if (this.props.collapsed) {
-				this.props.onSelectParent(e); 
+				this.props.onSelectParent(e)
 			} else {
-				this.props.onCollapse(e); 
+				this.props.onCollapse(e)
 			}
 		} else if (key === KEYS.RIGHT) {
 			if (!this.props.leaf) {
 				if (this.props.collapsed) {
-					this.props.onExpand(e); 
+					this.props.onExpand(e)
 				} else {
-					this.props.onSelectNext(e); 
+					this.props.onSelectNext(e)
 				}
 			}
 		}
 	}
-};
+}
 TreeView.propTypes = {
 	title: React.PropTypes.any.isRequired,
 	collapsed: React.PropTypes.bool.isRequired,
 	selected: React.PropTypes.bool,
 	leaf: React.PropTypes.bool
-};
-var noop = function () {};
+}
+var noop = function () { }
 TreeView.defaultProps = {
 	leaf: false,
 	selected: false,
@@ -117,4 +117,4 @@ TreeView.defaultProps = {
 	onFocus: noop,
 	onBlur: noop
 }
-module.exports = TreeView;
+module.exports = TreeView

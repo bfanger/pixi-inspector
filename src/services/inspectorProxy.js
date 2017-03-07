@@ -20,31 +20,31 @@ class InspectorProxy {
 	}
 	expand(id) {
 		return proxy.apply('__PIXI_INSPECTOR_GLOBAL_HOOK__', 'expand', [id]).then(function (value) {
-			refresh.onNext('expand');
+			refresh.next('expand');
 			return value;
 		});
 	}
 	collapse(id) {
 		return proxy.apply('__PIXI_INSPECTOR_GLOBAL_HOOK__', 'collapse', [id]).then(function (value) {
-			refresh.onNext('collapse');
+			refresh.next('collapse');
 			return value;
 		});
 	}
 	select(id) {
 		return proxy.apply('__PIXI_INSPECTOR_GLOBAL_HOOK__', 'select', [id]).then(function (value) {
-			refresh.onNext('select');
+			refresh.next('select');
 			return value;
 		});
 	}
 	highlight(id) {
 		return proxy.apply('__PIXI_INSPECTOR_GLOBAL_HOOK__', 'highlight', [id]).then(function (value) {
-			refresh.onNext('highlight');
+			refresh.next('highlight');
 			return value;
 		});
 	}
 	selectMode(value) {
 		return proxy.eval('__PIXI_INSPECTOR_GLOBAL_HOOK__.selectMode = ' + JSON.stringify(value)).then(function (value) {
-			refresh.onNext('selectMode');
+			refresh.next('selectMode');
 			return value;
 		});
 	}

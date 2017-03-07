@@ -1,4 +1,4 @@
-import {Component, PropTypes} from "react";
+import React, { Component, PropTypes } from "react";
 import inspector from "../services/inspectorProxy";
 import TreeView from "./TreeView";
 
@@ -26,17 +26,17 @@ export default class PixiTree extends Component {
 					title = node.type + ' (' + node.name + ')';
 				}
 			}
-			return <TreeView 
-				key={node.id} 
+			return <TreeView
+				key={node.id}
 				title={title}
 				leaf={node.leaf}
-				collapsed={node.collapsed} 
-				selected={node.id === this.props.selectedId} 
+				collapsed={node.collapsed}
+				selected={node.id === this.props.selectedId}
 				hovered={node.id === this.props.hoverId}
 				renderChildren={this.subtree.bind(this, node)}
-				onExpand={this.expand.bind(this, node)} 
-				onCollapse={this.collapse.bind(this, node)} 
-				onSelect={this.select.bind(this, node)} 
+				onExpand={this.expand.bind(this, node)}
+				onCollapse={this.collapse.bind(this, node)}
+				onSelect={this.select.bind(this, node)}
 				onSelectParent={this.selectParent.bind(this, node)}
 				onSelectPrevious={this.selectPrevious.bind(this, node)}
 				onSelectNext={this.selectNext.bind(this, node)}
