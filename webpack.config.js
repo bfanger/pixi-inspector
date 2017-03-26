@@ -1,5 +1,9 @@
 var webpack = require('webpack')
 
+if (!process.env.NODE_ENV) {
+    process.env.NODE_ENV = (process.argv.indexOf('-p') !== -1) ? 'production' : 'development'
+}
+
 module.exports = {
     entry: {
         'pixi-panel': './src/bootstrap.js',
@@ -10,13 +14,26 @@ module.exports = {
         filename: '[name].js',
         path: __dirname + '/build'
     },
+    resolve: {
+        extensions: ['.js', '.vue']
+    },
     module: {
         loaders: [{
+            test: /\.vue$/,
+            loader: 'vue-loader',
+            include: __dirname + '/src',
+            options: {
+                loaders: {
+                    scss: [
+                        'style-loader',
+                        'css-loader',
+                        'sass-loader'
+                    ]
+                }
+            }
+        }, {
             test: /\.js$/,
             loader: 'babel-loader',
-            options: {
-                presets: ['es2015', 'react']
-            },
             include: __dirname + '/src'
         }, {
             test: /\.scss$/,

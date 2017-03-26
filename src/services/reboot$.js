@@ -1,7 +1,7 @@
 import { Subject } from 'rxjs/Subject'
 /**
- * The refresh signal
+ * The reboot signal
  * - force fetching the scene (current tree & selected nore)
  */
-var refresh = new Subject()
-export default refresh
+const reboot$ = new Subject()
+export default reboot$

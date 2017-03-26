@@ -3,8 +3,12 @@
 <head>
     <title>Pixi Inspector</title>
 </head>
-<body>
-    <canvas id="example" style="float: left; margin-right: 40px"></canvas>
+<body style="display: flex">
+
+    <canvas id="example" style="width: 480;height: 360px;"></canvas>
+
+    <div id="devpanel" style="flex: 1"><!-- this is where the PixiPanel will get rendered --> </div>
+
     <script src="../node_modules/pixi.js/dist/pixi.js"></script>
     <script>
         var viewWidth = 480;
@@ -119,14 +123,8 @@
             // request another animation frame..
             requestAnimationFrame( animate );
         }
-
     </script>
 
-    <div style="float: left; border: 1px solid gray; padding: 10px;">
-        <div id="devpanel">
-            <!-- this is where the root react component will get rendered -->
-        </div>
-    </div>
 
     <script type="text/javascript" src="../common.js"></script>
     <script type="text/javascript" src="../pixi-panel.js"></script>

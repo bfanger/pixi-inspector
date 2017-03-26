@@ -233,7 +233,7 @@
 			}
 
 			properties.forEach(property => {
-				if (property[0] === '_' || ['children', 'parent'].indexOf(property) !== -1) {
+				if (property[0] === '_' || ['children', 'parent', 'tempDisplayObjectParent'].indexOf(property) !== -1) {
 					return;
 				}
 				var value = window.$pixi[property];
