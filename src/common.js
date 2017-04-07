@@ -1,6 +1,3 @@
-import 'vue'
-import 'vue-rx'
-import 'rxjs/Observable'
 
 import 'rxjs/add/observable/defer'
 import 'rxjs/add/observable/combineLatest'

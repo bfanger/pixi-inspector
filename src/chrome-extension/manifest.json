@@ -1,16 +1,32 @@
 {
+  "manifest_version": 2,
+  "version": "0.8.0",
   "name": "Pixi Inspector",
-  "version": "0.7.1",
   "description": "Tool for debugging games written with pixi.js",
   "icons": {
-    "16": "img/webstore-icon.png",
-    "48": "img/webstore-icon.png",
-    "128": "img/webstore-icon.png"
+    "16": "webstore-icon.png",
+    "48": "webstore-icon.png",
+    "128": "webstore-icon.png"
   },
-  "devtools_page": "devtoolsBackground.html",
-  "manifest_version": 2,
   "permissions": [
     "<all_urls>"
+  ],
+  "devtools_page": "pixi.devtools.html",
+  "page_action": {
+    "default_icon": "page_action.png",
+    "default_title": "Pixi.JS Inspector"
+  },
+
+  "background": {
+    "scripts": [
+      "pixi.background.bundle.js"
+    ]
+  },
+  "content_scripts": [{
+      "matches": [ "<all_urls>" ],
+      "js": [ "pixi.content.js" ],
+      "all_frames": true
+    }
   ],
   "web_accessible_resources": [
     "pixi.inspector.js"
