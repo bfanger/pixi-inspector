@@ -1,3 +1,5 @@
+const debug = false
+
 const hook = function () {
   function detect (globals, path) {
     let detected = false
@@ -17,7 +19,7 @@ const hook = function () {
           if (err.code === 18 && err.name === 'SecurityError') { // DOMException: Blocked a frame with origin "..." from accessing a cross-origin frame.
             return
           }
-          console.warn(err)
+          debug && console.warn(err)
         }
       }
     }
@@ -30,17 +32,13 @@ const hook = function () {
   detect(window, 'window.')
 }.toString()
 
-chrome.runtime.onConnect.addListener(function () {
-  console.log('onConnect', arguments)
-})
-
 const port = chrome.runtime.connect({ name: 'content_scripts' })
 let isConnected = true
 port.onMessage.addListener(function (message) {
   if (message.command === 'RETRY') {
     detectPixi()
   } else {
-    console.log('onMessage', arguments)
+    debug && console.log('onMessage', arguments)
   }
 })
 port.onDisconnect.addListener(function () {
@@ -53,7 +51,7 @@ window.onmessage = function (event) {
     if (isConnected) {
       delete event.data.__PIXI_INSPECTOR__
       port.postMessage(event.data)
-      console.log('postMessage', event.data)
+      debug && console.log('postMessage', event.data)
       clearTimeout(timeout1sec)
       timeout1sec = null
       clearTimeout(timeout5sec)

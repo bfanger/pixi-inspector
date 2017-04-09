@@ -5,7 +5,7 @@
               :value="selectMode"
               @change="toggleSelectMode"
               title="Select a node in the scene to inspect it"></Toggle>
-      <a @click="reboot">reboot</a>
+      <a @click="reboot">reconnect</a>
     </Toolbar>
     <div class="pixi-panel__message"
          v-if="!isDetected">

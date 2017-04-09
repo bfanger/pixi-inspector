@@ -416,10 +416,12 @@
   inspector.use(PIXI)
 
 	// Patch console.warn to hide
+  var windowPath = 'window'
   var targetWindow = window
-  var windowPath = path.match(/window.frames\[[0-9]+\]/)
-  if (windowPath !== null) {
-    targetWindow = eval(windowPath[0])
+  var framesMatch = path.match(/window.frames\[[0-9]+\]/)
+  if (framesMatch !== null) {
+    targetWindow = eval(framesMatch[0])
+    windowPath = framesMatch[0]
   }
   var _warn = targetWindow.console.warn
   var _groupCollapsed = targetWindow.console.groupCollapsed
@@ -427,12 +429,11 @@
   targetWindow.console.groupCollapsed = false
 
   inspector.registerTypes('PIXI', PIXI, 2)
-  if (path.substr(-5) === '.PIXI') {
-    windowPath = path.substr(0, path.length - 5)
+  if (path.indexOf('Phaser') !== -1) {
     inspector.registerTypes('Phaser', eval(windowPath + '.Phaser || false'), 2) // Register Phaser types
-    if (windowPath.substr(-5) === '.game') {
-      inspector.registerTypes('game', eval(windowPath), 2) // Register Pandajs types
-    }
+  }
+  if (path.indexOf('game') !== -1) {
+    inspector.registerTypes('Panda', eval(windowPath + '.game || false'), 2) // Register Phaser types
   }
   targetWindow.console.warn = _warn
   targetWindow.console.warn = _groupCollapsed

@@ -60,6 +60,9 @@ export default {
           title = node.type + ' (' + node.name + ')'
         }
       }
+      if (title === '') {
+        title = 'unknown'
+      }
       let selected = false
       if (this.scene.selected && this.scene.selected._inspector) {
         selected = node.id === this.scene.selected._inspector.id
