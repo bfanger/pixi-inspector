@@ -10,12 +10,12 @@
 
 <script>
 import DetailValue from './DetailValue'
-import proxy from '../services/proxy'
 
 export default {
   components: { DetailValue },
   props: {
-    selected: Object
+    selected: Object,
+    proxy: Object
   },
   computed: {
     fields () {
@@ -54,7 +54,7 @@ export default {
   },
   methods: {
     updateValue (property, value) {
-      proxy.eval('$pixi.' + property + ' = ' + value)
+      this.proxy.eval('$pixi.' + property + ' = ' + value)
     }
   }
 }

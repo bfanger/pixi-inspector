@@ -1,4 +1,3 @@
-import proxy from './proxy'
 import { Subject } from 'rxjs/Subject'
 
 /**
@@ -6,7 +5,8 @@ import { Subject } from 'rxjs/Subject'
  */
 export default class InspectorProxy {
 
-  constructor () {
+  constructor (proxy) {
+    this.proxy = proxy
     this.refresh$ = new Subject()
     this.scene$ = this.refresh$.startWith('initial').concatMap(signal => {
       return this.scene()
@@ -14,46 +14,45 @@ export default class InspectorProxy {
   }
 
   scene () {
-    return proxy.apply('__PIXI_INSPECTOR_GLOBAL_HOOK__', 'scene')
+    return this.proxy.apply('__PIXI_INSPECTOR_GLOBAL_HOOK__', 'scene')
   }
   tree () {
-    return proxy.apply('__PIXI_INSPECTOR_GLOBAL_HOOK__', 'tree')
+    return this.proxy.apply('__PIXI_INSPECTOR_GLOBAL_HOOK__', 'tree')
   }
   selection () {
-    return proxy.apply('__PIXI_INSPECTOR_GLOBAL_HOOK__', 'selection')
+    return this.proxy.apply('__PIXI_INSPECTOR_GLOBAL_HOOK__', 'selection')
   }
   context (id) {
-    return proxy.apply('__PIXI_INSPECTOR_GLOBAL_HOOK__', 'context', [id])
+    return this.proxy.apply('__PIXI_INSPECTOR_GLOBAL_HOOK__', 'context', [id])
   }
   expand (id) {
-    return proxy.apply('__PIXI_INSPECTOR_GLOBAL_HOOK__', 'expand', [id]).then(value => {
+    return this.proxy.apply('__PIXI_INSPECTOR_GLOBAL_HOOK__', 'expand', [id]).then(value => {
       this.refresh$.next('expand')
       return value
     })
   }
   collapse (id) {
-    return proxy.apply('__PIXI_INSPECTOR_GLOBAL_HOOK__', 'collapse', [id]).then(value => {
+    return this.proxy.apply('__PIXI_INSPECTOR_GLOBAL_HOOK__', 'collapse', [id]).then(value => {
       this.refresh$.next('collapse')
       return value
     })
   }
   select (id) {
-    return proxy.apply('__PIXI_INSPECTOR_GLOBAL_HOOK__', 'select', [id]).then(value => {
+    return this.proxy.apply('__PIXI_INSPECTOR_GLOBAL_HOOK__', 'select', [id]).then(value => {
       this.refresh$.next('select')
       return value
     })
   }
   highlight (id) {
-    return proxy.apply('__PIXI_INSPECTOR_GLOBAL_HOOK__', 'highlight', [id]).then(value => {
+    return this.proxy.apply('__PIXI_INSPECTOR_GLOBAL_HOOK__', 'highlight', [id]).then(value => {
 			// this.refresh$.next('highlight');
       return value
     })
   }
   selectMode (value) {
-    return proxy.eval('__PIXI_INSPECTOR_GLOBAL_HOOK__.selectMode = ' + JSON.stringify(value)).then(value => {
+    return this.proxy.eval('__PIXI_INSPECTOR_GLOBAL_HOOK__.selectMode = ' + JSON.stringify(value)).then(value => {
       this.refresh$.next('selectMode')
       return value
     })
   }
-
-};
+}

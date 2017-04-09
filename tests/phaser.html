@@ -21,7 +21,7 @@
   </style>
 </head>
 
-<body>
+<body style="display:flex">
   <div id="phaser-example"></div>
 
   <script type="text/javascript">
@@ -58,7 +58,7 @@
       }
     }
   </script>
-  <div style="float: left; border: 1px solid gray; padding: 10px;">
+  <div style="flex: 1">
     <div id="devpanel">
       <!-- this is where the root react component will get rendered -->
     </div>
@@ -68,8 +68,7 @@
 
   <script src="http://localhost:8080/webpack-dev-server.js"></script>
 
-  <script type="text/javascript" src="../common.js"></script>
-  <script type="text/javascript" src="../pixi-panel.js"></script>
+  <script type="text/javascript" src="../pixi.panel.bundle.js"></script>
 </body>
 
 </html>

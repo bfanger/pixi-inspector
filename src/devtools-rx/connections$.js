@@ -1,10 +1,7 @@
 import { Observable } from 'rxjs/Observable'
-import 'rxjs/add/operator/publish'
-import 'rxjs/add/operator/first'
-// import fromEvent from './fromEvent'
 import connection$ from './connection$'
 
-export default Observable.create(observer => {
+const connections$ = Observable.create(observer => {
   const connections = []
   const disconnectSubscriptions = []
   const connectSubscription = connection$.subscribe(connection => {
@@ -19,4 +16,8 @@ export default Observable.create(observer => {
     connectSubscription.unsubscribe()
     disconnectSubscriptions.forEach(subscription => subscription.unsubscribe())
   }
-}).publish().refCount()
+}).publishReplay(1)
+
+export const subscription = connections$.connect()
+
+export default connections$

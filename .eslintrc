@@ -1,4 +1,7 @@
 {
   "extends": "vue",
-  "plugins": ["vue"]
+  "plugins": ["vue"],
+  "globals": {
+    "chrome": true
+  }
 }

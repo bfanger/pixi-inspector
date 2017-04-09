@@ -20,6 +20,7 @@
                 :inspector="inspector"
                 v-if="scene"></TreeView>
       <DetailView :selected="selected"
+                  :proxy="inspector.proxy"
                   v-if="selected"></DetailView>
     </SplitView>
   </div>
@@ -52,9 +53,9 @@ export default {
       this.isConnected = false
       this.scene = null
       this.selected = null
-      return detectPixi$.switchMap(path => {
+      return detectPixi$.switchMap(config => {
         this.isDetected = true
-        return injectInspector(path)
+        return injectInspector(config)
       }).do(() => {
         this.isConnected = true
       })

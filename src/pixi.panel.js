@@ -6,7 +6,9 @@ import './bootstrap.scss'
 import Observable from 'rxjs/Observable'
 import Subscription from 'rxjs/Subscription'
 
+console.info('pixi.panel')
+
 Vue.use(VueRx, { Observable, Subscription })
 
 const vm = new Vue(PixiPanel)
-vm.$mount('#devpanel')
+vm.$mount('pixi-panel')

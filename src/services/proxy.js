@@ -6,7 +6,11 @@
  *
  * Has convenience wrappers for console methods. `proxy.log('a example message')`
  */
-export default {
+export default class Proxy {
+
+  constructor (target) {
+    this.target = target || {}
+  }
 
 	/**
 	 * Proxy to console.log()
@@ -14,7 +18,7 @@ export default {
 	 */
   log (message) {
     return this.apply('console', 'log', arguments)
-  },
+  }
 
 	/**
 	 * Proxy to console.warn()
@@ -22,7 +26,7 @@ export default {
 	 */
   warn (message) {
     return this.apply('console', 'warn', arguments)
-  },
+  }
 
 	/**
 	 * Proxy to console.error()
@@ -30,7 +34,7 @@ export default {
 	 */
   error (message) {
     return this.apply('console', 'error', arguments)
-  },
+  }
 
 	/**
 	 * @param {String} object
@@ -49,7 +53,7 @@ export default {
     }
     code += ')'
     return this.eval(code)
-  },
+  }
 
 	/**
 	 * @param {Function} fn
@@ -67,7 +71,7 @@ export default {
       }
     }
     return this.eval(code)
-  },
+  }
 
 	/**
 	 * @param {String} code
@@ -76,7 +80,7 @@ export default {
   eval (code) {
     return new Promise((resolve, reject) => {
       if (chrome.devtools) {
-        chrome.devtools.inspectedWindow.eval(code, (result, exceptionInfo) => {
+        chrome.devtools.inspectedWindow.eval(code, this.target, (result, exceptionInfo) => {
           if (exceptionInfo) {
             // proxy.log('code', code)
             // proxy.warn(exceptionInfo)
@@ -97,7 +101,7 @@ export default {
         resolve(eval(code))
       }
     })
-  },
+  }
 
 	/**
 	 * @param {String} url

@@ -21,6 +21,13 @@ module.exports = {
   },
   module: {
     loaders: [{
+      test: /\.js$/,
+      include: path.join(__dirname, '/src'),
+      use: [
+        'babel-loader'
+        // 'eslint-loader'
+      ]
+    }, {
       test: /\.vue$/,
       loader: 'vue-loader',
       include: path.join(__dirname, '/src'),
@@ -33,10 +40,6 @@ module.exports = {
           ]
         }
       }
-    }, {
-      test: /\.js$/,
-      loader: 'babel-loader',
-      include: path.join(__dirname, '/src')
     }, {
       test: /\.scss$/,
       loaders: [
@@ -51,7 +54,7 @@ module.exports = {
   },
   plugins: [
     new CopyWebpackPlugin([
-        { from: '**/*', context: 'src/chrome-extension' }
+      { context: 'src/chrome-extension', from: '**/*' }
     ])
   ],
   devServer: {
