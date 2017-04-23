@@ -1,5 +1,8 @@
 var path = require('path')
+var webpack = require('webpack')
 var CopyWebpackPlugin = require('copy-webpack-plugin')
+var FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
+var HtmlPlugin = require('html-webpack-plugin')
 
 if (!process.env.NODE_ENV) {
   process.env.NODE_ENV = (process.argv.indexOf('-p') !== -1) ? 'production' : 'development'
@@ -23,10 +26,19 @@ module.exports = {
     loaders: [{
       test: /\.js$/,
       include: path.join(__dirname, '/src'),
-      use: [
-        'babel-loader'
-        // 'eslint-loader'
-      ]
+      enforce: 'pre',
+      loader: 'eslint-loader',
+      options: {
+        failOnError: false,
+        failOnWarning: false,
+        emitError: false,
+        emitWarning: true,
+        formatter: require('eslint-friendly-formatter')
+      }
+    }, {
+      test: /\.js$/,
+      include: path.join(__dirname, '/src'),
+      loader: 'babel-loader'
     }, {
       test: /\.vue$/,
       loader: 'vue-loader',
@@ -55,17 +67,21 @@ module.exports = {
   plugins: [
     new CopyWebpackPlugin([
       { context: 'src/chrome-extension', from: '**/*' }
-    ])
+    ]),
+    // new webpack.NoEmitOnErrorsPlugin(),
+    new HtmlPlugin(),
+    new FriendlyErrorsPlugin()
   ],
   devServer: {
     // publicPath: path.join(__dirname, '/',)
     // progress: true,
-    stats: {
-      chunks: false,
-      version: false,
-      assets: false,
-      hash: false,
-      colors: true
-    }
+    quiet: true
+    // stats: {
+    //   chunks: false,
+    //   version: false,
+    //   assets: false,
+    //   hash: false,
+    //   colors: true
+    // }
   }
 }

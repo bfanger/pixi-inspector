@@ -6,25 +6,24 @@ import Connection from './devtools-rx/Connection'
  */
 console.info('pixi.devtools')
 
-const port = chrome.runtime.connect({
+const connection = new Connection({
   name: 'devtools_page'
-})
-const connection = new Connection(port)
-connection.postMessage({
-  command: 'INIT',
-  tabId: chrome.devtools.inspectedWindow.tabId
 })
 connection.message$.subscribe(message => {
   console.info('onMessage', message)
-  if (message.command === 'DETECTED') {
+  if (message.response === 'DETECTED') {
+    connection.postMessage({ command: 'LOG', to: 0, data: 'panels.create' })
     chrome.devtools.panels.create('Pixi', 'img/pixi.png', 'pixi.panel.html', function (panel) {
       // listen to panel hide / show events?
       panel.onShown.addListener(() => {
         console.log('PixiPanel: visible')
+        connection.postMessage({ command: 'LOG', to: 0, data: 'panels.onShown' })
       })
       panel.onHidden.addListener(() => {
         console.log('PixiPanel: hidden')
+        connection.postMessage({ command: 'LOG', to: 0, data: 'panels.onHidden' })
       })
     })
   }
 })
+connection.postMessage({ broadcast: 'DETECT', channel: 'content_scripts', tabId: chrome.devtools.inspectedWindow.tabId })

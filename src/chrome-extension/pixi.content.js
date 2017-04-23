@@ -1,14 +1,21 @@
-const debug = false
+/* global __RESPONSE__ */
 
+const debug = true
+
+// @todo AutoDetect based on new <canvas>es using MutationObserver instead of polling?
+debug && console.info('pixi.content')
+/**
+ * PIXI detection code
+ */
 const hook = function () {
   function detect (globals, path) {
-    let detected = false
+    const response = __RESPONSE__
     if (globals.Phaser && globals.Phaser.PIXI) { // inside Phaser
-      detected = { path: path + 'Phaser.PIXI', version: globals.Phaser.PIXI.VERSION }
+      response.data = { path: path + 'Phaser.PIXI', version: globals.Phaser.PIXI.VERSION }
     } else if (globals.game && globals.game.PIXI) { // inside panda.js
-      detected = { path: path + 'game.PIXI', version: globals.game.PIXI.VERSION }
+      response.data = { path: path + 'game.PIXI', version: globals.game.PIXI.VERSION }
     } else if (globals.PIXI) { // global variable
-      detected = { path: path + 'PIXI', version: globals.PIXI.VERSION }
+      response.data = { path: path + 'PIXI', version: globals.PIXI.VERSION }
     } else {
       for (let i = 0; i < globals.frames.length; i++) {
         try {
@@ -19,55 +26,48 @@ const hook = function () {
           if (err.code === 18 && err.name === 'SecurityError') { // DOMException: Blocked a frame with origin "..." from accessing a cross-origin frame.
             return
           }
-          debug && console.warn(err)
+          // console.warn(err)
         }
       }
     }
-    if (detected) {
-      detected.__PIXI_INSPECTOR__ = true
-      detected.command = 'DETECTED'
-      window.postMessage(detected, '*')
+    if (response.data) {
+      window.postMessage(response, '*')
     }
   }
   detect(window, 'window.')
 }.toString()
 
-const port = chrome.runtime.connect({ name: 'content_scripts' })
-let isConnected = true
-port.onMessage.addListener(function (message) {
-  if (message.command === 'RETRY') {
-    detectPixi()
-  } else {
-    debug && console.log('onMessage', arguments)
-  }
-})
-port.onDisconnect.addListener(function () {
-    // Extension was restarted
-  isConnected = false
-})
-
-window.onmessage = function (event) {
-  if (typeof event.data === 'object' && event.data.__PIXI_INSPECTOR__) {
-    if (isConnected) {
-      delete event.data.__PIXI_INSPECTOR__
-      port.postMessage(event.data)
-      debug && console.log('postMessage', event.data)
-      clearTimeout(timeout1sec)
-      timeout1sec = null
-      clearTimeout(timeout5sec)
-      timeout5sec = null
-    }
-  }
-}
-
-function detectPixi () {
+/**
+ * Execute the javascript inside the context of the page.
+ * @param {String} code
+ */
+function executeInContext (code) {
   const script = document.createElement('script')
-  script.textContent = ';(' + hook + ')(window)'
+  script.textContent = ';(' + code + ')(window)'
   document.documentElement.appendChild(script)
   script.parentNode.removeChild(script)
 }
 
-// Detect <canvas> with MutationObserver?
-var timeout1sec = setTimeout(detectPixi, 1000)
-var timeout5sec = setTimeout(detectPixi, 5000)
-detectPixi()
+const port = chrome.runtime.connect({ name: 'content_scripts' })
+port.onMessage.addListener(function (message) {
+  debug && console.log('port.onMessage', message)
+  if (message.command === 'DETECT') {
+    const response = { response: 'DETECTED', to: message.from, id: message.id, __PIXI_INSPECTOR__: true }
+    executeInContext(hook.replace('__RESPONSE__', JSON.stringify(response)))
+  }
+})
+
+window.onmessage = function (event) {
+  debug && console.log('window.onmessage', event)
+  if (typeof event.data === 'object' && event.data.__PIXI_INSPECTOR__) {
+    delete event.data.__PIXI_INSPECTOR__
+    debug && console.log('port.postMessage', event.data)
+    port.postMessage(event.data)
+  }
+}
+
+port.onDisconnect.addListener(function () {
+  debug && console.log('onDisconnect')
+    // Extension was restarted
+  window.onmessage = null
+})

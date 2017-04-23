@@ -1,49 +1,38 @@
-import { Subject } from 'rxjs/Subject'
-import { Observable } from 'rxjs/Observable'
+// import { Subject } from 'rxjs/Subject'
+// import { Observable } from 'rxjs/Observable'
 import fromEvent from './fromEvent'
 
 export default class Connection {
+  /**
+   * @param {Port|Object} port  Port or connection options
+   */
   constructor (port) {
-    const messageObserver = {
-      next (message) {
-        port.postMessage(message)
-      }
+    if (!port || !port.postMessage) {
+      this._port = chrome.runtime.connect(port)
+    } else {
+      this._port = port
     }
-    const disconnectTrigger$ = new Subject()
-    let isDisconnected = false
-    const disconnectObserver = {
-      next () {
-        port.disconnect()
-        disconnectTrigger$.next()
-        isDisconnected = true
-      }
-    }
-    const disconnect$ = Observable.merge(
-      fromEvent(port.onDisconnect),
-      disconnectTrigger$,
-      Observable.defer(() => {
-        if (isDisconnected) {
-          return Observable.of(true)
-        } else {
-          return Observable.empty()
-        }
-      })
-    ).first()
-    const message$ = fromEvent(port.onMessage)
-      .map(([message]) => message)
-      .takeUntil(disconnect$)
+  }
 
-    this.name = port.name
-    this.message$ = Subject.create(messageObserver, message$)
-    this.disconnect$ = Subject.create(disconnectObserver, disconnect$)
-    this.sender = port.sender
+  get name () { return this._port.name }
+
+  get sender () { return this._port.sender }
+
+  get message$ () {
+    return fromEvent(this._port.onMessage)
+      .takeUntil(this.disconnect$)
+      .map(([message]) => message)
+  }
+
+  get disconnect$ () {
+    return fromEvent(this._port.onDisconnect)
   }
 
   postMessage (message) {
-    this.message$.next(message)
+    return this._port.postMessage(message)
   }
 
   disconnect () {
-    this.disconnect$.next()
+    return this._port.disconnect()
   }
 }

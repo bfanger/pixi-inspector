@@ -1,14 +1,18 @@
 import { Observable } from 'rxjs/Observable'
 import connection$ from './connection$'
 
+const debug = false
+
 const connections$ = Observable.create(observer => {
-  const connections = []
+  const connections = {}
   const disconnectSubscriptions = []
   const connectSubscription = connection$.subscribe(connection => {
-    connections.push(connection)
+    connections[connection.id] = connection
+    debug && console.log('connection [' + connection.id + '] added')
     observer.next(connections)
     disconnectSubscriptions.push(connection.disconnect$.subscribe(e => {
-      connections.splice(connections.indexOf(connection), 1)
+      debug && console.log('connection [' + connection.id + '] removed')
+      delete connections[connection.id]
       observer.next(connections)
     }))
   })
