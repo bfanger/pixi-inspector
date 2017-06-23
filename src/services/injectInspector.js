@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs/Observable'
-import Proxy from './Proxy'
-import InspectorProxy from './InspectorProxy'
+import Proxy from './proxy'
+import InspectorProxy from './inspectorProxy'
 const debug = false
 /**
  * Inject inpector for the detected path
