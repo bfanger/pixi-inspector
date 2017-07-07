@@ -56,11 +56,11 @@ const proxy = {
       }, recipient), '*')
     }
 
-    function broadcast (command, channel, data) {
-      debug && console.log('broadcast', { command, channel, data })
+    function broadcast (command, recipient, data) {
+      debug && console.log('broadcast', { command, recipient, data })
       window.postMessage({
         broadcast: command,
-        channel: channel,
+        filter: recipient,
         data: data,
         _pixiInspector: uid
       }, '*')
@@ -77,7 +77,7 @@ const proxy = {
           return
         }
         const i = _instances.push(instance)
-        broadcast('DETECTED', ['devtools_page'], {
+        broadcast('DETECTED', { channel: 'devtools_page' }, {
           index: i - 1,
           version: instance.PIXI.VERSION,
           phaser: instance.Phaser ? instance.Phaser.VERSION : false

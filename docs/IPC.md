@@ -1,0 +1,35 @@
+# Inter Process Communication
+
+The Chrome Extension is split across diffent processes, each process has different capabilities.
+To communicate the chrome.runtime exposes a message based system.
+Security complicates things even more, as Chrome won't expose the processes and doesn't allow direct communication between all processes.
+
+To simplify ipc i've codified common communcation patterns into the devtools-rx library.
+
+## Message types
+
+### Broadcast
+
+```js
+{ broadcast: 'DETECT', filter: {name: 'content_scripts', tabId: 123}, data?: * }
+```
+
+Sent by pixi.devtools or pixi.panel to the background_script which convert the message to a command and send it to all connections which in the filter.
+
+### Command
+
+```js
+{ command: 'DETECT', from: 123, to?, id?: 4, data?: * }
+```
+
+When a command is received the script does something and send zero or more Response messages back.
+A command is augmented by the background_script with the connection-id of the sender (from field)
+(Only the background_script can only relay command when a to: field is given.)
+
+### Response
+
+```js
+{ response: 'DETECTED', to: 123, from: 456, id?: 4, data?: { path: 'PIXI', version: 'v4.4' }}
+```
+
+The response is send back to the background_script but with the connection id in the to field and the operation id

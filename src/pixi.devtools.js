@@ -7,31 +7,35 @@ debug && console.info('pixi.devtools')
 /**
  * Access to the chrome.devtools apis
  */
-
-const connection = new Connection({ name: 'devtools_page' })
 let panelActive = false
-connection.message$.subscribe(message => {
-  debug && console.log('onMessage', message)
-  if (message.command === 'PANEL_ACTIVE') {
-    connection.postMessage({ response: 'PANEL_ACTIVE', data: panelActive, to: message.from, id: message.id })
+function activatePanel () {
+  if (panelActive) {
     return
   }
-  if (!panelActive) {
-    if (message.command === 'DETECTED' || (message.response === 'INSTANCES' && message.data.length > 0)) {
-      connection.postMessage({ command: 'LOG', to: 0, data: 'panels.create' })
-      chrome.devtools.panels.create('Pixi', 'img/pixi.png', 'pixi.panel.html', function (panel) {
-        panel.onShown.addListener(() => {
-          panelActive = true
-        })
-        panel.onHidden.addListener(() => {
-          panelActive = false
-        })
-      })
-    }
+  debug && connection.log('activatePanel')
+  chrome.devtools.panels.create('Pixi', 'img/pixi.png', 'pixi.panel.html', function (panel) {
+    panel.onShown.addListener(() => {
+      panelActive = true
+    })
+    panel.onHidden.addListener(() => {
+      panelActive = false
+    })
+  })
+}
+const connection = new Connection({ name: 'devtools_page' })
+connection.set('TAB_ID', 0, chrome.devtools.inspectedWindow.tabId)
+connection.on('PANEL_ACTIVE').subscribe(command => {
+  command.respond('PANEL_ACTIVE', panelActive)
+})
+connection.on('DETECTED').subscribe(() => {
+  activatePanel()
+})
+// When devtools is opened, start detection again, just in case.
+// If all pixi instances are already detected, no DETECTED events will fire.
+connection.send('DETECT', { name: 'content_scripts' })
+// Retrieve the detected instances
+connection.send('INSTANCES', { name: 'content_scripts' }).response$.subscribe(message => {
+  if (message.data.length > 0) {
+    activatePanel()
   }
 })
-
-// When devtools in opened detect again, just in case.
-connection.postMessage({ broadcast: 'DETECT', channel: 'content_scripts', tabId: chrome.devtools.inspectedWindow.tabId })
-// When pixi was detected before
-connection.postMessage({ broadcast: 'INSTANCES', channel: 'content_scripts', tabId: chrome.devtools.inspectedWindow.tabId })
