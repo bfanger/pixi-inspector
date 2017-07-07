@@ -1,17 +1,22 @@
 import './common'
 import connections$ from './devtools-rx/connections$'
 import connection$ from './devtools-rx/connection$'
-import { Observable } from 'rxjs/Observable'
+// import { Observable } from 'rxjs/Observable'
 
 const debug = true
+const verbose = true
+
 console.info('pixi.background')
 
-chrome.runtime.onMessage.addListener(function (e) {
-  console.log('onMessage', e)
-})
-chrome.runtime.onMessageExternal.addListener(function (e) {
-  console.log('onMessageExternal', e)
-})
+if (debug && verbose) {
+  connection$.mergeMap(connection => {
+    console.log('onConnection', connection.id)
+    return connection.message$
+  }).subscribe(message => {
+    console.log('onMessage', message)
+  })
+}
+
 // const contentConnection$ = connections$.first().switchMap(connections => {
 //   return Observable.of(...connections)
 // }).concat(connection$).filter(connection => connection.name === 'content_scripts')
@@ -22,27 +27,21 @@ chrome.runtime.onMessageExternal.addListener(function (e) {
 
 // Listen to DETECTED messages and show the PageAction icon
 // @todo Hide on disconnect?
-connection$.filter(connection => connection.name === 'content_scripts').mergeMap(connection => {
-  const detected$ = connection.message$.filter(message => message.response === 'DETECTED')
-  // @todo wait for onload
-  // const detect$ = Observable.timer(1000).startWith(null).do(() => {
-  //   connection.postMessage({ command: 'DETECT', from: 0 })
-  // })
-  return Observable.merge(
-    // detect$.takeUntil(Observable.merge(connection.disconnect$, detected$)),
-    detected$.do(message => {
-      debug && console.log('DETECTED', { tabId: connection.sender.tab.id, index: message.data.index, version: message.data.version })
-      const tabId = connection.sender.tab.id
-      chrome.pageAction.show(tabId)
-      if (message.data.phaser) {
-        chrome.pageAction.setTitle({ tabId, title: 'Phaser ' + message.data.phaser + '( PixiJS ' + message.data.version + ' )' })
-        chrome.pageAction.setIcon({ tabId, path: 'page_action-phaser.png' })
-      } else {
-        chrome.pageAction.setTitle({ tabId, title: 'PixiJS ' + message.data.version })
-        chrome.pageAction.setIcon({ tabId, path: 'page_action.png' })
-      }
-    })
-  )
+// filter(connection => connection.name === 'content_scripts')
+connection$.mergeMap(connection => {
+  const detected$ = connection.message$.filter(message => message.broadcast === 'DETECTED')
+  return detected$.do(message => {
+    debug && console.log('DETECTED', { tabId: connection.sender.tab.id, index: message.data.index, version: message.data.version })
+    const tabId = connection.sender.tab.id
+    chrome.pageAction.show(tabId)
+    if (message.data.phaser) {
+      chrome.pageAction.setTitle({ tabId, title: 'Phaser ' + message.data.phaser + '( PixiJS ' + message.data.version + ' )' })
+      chrome.pageAction.setIcon({ tabId, path: 'page_action-phaser.png' })
+    } else {
+      chrome.pageAction.setTitle({ tabId, title: 'PixiJS ' + message.data.version })
+      chrome.pageAction.setIcon({ tabId, path: 'page_action.png' })
+    }
+  })
 }).subscribe()
 
 connection$.mergeMap(connection => connection.message$.withLatestFrom(connections$).do(([message, connections]) => {
@@ -57,7 +56,7 @@ connection$.mergeMap(connection => connection.message$.withLatestFrom(connection
       if (target.id === connection.id) {
         return false // Don't broadcast back to sender
       }
-      if (message.channel && target.name !== message.channel) {
+      if (message.channel && (Array.isArray(message.channel) ? message.channel.indexOf(target.name) === -1 : target.name !== message.channel)) {
         return false // Only to connection with a specific name
       }
       if (message.tabId && (!target.sender.tab || target.sender.tab.id !== message.tabId)) {
@@ -65,10 +64,11 @@ connection$.mergeMap(connection => connection.message$.withLatestFrom(connection
       }
       return true
     })
+    debug && console.log('broadcast "' + command.command + '" to ' + targets.length + ' clients')
     targets.forEach(target => target.postMessage(command))
   } else if (message.to === 0) {
     if (message.command === 'LOG') {
-      console.log('Connection[' + connection.id + ']', message.data)
+      console.info('Connection[' + connection.id + ']', message.data)
     } else if (message.command) {
       debug && console.log('Connection[' + connection.id + ']', message)
     }
@@ -77,7 +77,8 @@ connection$.mergeMap(connection => connection.message$.withLatestFrom(connection
     if (!target) {
       debug && console.log('Couldn\'t deliver message', message, connections)
       connection.postMessage({
-        error: 'DISCONNECTED',
+        response: 'ERROR',
+        data: 'DISCONNECTED',
         id: message.id
       })
       return

@@ -1,29 +1,37 @@
 import './common'
 import Connection from './devtools-rx/Connection'
 
+const debug = false
+debug && console.info('pixi.devtools')
+
 /**
  * Access to the chrome.devtools apis
  */
-console.info('pixi.devtools')
 
-const connection = new Connection({
-  name: 'devtools_page'
-})
+const connection = new Connection({ name: 'devtools_page' })
+let panelActive = false
 connection.message$.subscribe(message => {
-  console.info('onMessage', message)
-  if (message.response === 'DETECTED') {
-    connection.postMessage({ command: 'LOG', to: 0, data: 'panels.create' })
-    chrome.devtools.panels.create('Pixi', 'img/pixi.png', 'pixi.panel.html', function (panel) {
-      // listen to panel hide / show events?
-      panel.onShown.addListener(() => {
-        console.log('PixiPanel: visible')
-        connection.postMessage({ command: 'LOG', to: 0, data: 'panels.onShown' })
+  debug && console.log('onMessage', message)
+  if (message.command === 'PANEL_ACTIVE') {
+    connection.postMessage({ response: 'PANEL_ACTIVE', data: panelActive, to: message.from, id: message.id })
+    return
+  }
+  if (!panelActive) {
+    if (message.command === 'DETECTED' || (message.response === 'INSTANCES' && message.data.length > 0)) {
+      connection.postMessage({ command: 'LOG', to: 0, data: 'panels.create' })
+      chrome.devtools.panels.create('Pixi', 'img/pixi.png', 'pixi.panel.html', function (panel) {
+        panel.onShown.addListener(() => {
+          panelActive = true
+        })
+        panel.onHidden.addListener(() => {
+          panelActive = false
+        })
       })
-      panel.onHidden.addListener(() => {
-        console.log('PixiPanel: hidden')
-        connection.postMessage({ command: 'LOG', to: 0, data: 'panels.onHidden' })
-      })
-    })
+    }
   }
 })
+
+// When devtools in opened detect again, just in case.
 connection.postMessage({ broadcast: 'DETECT', channel: 'content_scripts', tabId: chrome.devtools.inspectedWindow.tabId })
+// When pixi was detected before
+connection.postMessage({ broadcast: 'INSTANCES', channel: 'content_scripts', tabId: chrome.devtools.inspectedWindow.tabId })

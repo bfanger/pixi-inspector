@@ -1,56 +1,98 @@
 /* global crypto */
 const debug = false
 
-const guid = crypto.getRandomValues(new Uint32Array(4)).join('-')
+const uid = crypto.getRandomValues(new Uint16Array(3)).join('-')
 let isDetected = false
-
-function detect (recipient = {}) {
-  /* global __PIXI_INSPECTOR_GLOBAL_HOOK__ RECIPIENT */
-  executeInContext(function (window) {
-    __PIXI_INSPECTOR_GLOBAL_HOOK__.detect(window, RECIPIENT)
-  }.toString(), {
-    RECIPIENT: recipient
-  })
+if (debug) {
+  console.info('pixi.content', uid)
 }
-/**
- * Execute the javascript inside the context of the page.
- * @param {String} code
- */
-function executeInContext (code, variables = {}) {
-  for (const constant in variables) {
-    const value = JSON.stringify(variables[constant])
-    code = code.replace(new RegExp(constant, 'g'), value)
+
+const proxy = {
+  reportDetection (recipient = {}) {
+    /* global __PIXI_INSPECTOR_GLOBAL_HOOK__ RECIPIENT */
+    this.executeInContext(function (window) {
+      __PIXI_INSPECTOR_GLOBAL_HOOK__.reportDetection(window, RECIPIENT)
+    }.toString(), {
+      RECIPIENT: recipient
+    })
+  },
+  reportInstances (recipient) {
+    /* global __PIXI_INSPECTOR_GLOBAL_HOOK__ RECIPIENT */
+    this.executeInContext(function (window) {
+      __PIXI_INSPECTOR_GLOBAL_HOOK__.reportInstances(RECIPIENT)
+    }.toString(), {
+      RECIPIENT: recipient
+    })
+  },
+
+  /**
+   * Execute the javascript inside the context of the page.
+   * @param {String} code
+   */
+  executeInContext (code, variables = {}) {
+    for (const constant in variables) {
+      const value = JSON.stringify(variables[constant])
+      code = code.replace(new RegExp(constant, 'g'), value)
+    }
+    const script = document.createElement('script')
+    script.textContent = ';(' + code + ')(window)'
+    document.documentElement.appendChild(script)
+    script.parentNode.removeChild(script)
   }
-  const script = document.createElement('script')
-  script.textContent = ';(' + code + ')(window)'
-  document.documentElement.appendChild(script)
-  script.parentNode.removeChild(script)
 }
 
-(function () {
-  /* global DEBUG, GUID */
+;(function () {
+  /* global DEBUG, UID */
   function injectedScript (window) {
-    const guid = GUID
+    // Private
+    const uid = UID
+    const debug = DEBUG
+    function respond (response, data, recipient) {
+      debug && console.log('respond', { response, data, recipient })
+      window.postMessage(Object.assign({
+        response: response,
+        data: data,
+        _pixiInspector: uid
+      }, recipient), '*')
+    }
+
+    function broadcast (command, channel, data) {
+      debug && console.log('broadcast', { command, channel, data })
+      window.postMessage({
+        broadcast: command,
+        channel: channel,
+        data: data,
+        _pixiInspector: uid
+      }, '*')
+    }
+    const _instances = []
+    // Public
     window.__PIXI_INSPECTOR_GLOBAL_HOOK__ = {
-      _instances: [],
       register (instance, recipient = {}) {
-        const i = this._instances.push(instance)
-        this.respond('DETECTED', Object.assign({
-          to: 0,
-          data: {
-            index: i,
-            version: instance.PIXI.VERSION,
-            phaser: instance.Phaser ? instance.Phaser.VERSION : null
+        const exists = _instances.find(existing => existing.PIXI === instance.PIXI)
+        if (exists) {
+          if (instance.Phaser) {
+            exists.Phaser = instance.Phaser
           }
-        }, recipient))
-      },
-      respond (response, message) {
-        message.response = response
-        message.__PIXI_INSPECTOR__ = guid
-        window.postMessage(message, '*')
+          return
+        }
+        const i = _instances.push(instance)
+        broadcast('DETECTED', ['devtools_page'], {
+          index: i - 1,
+          version: instance.PIXI.VERSION,
+          phaser: instance.Phaser ? instance.Phaser.VERSION : false
+        })
       },
 
-      detect (globals, recipient) {
+      reportInstances (recipient) {
+        this.reportDetection(window, recipient)
+        const data = _instances.map(instance => ({
+          version: instance.PIXI.VERSION
+        }))
+        respond('INSTANCES', data, recipient)
+      },
+
+      reportDetection (globals, recipient) {
         if (globals.Phaser && globals.Phaser.PIXI) { // inside Phaser
           this.register({ PIXI: globals.Phaser.PIXI, Phaser: globals.Phaser }, recipient)
         } else if (globals.game && globals.game.PIXI) { // inside panda.js
@@ -60,12 +102,12 @@ function executeInContext (code, variables = {}) {
         } else {
           for (let i = 0; i < globals.frames.length; i++) {
             try {
-              this.detect(globals.frames[i], recipient)
+              this.reportDetection(globals.frames[i], recipient)
             } catch (err) {
               if (err.code === 18 && err.name === 'SecurityError') { // DOMException: Blocked a frame with origin "..." from accessing a cross-origin frame.
                 return
               }
-              if (DEBUG) {
+              if (debug) {
                 console.warn(err)
               }
             }
@@ -76,8 +118,8 @@ function executeInContext (code, variables = {}) {
   }
 
   const code = injectedScript.toString()
-  executeInContext(code, {
-    GUID: guid,
+  proxy.executeInContext(code, {
+    UID: uid,
     DEBUG: debug
   })
 })()
@@ -86,17 +128,22 @@ const port = chrome.runtime.connect({ name: 'content_scripts' })
 port.onMessage.addListener(function (message) {
   debug && console.log('port.onMessage', message)
   if (message.command === 'DETECT') {
-    detect({ to: message.from, id: message.id })
+    proxy.reportDetection({ to: message.from, id: message.id })
+  }
+  if (message.command === 'INSTANCES') {
+    proxy.reportInstances({ to: message.from, id: message.id })
   }
 })
 
 window.onmessage = function (event) {
   debug && console.log('window.onmessage', event)
-  if (typeof event.data === 'object' && event.data.__PIXI_INSPECTOR__ === guid) {
-    delete event.data.__PIXI_INSPECTOR__
+  if (typeof event.data === 'object' && event.data._pixiInspector === uid) {
+    delete event.data._pixiInspector
     debug && console.log('port.postMessage', event.data)
     port.postMessage(event.data)
-    isDetected = true
+    if (event.data.response === 'DETECTED') {
+      isDetected = true
+    }
   }
 }
 
@@ -106,10 +153,10 @@ port.onDisconnect.addListener(function () {
   window.onmessage = null
 })
 window.onload = function () {
-  detect()
+  proxy.reportDetection()
   setTimeout(() => {
     if (!isDetected) {
-      detect()
+      proxy.reportDetection()
     }
   }, 1000)
 }

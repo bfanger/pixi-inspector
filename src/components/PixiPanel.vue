@@ -9,7 +9,7 @@
     </Toolbar>
     <div class="pixi-panel__message"
          v-if="!isDetected">
-      Looking for PixiJS ...
+      Looking for <span class="pixi-panel__logo">pixijs</span> ...
     </div>
     <div class="pixi-panel__message"
          v-if="isDetected && !isConnected">
@@ -124,7 +124,17 @@ export default {
   width: 100%;
   height: 100vh;
 }
-
+.pixi-panel__logo {
+  display: inline-block;
+  background: url(../../img/pixijs.png) no-repeat;
+  background-size: contain;
+  color: transparent;
+  width: 86px;
+  height: 31px;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-top: -10px;
+}
 .pixi-panel__message {
   height: 100%;
   font-size: 24px;
