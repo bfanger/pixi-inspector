@@ -1,15 +1,15 @@
 import { Subject } from 'rxjs/Subject'
+import { Observable } from 'rxjs/Subject'
 
 /**
  * Async access to the __PIXI_INSPECTOR_GLOBAL_HOOK__ which works in both browser and devtool panel environments.
  */
 export default class InspectorProxy {
-
   constructor (proxy) {
     this.proxy = proxy
     this.refresh$ = new Subject()
     this.scene$ = this.refresh$.startWith('initial').concatMap(signal => {
-      return this.scene()
+      return Observable.fromPromise(this.scene())
     }).publishReplay(1).refCount()
   }
 
@@ -45,7 +45,7 @@ export default class InspectorProxy {
   }
   highlight (id) {
     return this.proxy.apply('__PIXI_INSPECTOR_GLOBAL_HOOK__', 'highlight', [id]).then(value => {
-			// this.refresh$.next('highlight');
+      // this.refresh$.next('highlight');
       return value
     })
   }

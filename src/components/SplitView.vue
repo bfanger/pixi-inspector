@@ -1,11 +1,8 @@
 <script>
-
 export default {
   render (h) {
-    /* eslint-disable */
-    const items = this.children().map(vnode => <div class="splitview__item" >{ vnode }</div>)
-    return <div class="splitview">{ items }</div>
-    /* eslint-enable */
+    const items = this.children().map(vnode => <div class='splitview__item' >{vnode}</div>)
+    return <div class='splitview'>{items}</div>
   },
   methods: {
     children () {

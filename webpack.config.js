@@ -1,8 +1,7 @@
-var path = require('path')
-var webpack = require('webpack')
-var CopyWebpackPlugin = require('copy-webpack-plugin')
-var FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
-var HtmlPlugin = require('html-webpack-plugin')
+const webpack = require('webpack')
+const path = require('path')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 
 if (!process.env.NODE_ENV) {
   process.env.NODE_ENV = (process.argv.indexOf('-p') !== -1) ? 'production' : 'development'
@@ -65,23 +64,16 @@ module.exports = {
     }]
   },
   plugins: [
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+    }),
     new CopyWebpackPlugin([
       { context: 'src/chrome-extension', from: '**/*' }
     ]),
     // new webpack.NoEmitOnErrorsPlugin(),
-    new HtmlPlugin(),
     new FriendlyErrorsPlugin()
   ],
   devServer: {
-    // publicPath: path.join(__dirname, '/',)
-    // progress: true,
     quiet: true
-    // stats: {
-    //   chunks: false,
-    //   version: false,
-    //   assets: false,
-    //   hash: false,
-    //   colors: true
-    // }
   }
 }

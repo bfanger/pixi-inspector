@@ -7,12 +7,11 @@
  * Has convenience wrappers for console methods. `proxy.log('a example message')`
  */
 export default class Proxy {
-
   constructor (target) {
     this.target = target || {}
   }
 
-	/**
+  /**
 	 * Proxy to console.log()
 	 * @param {String} message
 	 */
@@ -20,7 +19,7 @@ export default class Proxy {
     return this.apply('console', 'log', arguments)
   }
 
-	/**
+  /**
 	 * Proxy to console.warn()
 	 * @param {String} message
 	 */
@@ -28,7 +27,7 @@ export default class Proxy {
     return this.apply('console', 'warn', arguments)
   }
 
-	/**
+  /**
 	 * Proxy to console.error()
 	 * @param {String} message
 	 */
@@ -36,7 +35,7 @@ export default class Proxy {
     return this.apply('console', 'error', arguments)
   }
 
-	/**
+  /**
 	 * @param {String} object
 	 * @param {method} method
 	 * @param {Array} [args]
@@ -55,7 +54,7 @@ export default class Proxy {
     return this.eval(code)
   }
 
-	/**
+  /**
 	 * @param {Function} fn
 	 * @param {Object} tplvars
 	 * @returns Promise
@@ -73,7 +72,7 @@ export default class Proxy {
     return this.eval(code)
   }
 
-	/**
+  /**
 	 * @param {String} code
 	 * @returns Promise
 	 */
@@ -103,7 +102,7 @@ export default class Proxy {
     })
   }
 
-	/**
+  /**
 	 * @param {String} url
 	 */
   injectScript (url) {

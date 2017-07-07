@@ -35,7 +35,8 @@ import TreeView from './TreeView'
 import DetailView from './DetailView'
 import reboot$ from '../services/reboot$'
 import detectPixi$ from '../services/detectPixi$'
-import injectInspector from '../services/injectInspector'
+import connection from '../services/connection'
+// import injectInspector from '../services/injectInspector'
 
 export default {
   components: { Toolbar, Toggle, SplitView, TreeView, DetailView },
@@ -53,9 +54,14 @@ export default {
       this.isConnected = false
       this.scene = null
       this.selected = null
+      // const contentDisconnect$ = connection.message$.filter(message => message.command === 'DISCONNECTED')
+      // contentDisconnect$.subscribe(message => {
+      //   console.log(message)
+      // })
       return detectPixi$.switchMap(config => {
+        console.log('config', config)
         this.isDetected = true
-        return injectInspector(config)
+        // return injectInspector(config).takeUntil(contentDisconnect$.filter(message => message.frameId === config.frameId))
       }).do(() => {
         this.isConnected = true
       })
@@ -98,7 +104,7 @@ export default {
   //   scene.subscribe((_scene) => {
   //   this.setState(_scene)
   //   }, error => {
-  //   proxy.eval('typeof window.__PIXI_INSPECTOR_GLOBAL_HOOK__').then(function (type) {
+  //   proxy.eval('typeof window.__PIXI_INSPECTOR_GLOBAL_HOOK1__').then(function (type) {
   //     if (type === 'object') {
   //     console.error(error)
   //     } else { // page refresh?

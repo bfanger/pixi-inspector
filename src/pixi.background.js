@@ -6,28 +6,41 @@ import { Observable } from 'rxjs/Observable'
 const debug = true
 console.info('pixi.background')
 
+chrome.runtime.onMessage.addListener(function (e) {
+  console.log('onMessage', e)
+})
+chrome.runtime.onMessageExternal.addListener(function (e) {
+  console.log('onMessageExternal', e)
+})
 // const contentConnection$ = connections$.first().switchMap(connections => {
 //   return Observable.of(...connections)
 // }).concat(connection$).filter(connection => connection.name === 'content_scripts')
 
 // contentConnection$.mergeMap(connection => {
-  // return
+// return
 // }).subscribe()
 
 // Listen to DETECTED messages and show the PageAction icon
 // @todo Hide on disconnect?
 connection$.filter(connection => connection.name === 'content_scripts').mergeMap(connection => {
   const detected$ = connection.message$.filter(message => message.response === 'DETECTED')
-  const detect$ = Observable.timer(1000).startWith(null).do(() => {
-    connection.postMessage({ command: 'DETECT', from: 0 })
-  })
+  // @todo wait for onload
+  // const detect$ = Observable.timer(1000).startWith(null).do(() => {
+  //   connection.postMessage({ command: 'DETECT', from: 0 })
+  // })
   return Observable.merge(
-    detect$.takeUntil(Observable.merge(connection.disconnect$, detected$)),
+    // detect$.takeUntil(Observable.merge(connection.disconnect$, detected$)),
     detected$.do(message => {
-      debug && console.log('DETECTED', { tabId: connection.sender.tab.id, path: message.data.path, version: message.data.version })
+      debug && console.log('DETECTED', { tabId: connection.sender.tab.id, index: message.data.index, version: message.data.version })
       const tabId = connection.sender.tab.id
       chrome.pageAction.show(tabId)
-      chrome.pageAction.setTitle({ tabId, title: 'PixiJS ' + message.data.version })
+      if (message.data.phaser) {
+        chrome.pageAction.setTitle({ tabId, title: 'Phaser ' + message.data.phaser + '( PixiJS ' + message.data.version + ' )' })
+        chrome.pageAction.setIcon({ tabId, path: 'page_action-phaser.png' })
+      } else {
+        chrome.pageAction.setTitle({ tabId, title: 'PixiJS ' + message.data.version })
+        chrome.pageAction.setIcon({ tabId, path: 'page_action.png' })
+      }
     })
   )
 }).subscribe()
@@ -114,40 +127,40 @@ connection$.mergeMap(connection => connection.message$.withLatestFrom(connection
 //       }
 //     }).takeUntil(contentConnection.disconnect$)
 //   })
-  // Wait for the Panel(s) to connect and setup two-way communication
-  // const panelCommunication$ = panelConnection$.switchMap(panelConnection => {
-  //   return contentConnectionInTab$.mergeMap(contentConnection => {
-  //     contentConnection.postMessage({ command: 'RETRY' })
-  //     const disconnect$ = contentConnection.disconnect$.do(() => {
-  //       panelConnection.postMessage({ command: 'DISCONNECTED', frameId: contentConnection.sender.frameId })
-  //       console.log('report DISCONNECTED', panelConnection.tabId, contentConnection.sender.frameId)
-  //     }).filter(() => false)
-  //     return disconnect$.merge(Observable.create(observer => {
-  //       const panel2contentSubscription = panelConnection.message$.do(message => {
-  //         observer.next({ tabId: tabId, from: 'panel', to: 'content', message: message })
-  //       }).subscribe(contentConnection.message$)
-  //       const content2panelSubscription = contentConnection.message$.do(message => {
-  //         if (message.command === 'DETECTED') {
-  //           message.frameId = contentConnection.sender.frameId
-  //           if (contentConnection.sender.url !== contentConnection.sender.tab.url) {
-  //             message.frameURL = contentConnection.sender.url
-  //           }
-  //         }
-  //       }).do(message => {
-  //         observer.next({ tabId: tabId, from: 'content', to: 'panel', command: message.command, message: message })
-  //       }).subscribe(panelConnection.message$)
-  //       return () => {
-  //         console.log('connection cleanup', panelConnection.tabId)
-  //         panel2contentSubscription.unsubscribe()
-  //         content2panelSubscription.unsubscribe()
-  //       }
-  //     }).takeUntil(Observable.merge(panelConnection.disconnect$, contentConnection.disconnect$)))
-    // })
-  // })
-  // return Observable.merge(
-    // showPanel$.filter(() => false),
-    // panelCommunication$
-  // )
+// Wait for the Panel(s) to connect and setup two-way communication
+// const panelCommunication$ = panelConnection$.switchMap(panelConnection => {
+//   return contentConnectionInTab$.mergeMap(contentConnection => {
+//     contentConnection.postMessage({ command: 'RETRY' })
+//     const disconnect$ = contentConnection.disconnect$.do(() => {
+//       panelConnection.postMessage({ command: 'DISCONNECTED', frameId: contentConnection.sender.frameId })
+//       console.log('report DISCONNECTED', panelConnection.tabId, contentConnection.sender.frameId)
+//     }).filter(() => false)
+//     return disconnect$.merge(Observable.create(observer => {
+//       const panel2contentSubscription = panelConnection.message$.do(message => {
+//         observer.next({ tabId: tabId, from: 'panel', to: 'content', message: message })
+//       }).subscribe(contentConnection.message$)
+//       const content2panelSubscription = contentConnection.message$.do(message => {
+//         if (message.command === 'DETECTED') {
+//           message.frameId = contentConnection.sender.frameId
+//           if (contentConnection.sender.url !== contentConnection.sender.tab.url) {
+//             message.frameURL = contentConnection.sender.url
+//           }
+//         }
+//       }).do(message => {
+//         observer.next({ tabId: tabId, from: 'content', to: 'panel', command: message.command, message: message })
+//       }).subscribe(panelConnection.message$)
+//       return () => {
+//         console.log('connection cleanup', panelConnection.tabId)
+//         panel2contentSubscription.unsubscribe()
+//         content2panelSubscription.unsubscribe()
+//       }
+//     }).takeUntil(Observable.merge(panelConnection.disconnect$, contentConnection.disconnect$)))
+// })
+// })
+// return Observable.merge(
+// showPanel$.filter(() => false),
+// panelCommunication$
+// )
 // }).subscribe(communication => {
 //   console.log(communication)
 // })

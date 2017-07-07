@@ -1,13 +1,13 @@
 /*eslint no-eval: off */
 (function () {
-  if (typeof window.__PIXI_INSPECTOR_GLOBAL_HOOK__ === 'undefined') {
+  if (typeof window.__PIXI_INSPECTOR_GLOBAL_HOOK1__ === 'undefined') {
     throw new Error('PIXI must be detected before loading pixi.inspector.js')
   }
-  if (typeof window.__PIXI_INSPECTOR_GLOBAL_HOOK__ === 'object') {
+  if (typeof window.__PIXI_INSPECTOR_GLOBAL_HOOK1__ === 'object') {
     console.log('Injected twice')
     return
   }
-  var path = window.__PIXI_INSPECTOR_GLOBAL_HOOK__
+  var path = window.__PIXI_INSPECTOR_GLOBAL_HOOK1__
   var PIXI = eval(path)
   function MismatchConstructor () { };
   var TransformBaseRef = MismatchConstructor
@@ -17,7 +17,7 @@
 
     selectMode: false,
 
-		/**
+    /**
 		 * Root of the Pixi object tree.
 		 */
     root: {
@@ -41,7 +41,7 @@
       names: []
     },
 
-		/**
+    /**
 		 * Path the Renderer.render method to get a hold of the stage object(s)
 		 */
     patch (Renderer) {
@@ -54,7 +54,7 @@
       }
     },
 
-		/**
+    /**
 		 * An intercepted render call
 		 */
     beforeRender (stage, renderer) {
@@ -80,9 +80,9 @@
           this._highlight.point = false
           this._highlight.node = false
           this.selectAt(stage, new PIXI.Point(
-						((e.clientX - rect.left) * (canvas.width / rect.width)) / renderer.resolution,
-						((e.clientY - rect.top) * (canvas.height / rect.height)) / renderer.resolution
-					))
+            ((e.clientX - rect.left) * (canvas.width / rect.width)) / renderer.resolution,
+            ((e.clientY - rect.top) * (canvas.height / rect.height)) / renderer.resolution
+          ))
         }, true)
         canvas.addEventListener('mousemove', (e) => {
           if (!this.selectMode) {
@@ -90,16 +90,16 @@
           }
           var rect = e.target.getBoundingClientRect()
           this._highlight.point = new PIXI.Point(
-						((e.clientX - rect.left) * (canvas.width / rect.width)) / renderer.resolution,
-						((e.clientY - rect.top) * (canvas.height / rect.height)) / renderer.resolution
-					)
+            ((e.clientX - rect.left) * (canvas.width / rect.width)) / renderer.resolution,
+            ((e.clientY - rect.top) * (canvas.height / rect.height)) / renderer.resolution
+          )
         }, false)
         canvas.addEventListener('mouseleave', (e) => {
           this._highlight.point = false
           this._highlight.node = false
         }, false)
       }
-			// @todo remove stages after an idle period
+      // @todo remove stages after an idle period
       if (this._highlight.point) {
         this._highlight.node = this.highlightAt(stage, this._highlight.point)
       }
@@ -123,7 +123,7 @@
       }
       return retval
     },
-		/**
+    /**
 		 * Aggregate results  for services/scene.js
 		 */
     scene () {
@@ -278,7 +278,7 @@
         }
       })
     },
-		/**
+    /**
 		 * Get the surounding nodes (prev, next, parent. For tree keyboard navigation)
 		 */
     context (id, tree) {
@@ -408,14 +408,14 @@
       PIXI = _PIXI
       inspector.patch(PIXI.CanvasRenderer)
       inspector.patch(PIXI.WebGLRenderer)
-			// Prevent "Right-hand side of 'instanceof' is not an object" for older version of pixi
+      // Prevent "Right-hand side of 'instanceof' is not an object" for older version of pixi
       TransformBaseRef = typeof PIXI.TransformBase === 'function' ? PIXI.TransformBase : MismatchConstructor
       ObservablePointRef = typeof PIXI.ObservablePoint === 'function' ? PIXI.ObservablePoint : MismatchConstructor
     }
   }
   inspector.use(PIXI)
 
-	// Patch console.warn to hide
+  // Patch console.warn to hide
   var windowPath = 'window'
   var targetWindow = window
   var framesMatch = path.match(/window.frames\[[0-9]+\]/)
@@ -437,5 +437,5 @@
   }
   targetWindow.console.warn = _warn
   targetWindow.console.warn = _groupCollapsed
-  window.__PIXI_INSPECTOR_GLOBAL_HOOK__ = inspector
+  window.__PIXI_INSPECTOR_GLOBAL_HOOK1__ = inspector
 }())

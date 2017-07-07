@@ -8,13 +8,13 @@ const debug = false
  */
 export default function injectInspector (config) {
   const proxy = new Proxy({ frameURL: config.frameURL })
-  return Observable.fromPromise(proxy.eval('window.__PIXI_INSPECTOR_GLOBAL_HOOK__ = "' + config.path + '"').then(() => {
+  return Observable.fromPromise(proxy.eval('window.__PIXI_INSPECTOR_GLOBAL_HOOK1__ = "' + config.path + '"').then(() => {
     debug && console.log('injectInspector() inject script')
     return proxy.injectScript('pixi.inspector.js')
   })).delay(50).switchMap(() => {
     return Observable.create(observer => {
       debug && console.log('injectInspector() detect inspector')
-      proxy.eval('typeof window.__PIXI_INSPECTOR_GLOBAL_HOOK__').then(type => {
+      proxy.eval('typeof window.__PIXI_INSPECTOR_GLOBAL_HOOK1__').then(type => {
         if (type === 'object') {
           debug && console.log('injectInspector() inspector detected')
           observer.next(new InspectorProxy(proxy))
