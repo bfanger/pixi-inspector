@@ -1,4 +1,4 @@
-/* global crypto */
+/* global crypto, location */
 const debug = false
 
 const uid = crypto.getRandomValues(new Uint16Array(3)).join('-')
@@ -41,7 +41,7 @@ const proxy = {
   }
 }
 
-;(function () {
+!(function () {
   /* global DEBUG, UID */
   function injectedScript (window) {
     // Private
@@ -76,7 +76,7 @@ const proxy = {
           }
           return
         }
-        const i = _instances.push(instance)
+        const i = _instances.push(Object.assign({ status: 'FRESH' }, instance))
         broadcast('DETECTED', { channel: 'devtools_page' }, {
           index: i - 1,
           version: instance.PIXI.VERSION,
@@ -87,7 +87,8 @@ const proxy = {
       reportInstances (recipient) {
         this.reportDetection(window, recipient)
         const data = _instances.map(instance => ({
-          version: instance.PIXI.VERSION
+          version: instance.PIXI.VERSION,
+          status: instance.status
         }))
         respond('INSTANCES', data, recipient)
       },
@@ -127,11 +128,13 @@ const proxy = {
 const port = chrome.runtime.connect({ name: 'content_scripts' })
 port.onMessage.addListener(function (message) {
   debug && console.log('port.onMessage', message)
-  if (message.command === 'DETECT') {
-    proxy.reportDetection({ to: message.from, id: message.id })
-  }
-  if (message.command === 'INSTANCES') {
-    proxy.reportInstances({ to: message.from, id: message.id })
+  switch (message.command) {
+    case 'DETECT':
+      proxy.reportDetection({ to: message.from, id: message.id })
+      break
+    case 'INSTANCES':
+      proxy.reportInstances({ to: message.from, id: message.id })
+      break
   }
 })
 

@@ -111,7 +111,8 @@ export default class Connection {
    * Log a message in the pixi.background page.
    * @param {string|object} message
    */
-  log (message) {
-    this.postMessage({ command: 'LOG', to: 0, data: message })
+  log (...args) {
+    console.info.apply(console, arguments)
+    this.postMessage({ command: 'LOG', to: 0, data: args === 1 ? args[0] : args })
   }
 }

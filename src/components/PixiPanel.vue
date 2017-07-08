@@ -1,40 +1,36 @@
 <template>
   <div class="pixi-panel">
     <Toolbar>
-      <Toggle icon="node-search"
-              :value="selectMode"
-              @change="toggleSelectMode"
-              title="Select a node in the scene to inspect it"></Toggle>
-      <a @click="reboot">reconnect</a>
+      <Toggle icon="node-search" v-if="isConnected" :value="selectMode" @change="toggleSelectMode" title="Select a node in the scene to inspect it"></Toggle>
+      <button @click="reload">Reload</button>
+      <button v-if="instances.length == 0" @click="detect">Retry</button>
     </Toolbar>
-    <div class="pixi-panel__message"
-         v-if="!isDetected">
+    <div class="pixi-panel__message" v-if="instances.length == 0">
       Looking for <span class="pixi-panel__logo">pixijs</span> ...
     </div>
-    <div class="pixi-panel__message"
-         v-if="isDetected && !isConnected">
-      Connecting to PixiJS ...
+    <div class="pixi-panel__message" v-if="instances.length > 0 && !isConnected">
+      Connecting to <span class="pixi-panel__logo">pixijs</span> ...
     </div>
     <SplitView class="pixi-panel__body">
-      <TreeView :scene="scene"
-                :inspector="inspector"
-                v-if="scene"></TreeView>
-      <DetailView :selected="selected"
-                  :proxy="inspector.proxy"
-                  v-if="selected"></DetailView>
+      <TreeView :scene="scene" :inspector="inspector" v-if="scene"></TreeView>
+      <DetailView :selected="selected" :proxy="inspector.proxy" v-if="selected"></DetailView>
     </SplitView>
+    <!--<div v-for="instance in instances">
+      <h2>instance:</h2>
+      {{instance.latest}}
+    </div>-->
   </div>
 </template>
 
 <script>
-import { Observable } from 'rxjs/Observable'
+// import { Observable } from 'rxjs/Observable'
 import Toolbar from './Toolbar'
 import Toggle from './Toggle'
 import SplitView from './SplitView'
 import TreeView from './TreeView'
 import DetailView from './DetailView'
-import reboot$ from '../services/reboot$'
-import detectPixi$ from '../services/detectPixi$'
+// import reboot$ from '../services/reboot$'
+import instances$ from '../services/instances$'
 import connection from '../services/connection'
 // import injectInspector from '../services/injectInspector'
 
@@ -48,44 +44,50 @@ export default {
     selected: null,
     inspector: null
   }),
+  subscriptions () {
+    return {
+      instances: instances$.startWith([])
+    }
+  },
   mounted () {
-    this.inspector$ = reboot$.startWith('initial').switchMap(() => {
-      this.isDetected = false
-      this.isConnected = false
-      this.scene = null
-      this.selected = null
-      // const contentDisconnect$ = connection.message$.filter(message => message.command === 'DISCONNECTED')
-      // contentDisconnect$.subscribe(message => {
-      //   console.log(message)
-      // })
-      return detectPixi$.switchMap(config => {
-        console.log('config', config)
-        this.isDetected = true
-        // return injectInspector(config).takeUntil(contentDisconnect$.filter(message => message.frameId === config.frameId))
-      }).do(() => {
-        this.isConnected = true
-      })
-    }).do(inspector => {
-      this.inspector = inspector
-    }).catch(error => {
-      console.error(error)
-      reboot$.next('error')
-      return Observable.empty()
-    }).publishReplay(1).refCount()
+    // this.$subscribeTo()
+    // this.inspector$ = reboot$.startWith('initial').switchMap(() => {
+    //   this.isDetected = false
+    //   this.isConnected = false
+    //   this.scene = null
+    //   this.selected = null
+    //   // const contentDisconnect$ = connection.message$.filter(message => message.command === 'DISCONNECTED')
+    //   // contentDisconnect$.subscribe(message => {
+    //   //   console.log(message)
+    //   // })
+    //   return detectPixi$.switchMap(config => {
+    //     console.log('config', config)
+    //     this.isDetected = true
+    //     // return injectInspector(config).takeUntil(contentDisconnect$.filter(message => message.frameId === config.frameId))
+    //   }).do(() => {
+    //     this.isConnected = true
+    //   })
+    // }).do(inspector => {
+    //   this.inspector = inspector
+    // }).catch(error => {
+    //   console.error(error)
+    //   reboot$.next('error')
+    //   return Observable.empty()
+    // }).publishReplay(1).refCount()
 
-    this.$subscribeTo(this.inspector$.switchMap(inspector => {
-      // return Observable.empty()
-      return Observable.interval(500).map(() => inspector.refresh$)
-    }), refresh$ => {
-      refresh$.next('interval')
-    })
-    const scene$ = this.inspector$.switchMap(inspector => inspector.scene$)
-    this.$subscribeTo(scene$, scene => {
-      // console.log(scene)
-      this.selectMode = scene.selectMode
-      this.selected = scene.selected
-      this.scene = scene
-    })
+    // this.$subscribeTo(this.inspector$.switchMap(inspector => {
+    //   // return Observable.empty()
+    //   return Observable.interval(500).map(() => inspector.refresh$)
+    // }), refresh$ => {
+    //   refresh$.next('interval')
+    // })
+    // const scene$ = this.inspector$.switchMap(inspector => inspector.scene$)
+    // this.$subscribeTo(scene$, scene => {
+    //   // console.log(scene)
+    //   this.selectMode = scene.selectMode
+    //   this.selected = scene.selected
+    //   this.scene = scene
+    // })
   },
   methods: {
     toggleSelectMode (value) {
@@ -93,8 +95,11 @@ export default {
         inspector.selectMode(value)
       })
     },
-    reboot () {
+    reload () {
       window.location.reload()
+    },
+    detect () {
+      connection.send('DETECT', { name: 'content_scripts' })
     }
   }
 
@@ -124,6 +129,7 @@ export default {
   width: 100%;
   height: 100vh;
 }
+
 .pixi-panel__logo {
   display: inline-block;
   background: url(../../img/pixijs.png) no-repeat;
@@ -131,10 +137,11 @@ export default {
   color: transparent;
   width: 86px;
   height: 31px;
-  margin-left: 10px;
+  margin-left: 15px;
   margin-right: 10px;
-  margin-top: -10px;
+  margin-top: -5px;
 }
+
 .pixi-panel__message {
   height: 100%;
   font-size: 24px;
