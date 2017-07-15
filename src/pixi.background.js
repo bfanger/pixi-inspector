@@ -1,8 +1,7 @@
 import './common'
 import relay$ from './devtools-rx/relay$'
 import connection$ from './devtools-rx/connection$'
-
-const debug = false
+import { debug } from './services/config'
 const verbose = false
 
 console.info('pixi.background')

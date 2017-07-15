@@ -1,7 +1,7 @@
 import './common'
 import Connection from './devtools-rx/Connection'
+import { debug } from './services/config'
 
-const debug = false
 debug && console.info('pixi.devtools')
 
 /**
@@ -15,6 +15,7 @@ function activatePanel () {
   debug && connection.log('activatePanel')
   chrome.devtools.panels.create('Pixi', 'img/pixi.png', 'pixi.panel.html', function (panel) {
     panel.onShown.addListener(() => {
+      connection.send('DETECT', { name: 'content_scripts' })
       panelActive = true
     })
     panel.onHidden.addListener(() => {
@@ -34,7 +35,7 @@ connection.on('DETECTED').subscribe(() => {
 // If all pixi instances are already detected, no DETECTED events will fire.
 connection.send('DETECT', { name: 'content_scripts' })
 // Retrieve the detected instances
-connection.send('INSTANCES', { name: 'content_scripts' }).response$.subscribe(message => {
+connection.stream('INSTANCES', { name: 'content_scripts' }).subscribe(message => {
   if (message.data.length > 0) {
     activatePanel()
   }

@@ -3,36 +3,31 @@
     <Toolbar>
       <Toggle icon="node-search" v-if="isConnected" :value="selectMode" @change="toggleSelectMode" title="Select a node in the scene to inspect it"></Toggle>
       <button @click="reload">Reload</button>
-      <button v-if="instances.length == 0" @click="detect">Retry</button>
+      <button v-if="instance === null" @click="detect">Retry</button>
     </Toolbar>
-    <div class="pixi-panel__message" v-if="instances.length == 0">
+    <div class="pixi-panel__message" v-if="instance === null">
       Looking for <span class="pixi-panel__logo">pixijs</span> ...
     </div>
-    <div class="pixi-panel__message" v-if="instances.length > 0 && !isConnected">
+    <div class="pixi-panel__message" v-if="instance !== null && inspector === null">
       Connecting to <span class="pixi-panel__logo">pixijs</span> ...
     </div>
-    <SplitView class="pixi-panel__body">
-      <TreeView :scene="scene" :inspector="inspector" v-if="scene"></TreeView>
-      <DetailView :selected="selected" :proxy="inspector.proxy" v-if="selected"></DetailView>
+    <SplitView class="pixi-panel__body" v-if="inspector">
+      <TreeView :inspector="inspector"></TreeView>
+      <!-- <DetailView :selected="selected" :inspector="inspector" v-if="selected"></DetailView> -->
     </SplitView>
-    <!--<div v-for="instance in instances">
-      <h2>instance:</h2>
-      {{instance.latest}}
-    </div>-->
   </div>
 </template>
 
 <script>
-// import { Observable } from 'rxjs/Observable'
+import { Observable } from 'rxjs/Observable'
 import Toolbar from './Toolbar'
 import Toggle from './Toggle'
 import SplitView from './SplitView'
 import TreeView from './TreeView'
 import DetailView from './DetailView'
-// import reboot$ from '../services/reboot$'
-import instances$ from '../services/instances$'
+import lastInstance$ from '../services/lastInstance$'
 import connection from '../services/connection'
-// import injectInspector from '../services/injectInspector'
+import Proxy from '../services/Proxy'
 
 export default {
   components: { Toolbar, Toggle, SplitView, TreeView, DetailView },
@@ -45,8 +40,18 @@ export default {
     inspector: null
   }),
   subscriptions () {
+    const instance$ = lastInstance$.share()
+    const inspector$ = instance$.switchMap(instance => {
+      if (instance === null) {
+        return Observable.of(null)
+      }
+      return connection.get('INSPECTOR', instance.connection, instance.index).then(index => {
+        return new Proxy(index, { frameURL: instance.frameURL })
+      })
+    })
     return {
-      instances: instances$.startWith([])
+      instance: instance$.startWith(null),
+      inspector: inspector$.startWith(null)
     }
   },
   mounted () {

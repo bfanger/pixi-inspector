@@ -1,4 +1,4 @@
-/* global crypto, location */
+/* global crypto */
 const debug = false
 
 const uid = crypto.getRandomValues(new Uint16Array(3)).join('-')
@@ -24,6 +24,15 @@ const proxy = {
       RECIPIENT: recipient
     })
   },
+  reportInspector (index, recipient) {
+    /* global __PIXI_INSPECTOR_GLOBAL_HOOK__ INDEX RECIPIENT */
+    this.executeInContext(function (window) {
+      __PIXI_INSPECTOR_GLOBAL_HOOK__.reportInspector(INDEX, RECIPIENT)
+    }.toString(), {
+      INDEX: index,
+      RECIPIENT: recipient
+    })
+  },
 
   /**
    * Execute the javascript inside the context of the page.
@@ -42,7 +51,7 @@ const proxy = {
 }
 
 !(function () {
-  /* global DEBUG, UID */
+  /* global DEBUG, UID, INSPECTOR_SCRIPT_URL */
   function injectedScript (window) {
     // Private
     const uid = UID
@@ -66,8 +75,10 @@ const proxy = {
       }, '*')
     }
     const _instances = []
+    let InspectorPromise = false
     // Public
     window.__PIXI_INSPECTOR_GLOBAL_HOOK__ = {
+      inspectors: [],
       register (instance, recipient = {}) {
         const exists = _instances.find(existing => existing.PIXI === instance.PIXI)
         if (exists) {
@@ -76,7 +87,7 @@ const proxy = {
           }
           return
         }
-        const i = _instances.push(Object.assign({ status: 'FRESH' }, instance))
+        const i = _instances.push(Object.assign({ status: 'IDLE' }, instance))
         broadcast('DETECTED', { channel: 'devtools_page' }, {
           index: i - 1,
           version: instance.PIXI.VERSION,
@@ -114,6 +125,44 @@ const proxy = {
             }
           }
         }
+      },
+
+      reportInspector (index, recipient) {
+        if (!_instances[index]) {
+          respond('ERROR', 'OUT_OF_BOUNDS', recipient)
+          return
+        }
+        if (_instances[index].status !== 'IDLE') {
+          respond('INSPECTOR', _instances[index].inspector, recipient)
+          return
+        }
+        _instances[index].status = 'LOADING'
+        this.injectInspector().then(Inspector => {
+          this.inspectors.push(new Inspector(_instances[index]))
+          _instances[index].inspector = (this.inspectors.length - 1)
+          _instances[index].status = 'INJECTED'
+          respond('INSPECTOR', _instances[index].inspector, recipient)
+        }).catch(error => {
+          respond('ERROR', error.message, recipient)
+        })
+      },
+      /**
+       * @returns {Promise}
+       */
+      injectInspector () {
+        if (InspectorPromise) {
+          return InspectorPromise
+        }
+        InspectorPromise = new Promise(resolve => {
+          const script = window.document.createElement('script')
+          script.src = INSPECTOR_SCRIPT_URL
+          const html = document.getElementsByTagName('html')[0]
+          script.onload = () => {
+            resolve(this.Inspector)
+          }
+          html.appendChild(script)
+        })
+        return InspectorPromise
       }
     }
   }
@@ -121,7 +170,8 @@ const proxy = {
   const code = injectedScript.toString()
   proxy.executeInContext(code, {
     UID: uid,
-    DEBUG: debug
+    DEBUG: debug,
+    INSPECTOR_SCRIPT_URL: chrome.extension.getURL('pixi.inspector.bundle.js')
   })
 })()
 
@@ -134,6 +184,9 @@ port.onMessage.addListener(function (message) {
       break
     case 'INSTANCES':
       proxy.reportInstances({ to: message.from, id: message.id })
+      break
+    case 'INSPECTOR':
+      proxy.reportInspector(message.data, { to: message.from, id: message.id })
       break
   }
 })

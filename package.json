@@ -7,11 +7,12 @@
     "test": "npm run lint",
     "lint": "eslint --ext js,vue src",
     "clean": "rm -rf build",
-    "build": "webpack -p",
+    "build": "webpack -p --progress",
     "build:clean": "npm run clean && webpack -p",
-    "build:watch": "webpack -w"
+    "build:watch": "webpack -w --display none"
   },
   "eslintConfig": {
+    "parser": "babel-eslint",
     "extends": "vue",
     "plugins": [
       "only-warn"
@@ -36,6 +37,7 @@
   "dependencies": {
     "@types/chrome": "^0.0.47",
     "babel-core": "^6.25.0",
+    "babel-eslint": "^7.2.3",
     "babel-helper-vue-jsx-merge-props": "^2.0.2",
     "babel-loader": "^7.1.1",
     "babel-plugin-syntax-jsx": "^6.18.0",
@@ -54,17 +56,18 @@
     "gulp": "^3.9.1",
     "gulp-util": "^3.0.8",
     "node-sass": "^4.5.3",
-    "pixi-spine": "^1.4.2",
+    "pixi-spine": "^1.5.1",
     "pixi.js": "^4.5.3",
     "rxjs": "^5.4.2",
     "sass-loader": "^6.0.6",
     "style-loader": "^0.18.2",
     "url-loader": "^0.5.9",
-    "vue": "^2.3.4",
-    "vue-loader": "^13.0.0",
+    "vue": "^2.4.1",
+    "vue-loader": "^12.2.2",
     "vue-rx": "^3.2.0",
-    "vue-template-compiler": "^2.3.4",
-    "webpack": "^3.1.0",
-    "webpack-dev-server": "^2.5.1"
+    "vue-template-compiler": "^2.4.1",
+    "webpack": "^3.3.0",
+    "webpack-dev-server": "^2.5.1",
+    "webpack-merge": "^4.1.0"
   }
 }

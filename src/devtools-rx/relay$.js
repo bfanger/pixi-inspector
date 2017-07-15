@@ -1,7 +1,6 @@
 import connection$ from './connection$'
 import connections$ from './connections$'
-
-const debug = false
+import debug from './debug'
 
 export default connection$.mergeMap(connection => connection.message$.withLatestFrom(connections$).do(([message, connections]) => {
   if (message.broadcast) {
@@ -30,18 +29,18 @@ export default connection$.mergeMap(connection => connection.message$.withLatest
       }
       return true
     })
-    debug && console.log('broadcast "' + command.command + '" to ' + targets.length + ' clients')
+    debug && console.log('client[' + connection.name + ' ' + connection.id + '] broadcast "' + command.command + '" to ' + targets.length + ' clients')
 
     targets.forEach(target => target.postMessage(command))
   } else if (message.to === 0) {
     if (message.command === 'TAB_ID') {
       connection.tabId = message.data
     } else if (message.command === 'LOG') {
-      const prefix = 'Connection[' + connection.name + ' ' + connection.id + ']'
+      const prefix = 'Log [' + connection.name + ' ' + connection.id + ']'
       if (Array.isArray(message.data)) {
         console.info(prefix, ...message.data)
       } else {
-        console.info('Connection[' + connection.name + ' ' + connection.id + ']', message.data)
+        console.info('Log [' + connection.name + ' ' + connection.id + ']', message.data)
       }
     } else {
       debug && console.warn('Connection[' + connection.name + ' ' + connection.id + ']', message)

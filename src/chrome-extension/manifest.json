@@ -30,6 +30,6 @@
     }
   ],
   "web_accessible_resources": [
-    "pixi.inspector.js"
+    "pixi.inspector.bundle.js"
   ]
 }

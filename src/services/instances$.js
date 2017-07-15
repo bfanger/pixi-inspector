@@ -1,37 +1,33 @@
 import connection from './connection'
 import { Observable } from 'rxjs/Observable'
+
 /**
- * An array with connections with instances.
+ * @var {Observable} All frames which have detected one ore more PIXI instances.
  */
 export default Observable.defer(() => {
   connection.send('DETECT', { name: 'content_scripts' })
-  const instances = []
+  const frames = []
+  // @todo Detect when a frame was closed/reloaded.
   return connection.on('DETECTED').startWith(null).switchMap(() => {
-    return connection.send('INSTANCES', { name: 'content_scripts' }).response$
+    return connection.stream('INSTANCES', { name: 'content_scripts' })
   }).switchMap(message => {
-    const index = instances.findIndex(instance => instance.from === message.from)
+    const index = frames.findIndex(instance => instance.from === message.from)
     if (message.data.length === 0) {
       if (index === -1) {
         return Observable.empty()
       } else {
-        instances.splice(index, 1)
-        return Observable.of(instances)
+        frames.splice(index, 1)
+        return Observable.of(frames)
       }
     }
     // chrome.devtools.inspectedWindow.eval('console.info(window.PIXI || "no pixi :(")', { frameURL: message.frameURL }, function (...args) {
     //   connection.log(...args)
     // })
-    const instance = {
-      from: message.from,
-      frameURL: message.frameURL,
-      latest: message.data[message.data.length - 1],
-      count: message.data.length
-    }
     if (index === -1) {
-      instances.push(instance)
+      frames.push(message)
     } else {
-      instances[index] = instance
+      frames[index] = message
     }
-    return Observable.of(instances)
+    return Observable.of(frames)
   })
 })

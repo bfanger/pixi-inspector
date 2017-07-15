@@ -1,4 +1,5 @@
 const webpack = require('webpack')
+const merge = require('webpack-merge')
 const path = require('path')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
@@ -7,13 +8,13 @@ if (!process.env.NODE_ENV) {
   process.env.NODE_ENV = (process.argv.indexOf('-p') !== -1) ? 'production' : 'development'
 }
 
-module.exports = {
+const baseConfig = {
   entry: {
     'pixi.panel': './src/pixi.panel.js',
     'pixi.devtools': './src/pixi.devtools.js',
-    'pixi.background': './src/pixi.background.js'
+    'pixi.background': './src/pixi.background.js',
+    'pixi.inspector': './src/pixi.inspector.js'
   },
-  devtool: process.env.NODE_ENV !== 'production' ? 'source-map' : '',
   output: {
     filename: '[name].bundle.js',
     path: path.join(__dirname, '/build')
@@ -69,11 +70,20 @@ module.exports = {
     }),
     new CopyWebpackPlugin([
       { context: 'src/chrome-extension', from: '**/*' }
-    ]),
-    // new webpack.NoEmitOnErrorsPlugin(),
-    new FriendlyErrorsPlugin()
-  ],
-  devServer: {
-    quiet: true
-  }
+    ])
+  ]
+
 }
+let webpackConfig = baseConfig
+if (process.env.NODE_ENV === 'development') {
+  webpackConfig = merge(baseConfig, {
+    devtool: 'source-map',
+    plugins: [
+      new FriendlyErrorsPlugin()
+    ],
+    devServer: {
+      quiet: true
+    }
+  })
+}
+module.exports = webpackConfig

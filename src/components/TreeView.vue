@@ -6,25 +6,26 @@
        @keydown.up.prevent="navigateUp"
        @keydown.down.prevent="navigateDown">
 
-    <div v-for="node in nodes()"
-         :key="node.id"
-         class="treeview__item"
-         :class="{'treeview__item--selected': node.selected}"
-         @mouseenter="inspector.highlight(node.id)"
+<!-- @mouseenter="inspector.highlight(node.id)"
          @mouseleave="inspector.highlight(false)"
-         @mousedown="select(node.id)"
-         :data-id="node.id">
+         @mousedown="select(node.id)" -->
+    <div v-for="row in rows()"
+         :key="row.node.id"
+         class="treeview__item"
+         :class="{'treeview__item--selected': row.node.selected}"
+
+         :data-id="row.node.id">
       <div class="treeview__indent"
-           :style="{width: (node.indent * 14)  + 'px'}"></div>
+           :style="{width: (row.indent * 14)  + 'px'}"></div>
       <div class="treeview__toggle">
         <div class="treeview__toggle__expand"
-             v-if="!node.leaf && node.collapsed"
-             @click="inspector.expand(node.id)"></div>
+             v-if="row.node.children && row.node.collapsed"
+             @click="inspector.expand(row.node)"></div>
         <div class="treeview__toggle__collapse"
-             v-if="!node.leaf && !node.collapsed"
-             @click="inspector.collapse(node.id)"></div>
+             v-if="row.node.children && !row.node.collapsed"
+             @click="inspector.collapse(row.node)"></div>
       </div>
-      {{node.title}}
+      {{row.node.type}}
     </div>
   </div>
 </template>
@@ -38,82 +39,83 @@
 // }
 export default {
   props: {
-    scene: Object,
     inspector: Object
   },
+  // async mounted () {
+  // this.tree = await this.inspector.tree()
+  // console.log('mounted', this.tree)
+  // this.tree.children.map(node => console.log('node', node.id))
+  // await Promise.all(this.inspector.expand(node.id)))
+  // setTimeout(function () {
+  // await this.inspector.tree()
+  // })
+  // },
   methods: {
-    nodes () {
-      const nodes = []
-      if (this.scene.tree.children) {
-        for (const scene of this.scene.tree.children) {
-          this.flattenNode(scene, nodes, 0)
+    rows () {
+      const rows = []
+      if (this.inspector.tree.children) {
+        for (const container of this.inspector.tree.children) {
+          this.flattenNode(container, rows, 0)
         }
       }
-      return nodes
+      return rows
     },
-    flattenNode (node, nodes, indent) {
-      let title = node.type
-      if (typeof node.name !== 'undefined' && node.name !== null && node.name !== '') {
-        if (node.type === 'Unknown') {
-          title = node.name
-        } else {
-          title = node.type + ' (' + node.name + ')'
-        }
-      }
-      if (title === '') {
-        title = 'unknown'
-      }
-      let selected = false
-      if (this.scene.selected && this.scene.selected._inspector) {
-        selected = node.id === this.scene.selected._inspector.id
-      }
-      nodes.push({
-        id: node.id,
-        leaf: node.leaf,
-        collapsed: node.collapsed,
-        title: title,
-        selected: selected,
-        indent: indent
-      })
+    flattenNode (node, rows, indent) {
+      // let title = node.type
+      // if (typeof node.name !== 'undefined' && node.name !== null && node.name !== '') {
+      //   if (node.type === 'Unknown') {
+      //     title = node.name
+      //   } else {
+      //     title = node.type + ' (' + node.name + ')'
+      //   }
+      // }
+      // if (title === '') {
+      //   title = 'unknown'
+      // }
+      // const selected = false
+      // if (this.selected && this.selected._inspector) {
+      //   selected = node.id === this.selected._inspector.id
+      // }
+      rows.push({ indent, node })
       indent++
-      if (!node.collapsed && !node.leaf) {
+      if (!node.collapsed && node.children) {
         for (const subnode of node.children) {
-          this.flattenNode(subnode, nodes, indent)
+          this.flattenNode(subnode, rows, indent)
         }
       }
     },
     select (id) {
-      this.inspector.select(id)
+      // this.inspector.select(id)
     },
     navigateLeft () {
-      const node = this.scene.selected._inspector
-      if (!node.collapsed) {
-        this.inspector.collapse(node.id)
-      } else if (this.scene.context.parent) {
-        this.inspector.select(this.scene.context.parent)
-        this.inspector.highlight(this.scene.context.parent)
-      }
+      // const node = this.selected._inspector
+      // if (!node.collapsed) {
+      //   this.inspector.collapse(node.id)
+      // } else if (this.context.parent) {
+      //   this.inspector.select(this.context.parent)
+      //   this.inspector.highlight(this.context.parent)
+      // }
     },
     navigateRight () {
-      const node = this.scene.selected._inspector
-      if (node.collapsed) {
-        this.inspector.expand(node.id)
-      } else if (this.scene.context.next) {
-        this.inspector.select(this.scene.context.next)
-        this.inspector.highlight(this.scene.context.next)
-      }
+      // const node = this.selected._inspector
+      // if (node.collapsed) {
+      //   this.inspector.expand(node.id)
+      // } else if (this.context.next) {
+      //   this.inspector.select(this.context.next)
+      //   this.inspector.highlight(this.context.next)
+      // }
     },
     navigateUp () {
-      if (this.scene.context.prev) {
-        this.inspector.select(this.scene.context.prev)
-        this.inspector.highlight(this.scene.context.prev)
-      }
+      // if (this.context.prev) {
+      //   this.inspector.select(this.context.prev)
+      //   this.inspector.highlight(this.context.prev)
+      // }
     },
     navigateDown () {
-      if (this.scene.context.next) {
-        this.inspector.select(this.scene.context.next)
-        this.inspector.highlight(this.scene.context.next)
-      }
+      // if (this.context.next) {
+      //   this.inspector.select(this.context.next)
+      //   this.inspector.highlight(this.context.next)
+      // }
     }
   }
 }

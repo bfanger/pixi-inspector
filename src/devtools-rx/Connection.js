@@ -1,8 +1,7 @@
 import fromEvent from './fromEvent'
 import Command from './Command'
-import Request from './Request'
-
-const debug = false
+import stream from './stream'
+import debug from './debug'
 
 export default class Connection {
   /**
@@ -42,7 +41,7 @@ export default class Connection {
   }
 
   /**
-   * Listen to a specific command.
+   * Listen for a specific command.
    *
    * @param {string} command
    * @return {Observable}
@@ -59,10 +58,40 @@ export default class Connection {
    * @param {string} command
    * @param {number|object} recipient
    * @param {*} data
-   * @returns {Request}
+   * @returns {Observable}
    */
-  send (command, recipient, data) {
-    return new Request(this, command, recipient, data)
+  send (command, recipient, data, options = {}) {
+    const message = Object.assign({ data }, options)
+    if (typeof recipient === 'number') {
+      message.command = command
+      message.to = recipient
+    } else {
+      message.broadcast = command
+      message.filter = Object.assign({
+        tabId: recipient.tabId || chrome.devtools && chrome.devtools.inspectedWindow && chrome.devtools.inspectedWindow.tabId
+      }, recipient)
+    }
+    if (debug) {
+      const logMessage = (message.id ? 'stream "' + command + '" from' : 'send "' + command + '" to')
+      if (typeof data === 'undefined') {
+        console.log(logMessage, recipient)
+      } else {
+        console.log(logMessage, recipient, data)
+      }
+    }
+    this.postMessage(message)
+  }
+
+  /**
+   * Send a command and stream the replys
+   *
+   * @param {string} command
+   * @param {number|object} recipient
+   * @param {*} data
+   * @returns {Observable}
+   */
+  stream (command, recipient, data) {
+    return stream(this, command, recipient, data)
   }
 
   /**
@@ -78,13 +107,19 @@ export default class Connection {
     if (typeof recipient !== 'number') {
       throw new Error('Invalid recipient') // Prevent accidental race conditions
     }
-    debug && console.log('get', { command, recipient, data })
-    const request = new Request(this, command, recipient, data)
-    return request.response$.take(1).map(response => {
-      if (response.response !== command) {
-        throw new Error('Unexpected response "' + response.response + '", expecting "' + command + '"')
+    if (debug) {
+      if (arguments.length === 2) {
+        console.log('client[' + recipient + '] get "' + command + '"')
+      } else {
+        console.log('client[' + recipient + '] get "' + command + '"(', data, ')')
       }
-      return response.data
+    }
+    const message$ = stream(this, command, recipient, data)
+    return message$.take(1).map(message => {
+      if (message.response !== command) {
+        throw new Error('Unexpected response "' + message.response + '", expecting "' + command + '"')
+      }
+      return message.data
     }).toPromise()
   }
 
@@ -99,7 +134,7 @@ export default class Connection {
     if (typeof recipient !== 'number') {
       throw new Error('Invalid recipient') // Prevent accidental race conditions
     }
-    debug && console.log('set', { command, recipient, data })
+    debug && console.log('client[' + recipient + '] set "' + command + '" = ', data)
     this.postMessage({
       command: command,
       to: recipient,

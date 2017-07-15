@@ -1,3 +1,5 @@
+console.info('pixi.panel')
+
 import './common'
 import Vue from 'vue'
 import VueRx from 'vue-rx'
@@ -6,8 +8,6 @@ import './bootstrap.scss'
 import Observable from 'rxjs/Observable'
 import Subscription from 'rxjs/Subscription'
 import Subject from 'rxjs/Subject'
-
-console.info('pixi.panel')
 
 if (chrome.extension) {
   Vue.config.productionTip = false
