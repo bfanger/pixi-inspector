@@ -8,7 +8,11 @@ export default class Client {
    */
   constructor (connection, recipient) {
     this.isBroadcast = (typeof recipient !== 'number')
-    this.recipient = recipient
+    if (typeof recipient === 'string') {
+      this.recipient = { name: recipient }
+    } else {
+      this.recipient = recipient
+    }
     this.connection = connection
   }
 

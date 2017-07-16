@@ -104,7 +104,7 @@ export default {
       window.location.reload()
     },
     detect () {
-      connection.to({ name: 'content_scripts' }).send('DETECT')
+      connection.to('content_scripts').send('DETECT')
     }
   }
 

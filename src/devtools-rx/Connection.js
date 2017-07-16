@@ -4,16 +4,16 @@ import Client from './Client'
 
 export default class Connection {
   /**
-   * @param {Port|Object} port  Port or connection options
+   * @param {Port|string|object} options  Port, name or connection options
    */
-  constructor (port) {
-    if (!port || !port.postMessage) {
-      this._port = chrome.runtime.connect(port)
-    } else {
-      this._port = port
+  constructor (options) {
+    if (typeof options === 'string') {
+      options = { name: options }
     }
-    if (port.sender && port.sender.tab) {
-      this.tabId = port.sender.tab.id
+    if (typeof options === 'object' && options.postMessage) { // Port object
+      this._port = options
+    } else {
+      this._port = chrome.runtime.connect(options)
     }
   }
 
@@ -51,6 +51,11 @@ export default class Connection {
     })
   }
 
+  /**
+   * Specify the target and use the Client API to communicate.
+   * @param {number|string|object} recipient A number (connection id) creates a 1 on 1 client, else a broadcast client is created.
+   * @returns {Client}
+   */
   to (recipient) {
     return new Client(this, recipient)
   }
