@@ -6,12 +6,17 @@
  */
 export default class Proxy {
   constructor (index, target) {
-    this.target = target
-    this.path = '__PIXI_INSPECTOR_GLOBAL_HOOK__.inspectors[' + index + ']'
+    if (typeof index === 'object') {
+      this.inspector = index
+    } else {
+      this.path = '__PIXI_INSPECTOR_GLOBAL_HOOK__.inspectors[' + index + ']'
+      this.target = target
+    }
     this.tree = {
       collapsed: true,
       children: false
     }
+    this.selected = false
     this.call('tree').then(tree => {
       this.tree = tree
       // console.log(tree)
@@ -31,12 +36,14 @@ export default class Proxy {
       node.children = children
     })
   }
-  // select (id) {
-  //   return this.call('select', id).then(value => {
-  //     this.refresh$.next('select')
-  //     return value
-  //   })
-  // }
+  select (node) {
+    return this.call('select', node.id).then(() => {
+      if (this.selected) {
+        delete this.selected.selected
+      }
+      node.selected = true
+    })
+  }
   // highlight (id) {
   //   return this.call('highlight', id).then(value => {
   //     // this.refresh$.next('highlight');
@@ -44,12 +51,10 @@ export default class Proxy {
   //   })
   // }
   call (method, ...args) {
-    const code = this.path + '.' + method + '(' + (args.map(arg => JSON.stringify(arg)).join(', ')) + ')'
     if (!chrome.devtools) {
-      /* eslint-disable no-eval */
-      return Promise.resolve(eval(code))
-      /* eslint-enable */
+      return Promise.resolve(this.inspector[method].apply(this.inspector, args))
     }
+    const code = this.path + '.' + method + '(' + (args.map(arg => JSON.stringify(arg)).join(', ')) + ')'
     return new Promise((resolve, reject) => {
       chrome.devtools.inspectedWindow.eval(code, this.target, (result, exceptionInfo) => {
         if (exceptionInfo) {

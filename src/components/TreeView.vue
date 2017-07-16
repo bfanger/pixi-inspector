@@ -8,13 +8,13 @@
 
 <!-- @mouseenter="inspector.highlight(node.id)"
          @mouseleave="inspector.highlight(false)"
-         @mousedown="select(node.id)" -->
+         -->
     <div v-for="row in rows()"
-         :key="row.node.id"
          class="treeview__item"
+         :key="row.node.id"
          :class="{'treeview__item--selected': row.node.selected}"
-
-         :data-id="row.node.id">
+         :data-id="row.node.id"
+          @mousedown="inspector.select(node)">
       <div class="treeview__indent"
            :style="{width: (row.indent * 14)  + 'px'}"></div>
       <div class="treeview__toggle">

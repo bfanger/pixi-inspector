@@ -8,6 +8,7 @@ import 'rxjs/add/observable/merge'
 import 'rxjs/add/observable/timer'
 import 'rxjs/add/observable/of'
 import 'rxjs/add/observable/race'
+import 'rxjs/add/observable/never'
 
 import 'rxjs/add/operator/catch'
 import 'rxjs/add/operator/concat'

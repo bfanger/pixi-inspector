@@ -17,7 +17,8 @@ const baseConfig = {
   },
   output: {
     filename: '[name].bundle.js',
-    path: path.join(__dirname, '/build')
+    path: path.join(__dirname, '/build'),
+    publicPath: '/'
   },
   resolve: {
     extensions: ['.js', '.vue']
@@ -74,12 +75,25 @@ const baseConfig = {
   ]
 
 }
-let webpackConfig = baseConfig
+let devConfig = baseConfig
 if (process.env.NODE_ENV === 'development') {
-  webpackConfig = merge(baseConfig, {
+  devConfig = merge(baseConfig, {
     devtool: 'source-map',
     plugins: [
       new FriendlyErrorsPlugin()
+    ]
+  })
+}
+const isDevServer = process.argv.find(arg => {
+  return arg.substr(-18) === 'webpack-dev-server'
+})
+let webpackConfig = devConfig
+if (isDevServer) {
+  webpackConfig = merge(devConfig, {
+    plugins: [
+      new webpack.DefinePlugin({
+        'process.env.DEV_SERVER': 'true'
+      })
     ],
     devServer: {
       quiet: true

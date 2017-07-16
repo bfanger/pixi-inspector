@@ -45,7 +45,7 @@ export default {
       if (instance === null) {
         return Observable.of(null)
       }
-      return connection.get('INSPECTOR', instance.connection, instance.index).then(index => {
+      return connection.to(instance.connection).get('INSPECTOR', instance.index).then(index => {
         return new Proxy(index, { frameURL: instance.frameURL })
       })
     })
@@ -104,7 +104,7 @@ export default {
       window.location.reload()
     },
     detect () {
-      connection.send('DETECT', { name: 'content_scripts' })
+      connection.to({ name: 'content_scripts' }).send('DETECT')
     }
   }
 

@@ -5,11 +5,11 @@ import { Observable } from 'rxjs/Observable'
  * @var {Observable} All frames which have detected one ore more PIXI instances.
  */
 export default Observable.defer(() => {
-  connection.send('DETECT', { name: 'content_scripts' })
+  connection.to({ name: 'content_scripts' }).send('DETECT')
   const frames = []
   // @todo Detect when a frame was closed/reloaded.
   return connection.on('DETECTED').startWith(null).switchMap(() => {
-    return connection.stream('INSTANCES', { name: 'content_scripts' })
+    return connection.to({ name: 'content_scripts' }).stream('INSTANCES')
   }).switchMap(message => {
     const index = frames.findIndex(instance => instance.from === message.from)
     if (message.data.length === 0) {

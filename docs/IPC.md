@@ -14,7 +14,7 @@ To simplify ipc i've codified common communcation patterns into the devtools-rx 
 { broadcast: 'DETECT', filter: {name: 'content_scripts', tabId: 123}, data?: * }
 ```
 
-Sent by pixi.devtools or pixi.panel to the background_script which convert the message to a command and send it to all connections which in the filter.
+Sent by pixi.devtools or pixi.panel to the background_script which converts the message to a command and send it to all connections that match the filter.
 
 ### Command
 

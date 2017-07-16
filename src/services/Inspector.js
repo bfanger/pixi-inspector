@@ -1,4 +1,5 @@
 import TypeDetection from './TypeDetection'
+const symbol = Symbol('PixiInspector')
 
 export default class Inspector {
   constructor (instance) {
@@ -7,7 +8,7 @@ export default class Inspector {
     this.unpatched = {}
     this.nodes = [{
       children: [],
-      _inspector: {
+      [symbol]: {
         id: 0,
         type: 'root',
         collapsed: false
@@ -47,9 +48,9 @@ export default class Inspector {
     if (this.nodes[0].children.indexOf(container) === -1) {
       this.nodes[0].children.push(container)
       this.serialize(container)
-      container._inspector.collapsed = false
+      container[symbol].collapsed = false
       if (!window.$pixi) {
-        window.$pixi = container
+        this.select(container[symbol].id)
       }
     }
     if (renderer.view !== this.canvas) {
@@ -60,46 +61,57 @@ export default class Inspector {
     return retval
   }
 
+  select (id) {
+    const node = this.nodes[id]
+    if (window.$pixi) {
+      delete window.$pixi[symbol].selected
+    }
+    if (node) {
+      window.$pixi = node
+      node[symbol].selected = true
+    }
+  }
+
   tree () {
     return this.serialize(this.nodes[0])
   }
   expand (id) {
     const node = this.nodes[id]
     if (node) {
-      node._inspector.collapsed = false
+      node[symbol].collapsed = false
       return this.serialize(node).children
     }
   }
   collapse (id) {
     const node = this.nodes[id]
     if (node) {
-      node._inspector.collapsed = true
+      node[symbol].collapsed = true
       return this.serialize(node).children
     }
   }
   serialize (node) {
-    if (typeof node._inspector === 'undefined') {
-      node._inspector = {
+    if (typeof node[symbol] === 'undefined') {
+      node[symbol] = {
         id: -1,
         type: this.typeDetection.detectType(node),
         collapsed: true,
         children: null
       }
-      node._inspector.id = (this.nodes.push(node) - 1)
+      node[symbol].id = (this.nodes.push(node) - 1)
     }
 
     if (Array.isArray(node.children)) {
       if (node.children.length === 0) {
-        node._inspector.children = false
-      } else if (node._inspector.collapsed === false) {
-        node._inspector.children = node.children.map(childNode => this.serialize(childNode))
+        node[symbol].children = false
+      } else if (node[symbol].collapsed === false) {
+        node[symbol].children = node.children.map(childNode => this.serialize(childNode))
       } else {
-        node._inspector.children = true
+        node[symbol].children = true
       }
     } else {
-      node._inspector.children = false
+      node[symbol].children = false
     }
-    return node._inspector
+    return node[symbol]
   }
 }
 
@@ -131,12 +143,12 @@ export default class Inspector {
 //         context: {}
 //       }
 //       if (this._highlight.node && this._highlight.node._inspector) {
-//         scene.hover = this._highlight.node._inspector.id
+//         scene.hover = this._highlight.node[symbol].id
 //       }
 //       if (window.$pixi) {
 //         scene.selected = this.selection()
 //         if (window.$pixi._inspector) {
-//           scene.context = this.context(window.$pixi._inspector.id)
+//           scene.context = this.context(window.$pixi[symbol].id)
 //         }
 //       }
 //       return scene
@@ -161,7 +173,7 @@ export default class Inspector {
 //           var result = this.selectAt(node.children[i], point)
 //           if (result) {
 //             this.node(node)
-//             node._inspector.collapsed = false
+//             node[symbol].collapsed = false
 //             return result
 //           }
 //         }
@@ -210,8 +222,8 @@ export default class Inspector {
 
 //       var properties = Object.keys(window.$pixi)
 
-//       if (formatted._inspector !== undefined && formatted._inspector.whitelist !== undefined) {
-//         properties = formatted._inspector.whitelist
+//       if (formatted._inspector !== undefined && formatted[symbol].whitelist !== undefined) {
+//         properties = formatted[symbol].whitelist
 //       }
 
 //       properties.forEach(property => {
@@ -310,7 +322,7 @@ export default class Inspector {
 //       if (!node._inspector) {
 //         return false
 //       }
-//       if (node._inspector.id === id) {
+//       if (node[symbol].id === id) {
 //         return node
 //       }
 //       if (node.children) {

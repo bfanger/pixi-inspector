@@ -2,13 +2,13 @@ import { Observable } from 'rxjs/Observable'
 
 let autoIncrement = 1
 
-export default function stream (connection, command, recipient, data) {
+export default function stream (client, command, data) {
   return Observable.defer(() => {
     const id = autoIncrement
     autoIncrement++
-    connection.send(command, recipient, data, { id })
+    client.send(command, data, { id })
 
-    return connection.message$.filter(message => (message.id === id)).do(message => {
+    return client.connection.message$.filter(message => (message.id === id)).do(message => {
       if (message.response === 'ERROR') {
         throw new Error(message.data)
       }
