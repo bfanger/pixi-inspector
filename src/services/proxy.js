@@ -17,10 +17,10 @@ export default class Proxy {
       children: false
     }
     this.selected = false
-    this.call('selected').then(selected => {
+    this.call('outliner.selected').then(selected => {
       this.selected = selected
     })
-    this.call('tree').then(tree => {
+    this.call('outliner.tree').then(tree => {
       this.tree = tree
     })
     this.subscription = connection.on('TREE').subscribe(({ data }) => {
@@ -32,37 +32,47 @@ export default class Proxy {
     this.subscription.unsubscribe()
   }
 
-  expand (node) {
-    return this.call('expand', node.id).then(children => {
-      node.collapsed = false
-      node.children = children
-    })
-  }
-  collapse (node) {
-    return this.call('collapse', node.id).then(children => {
-      node.collapsed = true
-      node.children = children
-    })
-  }
-  select (node) {
-    this.selected = node
-    return this.call('select', node.id)
-  }
   activate () {
     return this.call('activate')
   }
   deactivate () {
     return this.call('deactivate')
   }
+
+  expand (node) {
+    return this.call('outliner.expand', node.id).then(children => {
+      node.collapsed = false
+      node.children = children
+    })
+  }
+  collapse (node) {
+    return this.call('outliner.collapse', node.id).then(children => {
+      node.collapsed = true
+      node.children = children
+    })
+  }
+  select (node) {
+    this.selected = node
+    return this.call('outliner.select', node.id)
+  }
+
   // highlight (id) {
-  //   return this.call('highlight', id).then(value => {
+  //   return this.call('outliner.highlight', id).then(value => {
   //     // this.refresh$.next('highlight');
   //     return value
   //   })
   // }
   call (method, ...args) {
     if (!chrome.devtools) {
-      let value = this.inspector[method].apply(this.inspector, args)
+      const dot = method.indexOf('.')
+      let value
+      if (dot === -1) {
+        value = this.inspector[method].apply(this.inspector, args)
+      } else {
+        const helper = this.inspector[method.substr(0, dot)]
+        const _method = method.substr(dot + 1)
+        value = helper[_method].apply(helper, args)
+      }
       if (typeof value !== 'undefined') {
         value = JSON.parse(JSON.stringify(value))
       }

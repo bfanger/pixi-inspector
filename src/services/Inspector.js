@@ -1,23 +1,11 @@
 import TypeDetection from './TypeDetection'
 import Outliner from './InspectorOutliner'
 
-export const meta = Symbol('PixiInspector')
-
 export default class Inspector {
   constructor (instance, emit) {
     this.PIXI = instance.PIXI
     this.emit = emit
-    this.Phaser = instance.Phaser
     this.unpatched = {}
-    this.nodes = [{
-      children: [],
-      [meta]: {
-        id: 0,
-        type: 'root',
-        collapsed: false
-      }
-    }]
-    // @todo Garbage collect nodes
 
     this.typeDetection = new TypeDetection()
     this.typeDetection.registerTypes('PIXI', instance.PIXI)
@@ -74,8 +62,9 @@ export default class Inspector {
   }
 
   /**
-   * @param {*} callback
+   * @param {Function} callback
    * @param {number} ms
+   * @return {Function} unregister
    */
   registerHook (callback, ms = 0) {
     const hook = {
@@ -84,69 +73,12 @@ export default class Inspector {
       skip: false
     }
     this.hooks.push(hook)
-    return function () {
-
-    }
-  }
-
-  select (id) {
-    const node = this.nodes[id]
-    if (node) {
-      window.$pixi = node
-    }
-  }
-
-  selected () {
-    if (window.$pixi) {
-      const id = window.$pixi[meta].id
-      if (this.nodes[id] && this.nodes[id] === window.$pixi) {
-        return this.serialize(this.nodes[id])
+    return () => {
+      const index = this.hooks.indexOf(hook)
+      if (index !== -1) {
+        this.hooks.splice(index, 1)
       }
     }
-    return false
-  }
-
-  tree () {
-    return this.serialize(this.nodes[0])
-  }
-
-  expand (id) {
-    const node = this.nodes[id]
-    if (node) {
-      node[meta].collapsed = false
-      return this.serialize(node).children
-    }
-  }
-  collapse (id) {
-    const node = this.nodes[id]
-    if (node) {
-      node[meta].collapsed = true
-      return this.serialize(node).children
-    }
-  }
-  serialize (node) {
-    if (typeof node[meta] === 'undefined') {
-      node[meta] = {
-        id: -1,
-        type: this.typeDetection.detectType(node),
-        collapsed: true,
-        children: null
-      }
-      node[meta].id = (this.nodes.push(node) - 1)
-    }
-
-    if (Array.isArray(node.children)) {
-      if (node.children.length === 0) {
-        node[meta].children = false
-      } else if (node[meta].collapsed === false) {
-        node[meta].children = node.children.map(childNode => this.serialize(childNode))
-      } else {
-        node[meta].children = true
-      }
-    } else {
-      node[meta].children = false
-    }
-    return node[meta]
   }
 }
 

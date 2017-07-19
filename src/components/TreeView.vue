@@ -9,7 +9,7 @@
 <!-- @mouseenter="inspector.highlight(node.id)"
          @mouseleave="inspector.highlight(false)"
          -->
-    <div v-for="row in rows()"
+    <div v-for="row in rows"
          class="treeview__item"
          :key="row.node.id"
          :class="{'treeview__item--selected': row.node.id === inspector.selected.id}"
@@ -50,7 +50,7 @@ export default {
   // await this.inspector.tree()
   // })
   // },
-  methods: {
+  computed: {
     rows () {
       const rows = []
       if (this.inspector.tree.children) {
@@ -59,7 +59,9 @@ export default {
         }
       }
       return rows
-    },
+    }
+  },
+  methods: {
     flattenNode (node, rows, indent) {
       // let title = node.type
       // if (typeof node.name !== 'undefined' && node.name !== null && node.name !== '') {
@@ -72,10 +74,6 @@ export default {
       // if (title === '') {
       //   title = 'unknown'
       // }
-      // const selected = false
-      // if (this.selected && this.selected._inspector) {
-      //   selected = node.id === this.selected._inspector.id
-      // }
       rows.push({ indent, node })
       indent++
       if (!node.collapsed && node.children) {
@@ -83,9 +81,6 @@ export default {
           this.flattenNode(subnode, rows, indent)
         }
       }
-    },
-    select (id) {
-      // this.inspector.select(id)
     },
     navigateLeft () {
       // const node = this.selected._inspector
