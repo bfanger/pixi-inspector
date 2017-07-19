@@ -21,3 +21,7 @@ C1. When the devtools are opened. we'll scan for PIXI again and ask how many PIX
 C2. When 1 or more PIXI are detected a new tab "Pixi" will become available in the devtools.
 
 # D. Pixi panel
+D1. The panel starts in a dormant state, and waits for the PANEL_VISIBLE command
+D2. When activated it start a detection round and injects an Inspector into the last detected instance
+D3. It activates the inspector which patches the PIXI renderers
+D4. When PANEL_VISIBLE is false the inspector is deactivated and PIXI renderers are restored.

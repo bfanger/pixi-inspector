@@ -62,7 +62,7 @@ export default class Client {
    *
    * @param {string} command
    * @param {*} data
-   * @returns {Promise}
+   * @returns {Observable}
    */
   get (command, data) {
     if (this.isBroadcast) {
@@ -81,7 +81,7 @@ export default class Client {
         throw new Error('Unexpected response "' + message.response + '", expecting "' + command + '"')
       }
       return message.data
-    }).toPromise()
+    })
   }
 
   /**

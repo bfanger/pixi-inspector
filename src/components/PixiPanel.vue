@@ -5,10 +5,10 @@
       <button @click="reload">Reload</button>
       <button v-if="instance === null" @click="detect">Retry</button>
     </Toolbar>
-    <div class="pixi-panel__message" v-if="instance === null">
+    <div class="pixi-panel__message" v-if="messageVisible && instance === null">
       Looking for <span class="pixi-panel__logo">pixijs</span> ...
     </div>
-    <div class="pixi-panel__message" v-if="instance !== null && inspector === null">
+    <div class="pixi-panel__message" v-if="messageVisible && instance !== null && inspector === null">
       Connecting to <span class="pixi-panel__logo">pixijs</span> ...
     </div>
     <SplitView class="pixi-panel__body" v-if="inspector">
@@ -27,6 +27,7 @@ import TreeView from './TreeView'
 import DetailView from './DetailView'
 import lastInstance$ from '../services/lastInstance$'
 import connection from '../services/connection'
+import active$ from '../services/active$'
 import Proxy from '../services/Proxy'
 
 export default {
@@ -45,13 +46,29 @@ export default {
       if (instance === null) {
         return Observable.of(null)
       }
-      return connection.to(instance.connection).get('INSPECTOR', instance.index).then(index => {
-        return new Proxy(index, { frameURL: instance.frameURL })
-      })
+      return connection.to(instance.connection).get('INSPECTOR', instance.index)
+        .switchMap(index => {
+          return Observable.create(observer => {
+            const proxy = new Proxy(index, { frameURL: instance.frameURL })
+            observer.next(proxy)
+            proxy.activate()
+            return () => {
+              proxy.deactivate()
+              proxy.destroy()
+            }
+          })
+        })
     })
+    // activate
     return {
       instance: instance$.startWith(null),
-      inspector: inspector$.startWith(null)
+      inspector: inspector$.startWith(null),
+      messageVisible: active$.switchMap(active => {
+        if (active) {
+          return Observable.timer(100).map(() => true).startWith(false)
+        }
+        return Observable.of(false)
+      })
     }
   },
   mounted () {

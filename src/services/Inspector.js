@@ -1,117 +1,152 @@
 import TypeDetection from './TypeDetection'
-const symbol = Symbol('PixiInspector')
+import Outliner from './InspectorOutliner'
+
+export const meta = Symbol('PixiInspector')
 
 export default class Inspector {
-  constructor (instance) {
+  constructor (instance, emit) {
     this.PIXI = instance.PIXI
+    this.emit = emit
     this.Phaser = instance.Phaser
     this.unpatched = {}
     this.nodes = [{
       children: [],
-      [symbol]: {
+      [meta]: {
         id: 0,
         type: 'root',
         collapsed: false
       }
     }]
+    // @todo Garbage collect nodes
 
     this.typeDetection = new TypeDetection()
     this.typeDetection.registerTypes('PIXI', instance.PIXI)
     instance.Phaser && this.typeDetection.registerTypes('Phaser', instance.Phaser)
-
-    this.patch('CanvasRenderer')
-    this.patch('WebGLRenderer')
+    this.hooks = []
+    this.outliner = new Outliner(this)
   }
+
+  activate () {
+    if (!this.unpatched['CanvasRenderer']) {
+      this.patch('CanvasRenderer')
+    }
+    if (!this.unpatched['WebGLRenderer']) {
+      this.patch('WebGLRenderer')
+    }
+  }
+
+  deactivate () {
+    for (const [renderer, renderMethod] of Object.entries(this.unpatched)) {
+      this.PIXI[renderer].prototype.render = renderMethod
+    }
+    this.unpatched = {}
+  }
+
   /**
    * Path the Renderer.render method to get a hold of the stage object(s)
    */
   patch (renderer) {
     if (this.unpatched[renderer]) {
-      console.warn('already patched')
+      console.warn(renderer + ' already patched')
       return
     }
     const Renderer = this.PIXI[renderer]
-    const renderMethod = Renderer.prototype.render
-    this.unpatched[renderer] = renderMethod
-    var self = this
-    Renderer.prototype.render = function (container) {
-      self.beforeRender(container, this)
-      var retval = renderMethod.apply(this, arguments)
-      return self.afterRender(container, this, retval)
+    if (Renderer && Renderer.prototype.render) {
+      const renderMethod = Renderer.prototype.render
+      this.unpatched[renderer] = renderMethod
+      var self = this
+      Renderer.prototype.render = function (container) {
+        for (const hook of self.hooks) {
+          if (hook.skip) {
+            continue
+          }
+          hook.callback(container, renderer)
+          if (hook.throttle) {
+            hook.skip = true
+            setTimeout(() => {
+              hook.skip = false
+            }, hook.throttle)
+          }
+        }
+        return renderMethod.apply(this, arguments)
+      }
     }
   }
 
   /**
-   * An intercepted render call
+   * @param {*} callback
+   * @param {number} ms
    */
-  beforeRender (container, renderer) {
-    if (this.nodes[0].children.indexOf(container) === -1) {
-      this.nodes[0].children.push(container)
-      this.serialize(container)
-      container[symbol].collapsed = false
-      if (!window.$pixi) {
-        this.select(container[symbol].id)
-      }
+  registerHook (callback, ms = 0) {
+    const hook = {
+      callback: callback,
+      throttle: ms,
+      skip: false
     }
-    if (renderer.view !== this.canvas) {
-      this.canvas = renderer.view
+    this.hooks.push(hook)
+    return function () {
+
     }
-  }
-  afterRender (container, renderer, retval) {
-    return retval
   }
 
   select (id) {
     const node = this.nodes[id]
-    if (window.$pixi) {
-      delete window.$pixi[symbol].selected
-    }
     if (node) {
       window.$pixi = node
-      node[symbol].selected = true
     }
+  }
+
+  selected () {
+    if (window.$pixi) {
+      const id = window.$pixi[meta].id
+      if (this.nodes[id] && this.nodes[id] === window.$pixi) {
+        return this.serialize(this.nodes[id])
+      }
+    }
+    return false
   }
 
   tree () {
     return this.serialize(this.nodes[0])
   }
+
   expand (id) {
     const node = this.nodes[id]
     if (node) {
-      node[symbol].collapsed = false
+      node[meta].collapsed = false
       return this.serialize(node).children
     }
   }
   collapse (id) {
     const node = this.nodes[id]
     if (node) {
-      node[symbol].collapsed = true
+      node[meta].collapsed = true
       return this.serialize(node).children
     }
   }
   serialize (node) {
-    if (typeof node[symbol] === 'undefined') {
-      node[symbol] = {
+    if (typeof node[meta] === 'undefined') {
+      node[meta] = {
         id: -1,
         type: this.typeDetection.detectType(node),
         collapsed: true,
         children: null
       }
-      node[symbol].id = (this.nodes.push(node) - 1)
+      node[meta].id = (this.nodes.push(node) - 1)
     }
 
     if (Array.isArray(node.children)) {
       if (node.children.length === 0) {
-        node[symbol].children = false
-      } else if (node[symbol].collapsed === false) {
-        node[symbol].children = node.children.map(childNode => this.serialize(childNode))
+        node[meta].children = false
+      } else if (node[meta].collapsed === false) {
+        node[meta].children = node.children.map(childNode => this.serialize(childNode))
       } else {
-        node[symbol].children = true
+        node[meta].children = true
       }
     } else {
-      node[symbol].children = false
+      node[meta].children = false
     }
-    return node[symbol]
+    return node[meta]
   }
 }
 

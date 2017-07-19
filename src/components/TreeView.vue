@@ -12,9 +12,9 @@
     <div v-for="row in rows()"
          class="treeview__item"
          :key="row.node.id"
-         :class="{'treeview__item--selected': row.node.selected}"
+         :class="{'treeview__item--selected': row.node.id === inspector.selected.id}"
          :data-id="row.node.id"
-          @mousedown="inspector.select(node)">
+        @mousedown="inspector.select(row.node)">
       <div class="treeview__indent"
            :style="{width: (row.indent * 14)  + 'px'}"></div>
       <div class="treeview__toggle">

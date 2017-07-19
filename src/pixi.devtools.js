@@ -1,42 +1,33 @@
-import './common'
-import Connection from './devtools-rx/Connection'
-import { debug } from './services/config'
-
-debug && console.info('pixi.devtools')
-
 /**
  * Access to the chrome.devtools apis
  */
-let panelActive = false
-function activatePanel () {
-  if (panelActive) {
-    return
-  }
-  debug && connection.log('activatePanel')
-  chrome.devtools.panels.create('Pixi', 'img/pixi.png', 'pixi.panel.html', function (panel) {
-    panel.onShown.addListener(() => {
-      connection.to('content_scripts').send('DETECT')
-      panelActive = true
-    })
-    panel.onHidden.addListener(() => {
-      panelActive = false
-    })
-  })
-}
+
+import './common'
+import Connection from './devtools-rx/Connection'
+import { debug } from './services/config'
+import Panel from './devtools-rx/Panel'
+
+debug && console.info('pixi.devtools')
+
 const connection = new Connection('devtools_page')
-connection.to(0).set('TAB_ID', chrome.devtools.inspectedWindow.tabId)
-connection.on('PANEL_ACTIVE').subscribe(command => {
-  command.respond('PANEL_ACTIVE', panelActive)
-})
-connection.on('DETECTED').subscribe(() => {
-  activatePanel()
-})
-// When devtools is opened, start detection again, just in case.
-// If all pixi instances are already detected, no DETECTED events will fire.
+
+// If all pixi instances are already detected, no DETECTED events will fire, but INSTANCES will return an array.
+const pixiDetected$ = connection.on('DETECTED')
+  .merge(connection.to('content_scripts').stream('INSTANCES').filter(message => message.data.length > 0))
+
+const panel$ = pixiDetected$.take(1).map(() => {
+  return new Panel('Pixi', 'img/pixi.png', 'pixi.panel.html')
+}).publishReplay(1).refCount(1)
+
+panel$.subscribe()
+
+// When devtools is opened, start detection again, maybe PIXI wasn't yet ready before.
 connection.to('content_scripts').send('DETECT')
-// Retrieve the detected instances
-connection.to('content_scripts').stream('INSTANCES').subscribe(message => {
-  if (message.data.length > 0) {
-    activatePanel()
-  }
-})
+
+// Stream the visibility to the pixi_panel
+connection.on('PANEL_VISIBLE').switchMap(command => {
+  return panel$.switchMap(panel => panel.visible$).do(visible => {
+    command.respond('PANEL_VISIBLE', visible)
+  })
+}).subscribe()
+

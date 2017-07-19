@@ -6,5 +6,5 @@ if (typeof window.__PIXI_INSPECTOR_GLOBAL_HOOK__ === 'undefined') {
 if (!window.__PIXI_INSPECTOR_GLOBAL_HOOK__.Inspector) {
   window.__PIXI_INSPECTOR_GLOBAL_HOOK__.Inspector = Inspector
 } else {
-  console.warn('Duplicate injection')
+  console.warn('pixi.inspector was already injected into the page')
 }

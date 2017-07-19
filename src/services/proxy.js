@@ -1,8 +1,8 @@
-// import { Subject } from 'rxjs/Subject'
-// import { Observable } from 'rxjs/Subject'
-
+import connection from './connection'
 /**
  * Async access to the Inspector.
+ *
+ * All operations return Promises
  */
 export default class Proxy {
   constructor (index, target) {
@@ -17,11 +17,19 @@ export default class Proxy {
       children: false
     }
     this.selected = false
+    this.call('selected').then(selected => {
+      this.selected = selected
+    })
     this.call('tree').then(tree => {
       this.tree = tree
-      // console.log(tree)
-      // Vue.set(this, 'tree', tree)
     })
+    this.subscription = connection.on('TREE').subscribe(({ data }) => {
+      this.tree = data
+    })
+  }
+
+  destroy () {
+    this.subscription.unsubscribe()
   }
 
   expand (node) {
@@ -37,12 +45,14 @@ export default class Proxy {
     })
   }
   select (node) {
-    return this.call('select', node.id).then(() => {
-      if (this.selected) {
-        delete this.selected.selected
-      }
-      node.selected = true
-    })
+    this.selected = node
+    return this.call('select', node.id)
+  }
+  activate () {
+    return this.call('activate')
+  }
+  deactivate () {
+    return this.call('deactivate')
   }
   // highlight (id) {
   //   return this.call('highlight', id).then(value => {
@@ -52,7 +62,11 @@ export default class Proxy {
   // }
   call (method, ...args) {
     if (!chrome.devtools) {
-      return Promise.resolve(this.inspector[method].apply(this.inspector, args))
+      let value = this.inspector[method].apply(this.inspector, args)
+      if (typeof value !== 'undefined') {
+        value = JSON.parse(JSON.stringify(value))
+      }
+      return Promise.resolve(value)
     }
     const code = this.path + '.' + method + '(' + (args.map(arg => JSON.stringify(arg)).join(', ')) + ')'
     return new Promise((resolve, reject) => {

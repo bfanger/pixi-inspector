@@ -74,6 +74,17 @@ const proxy = {
         _pixiInspector: uid
       }, '*')
     }
+
+    let pixiPanelId = -1
+    function emit (command, data) {
+      debug && console.log('emit', { command, data })
+      window.postMessage({
+        command: command,
+        to: pixiPanelId,
+        data: data,
+        _pixiInspector: uid
+      }, '*')
+    }
     const _instances = []
     let InspectorPromise = false
     // Public
@@ -132,13 +143,14 @@ const proxy = {
           respond('ERROR', 'OUT_OF_BOUNDS', recipient)
           return
         }
+        pixiPanelId = recipient.to
         if (_instances[index].status !== 'IDLE') {
           respond('INSPECTOR', _instances[index].inspector, recipient)
           return
         }
         _instances[index].status = 'LOADING'
         this.injectInspector().then(Inspector => {
-          this.inspectors.push(new Inspector(_instances[index]))
+          this.inspectors.push(new Inspector(_instances[index], emit))
           _instances[index].inspector = (this.inspectors.length - 1)
           _instances[index].status = 'INJECTED'
           respond('INSPECTOR', _instances[index].inspector, recipient)

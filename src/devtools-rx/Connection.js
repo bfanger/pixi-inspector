@@ -15,6 +15,9 @@ export default class Connection {
     } else {
       this._port = chrome.runtime.connect(options)
     }
+    if (chrome.devtools && chrome.devtools.inspectedWindow) {
+      this._port.postMessage({ command: 'TAB_ID', to: 0, data: chrome.devtools.inspectedWindow.tabId })
+    }
   }
 
   get name () { return this._port.name }

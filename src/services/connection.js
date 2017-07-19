@@ -6,7 +6,6 @@ if (process.env.DEV_SERVER) {
 } else {
   const Connection = require('../devtools-rx/Connection').default
   connection = new Connection('pixi_panel')
-  connection.to(0).set('TAB_ID', chrome.devtools.inspectedWindow.tabId)
 }
 
 export default connection
