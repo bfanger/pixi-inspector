@@ -1,5 +1,4 @@
-console.info('pixi.panel')
-
+import { debug } from './services/config'
 import './common'
 import Vue from 'vue'
 import VueRx from 'vue-rx'
@@ -8,10 +7,13 @@ import './bootstrap.scss'
 import Observable from 'rxjs/Observable'
 import Subscription from 'rxjs/Subscription'
 import Subject from 'rxjs/Subject'
+debug && console.info('pixi.panel')
 
 if (chrome.extension) {
-  Vue.config.productionTip = false
   Vue.config.devtools = false
+}
+if (chrome.extension || process.env.DEV_SERVER) {
+  Vue.config.productionTip = false
 }
 Vue.use(VueRx, { Observable, Subscription, Subject })
 

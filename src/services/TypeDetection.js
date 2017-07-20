@@ -22,9 +22,9 @@ export default class TypeDetection {
     for (var prop in object) {
       if (typeof object[prop] === 'function') {
         this.constructors.push(object[prop])
-        this.names.push(name + '.' + prop)
+        this.names.push(name + prop)
       } else if (typeof object[prop] === 'object') {
-        this.registerTypes(name + '.' + prop, object[prop], depth - 1)
+        this.registerTypes(name + prop + '.', object[prop], depth - 1)
       }
     }
   }

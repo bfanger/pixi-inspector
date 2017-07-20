@@ -4,9 +4,10 @@ import { Subject } from 'rxjs/Subject'
 import Inspector from './Inspector'
 
 const tree$ = new Subject()
+
 function emit (command, data) {
   if (command === 'TREE') {
-    return tree$.next({ command, data })
+    return tree$.next(JSON.parse(JSON.stringify({ command, data })))
   }
   console.warn('Unsupported emit', command)
 }

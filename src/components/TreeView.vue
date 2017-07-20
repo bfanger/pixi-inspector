@@ -1,67 +1,44 @@
 <template>
-  <div class="treeview"
-       tabindex="1"
-       @keydown.right.prevent="navigateRight"
-       @keydown.left.prevent="navigateLeft"
-       @keydown.up.prevent="navigateUp"
-       @keydown.down.prevent="navigateDown">
-
-<!-- @mouseenter="inspector.highlight(node.id)"
-         @mouseleave="inspector.highlight(false)"
-         -->
-    <div v-for="row in rows"
-         class="treeview__item"
-         :key="row.node.id"
-         :class="{'treeview__item--selected': row.node.id === inspector.selected.id}"
-         :data-id="row.node.id"
-        @mousedown="inspector.select(row.node)">
-      <div class="treeview__indent"
-           :style="{width: (row.indent * 14)  + 'px'}"></div>
+  <div class="treeview" tabindex="1" @keydown.right.prevent="navigateRight" @keydown.left.prevent="navigateLeft" @keydown.up.prevent="navigateUp" @keydown.down.prevent="navigateDown">
+    <!-- @mouseenter="inspector.highlight(node.id)"
+           @mouseleave="inspector.highlight(false)"
+           -->
+    <div v-for="row in rows" class="treeview__item" :key="row.node.id" :class="{'treeview__item--selected': row.node.id === selected.id}" :data-id="row.node.id" @mousedown="select(row.node)">
+      <div class="treeview__indent" :style="{width: (row.indent * 14)  + 'px'}"></div>
       <div class="treeview__toggle">
-        <div class="treeview__toggle__expand"
-             v-if="row.node.children && row.node.collapsed"
-             @click="inspector.expand(row.node)"></div>
-        <div class="treeview__toggle__collapse"
-             v-if="row.node.children && !row.node.collapsed"
-             @click="inspector.collapse(row.node)"></div>
+        <div class="treeview__toggle__expand" v-if="row.node.children && row.node.collapsed" @click="expand(row.node)"></div>
+        <div class="treeview__toggle__collapse" v-if="row.node.children && !row.node.collapsed" @click="collapse(row.node)"></div>
       </div>
-      {{row.node.type}}
+      <div class="treeview__label">{{row.node.type}}</div>
     </div>
   </div>
 </template>
 
 <script>
-// var KEYS = {
-//   LEFT: 37,
-//   UP: 38,
-//   RIGHT: 39,
-//   DOWN: 40
-// }
+import lastestInspector$ from '../services/lastestInspector$'
+
 export default {
-  props: {
-    inspector: Object
-  },
-  // async mounted () {
-  // this.tree = await this.inspector.tree()
-  // console.log('mounted', this.tree)
-  // this.tree.children.map(node => console.log('node', node.id))
-  // await Promise.all(this.inspector.expand(node.id)))
-  // setTimeout(function () {
-  // await this.inspector.tree()
-  // })
-  // },
-  computed: {
-    rows () {
-      const rows = []
-      if (this.inspector.tree.children) {
-        for (const container of this.inspector.tree.children) {
-          this.flattenNode(container, rows, 0)
-        }
-      }
-      return rows
+
+  subscriptions () {
+    const inspector$ = lastestInspector$.filter(inspector => inspector !== null)
+    return {
+      selected: inspector$.switchMap(inspector => inspector.selected$),
+      rows: inspector$.switchMap(inspector => inspector.tree$.map(this.flattenTree)),
+      select: lastestInspector$.method('select'),
+      expand: lastestInspector$.method('expand'),
+      collapse: lastestInspector$.method('collapse')
     }
   },
   methods: {
+    flattenTree (tree) {
+      const rows = []
+      if (Array.isArray(tree.children)) {
+        for (const node of tree.children) {
+          this.flattenNode(node, rows, 0)
+        }
+      }
+      return rows
+    },
     flattenNode (node, rows, indent) {
       // let title = node.type
       // if (typeof node.name !== 'undefined' && node.name !== null && node.name !== '') {
@@ -82,38 +59,50 @@ export default {
         }
       }
     },
-    navigateLeft () {
-      // const node = this.selected._inspector
-      // if (!node.collapsed) {
-      //   this.inspector.collapse(node.id)
-      // } else if (this.context.parent) {
-      //   this.inspector.select(this.context.parent)
-      //   this.inspector.highlight(this.context.parent)
-      // }
+
+    navigateUp () {
+      const index = this.findRowIndex(this.selected.id)
+      if (index > 0) {
+        this.select(this.rows[index - 1].node)
+      }
     },
     navigateRight () {
-      // const node = this.selected._inspector
-      // if (node.collapsed) {
-      //   this.inspector.expand(node.id)
-      // } else if (this.context.next) {
-      //   this.inspector.select(this.context.next)
-      //   this.inspector.highlight(this.context.next)
-      // }
+      const index = this.findRowIndex(this.selected.id)
+      const row = this.rows[index]
+      if (row.node.collapsed) {
+        this.expand(row.node)
+      } else if (index < this.rows.length - 1) {
+        this.select(this.rows[index + 1].node)
+      }
     },
-    navigateUp () {
-      // if (this.context.prev) {
-      //   this.inspector.select(this.context.prev)
-      //   this.inspector.highlight(this.context.prev)
-      // }
-    },
+
     navigateDown () {
-      // if (this.context.next) {
-      //   this.inspector.select(this.context.next)
-      //   this.inspector.highlight(this.context.next)
-      // }
+      const index = this.findRowIndex(this.selected.id)
+      if (index < this.rows.length - 1) {
+        this.select(this.rows[index + 1].node)
+      }
+    },
+    navigateLeft () {
+      const index = this.findRowIndex(this.selected.id)
+      const row = this.rows[index]
+      if (!row.node.collapsed) {
+        this.collapse(row.node)
+      } else if (index > 0) {
+        const parentIndex = this.findRowIndex(row.node.parent)
+        this.select(this.rows[parentIndex].node)
+      }
+    },
+    findRowIndex (id) {
+      for (const i in this.rows) {
+        if (this.rows[i].node.id === id) {
+          return parseInt(i)
+        }
+      }
+      return -1
     }
   }
 }
+
 </script>
 
 <style lang="scss">

@@ -1,115 +1,42 @@
 <template>
   <div class="pixi-panel">
     <Toolbar>
-      <Toggle icon="node-search" v-if="isConnected" :value="selectMode" @change="toggleSelectMode" title="Select a node in the scene to inspect it"></Toggle>
+      <!-- <Toggle icon="node-search" v-if="isConnected" :value="selectMode" @change="toggleSelectMode" title="Select a node in the scene to inspect it"></Toggle> -->
       <button @click="reload">Reload</button>
-      <button v-if="instance === null" @click="detect">Retry</button>
     </Toolbar>
-    <div class="pixi-panel__message" v-if="messageVisible && instance === null">
-      Looking for <span class="pixi-panel__logo">pixijs</span> ...
-    </div>
-    <div class="pixi-panel__message" v-if="messageVisible && instance !== null && inspector === null">
-      Connecting to <span class="pixi-panel__logo">pixijs</span> ...
-    </div>
-    <SplitView class="pixi-panel__body" v-if="inspector">
-      <TreeView :inspector="inspector"></TreeView>
-      <!-- <DetailView :selected="selected" :inspector="inspector" v-if="selected"></DetailView> -->
+    <SplitView class="pixi-panel__body" v-if="injected">
+      <TreeView></TreeView>
+      <DetailView></DetailView>
     </SplitView>
+    <div class="pixi-panel__message" v-if="!injected">
+      Looking for
+      <span class="pixi-panel__inline-logo">pixijs</span> ...
+      <!-- <button v-if="instance === null" @click="detect">Retry</button> -->
+    </div>
   </div>
 </template>
 
 <script>
-import { Observable } from 'rxjs/Observable'
 import Toolbar from './Toolbar'
 import Toggle from './Toggle'
 import SplitView from './SplitView'
 import TreeView from './TreeView'
 import DetailView from './DetailView'
-import lastInstance$ from '../services/lastInstance$'
 import connection from '../services/connection'
-import active$ from '../services/active$'
-import Proxy from '../services/Proxy'
+import lastestInspector$ from '../services/lastestInspector$'
 
 export default {
   components: { Toolbar, Toggle, SplitView, TreeView, DetailView },
-  data: () => ({
-    isDetected: false,
-    isConnected: false,
-    selectMode: false,
-    scene: null,
-    selected: null,
-    inspector: null
-  }),
   subscriptions () {
-    const instance$ = lastInstance$.share()
-    const inspector$ = instance$.switchMap(instance => {
-      if (instance === null) {
-        return Observable.of(null)
-      }
-      return connection.to(instance.connection).get('INSPECTOR', instance.index)
-        .switchMap(index => {
-          return Observable.create(observer => {
-            const proxy = new Proxy(index, { frameURL: instance.frameURL })
-            observer.next(proxy)
-            proxy.activate()
-            return () => {
-              proxy.deactivate()
-              proxy.destroy()
-            }
-          })
-        })
-    })
-    // activate
     return {
-      instance: instance$.startWith(null),
-      inspector: inspector$.startWith(null),
-      messageVisible: active$.switchMap(active => {
-        if (active) {
-          return Observable.timer(100).map(() => true).startWith(false)
-        }
-        return Observable.of(false)
-      })
+      injected: lastestInspector$.map(inspector => inspector !== null)
+      // messageVisible: active$.switchMap(active => {
+      //   if (active) {
+      //     return Observable.timer(100).map(() => true).startWith(false)
+      //   }
+      //   return Observable.of(false)
+      // })
     }
-  },
-  mounted () {
-    // this.$subscribeTo()
-    // this.inspector$ = reboot$.startWith('initial').switchMap(() => {
-    //   this.isDetected = false
-    //   this.isConnected = false
-    //   this.scene = null
-    //   this.selected = null
-    //   // const contentDisconnect$ = connection.message$.filter(message => message.command === 'DISCONNECTED')
-    //   // contentDisconnect$.subscribe(message => {
-    //   //   console.log(message)
-    //   // })
-    //   return detectPixi$.switchMap(config => {
-    //     console.log('config', config)
-    //     this.isDetected = true
-    //     // return injectInspector(config).takeUntil(contentDisconnect$.filter(message => message.frameId === config.frameId))
-    //   }).do(() => {
-    //     this.isConnected = true
-    //   })
-    // }).do(inspector => {
-    //   this.inspector = inspector
-    // }).catch(error => {
-    //   console.error(error)
-    //   reboot$.next('error')
-    //   return Observable.empty()
-    // }).publishReplay(1).refCount()
-
-    // this.$subscribeTo(this.inspector$.switchMap(inspector => {
-    //   // return Observable.empty()
-    //   return Observable.interval(500).map(() => inspector.refresh$)
-    // }), refresh$ => {
-    //   refresh$.next('interval')
-    // })
-    // const scene$ = this.inspector$.switchMap(inspector => inspector.scene$)
-    // this.$subscribeTo(scene$, scene => {
-    //   // console.log(scene)
-    //   this.selectMode = scene.selectMode
-    //   this.selected = scene.selected
-    //   this.scene = scene
-    // })
   },
   methods: {
     toggleSelectMode (value) {
@@ -124,20 +51,6 @@ export default {
       connection.to('content_scripts').send('DETECT')
     }
   }
-
-  // },
-  // componentDidMount() {
-  // this.subscriptions = [
-  //   scene.subscribe((_scene) => {
-  //   this.setState(_scene)
-  //   }, error => {
-  //   proxy.eval('typeof window.__PIXI_INSPECTOR_GLOBAL_HOOK1__').then(function (type) {
-  //     if (type === 'object') {
-  //     console.error(error)
-  //     } else { // page refresh?
-  //     location.reload()
-  //     }
-  //   })
 }
 </script>
 
@@ -152,16 +65,8 @@ export default {
   height: 100vh;
 }
 
-.pixi-panel__logo {
-  display: inline-block;
-  background: url(../../img/pixijs.png) no-repeat;
-  background-size: contain;
-  color: transparent;
-  width: 86px;
-  height: 31px;
-  margin-left: 15px;
-  margin-right: 10px;
-  margin-top: -5px;
+.pixi-panel__body {
+  flex-grow: 1;
 }
 
 .pixi-panel__message {
@@ -175,7 +80,15 @@ export default {
   justify-content: center;
 }
 
-.pixi-panel__body {
-  flex-grow: 1;
+.pixi-panel__inline-logo {
+  display: inline-block;
+  background: url(../../img/pixijs.png) no-repeat;
+  background-size: contain;
+  color: transparent;
+  width: 86px;
+  height: 31px;
+  margin-left: 15px;
+  margin-right: 10px;
+  margin-top: -5px;
 }
 </style>

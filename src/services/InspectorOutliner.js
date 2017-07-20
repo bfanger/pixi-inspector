@@ -1,3 +1,9 @@
+/**
+ * Backend for the outliner / TreeView
+ * - Performs selection / expand / collapse
+ * - Detects changes in tree
+ * - Serializes the tree for display in the outliner
+ */
 const outliner = Symbol('outliner')
 
 export default class InspectorOutliner {
@@ -8,14 +14,16 @@ export default class InspectorOutliner {
       [outliner]: {
         id: 0,
         type: 'root',
-        collapsed: false
+        collapsed: false,
+        parent: null
       }
     }]
     // @todo Garbage collect nodes
 
     this.previousTree = {}
 
-    this.inspector.registerHook(this.detectChanges.bind(this), 500)
+    this.inspector.registerHook(this.detectScene.bind(this))
+    this.inspector.registerHook(this.detectChanges.bind(this), 250)
   }
 
   select (id) {
@@ -53,6 +61,32 @@ export default class InspectorOutliner {
       return this.serialize(node).children
     }
   }
+
+  detectScene (container, renderer) {
+    const root = this.nodes[0]
+    if (root.children.indexOf(container) === -1) { // container was rendered for the first time?
+      if (!window.$pixi) {
+        window.$pixi = container // autoselect if nothing is selected
+      }
+      root.children.push(container)
+      this.serialize(container)
+      container[outliner].collapsed = false // Auto expand root level
+      this.inspector.emit('TREE', this.serialize(root))
+    }
+  }
+
+  detectChanges (container, renderer) {
+    if (container[outliner]) {
+      const id = container[outliner].id
+      if (hasChanged(container, this.previousTree[id])) {
+        this.serialize(container)
+        this.inspector.emit('TREE', this.nodes[0][outliner])
+        this.previousTree[id] = container[outliner]
+      }
+    }
+    // container[meta].lastRender = Date.now()
+  }
+
   serialize (node) {
     if (typeof node[outliner] === 'undefined') {
       node[outliner] = {
@@ -62,6 +96,11 @@ export default class InspectorOutliner {
         children: null
       }
       node[outliner].id = (this.nodes.push(node) - 1)
+    }
+    if (node.parent && node.parent[outliner]) {
+      node[outliner].parent = node.parent[outliner].id
+    } else {
+      node[outliner].parent = null
     }
 
     if (Array.isArray(node.children)) {
@@ -76,27 +115,6 @@ export default class InspectorOutliner {
       node[outliner].children = false
     }
     return node[outliner]
-  }
-
-  detectChanges (container, renderer) {
-    const root = this.nodes[0]
-    if (root.children.indexOf(container) === -1) { // container was rendered for the first time?
-      root.children.push(container)
-      this.serialize(container)
-      container[outliner].collapsed = false // Auto expand root level
-      this.inspector.emit('TREE', this.serialize(root))
-      if (!window.$pixi) {
-        this.select(container[outliner].id) // autoselect if nothing is selected
-      }
-    } else {
-      const id = container[outliner].id
-      if (hasChanged(container, this.previousTree[id])) {
-        this.serialize(container)
-        this.inspector.emit('TREE', root[outliner])
-        this.previousTree[id] = container[outliner]
-      }
-    }
-    // container[meta].lastRender = Date.now()
   }
 }
 

@@ -1,4 +1,7 @@
+import { Observable } from 'rxjs/Observable'
+import { Subject } from 'rxjs/Subject'
 import connection from './connection'
+
 /**
  * Async access to the Inspector.
  *
@@ -12,29 +15,29 @@ export default class Proxy {
       this.path = '__PIXI_INSPECTOR_GLOBAL_HOOK__.inspectors[' + index + ']'
       this.target = target
     }
-    this.tree = {
-      collapsed: true,
-      children: false
+    this.local = {
+      selected$: new Subject(),
+      treeChange$: new Subject()
     }
-    this.selected = false
-    this.call('outliner.selected').then(selected => {
-      this.selected = selected
-    })
-    this.call('outliner.tree').then(tree => {
-      this.tree = tree
-    })
-    this.subscription = connection.on('TREE').subscribe(({ data }) => {
-      this.tree = data
-    })
-  }
+    this.tree$ = Observable.defer(() => {
+      let root
+      return Observable.concat(
+        this.call('outliner.tree'),
+        connection.on('TREE').map(message => message.data)
+      ).do(tree => { root = tree }).merge(this.local.treeChange$.map(node => root))
+    }).publishReplay(1).refCount()
 
-  destroy () {
-    this.subscription.unsubscribe()
+    this.selected$ = Observable.merge(
+      this.tree$.take(2).switchMap(() => {
+        return this.call('outliner.selected')
+      }),
+      this.local.selected$)
   }
 
   activate () {
     return this.call('activate')
   }
+
   deactivate () {
     return this.call('deactivate')
   }
@@ -43,16 +46,19 @@ export default class Proxy {
     return this.call('outliner.expand', node.id).then(children => {
       node.collapsed = false
       node.children = children
+      this.local.treeChange$.next(node)
     })
   }
+
   collapse (node) {
     return this.call('outliner.collapse', node.id).then(children => {
       node.collapsed = true
       node.children = children
+      this.local.treeChange$.next(node)
     })
   }
   select (node) {
-    this.selected = node
+    this.local.selected$.next(node)
     return this.call('outliner.select', node.id)
   }
 
