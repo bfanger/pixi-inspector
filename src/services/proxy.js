@@ -58,8 +58,13 @@ export default class Proxy {
     })
   }
   select (node) {
-    this.local.selected$.next(node)
-    return this.call('outliner.select', node.id)
+    return this.call('outliner.select', node.id).then(() => {
+      this.local.selected$.next(node)
+    })
+  }
+
+  setProperty (path, value) {
+    return this.call('properties.set', path, value)
   }
 
   // highlight (id) {

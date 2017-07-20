@@ -1,5 +1,6 @@
 import TypeDetection from './TypeDetection'
 import Outliner from './InspectorOutliner'
+import Properties from './InspectorProperties'
 
 export default class Inspector {
   constructor (instance, emit) {
@@ -12,6 +13,7 @@ export default class Inspector {
     instance.Phaser && this.typeDetection.registerTypes('Phaser.', instance.Phaser)
     this.hooks = []
     this.outliner = new Outliner(this)
+    this.properties = new Properties(this)
   }
 
   activate () {

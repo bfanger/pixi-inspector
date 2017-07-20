@@ -31,7 +31,9 @@ export class DevClient {
   }
   get (command) {
     if (command === 'INSPECTOR') {
-      return Observable.of(new Inspector({ PIXI }, emit))
+      const inspector = new Inspector({ PIXI }, emit)
+      window.pixiInspector = inspector
+      return Observable.of(inspector)
     }
     new Error('Unsupported get "' + command + '"')
   }

@@ -1,11 +1,14 @@
 <template>
-  <span contenteditable="true" @keydown="keydown" @input="input">{{value}}</span>
+  <span>
+    <span contenteditable="true" @keydown="keydown" @input="input">{{field.value}}</span>
+    <span>{{typeof field.value === 'undefined' ? field.type : ''}}</span>
+  </span>
 </template>
 
 <script>
 export default {
   props: {
-    value: {}
+    field: {}
   },
   methods: {
     input (e) {
