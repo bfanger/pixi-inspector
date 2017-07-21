@@ -1,6 +1,10 @@
 import TypeDetection from './TypeDetection'
 import Outliner from './InspectorOutliner'
 import Properties from './InspectorProperties'
+import Gui from './InspectorGui'
+import Highlight from './InspectorHighlight'
+
+let runningHooks = false
 
 export default class Inspector {
   constructor (instance, emit) {
@@ -12,8 +16,10 @@ export default class Inspector {
     this.typeDetection.registerTypes('', instance.PIXI)
     instance.Phaser && this.typeDetection.registerTypes('Phaser.', instance.Phaser)
     this.hooks = []
+    this.gui = new Gui(this)
     this.outliner = new Outliner(this)
     this.properties = new Properties(this)
+    this.highlight = new Highlight(this)
   }
 
   activate () {
@@ -23,6 +29,7 @@ export default class Inspector {
     if (!this.unpatched['WebGLRenderer']) {
       this.patch('WebGLRenderer')
     }
+    this.gui.activate()
   }
 
   deactivate () {
@@ -30,6 +37,7 @@ export default class Inspector {
       this.PIXI[renderer].prototype.render = renderMethod
     }
     this.unpatched = {}
+    this.gui.deactivate()
   }
 
   /**
@@ -46,17 +54,21 @@ export default class Inspector {
       this.unpatched[renderer] = renderMethod
       var self = this
       Renderer.prototype.render = function (container) {
-        for (const hook of self.hooks) {
-          if (hook.skip) {
-            continue
+        if (!runningHooks) {
+          runningHooks = true
+          for (const hook of self.hooks) {
+            if (hook.skip) {
+              continue
+            }
+            hook.callback(container, this)
+            if (hook.throttle) {
+              hook.skip = true
+              setTimeout(() => {
+                hook.skip = false
+              }, hook.throttle)
+            }
           }
-          hook.callback(container, renderer)
-          if (hook.throttle) {
-            hook.skip = true
-            setTimeout(() => {
-              hook.skip = false
-            }, hook.throttle)
-          }
+          runningHooks = false
         }
         return renderMethod.apply(this, arguments)
       }

@@ -4,7 +4,11 @@ import { Subject } from 'rxjs/Subject'
 import Inspector from './Inspector'
 
 const tree$ = new Subject()
+let inspector = null
 
+if (!window.PIXI) {
+  console.warn('DevConnection requires a global PIXI object')
+}
 function emit (command, data) {
   if (command === 'TREE') {
     return tree$.next(JSON.parse(JSON.stringify({ command, data })))
@@ -31,7 +35,9 @@ export class DevClient {
   }
   get (command) {
     if (command === 'INSPECTOR') {
-      const inspector = new Inspector({ PIXI }, emit)
+      if (!inspector) {
+        inspector = new Inspector({ PIXI, Phaser: window.Phaser }, emit)
+      }
       window.pixiInspector = inspector
       return Observable.of(inspector)
     }

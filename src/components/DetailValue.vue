@@ -1,7 +1,7 @@
 <template>
   <span>
     <span contenteditable="true" @keydown="keydown" @input="input">{{field.value}}</span>
-    <span>{{typeof field.value === 'undefined' ? field.type : ''}}</span>
+    <span>{{type()}}</span>
   </span>
 </template>
 
@@ -11,6 +11,16 @@ export default {
     field: {}
   },
   methods: {
+    type () {
+      const type = this.field.type
+      if (type === 'object' && this.field.value === null) {
+        return 'null'
+      }
+      if (type === 'boolean' || type === 'number' || type === 'string') {
+        return ''
+      }
+      return type
+    },
     input (e) {
       var value = e.target.innerText
       if (value.match(/[0-9.]+/)) {

@@ -93,6 +93,9 @@ const isDevServer = process.argv.find(arg => {
 let webpackConfig = devConfig
 if (isDevServer) {
   webpackConfig = merge(devConfig, {
+    entry: {
+      'example': './tests/example.js'
+    },
     plugins: [
       new webpack.DefinePlugin({
         'process.env.DEV_SERVER': 'true'

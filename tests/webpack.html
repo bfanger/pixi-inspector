@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Pixi Inspector</title>
+    <script type="text/javascript" src="http://localhost:8080/webpack-dev-server.js"></script>
+</head>
+
+<body style="display: flex">
+
+    <canvas id="example" style="width: 480;height: 360px;"></canvas>
+
+    <div id="devpanel" style="flex: 1">
+        <pixi-panel></pixi-panel>
+        <!-- this is where the PixiPanel will get rendered -->
+    </div>
+    <script>
+        const globalNamesBefore = Object.keys(window)
+    </script>
+    <script type="text/javascript" src="../example.bundle.js"></script>
+    <script>
+        const globalNamesAfter = Object.keys(window)
+        const globalNamesDiff = (globalNamesAfter.filter(name => globalNamesBefore.indexOf(name) === -1))
+        if (globalNamesDiff.length > 0) {
+            console.log(globalNamesDiff)
+            alert('New globals are detected')
+        }
+    </script>
+</body>
+
+</html>

@@ -67,12 +67,10 @@ export default class Proxy {
     return this.call('properties.set', path, value)
   }
 
-  // highlight (id) {
-  //   return this.call('outliner.highlight', id).then(value => {
-  //     // this.refresh$.next('highlight');
-  //     return value
-  //   })
-  // }
+  highlight (node) {
+    return this.call('outliner.highlight', node.id)
+  }
+
   call (method, ...args) {
     if (!chrome.devtools) {
       const dot = method.indexOf('.')

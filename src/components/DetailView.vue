@@ -16,10 +16,12 @@ export default {
   components: { DetailValue },
 
   subscriptions () {
-    const inspector$ = lastestInspector$.filter(inspector => inspector !== null)
     return {
-      fields: inspector$.switchMap(inspector => {
-        return Observable.interval(500).merge(inspector.selected$).switchMap(() => {
+      fields: lastestInspector$.switchMap(inspector => {
+        if (inspector === null) {
+          return Observable.empty()
+        }
+        return Observable.interval(10000).merge(inspector.selected$).switchMap(() => {
           return inspector.call('properties.all')
         })
       }),

@@ -10,7 +10,7 @@ export default class TypeDetection {
     }
     var index = this.constructors.indexOf(node.constructor)
     if (index === -1) {
-      return node.constructor.name
+      return node.constructor.name || 'Anonymous'
     }
     return this.names[index]
   }

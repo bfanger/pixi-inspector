@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Pixi Inspector</title>
+    <script type="text/javascript" src="http://localhost:8080/webpack-dev-server.js"></script>
 </head>
 <body style="display: flex">
 
@@ -125,10 +126,12 @@
             // request another animation frame..
             requestAnimationFrame( animate );
         }
+        // renderer.view.addEventListener('click', () => {
+        //     renderer.render(stage);
+        // })
+
     </script>
 
-    <!-- <script type="text/javascript" src="../pixi.inspector.bundle.js"></script> -->
-     <script type="text/javascript" src="../pixi.panel.bundle.js"></script>
-    <script type="text/javascript" src="http://localhost:8080/webpack-dev-server.js"></script>
+    <script type="text/javascript" src="../pixi.panel.bundle.js"></script>
 </body>
 </html>

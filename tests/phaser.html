@@ -5,6 +5,7 @@
   <meta charset="UTF-8" />
   <title>Phaser Example Runner</title>
   <meta name="viewport" content="initial-scale=1 maximum-scale=1 user-scalable=0" />
+  <script src="http://localhost:8080/webpack-dev-server.js"></script>
   <script src="http://examples.phaser.io/_site/js/jquery-2.0.3.min.js" type="text/javascript"></script>
   <script src="http://examples.phaser.io/_site/phaser/phaser.2.6.2.min.js" type="text/javascript"></script>
   <script src="http://examples.phaser.io/_site/phaser/blob.js" type="text/javascript"></script>
@@ -23,6 +24,9 @@
 
 <body style="display:flex">
   <div id="phaser-example"></div>
+  <div id="devpanel" style="flex: 1">
+      <pixi-panel></pixi-panel><!-- this is where the PixiPanel will get rendered -->
+  </div>
 
   <script type="text/javascript">
     var IDE_HOOK = false;
@@ -58,16 +62,8 @@
       }
     }
   </script>
-  <div style="flex: 1">
-    <div id="devpanel">
-      <!-- this is where the root react component will get rendered -->
-    </div>
-  </div>
 
   <!-- Inject Pixi Inspector & webpack-dev-server -->
-
-  <script src="http://localhost:8080/webpack-dev-server.js"></script>
-
   <script type="text/javascript" src="../pixi.panel.bundle.js"></script>
 </body>
 

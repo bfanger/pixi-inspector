@@ -4,6 +4,8 @@
  * - Detects changes in tree
  * - Serializes the tree for display in the outliner
  */
+import InspectorHighlight from './InspectorHighlight'
+
 const outliner = Symbol('outliner')
 
 export default class InspectorOutliner {
@@ -30,6 +32,7 @@ export default class InspectorOutliner {
     const node = this.nodes[id]
     if (node) {
       window.$pixi = node
+      InspectorHighlight.override = false
     }
   }
 
@@ -59,6 +62,15 @@ export default class InspectorOutliner {
     if (node) {
       node[outliner].collapsed = true
       return this.serialize(node).children
+    }
+  }
+
+  highlight (id) {
+    const node = this.nodes[id]
+    if (node) {
+      InspectorHighlight.override = node
+    } else {
+      InspectorHighlight.override = false
     }
   }
 
@@ -120,6 +132,9 @@ export default class InspectorOutliner {
 
 function hasChanged (node, serialized) {
   if (!serialized) { // detect addition
+    return true
+  }
+  if (!node[outliner]) { // not serialized before
     return true
   }
   if (node[outliner].id !== serialized.id) { // detect order change
