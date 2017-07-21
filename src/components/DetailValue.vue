@@ -1,6 +1,7 @@
 <template>
   <span>
-    <span contenteditable="true" @keydown="keydown" @input="input">{{field.value}}</span>
+    <span v-if="field.type === 'number' || field.type === 'string'" contenteditable="true" @keydown="keydown" @input="input">{{field.value}}</span>
+    <label class="detailvalue__label" v-if="field.type === 'boolean'"><input type="checkbox"  v-model="field.value" @change="toggle()">{{field.value}}</label>
     <span>{{type()}}</span>
   </span>
 </template>
@@ -28,6 +29,10 @@ export default {
       } else if (['true', 'false', 'null'].indexOf(value.toLowerCase()) !== -1) {
         this.$emit('change', value.toLowerCase())
       }
+    },
+    toggle () {
+      console.log()
+      this.$emit('change', this.field.value)
     },
     keydown (e) {
       var value = parseFloat(e.target.innerText, 10)
@@ -59,3 +64,15 @@ export default {
   }
 }
 </script>
+
+<style>
+.detailvalue__label {
+  position: relative;
+  padding-left: 12px;
+}
+.detailvalue__label input {
+  position: absolute;
+  top: -2px;
+  left: -6px;
+}
+</style>

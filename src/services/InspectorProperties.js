@@ -12,7 +12,15 @@ export default class InspectorProperties {
     if (!window.$pixi) {
       return []
     }
-    return this.serialize(window.$pixi, [], 0)
+    const properties = []
+    for (const property in window.$pixi) {
+      if (property[0] === '_' || blacklist.indexOf(property) !== -1) {
+        continue
+      }
+      properties.push(...this.serialize(window.$pixi[property], [property], 3))
+    }
+    properties.sort((a, b) => (a.path > b.path ? 1 : -1))
+    return properties
   }
   set (path, value) {
     /* eslint-disable no-eval */
@@ -21,22 +29,30 @@ export default class InspectorProperties {
   }
 
   serialize (value, path, depth) {
-    if (depth >= 3) {
+    depth--
+    if (depth < 0) {
       return []
     }
     var type = typeof value
-    if (type === 'string' || type === 'number' || type === 'boolean' || value === null) {
+    if (type === 'undefined' || type === 'function') {
+      return []
+    } else if (type === 'string' || type === 'number' || type === 'boolean' || value === null) {
       return [{ path: path.join('.'), type, value }]
-    } else if (type === 'object' && Array.isArray(value) === false) {
-      depth++
-      if (depth === 1 || whitelist.indexOf(path[path.length - 1]) !== -1) {
+    } else if (type === 'object') {
+      if (value === null) {
+        return [{ path: path.join('.'), type, value }]
+      }
+      if (Array.isArray(value)) {
+        return [{ path: path.join('.'), type: 'Array' }]
+      }
+      if (whitelist.indexOf(path[path.length - 1]) !== -1) {
         const properties = []
-        Object.keys(value).forEach(property => {
+        for (const property in value) {
           if (property[0] === '_' || blacklist.indexOf(property) !== -1) {
-            return
+            continue
           }
           properties.push(...this.serialize(value[property], [...path, property], depth))
-        })
+        }
         if (value instanceof this.ObservablePointRef) {
           properties.push({
             path: path.join('.') + '.x', type: 'number', value: value.x
@@ -48,9 +64,8 @@ export default class InspectorProperties {
           return properties
         }
       }
-      return [{ path: path.join('.'), type: (typeof value.constructor ? (value.constructor.name || type) : type) }]
-    } else if (type === 'undefined') {
-      return [{ path: path.join('.'), type }]
+      // (typeof value.constructor ? (value.constructor.name || type) : type
+      return [{ path: path.join('.'), type: 'Object' }]
     } else {
       return [{ path: path.join('.'), type: (typeof value.constructor ? (value.constructor.name || type) : type) }]
     }

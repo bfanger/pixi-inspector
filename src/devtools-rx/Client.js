@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs/Observable'
 import stream from './stream'
 import debug from './debug'
 
@@ -14,6 +15,13 @@ export default class Client {
       this.recipient = recipient
     }
     this.connection = connection
+  }
+
+  get disconnect$ () {
+    if (this.isBroadcast) {
+      return Observable.throw(new Error('disconnect$ is not available for broadcast clients'))
+    }
+    return this.connection.on('DISCONNECTED').filter(message => message.from === this.recipient).take(1)
   }
 
   /**
@@ -53,7 +61,11 @@ export default class Client {
      * @returns {Observable}
      */
   stream (command, data) {
-    return stream(this, command, data)
+    const message$ = stream(this, command, data)
+    if (this.isBroadcast) {
+      return message$
+    }
+    return message$.takeUntil(this.disconnect$)
   }
 
   /**

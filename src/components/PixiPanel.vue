@@ -8,7 +8,7 @@
       <TreeView></TreeView>
       <DetailView></DetailView>
     </SplitView>
-    <div class="pixi-panel__message" v-if="!injected">
+    <div class="pixi-panel__message" v-if="!injected && messageVisible">
       Looking for
       <span class="pixi-panel__inline-logo">pixijs</span> ...
       <!-- <button v-if="instance === null" @click="detect">Retry</button> -->
@@ -17,25 +17,27 @@
 </template>
 
 <script>
+import { Observable } from 'rxjs/Observable'
 import Toolbar from './Toolbar'
 import Toggle from './Toggle'
 import SplitView from './SplitView'
 import TreeView from './TreeView'
 import DetailView from './DetailView'
 import connection from '../services/connection'
+import active$ from '../services/active$'
 import lastestInspector$ from '../services/lastestInspector$'
 
 export default {
   components: { Toolbar, Toggle, SplitView, TreeView, DetailView },
   subscriptions () {
     return {
-      injected: lastestInspector$.map(inspector => inspector !== null)
-      // messageVisible: active$.switchMap(active => {
-      //   if (active) {
-      //     return Observable.timer(100).map(() => true).startWith(false)
-      //   }
-      //   return Observable.of(false)
-      // })
+      injected: lastestInspector$.map(inspector => inspector !== null),
+      messageVisible: active$.switchMap(active => {
+        if (active) {
+          return Observable.timer(100).map(() => true).startWith(false)
+        }
+        return Observable.of(false)
+      })
     }
   },
   methods: {

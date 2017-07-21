@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs/Observable'
-
+console.log(Observable.prototype)
 export const overlay = {
   div: null,
   renderer: null,
@@ -87,8 +87,10 @@ export default class InspectorGui {
 
   deactivate () {
     overlay.div.style.display = 'none'
-    overlay.subscription.unsubscribe()
-    overlay.subscription = null
+    if (overlay.subscription) {
+      overlay.subscription.unsubscribe()
+      overlay.subscription = null
+    }
   }
 
   render () {

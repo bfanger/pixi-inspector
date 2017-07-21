@@ -33,6 +33,11 @@ const proxy = {
       RECIPIENT: recipient
     })
   },
+  deactivate () {
+    this.executeInContext(function (window) {
+      __PIXI_INSPECTOR_GLOBAL_HOOK__.deactivate()
+    }.toString())
+  },
 
   /**
    * Execute the javascript inside the context of the page.
@@ -175,6 +180,12 @@ const proxy = {
           html.appendChild(script)
         })
         return InspectorPromise
+      },
+
+      deactivate () {
+        for (const inspector of this.inspectors) {
+          inspector.deactivate()
+        }
       }
     }
   }
@@ -199,6 +210,9 @@ port.onMessage.addListener(function (message) {
       break
     case 'INSPECTOR':
       proxy.reportInspector(message.data, { to: message.from, id: message.id })
+      break
+    case 'DISCONNECTED':
+      proxy.deactivate()
       break
   }
 })

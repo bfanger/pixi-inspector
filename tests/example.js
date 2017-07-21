@@ -2,9 +2,9 @@
  * Example game where PIXI is not exposed onto the window object.
  */
 
-import { Application, Sprite, Rectangle } from 'pixi.js'
-// import Application from 'pixi.js/lib/core/Application'
-// import Sprite from 'pixi.js/lib/core/sprites/Sprite'
+// import { Application, Sprite } from 'pixi.js'
+import Application from 'pixi.js/lib/core/Application'
+import Sprite from 'pixi.js/lib/core/sprites/Sprite'
 
 window.__PIXI_INSPECTOR_GLOBAL_HOOK__ && window.__PIXI_INSPECTOR_GLOBAL_HOOK__.register({ PIXI: window.PIXI })
 delete window.PIXI

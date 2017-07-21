@@ -1,6 +1,6 @@
+import { Observable } from 'rxjs/Observable'
 import connection from './connection'
 import active$ from './active$'
-import { Observable } from 'rxjs/Observable'
 
 /**
  * @var {Observable} All frames which have detected one ore more PIXI instances.
@@ -15,7 +15,7 @@ export default active$.switchMap(active => {
   return connection.on('DETECTED').startWith(null).switchMap(() => {
     return connection.to('content_scripts').stream('INSTANCES')
   }).switchMap(message => {
-    const index = frames.findIndex(instance => instance.from === message.from)
+    const index = frames.findIndex(frame => frame.from === message.from)
     if (message.data.length === 0) {
       if (index === -1) {
         return Observable.empty()
@@ -33,5 +33,7 @@ export default active$.switchMap(active => {
       frames[index] = message
     }
     return Observable.of(frames)
-  })
+  }).merge(connection.on('DISCONNECTED').map(message => {
+    return frames.filter(frame => frame.from !== message.from)
+  }))
 })

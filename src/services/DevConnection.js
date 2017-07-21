@@ -58,6 +58,9 @@ export default class DevConnection {
     if (command === 'TREE') {
       return tree$
     }
+    if (command === 'DISCONNECTED') {
+      return Observable.never()
+    }
     console.warn('Unsupported connection.on', command)
     return Observable.never()
   }
