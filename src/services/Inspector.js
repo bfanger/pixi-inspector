@@ -13,7 +13,7 @@ export default class Inspector {
     this.unpatched = {}
 
     this.typeDetection = new TypeDetection()
-    this.typeDetection.registerTypes('', instance.PIXI)
+    this.typeDetection.registerTypes('', instance.PIXI, 2)
     instance.Phaser && this.typeDetection.registerTypes('Phaser.', instance.Phaser)
     this.hooks = []
     this.gui = new Gui(this)

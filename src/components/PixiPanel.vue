@@ -2,7 +2,7 @@
   <div class="pixi-panel">
     <Toolbar>
       <!-- <Toggle icon="node-search" v-if="isConnected" :value="selectMode" @change="toggleSelectMode" title="Select a node in the scene to inspect it"></Toggle> -->
-      <button @click="reload">Reload</button>
+      <button @click="reload">Reconnect</button>
     </Toolbar>
     <SplitView class="pixi-panel__body" v-if="injected">
       <TreeView></TreeView>

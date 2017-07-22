@@ -1,6 +1,6 @@
 <template>
   <div class="treeview" tabindex="1" @keydown.right.prevent="navigateRight" @keydown.left.prevent="navigateLeft" @keydown.up.prevent="navigateUp" @keydown.down.prevent="navigateDown">
-    <div v-for="row in rows" class="treeview__item" :key="row.node.id" :class="{'treeview__item--selected': row.node.id === selected.id}" :data-id="row.node.id" @mousedown="select(row.node)" @mouseenter="highlight(row.node)" @mouseleave="highlight(false)">
+    <div v-for="row in rows" class="treeview__item" :key="row.node.id" :class="{'treeview__item--selected': selected && row.node.id === selected.id}" :data-id="row.node.id" @mousedown="select(row.node)" @mouseenter="highlight(row.node)" @mouseleave="highlight(false)">
       <div class="treeview__indent" :style="{width: (row.indent * 14)  + 'px'}"></div>
       <div class="treeview__toggle">
         <div class="treeview__toggle__expand" v-if="row.node.children && row.node.collapsed" @click="expand(row.node)"></div>

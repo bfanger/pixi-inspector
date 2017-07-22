@@ -32,7 +32,7 @@ export default class InspectorOutliner {
     const node = this.nodes[id]
     if (node) {
       window.$pixi = node
-      InspectorHighlight.override = false
+      InspectorHighlight.node = node
     }
   }
 
@@ -68,9 +68,9 @@ export default class InspectorOutliner {
   highlight (id) {
     const node = this.nodes[id]
     if (node) {
-      InspectorHighlight.override = node
+      InspectorHighlight.node = node
     } else {
-      InspectorHighlight.override = false
+      InspectorHighlight.node = false
     }
   }
 

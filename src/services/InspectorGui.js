@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs/Observable'
-console.log(Observable.prototype)
+
 export const overlay = {
   div: null,
   renderer: null,
@@ -14,6 +14,7 @@ export default class InspectorGui {
     }
     const Stage = overlay.PIXI.Container || overlay.PIXI.DisplayObjectContainer
     this.stage = new Stage()
+    this.resolution = { x: 1, y: 1 }
 
     inspector.registerHook(this.calculateOffset.bind(this), 5000)
     inspector.registerHook(this.render.bind(this))
@@ -86,7 +87,9 @@ export default class InspectorGui {
   }
 
   deactivate () {
-    overlay.div.style.display = 'none'
+    if (overlay.div) {
+      overlay.div.style.display = 'none'
+    }
     if (overlay.subscription) {
       overlay.subscription.unsubscribe()
       overlay.subscription = null
@@ -100,15 +103,17 @@ export default class InspectorGui {
   }
 
   calculateOffset (_, renderer) {
-    if (renderer && renderer.view) {
-      this.canvas = renderer.view
+    if (renderer) {
+      this.renderer = renderer
     }
-    if (this.canvas.parentElement) {
-      const bounds = this.canvas.getBoundingClientRect()
+    if (this.renderer.view) { // && this.renderer.view.parentElement
+      const bounds = this.renderer.view.getBoundingClientRect()
       this.stage.position.x = bounds.left
       this.stage.position.y = bounds.top
+      this.resolution.x = bounds.width / this.renderer.width
+      this.resolution.y = bounds.height / this.renderer.height
       for (const canvas of document.querySelectorAll('canvas')) {
-        if (canvas === this.canvas) {
+        if (canvas === this.renderer.view) {
           return
         }
       }
@@ -116,7 +121,7 @@ export default class InspectorGui {
       for (const iframe of document.querySelectorAll('iframe')) {
         try {
           for (const canvas of iframe.contentDocument.querySelectorAll('canvas')) {
-            if (canvas === this.canvas) {
+            if (canvas === this.renderer.view) {
               const iframeBounds = iframe.getBoundingClientRect()
               this.stage.position.x += Math.floor(iframeBounds.left)
               this.stage.position.y += Math.floor(iframeBounds.top)

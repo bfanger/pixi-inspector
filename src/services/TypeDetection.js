@@ -8,11 +8,35 @@ export default class TypeDetection {
     if (!node.constructor) {
       return 'Unknown'
     }
-    var index = this.constructors.indexOf(node.constructor)
+    const index = this.constructors.indexOf(node.constructor)
     if (index === -1) {
-      return node.constructor.name || 'Anonymous'
+      return this.resolveType(node.constructor.name || 'Anonymous', node, [node.constructor])
     }
     return this.names[index]
+  }
+
+  resolveType (name, node, constructors) {
+    const types = []
+    for (const i in this.constructors) {
+      if (node instanceof this.constructors[i]) {
+        types.push(i)
+      }
+    }
+    if (types.length === 0) {
+      return name
+    }
+    if (types.length === 1) {
+      return name + ':' + this.names[types[0]]
+    }
+    const scores = []
+    for (const i in types) {
+      const type = this.constructors[types[i]].prototype
+      scores[i] = 0
+      for (const j of types) {
+        scores[i] += (type instanceof this.constructors[j])
+      }
+    }
+    return name + ' (' + this.names[types[indexOfMax(scores)]] + ')'
   }
 
   registerTypes (name, object, depth = 1) {
@@ -28,4 +52,21 @@ export default class TypeDetection {
       }
     }
   }
+}
+function indexOfMax (arr) {
+  if (arr.length === 0) {
+    return -1
+  }
+
+  var max = arr[0]
+  var maxIndex = 0
+
+  for (var i = 1; i < arr.length; i++) {
+    if (arr[i] > max) {
+      maxIndex = i
+      max = arr[i]
+    }
+  }
+
+  return maxIndex
 }
