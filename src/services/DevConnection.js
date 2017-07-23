@@ -3,15 +3,18 @@ import { Observable } from 'rxjs/Observable'
 import { Subject } from 'rxjs/Subject'
 import Inspector from './Inspector'
 
-const tree$ = new Subject()
+const commands = {
+  'TREE': new Subject(),
+  'SELECTED': new Subject()
+}
 let inspector = null
 
 if (!window.PIXI) {
   console.warn('DevConnection requires a global PIXI object')
 }
 function emit (command, data) {
-  if (command === 'TREE') {
-    return tree$.next(JSON.parse(JSON.stringify({ command, data })))
+  if (commands[command]) {
+    return commands[command].next(JSON.parse(JSON.stringify({ command, data })))
   }
   console.warn('Unsupported emit', command)
 }
@@ -55,8 +58,8 @@ export default class DevConnection {
     if (command === 'DETECTED') {
       return Observable.of({ version: PIXI.VERSION })
     }
-    if (command === 'TREE') {
-      return tree$
+    if (commands[command]) {
+      return commands[command]
     }
     if (command === 'DISCONNECTED') {
       return Observable.never()

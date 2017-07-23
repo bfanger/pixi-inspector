@@ -1,26 +1,30 @@
 import { Observable } from 'rxjs/Observable'
+import { Subject } from 'rxjs/Subject'
 
 export const overlay = {
   div: null,
   renderer: null,
   PIXI: null,
+  Stage: null,
   subscription: null
 }
 
 export default class InspectorGui {
   constructor (inspector) {
     if (!overlay.PIXI) {
-      overlay.PIXI = inspector.PIXI
+      overlay.PIXI = inspector.instance.PIXI
+      overlay.Stage = overlay.PIXI.Container || overlay.PIXI.Stage || overlay.PIXI.DisplayObjectContainer
     }
-    const Stage = overlay.PIXI.Container || overlay.PIXI.DisplayObjectContainer
-    this.stage = new Stage()
+    this.stage = new overlay.Stage()
     this.resolution = { x: 1, y: 1 }
+    this.canvasSubscription = null
 
     inspector.registerHook(this.calculateOffset.bind(this), 5000)
     inspector.registerHook(this.render.bind(this))
+    this.rightclick$ = new Subject()
   }
 
-  activate () {
+  enable () {
     if (overlay.subscription) {
       overlay.subscription.unsubscribe()
       overlay.subscription = null
@@ -86,13 +90,17 @@ export default class InspectorGui {
     ).subscribe()
   }
 
-  deactivate () {
+  disable () {
     if (overlay.div) {
       overlay.div.style.display = 'none'
     }
     if (overlay.subscription) {
       overlay.subscription.unsubscribe()
       overlay.subscription = null
+    }
+    if (this.canvasSubscription) {
+      this.canvasSubscription.unsubscribe()
+      this.canvasSubscription = null
     }
   }
 
@@ -107,6 +115,16 @@ export default class InspectorGui {
       this.renderer = renderer
     }
     if (this.renderer.view) { // && this.renderer.view.parentElement
+      if (!this.canvasSubscription) {
+        this.canvasSubscription = Observable.fromEvent(this.renderer.view, 'contextmenu').map(event => {
+          event.preventDefault()
+          return {
+            x: (event.clientX - this.stage.position.x) * this.resolution.x,
+            y: (event.clientY - this.stage.position.y) * this.resolution.y,
+            event: event
+          }
+        }).subscribe(this.rightclick$)
+      }
       const bounds = this.renderer.view.getBoundingClientRect()
       this.stage.position.x = bounds.left
       this.stage.position.y = bounds.top

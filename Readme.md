@@ -14,9 +14,6 @@ Install (Pixi Inspector from the Chrome Web Store)[https://chrome.google.com/web
 * Highlight (the bounds of) the node on hover
 * Select a node with the mouse.
 
-To use the inspector on the [pixi.js example site](http://pixijs.github.io/examples/)
-run `__PIXI_INSPECTOR_GLOBAL_HOOK1__.use(frames[0].PIXI);` to point the inspector to the PIXI instance in the iframe.
-
 ## Build from source
 
 * git clone git@github.com:bfanger/pixi-inspector.git
@@ -31,8 +28,7 @@ Run `npm run dev` and open http://localhost:8080/webpack-dev-server/tests/ (or h
 
 This loads the pixi-inspector into the same page as an example PIXI scene, which makes debugging easier.
 However in the chrome-extension environment, you don't have direct access to the PIXI object or console.log (The injected pixi.inspector.js is the exception)
-Use the [proxy](src/services/proxy.js) service to interact with the inspected page.
-
+Use the [AsyncInspector](src/services/AsyncInspector.js) service to interact with the inspected page from the panel.
 
 Run `npm run build:watch` and load the unpacked extension from the build folder.
-To make sure the latest code is running, refresh the extensions page, close devtools, refresh the page and reopen devtools.
+To ensure the latest code is running, refresh the extensions page, close devtools, refresh the page and reopen devtools.

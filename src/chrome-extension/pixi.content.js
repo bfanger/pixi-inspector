@@ -7,7 +7,7 @@ if (debug) {
   console.info('pixi.content', uid)
 }
 
-const proxy = {
+const globalHook = {
   reportDetection (recipient = {}) {
     /* global __PIXI_INSPECTOR_GLOBAL_HOOK__ RECIPIENT */
     this.executeInContext(function (window) {
@@ -33,9 +33,9 @@ const proxy = {
       RECIPIENT: recipient
     })
   },
-  deactivate () {
+  disable () {
     this.executeInContext(function (window) {
-      __PIXI_INSPECTOR_GLOBAL_HOOK__.deactivate()
+      __PIXI_INSPECTOR_GLOBAL_HOOK__.disable()
     }.toString())
   },
 
@@ -182,16 +182,16 @@ const proxy = {
         return InspectorPromise
       },
 
-      deactivate () {
+      disable () {
         for (const inspector of this.inspectors) {
-          inspector.deactivate()
+          inspector.disable()
         }
       }
     }
   }
 
   const code = injectedScript.toString()
-  proxy.executeInContext(code, {
+  globalHook.executeInContext(code, {
     UID: uid,
     DEBUG: debug,
     INSPECTOR_SCRIPT_URL: chrome.extension.getURL('pixi.inspector.bundle.js')
@@ -203,16 +203,16 @@ port.onMessage.addListener(function (message) {
   debug && console.log('port.onMessage', message)
   switch (message.command) {
     case 'DETECT':
-      proxy.reportDetection({ to: message.from, id: message.id })
+      globalHook.reportDetection({ to: message.from, id: message.id })
       break
     case 'INSTANCES':
-      proxy.reportInstances({ to: message.from, id: message.id })
+      globalHook.reportInstances({ to: message.from, id: message.id })
       break
     case 'INSPECTOR':
-      proxy.reportInspector(message.data, { to: message.from, id: message.id })
+      globalHook.reportInspector(message.data, { to: message.from, id: message.id })
       break
     case 'DISCONNECTED':
-      proxy.deactivate()
+      globalHook.disable()
       break
   }
 })
@@ -235,10 +235,10 @@ port.onDisconnect.addListener(function () {
   window.onmessage = null
 })
 window.onload = function () {
-  proxy.reportDetection()
+  globalHook.reportDetection()
   setTimeout(() => {
     if (!isDetected) {
-      proxy.reportDetection()
+      globalHook.reportDetection()
     }
   }, 1000)
 }

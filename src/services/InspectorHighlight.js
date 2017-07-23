@@ -14,7 +14,7 @@ export default class InspectorHighlight {
   update () {
     const box = this.graphics
     const node = InspectorHighlight.node
-    if (node) {
+    if (node && node.parent) {
       box.visible = true
       box.clear()
       // if (node.texture && node.transform && node.transform.worldTransform) {

@@ -1,4 +1,4 @@
-import Proxy from './Proxy'
+import AsyncInspector from './AsyncInspector'
 import connection from './connection'
 import { Observable } from 'rxjs/Observable'
 import instances$ from './instances$'
@@ -24,7 +24,7 @@ export const latestInstance$ = instances$.map(frames => {
   }
 })
 /**
- * Create a Proxy for the detected instance
+ * Create a AsyncInspector for the detected instance
  */
 const latestInspector$ = latestInstance$.switchMap(instance => {
   if (instance === null) {
@@ -33,11 +33,11 @@ const latestInspector$ = latestInstance$.switchMap(instance => {
   return connection.to(instance.connection).get('INSPECTOR', instance.index)
     .switchMap(index => {
       return Observable.create(observer => {
-        const proxy = new Proxy(index, { frameURL: instance.frameURL })
-        observer.next(proxy)
-        proxy.activate()
+        const inspector = new AsyncInspector(index, { frameURL: instance.frameURL })
+        observer.next(inspector)
+        inspector.enable()
         return () => {
-          proxy.deactivate()
+          inspector.disable()
         }
       })
     })

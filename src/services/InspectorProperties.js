@@ -3,9 +3,10 @@ export const blacklist = ['children', 'parent', 'tempDisplayObjectParent']
 export const whitelist = ['transform', 'position', 'scale', 'rotation', 'pivot', 'skew', 'anchor']
 export default class InspectorProperties {
   constructor (inspector) {
-    // this.TransformBaseRef = typeof inspector.PIXI.TransformBase === 'function' ? inspector.PIXI.TransformBase : MismatchConstructor
-    this.ObservablePointRef = typeof inspector.PIXI.ObservablePoint === 'function' ? inspector.PIXI.ObservablePoint : MismatchConstructor
-    // this.Point = inspector.PIXI.Point
+    const PIXI = inspector.instance.PIXI
+    // this.TransformBaseRef = typeof PIXI.TransformBase === 'function' ? PIXI.TransformBase : MismatchConstructor
+    this.ObservablePointRef = typeof PIXI.ObservablePoint === 'function' ? PIXI.ObservablePoint : MismatchConstructor
+    // this.Point = PIXI.Point
   }
 
   all () {

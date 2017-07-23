@@ -8,36 +8,42 @@ let runningHooks = false
 
 export default class Inspector {
   constructor (instance, emit) {
-    this.PIXI = instance.PIXI
+    this.instance = instance
     this.emit = emit
     this.unpatched = {}
+    this.hooks = []
 
+    // Register types
     this.typeDetection = new TypeDetection()
+    const console = window.console
+    window.console = { warn: () => {} } // Prevent lots of "Deprecation Warning: PIXI.${oldthing} has been deprecated, please use PIXI.${newthing}"
     this.typeDetection.registerTypes('', instance.PIXI, 2)
     instance.Phaser && this.typeDetection.registerTypes('Phaser.', instance.Phaser)
-    this.hooks = []
+    window.console = console
+
+    // Register "plugins"
     this.gui = new Gui(this)
     this.outliner = new Outliner(this)
     this.properties = new Properties(this)
     this.highlight = new Highlight(this)
   }
 
-  activate () {
+  enable () {
     if (!this.unpatched['CanvasRenderer']) {
       this.patch('CanvasRenderer')
     }
     if (!this.unpatched['WebGLRenderer']) {
       this.patch('WebGLRenderer')
     }
-    this.gui.activate()
+    this.gui.enable()
   }
 
-  deactivate () {
+  disable () {
     for (const [renderer, renderMethod] of Object.entries(this.unpatched)) {
-      this.PIXI[renderer].prototype.render = renderMethod
+      this.instance.PIXI[renderer].prototype.render = renderMethod
     }
     this.unpatched = {}
-    this.gui.deactivate()
+    this.gui.disable()
   }
 
   /**
@@ -48,7 +54,7 @@ export default class Inspector {
       console.warn(renderer + ' already patched')
       return
     }
-    const Renderer = this.PIXI[renderer]
+    const Renderer = this.instance.PIXI[renderer]
     if (Renderer && Renderer.prototype.render) {
       const renderMethod = Renderer.prototype.render
       this.unpatched[renderer] = renderMethod
@@ -95,29 +101,3 @@ export default class Inspector {
     }
   }
 }
-
-//     selectAt (node, point) {
-//       if (node === this._highlight.graphics) {
-//         return false
-//       }
-//       if (node.containsPoint) {
-//         if (node.containsPoint(point)) {
-//           this.node(node)
-//           window.$pixi = node
-//           return node
-//         }
-//       } else if (node.children && node.children.length) {
-//         for (var i = node.children.length - 1; i >= 0; i--) {
-//           var result = this.selectAt(node.children[i], point)
-//           if (result) {
-//             this.node(node)
-//             node[symbol].collapsed = false
-//             return result
-//           }
-//         }
-//       }
-//       if (node.getBounds && node.getBounds().contains(point.x, point.y)) {
-//         window.$pixi = node
-//         return node
-//       }
-//     },

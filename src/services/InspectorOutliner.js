@@ -26,6 +26,30 @@ export default class InspectorOutliner {
 
     this.inspector.registerHook(this.detectScene.bind(this))
     this.inspector.registerHook(this.detectChanges.bind(this), 250)
+
+    this.inspector.gui.rightclick$.subscribe(({ x, y }) => {
+      const point = new inspector.instance.PIXI.Point(x, y)
+      if (this.nodes[0].children.length) {
+        for (let i = this.nodes[0].children.length - 1; i >= 0; i--) {
+          const node = this.nodeAt(this.nodes[0].children[i], point)
+          if (node) {
+            window.$pixi = node
+            InspectorHighlight.node = node
+            this.inspector.emit('SELECTED', this.serialize(node))
+            let parent = node
+            while (parent.parent) {
+              parent = parent.parent
+              if (!parent[outliner]) {
+                this.serialize(parent)
+              }
+              parent[outliner].collapsed = false // expand to show the selection
+            }
+            this.inspector.emit('TREE', this.serialize(this.nodes[0]))
+            break
+          }
+        }
+      }
+    })
   }
 
   select (id) {
@@ -77,13 +101,14 @@ export default class InspectorOutliner {
   detectScene (container, renderer) {
     const root = this.nodes[0]
     if (root.children.indexOf(container) === -1) { // container was rendered for the first time?
-      if (!window.$pixi) {
-        window.$pixi = container // autoselect if nothing is selected
-      }
       root.children.push(container)
       this.serialize(container)
       container[outliner].collapsed = false // Auto expand root level
       this.inspector.emit('TREE', this.serialize(root))
+      if (!window.$pixi) {
+        window.$pixi = container // autoselect if nothing is selected
+        this.inspector.emit('SELECTED', this.serialize(container))
+      }
     }
   }
 
@@ -99,12 +124,31 @@ export default class InspectorOutliner {
     // container[meta].lastRender = Date.now()
   }
 
+  nodeAt (node, point) {
+    if (node.containsPoint) {
+      if (node.containsPoint(point)) {
+        return node
+      }
+    } else if (node.children && node.children.length) {
+      for (var i = node.children.length - 1; i >= 0; i--) {
+        const found = this.nodeAt(node.children[i], point)
+        if (found) {
+          return found
+        }
+      }
+    }
+    if (node.getBounds && node.getBounds().contains(point.x, point.y)) {
+      return node
+    }
+  }
+
   serialize (node) {
     if (typeof node[outliner] === 'undefined') {
       node[outliner] = {
         id: -1,
+        name: node.name,
         type: this.inspector.typeDetection.detectType(node),
-        collapsed: true,
+        collapsed: (node.parent && node.parent[outliner]) ? node.parent[outliner].parent !== null : false,
         children: null
       }
       node[outliner].id = (this.nodes.push(node) - 1)
