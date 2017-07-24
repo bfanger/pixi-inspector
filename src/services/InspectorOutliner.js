@@ -11,7 +11,7 @@ const outliner = Symbol('outliner')
 export default class InspectorOutliner {
   constructor (inspector) {
     this.inspector = inspector
-    this.nodes = [{
+    this.root = {
       children: [],
       [outliner]: {
         id: 0,
@@ -19,7 +19,8 @@ export default class InspectorOutliner {
         collapsed: false,
         parent: null
       }
-    }]
+    }
+    this.nodes = [this.root]
     // @todo Garbage collect nodes
 
     this.previousTree = {}
@@ -29,9 +30,9 @@ export default class InspectorOutliner {
 
     this.inspector.gui.rightclick$.subscribe(({ x, y }) => {
       const point = new inspector.instance.PIXI.Point(x, y)
-      if (this.nodes[0].children.length) {
-        for (let i = this.nodes[0].children.length - 1; i >= 0; i--) {
-          const node = this.nodeAt(this.nodes[0].children[i], point)
+      if (this.root.children.length) {
+        for (let i = this.root.children.length - 1; i >= 0; i--) {
+          const node = this.nodeAt(this.root.children[i], point)
           if (node) {
             window.$pixi = node
             InspectorHighlight.node = node
@@ -44,7 +45,7 @@ export default class InspectorOutliner {
               }
               parent[outliner].collapsed = false // expand to show the selection
             }
-            this.inspector.emit('TREE', this.serialize(this.nodes[0]))
+            this.inspector.emit('TREE', this.serialize(this.root))
             break
           }
         }
@@ -71,7 +72,7 @@ export default class InspectorOutliner {
   }
 
   tree () {
-    return this.serialize(this.nodes[0])
+    return this.serialize(this.root)
   }
 
   expand (id) {
@@ -99,12 +100,11 @@ export default class InspectorOutliner {
   }
 
   detectScene (container, renderer) {
-    const root = this.nodes[0]
-    if (root.children.indexOf(container) === -1) { // container was rendered for the first time?
-      root.children.push(container)
+    if (this.root.children.indexOf(container) === -1) { // container was rendered for the first time?
+      this.root.children.push(container)
       this.serialize(container)
       container[outliner].collapsed = false // Auto expand root level
-      this.inspector.emit('TREE', this.serialize(root))
+      this.inspector.emit('TREE', this.serialize(this.root))
       if (!window.$pixi) {
         window.$pixi = container // autoselect if nothing is selected
         this.inspector.emit('SELECTED', this.serialize(container))
@@ -117,7 +117,7 @@ export default class InspectorOutliner {
       const id = container[outliner].id
       if (hasChanged(container, this.previousTree[id])) {
         this.serialize(container)
-        this.inspector.emit('TREE', this.nodes[0][outliner])
+        this.inspector.emit('TREE', this.root[outliner])
         this.previousTree[id] = container[outliner]
       }
     }
@@ -125,11 +125,10 @@ export default class InspectorOutliner {
   }
 
   nodeAt (node, point) {
-    if (node.containsPoint) {
-      if (node.containsPoint(point)) {
-        return node
-      }
-    } else if (node.children && node.children.length) {
+    if (node.visible === false) { // || node.renderable === false
+      return false
+    }
+    if (node.children && node.children.length) {
       for (var i = node.children.length - 1; i >= 0; i--) {
         const found = this.nodeAt(node.children[i], point)
         if (found) {
@@ -137,9 +136,14 @@ export default class InspectorOutliner {
         }
       }
     }
-    if (node.getBounds && node.getBounds().contains(point.x, point.y)) {
+    if (node.containsPoint) {
+      if (node.containsPoint(point)) {
+        return node
+      }
+    } else if (node.getBounds && node.getBounds().contains(point.x, point.y)) {
       return node
     }
+    return false
   }
 
   serialize (node) {

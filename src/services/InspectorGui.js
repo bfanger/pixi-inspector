@@ -1,42 +1,128 @@
 import { Observable } from 'rxjs/Observable'
 import { Subject } from 'rxjs/Subject'
+import { ReplaySubject } from 'rxjs/ReplaySubject'
 
 export const overlay = {
   div: null,
   renderer: null,
   PIXI: null,
-  Stage: null,
-  subscription: null
+  Stage: null
 }
 
 export default class InspectorGui {
   constructor (inspector) {
     if (!overlay.PIXI) {
-      overlay.PIXI = inspector.instance.PIXI
-      overlay.Stage = overlay.PIXI.Container || overlay.PIXI.Stage || overlay.PIXI.DisplayObjectContainer
+      this.initOverlay(inspector)
     }
     this.stage = new overlay.Stage()
-    this.resolution = { x: 1, y: 1 }
-    this.canvasSubscription = null
-
-    inspector.registerHook(this.calculateOffset.bind(this), 5000)
-    inspector.registerHook(this.render.bind(this))
-    this.rightclick$ = new Subject()
-  }
-
-  enable () {
-    if (overlay.subscription) {
-      overlay.subscription.unsubscribe()
-      overlay.subscription = null
+    this.offset = {
+      canvas: { x: 0, y: 0 },
+      iframe: { x: 0, y: 0 }
+    }
+    this.size = {
+      canvas: { width: 800, y: 600 },
+      renderer: { width: 800, y: 600 }
     }
 
-    if (overlay.div) {
-      overlay.div.removeAttribute('style')
-    } else {
-      overlay.div = document.createElement('div')
-      overlay.div.id = 'pixi-inspector-overlay'
-      const style = document.createElement('style')
-      style.textContent = `
+    inspector.registerHook(this.updateRenderer.bind(this), 5000)
+    inspector.registerHook(this.render.bind(this))
+    this.rightclick$ = new Subject()
+    this.renderer$ = new ReplaySubject(1)
+
+    const canvas$ = this.renderer$.map(renderer => renderer.view).distinctUntilChanged()
+
+    const iframe$ = canvas$.map(reference => {
+      for (const canvas of document.querySelectorAll('canvas')) {
+        if (canvas === reference) {
+          return null // canvas found in current frame
+        }
+      }
+      for (const iframe of document.querySelectorAll('iframe')) {
+        try {
+          for (const canvas of iframe.contentDocument.querySelectorAll('canvas')) {
+            if (canvas === reference) {
+              return iframe
+            }
+          }
+        } catch (err) {
+          // ignore cors errors
+        }
+      }
+    }).shareReplay(1)
+
+    const handleClick$ = canvas$.switchMap(canvas => {
+      return Observable.merge(
+        Observable.fromEvent(canvas, 'contextmenu').do(event => {
+          event.preventDefault()
+        }),
+        Observable.fromEvent(canvas, 'mousedown', { capture: true }).withLatestFrom(iframe$).do(([event, iframe]) => {
+          if (event.which === 3) {
+            this.calculateOffset(canvas, iframe)
+            const x = (event.clientX - this.offset.canvas.x) * this.resolution.x
+            const y = (event.clientY - this.offset.canvas.y) * this.resolution.y
+            this.rightclick$.next({ x, y, event })
+          }
+        })
+      )
+    })
+
+    const handleResize$ = Observable.fromEvent(window, 'resize').debounceTime(100).do(_ => {
+      overlay.renderer.resize(window.innerWidth, window.innerHeight)
+      overlay.renderer.view.style.width = window.innerWidth + 'px'
+      overlay.renderer.view.style.height = window.innerHeight + 'px'
+    }).switchMap(() => {
+      return iframe$.combineLatest(canvas$).do(([iframe, canvas]) => {
+        this.calculateOffset(canvas, iframe)
+      })
+    })
+
+    const handleScroll$ = iframe$.combineLatest(canvas$).switchMap(([iframe, canvas]) => {
+      const elements = [window].concat(parentElements(iframe)).concat(parentElements(canvas))
+      if (iframe) {
+        elements.push(iframe.contentWindow)
+      }
+      return Observable.merge(...elements.map(element => {
+        return Observable.fromEvent(element, 'scroll')
+      })).debounceTime(50).do(e => {
+        this.calculateOffset(canvas, iframe)
+      })
+    })
+
+    this.subscription = inspector.enabled$.do(enabled => {
+      if (enabled) {
+        overlay.div.removeAttribute('style')
+      } else {
+        overlay.div.removeAttribute('style')
+      }
+    }).switchMap(enabled => {
+      if (enabled === false) {
+        return Observable.empty()
+      }
+      return Observable.merge(
+        handleResize$,
+        handleScroll$,
+        handleClick$,
+        canvas$.combineLatest(iframe$).do(([canvas, iframe]) => {
+          this.calculateOffset(canvas, iframe)
+        })
+      )
+    }).subscribe()
+  }
+
+  get resolution () {
+    return {
+      x: (this.size.renderer.width / this.size.canvas.width),
+      y: (this.size.renderer.height / this.size.canvas.height)
+    }
+  }
+
+  initOverlay (inspector) {
+    overlay.PIXI = inspector.instance.PIXI
+    overlay.Stage = overlay.PIXI.Container || overlay.PIXI.Stage || overlay.PIXI.DisplayObjectContainer
+    overlay.div = document.createElement('div')
+    overlay.div.id = 'pixi-inspector-overlay'
+    const style = document.createElement('style')
+    style.textContent = `
       #pixi-inspector-overlay {
         position: fixed;
         z-index: 16000000;
@@ -53,100 +139,74 @@ export default class InspectorGui {
         left: 0;
       }
       `
-      overlay.div.appendChild(style)
-      document.body.appendChild(overlay.div)
+    overlay.div.appendChild(style)
+    document.body.appendChild(overlay.div)
 
-      const canvas = document.createElement('canvas')
-      canvas.style.width = window.innerWidth + 'px'
-      canvas.style.height = window.innerHeight + 'px'
+    const canvas = document.createElement('canvas')
+    canvas.style.width = window.innerWidth + 'px'
+    canvas.style.height = window.innerHeight + 'px'
 
-      const options = {
-        transparent: true,
-        resolution: window.devicePixelRatio,
-        view: canvas
-      }
-      if (overlay.PIXI.WebGLRenderer.length === 1) { // Expects a Phaser Game object?
-        overlay.renderer = new overlay.PIXI.WebGLRenderer(Object.assign({
-          canvas: canvas,
-          camera: {
-            _shake: { x: 0, y: 0 }
-          },
-          width: window.innerWidth,
-          height: window.innerHeight
-        }, options))
-      } else {
-        overlay.renderer = new overlay.PIXI.WebGLRenderer(window.innerWidth, window.innerHeight, options)
-      }
-      overlay.div.appendChild(canvas)
+    const options = {
+      transparent: true,
+      resolution: window.devicePixelRatio,
+      view: canvas
     }
-    overlay.subscription = Observable.merge(
-      Observable.fromEvent(window, 'resize').debounceTime(100).do(_ => {
-        overlay.renderer.resize(window.innerWidth, window.innerHeight)
-        overlay.renderer.view.style.width = window.innerWidth + 'px'
-        overlay.renderer.view.style.height = window.innerHeight + 'px'
-        this.calculateOffset()
-      }),
-      Observable.fromEvent(window, 'scroll').debounceTime(50).do(() => this.calculateOffset())
-    ).subscribe()
+    if (overlay.PIXI.WebGLRenderer.length === 1) { // Expects a Phaser Game object?
+      overlay.renderer = new overlay.PIXI.WebGLRenderer(Object.assign({
+        canvas: canvas,
+        camera: {
+          _shake: { x: 0, y: 0 }
+        },
+        width: window.innerWidth,
+        height: window.innerHeight
+      }, options))
+    } else {
+      overlay.renderer = new overlay.PIXI.WebGLRenderer(window.innerWidth, window.innerHeight, options)
+    }
+    overlay.div.appendChild(canvas)
   }
 
-  disable () {
-    if (overlay.div) {
-      overlay.div.style.display = 'none'
-    }
-    if (overlay.subscription) {
-      overlay.subscription.unsubscribe()
-      overlay.subscription = null
-    }
-    if (this.canvasSubscription) {
-      this.canvasSubscription.unsubscribe()
-      this.canvasSubscription = null
-    }
-  }
-
-  render () {
+  render (_, renderer) {
     if (overlay.renderer) {
       overlay.renderer.render(this.stage)
     }
   }
 
-  calculateOffset (_, renderer) {
-    if (renderer) {
-      this.renderer = renderer
-    }
-    if (this.renderer.view) { // && this.renderer.view.parentElement
-      if (!this.canvasSubscription) {
-        this.canvasSubscription = Observable.fromEvent(this.renderer.view, 'contextmenu').map(event => {
-          event.preventDefault()
-          return {
-            x: (event.clientX - this.stage.position.x) * this.resolution.x,
-            y: (event.clientY - this.stage.position.y) * this.resolution.y,
-            event: event
-          }
-        }).subscribe(this.rightclick$)
-      }
-      const bounds = this.renderer.view.getBoundingClientRect()
-      this.stage.position.x = bounds.left
-      this.stage.position.y = bounds.top
-      this.resolution.x = bounds.width / this.renderer.width
-      this.resolution.y = bounds.height / this.renderer.height
-      for (const canvas of document.querySelectorAll('canvas')) {
-        if (canvas === this.renderer.view) {
-          return
-        }
-      }
-      // Check for the canvas inside an iframe
-      for (const iframe of document.querySelectorAll('iframe')) {
-        try {
-          for (const canvas of iframe.contentDocument.querySelectorAll('canvas')) {
-            if (canvas === this.renderer.view) {
-              const iframeBounds = iframe.getBoundingClientRect()
-              this.stage.position.x += Math.floor(iframeBounds.left)
-              this.stage.position.y += Math.floor(iframeBounds.top)
-            }
-          }
-        } catch (err) {}
-      }
-    }
+  updateRenderer (_, renderer) {
+    this.renderer = renderer
+    this.renderer$.next(renderer)
   }
+
+  calculateOffset (canvas, iframe) {
+    const bounds = canvas.getBoundingClientRect()
+    this.offset.canvas.x = bounds.left
+    this.offset.canvas.y = bounds.top
+    this.size.canvas.width = bounds.width
+    this.size.canvas.height = bounds.height
+    this.size.renderer.width = this.renderer.width
+    this.size.renderer.height = this.renderer.height
+
+    if (iframe) {
+      const iframeBounds = iframe.getBoundingClientRect()
+      this.offset.iframe.x = iframeBounds.left
+      this.offset.iframe.y = iframeBounds.top
+    } else {
+      this.offset.iframe.x = 0
+      this.offset.iframe.y = 0
+    }
+    this.stage.position.x = this.offset.iframe.x + this.offset.canvas.x
+    this.stage.position.y = this.offset.iframe.y + this.offset.canvas.y
+  }
+}
+
+function parentElements (element) {
+  if (element === null) {
+    return []
+  }
+  const elements = []
+  while (element.parentElement) {
+    elements.push(element.parentElement)
+    element = element.parentElement
+  }
+  return elements
 }

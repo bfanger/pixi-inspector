@@ -1,3 +1,4 @@
+import { ReplaySubject } from 'rxjs/ReplaySubject'
 import TypeDetection from './TypeDetection'
 import Outliner from './InspectorOutliner'
 import Properties from './InspectorProperties'
@@ -12,12 +13,13 @@ export default class Inspector {
     this.emit = emit
     this.unpatched = {}
     this.hooks = []
+    this.enabled$ = new ReplaySubject(1)
 
     // Register types
     this.typeDetection = new TypeDetection()
     const console = window.console
     window.console = { warn: () => {} } // Prevent lots of "Deprecation Warning: PIXI.${oldthing} has been deprecated, please use PIXI.${newthing}"
-    this.typeDetection.registerTypes('', instance.PIXI, 2)
+    this.typeDetection.registerTypes('PIXI.', instance.PIXI, 2)
     instance.Phaser && this.typeDetection.registerTypes('Phaser.', instance.Phaser)
     window.console = console
 
@@ -35,7 +37,7 @@ export default class Inspector {
     if (!this.unpatched['WebGLRenderer']) {
       this.patch('WebGLRenderer')
     }
-    this.gui.enable()
+    this.enabled$.next(true)
   }
 
   disable () {
@@ -43,7 +45,7 @@ export default class Inspector {
       this.instance.PIXI[renderer].prototype.render = renderMethod
     }
     this.unpatched = {}
-    this.gui.disable()
+    this.enabled$.next(false)
   }
 
   /**

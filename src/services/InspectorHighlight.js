@@ -38,7 +38,7 @@ export default class InspectorHighlight {
       box.beginFill(0x007eff, 0.3)
       box.lineStyle(1, 0x007eff, 0.6)
       var bounds = node.getBounds()
-      box.drawRect((bounds.x * this.gui.resolution.x), (bounds.y * this.gui.resolution.y), (bounds.width * this.gui.resolution.x), (bounds.height * this.gui.resolution.y))
+      box.drawRect((bounds.x / this.gui.resolution.x), (bounds.y / this.gui.resolution.y), (bounds.width / this.gui.resolution.x), (bounds.height / this.gui.resolution.y))
       box.endFill()
     } else {
       box.visible = false

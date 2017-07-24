@@ -55,11 +55,11 @@ export default class DevConnection {
     return new DevClient()
   }
   on (command) {
-    if (command === 'DETECTED') {
-      return Observable.of({ version: PIXI.VERSION })
-    }
     if (commands[command]) {
       return commands[command]
+    }
+    if (command === 'DETECTED') {
+      return Observable.never()
     }
     if (command === 'DISCONNECTED') {
       return Observable.never()

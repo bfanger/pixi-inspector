@@ -41,7 +41,7 @@ const latestInspector$ = latestInstance$.switchMap(instance => {
         }
       })
     })
-}).startWith(null).publishReplay(1).refCount()
+}).startWith(null).shareReplay(1)
 
 latestInspector$.method = function (method) {
   return this.map(inspector => {
