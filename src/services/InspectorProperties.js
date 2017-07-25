@@ -1,10 +1,10 @@
 
-export const blacklist = ['children', 'parent', 'tempDisplayObjectParent']
+export const blacklist = ['children', 'parent', 'tempDisplayObjectParent', 'scope']
 export const whitelist = ['transform', 'position', 'scale', 'rotation', 'pivot', 'skew', 'anchor']
 export default class InspectorProperties {
   constructor (inspector) {
     const PIXI = inspector.instance.PIXI
-    // this.TransformBaseRef = typeof PIXI.TransformBase === 'function' ? PIXI.TransformBase : MismatchConstructor
+    this.TransformBaseRef = typeof PIXI.TransformBase === 'function' ? PIXI.TransformBase : MismatchConstructor
     this.ObservablePointRef = typeof PIXI.ObservablePoint === 'function' ? PIXI.ObservablePoint : MismatchConstructor
     // this.Point = PIXI.Point
   }
@@ -49,7 +49,10 @@ export default class InspectorProperties {
       if (whitelist.indexOf(path[path.length - 1]) !== -1) {
         const properties = []
         for (const property in value) {
-          if (property[0] === '_' || blacklist.indexOf(property) !== -1) {
+          if (blacklist.indexOf(property) !== -1) {
+            continue
+          }
+          if (property[0] === '_') {
             continue
           }
           properties.push(...this.serialize(value[property], [...path, property], depth))
@@ -59,6 +62,11 @@ export default class InspectorProperties {
             path: path.join('.') + '.x', type: 'number', value: value.x
           }, {
             path: path.join('.') + '.y', type: 'number', value: value.y
+          })
+        }
+        if (value instanceof this.TransformBaseRef) {
+          properties.push({
+            path: path.join('.') + '.rotation', type: 'number', value: value.rotation
           })
         }
         if (properties.length !== 0) {

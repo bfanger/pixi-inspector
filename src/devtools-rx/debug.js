@@ -1,5 +1,9 @@
 var debug = false
 if (typeof process === 'object' && process.env) {
-//   debug = (process.env.NODE_ENV === 'development')
+  if (process.env.NODE_ENV === 'production') {
+    debug = false
+  } else {
+    debug = !!(process.env.DEBUG_DEVTOOLS_RX)
+  }
 }
 export default debug

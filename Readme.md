@@ -12,7 +12,7 @@ Install (Pixi Inspector from the Chrome Web Store)[https://chrome.google.com/web
 * View and edit the properties of the selected node
 * The selected node is available in the Console as `$pixi`
 * Highlight (the bounds of) the node on hover
-* Select a node with the mouse.
+* Right click on the canvas to select the node at that position.
 
 ## Build from source
 
@@ -32,3 +32,5 @@ Use the [AsyncInspector](src/services/AsyncInspector.js) service to interact wit
 
 Run `npm run build:watch` and load the unpacked extension from the build folder.
 To ensure the latest code is running, refresh the extensions page, close devtools, refresh the page and reopen devtools.
+
+Run `DEBUG_DEVTOOLS_RX=1 npm run build:watch` to debug the communication between the differrent processen.

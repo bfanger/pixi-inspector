@@ -70,7 +70,10 @@ const baseConfig = {
   },
   plugins: [
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+      'process.env': {
+        NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+        DEBUG_DEVTOOLS_RX: JSON.stringify(process.env.DEBUG_DEVTOOLS_RX)
+      }
     }),
     new CopyWebpackPlugin([
       { context: 'src/chrome-extension', from: '**/*' }

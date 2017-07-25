@@ -12,7 +12,7 @@ import { Observable } from 'rxjs/Observable'
 import DetailValue from './DetailValue'
 import lastestInspector$ from '../services/lastestInspector$.js'
 
-const POLL_INTERVAL = 987 // Weird interval to be sure to be out of sync with a looping animation.
+const POLL_INTERVAL = 567 // Weird interval to be sure to be out of sync with a looping animation.
 
 export default {
   components: { DetailValue },
