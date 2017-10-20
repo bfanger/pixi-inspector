@@ -29,7 +29,7 @@ export default class TypeDetection {
       return name + ':' + this.names[types[0]]
     }
     const scores = []
-    for (const i in types) {
+    for (let i = 0; i < types.length; i++) {
       const type = this.constructors[types[i]].prototype
       scores[i] = 0
       for (const j of types) {

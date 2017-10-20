@@ -4,11 +4,11 @@ export default class InspectorHighlight {
   constructor (inspector) {
     this.gui = inspector.gui
     this.graphics = new overlay.PIXI.Graphics()
-    inspector.gui.stage.addChild(this.graphics)
+    inspector.gui.container.addChild(this.graphics)
     // if (this.graphics.transform && this.graphics.transform.worldTransform) {
     //   this.defaultTransform = this.graphics.transform.worldTransform.clone()
     // }
-    inspector.registerHook(this.update.bind(this))
+    inspector.registerHook('afterRender', this.update.bind(this))
   }
 
   update () {

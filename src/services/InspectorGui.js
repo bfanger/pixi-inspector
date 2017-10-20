@@ -15,6 +15,12 @@ export default class InspectorGui {
       this.initOverlay(inspector)
     }
     this.stage = new overlay.Stage()
+    if (overlay.Stage !== (overlay.PIXI.Container || overlay.PIXI.DisplayObjectContainer)) {
+      this.container = new overlay.PIXI.DisplayObjectContainer()
+      this.stage.addChild(this.container)
+    } else {
+      this.container = this.stage
+    }
     this.offset = {
       canvas: { x: 0, y: 0 },
       iframe: { x: 0, y: 0 }
@@ -24,8 +30,8 @@ export default class InspectorGui {
       renderer: { width: 800, y: 600 }
     }
 
-    inspector.registerHook(this.updateRenderer.bind(this), 5000)
-    inspector.registerHook(this.render.bind(this))
+    inspector.registerHook('beforeRender', this.updateRenderer.bind(this), 5000)
+    inspector.registerHook('beforeRender', this.render.bind(this))
     this.rightclick$ = new Subject()
     this.renderer$ = new ReplaySubject(1)
 
@@ -194,8 +200,8 @@ export default class InspectorGui {
       this.offset.iframe.x = 0
       this.offset.iframe.y = 0
     }
-    this.stage.position.x = this.offset.iframe.x + this.offset.canvas.x
-    this.stage.position.y = this.offset.iframe.y + this.offset.canvas.y
+    this.container.position.x = this.offset.iframe.x + this.offset.canvas.x
+    this.container.position.y = this.offset.iframe.y + this.offset.canvas.y
   }
 }
 

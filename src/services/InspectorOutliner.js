@@ -25,8 +25,8 @@ export default class InspectorOutliner {
 
     this.previousTree = {}
 
-    this.inspector.registerHook(this.detectScene.bind(this))
-    this.inspector.registerHook(this.detectChanges.bind(this), 250)
+    this.inspector.registerHook('beforeRender', this.detectScene.bind(this))
+    this.inspector.registerHook('beforeRender', this.detectChanges.bind(this), 250)
 
     this.inspector.gui.rightclick$.subscribe(({ x, y }) => {
       const point = new inspector.instance.PIXI.Point(x, y)

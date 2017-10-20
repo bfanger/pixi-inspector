@@ -4,15 +4,17 @@ import Outliner from './InspectorOutliner'
 import Properties from './InspectorProperties'
 import Gui from './InspectorGui'
 import Highlight from './InspectorHighlight'
-
-let runningHooks = false
+import runHooks from './runHooks'
 
 export default class Inspector {
   constructor (instance, emit) {
     this.instance = instance
     this.emit = emit
     this.unpatched = {}
-    this.hooks = []
+    this.hooks = {
+      beforeRender: [],
+      afterRender: []
+    }
     this.enabled$ = new ReplaySubject(1)
 
     // Register types
@@ -62,43 +64,31 @@ export default class Inspector {
       this.unpatched[renderer] = renderMethod
       var self = this
       Renderer.prototype.render = function (container) {
-        if (!runningHooks) {
-          runningHooks = true
-          for (const hook of self.hooks) {
-            if (hook.skip) {
-              continue
-            }
-            hook.callback(container, this)
-            if (hook.throttle) {
-              hook.skip = true
-              setTimeout(() => {
-                hook.skip = false
-              }, hook.throttle)
-            }
-          }
-          runningHooks = false
-        }
-        return renderMethod.apply(this, arguments)
+        runHooks(self.hooks.beforeRender, container, this)
+        const result = renderMethod.apply(this, arguments)
+        runHooks(self.hooks.afterRender, container, this)
+        return result
       }
     }
   }
 
   /**
+   * @param {string} type 'beforeRender', 'afterRender'
    * @param {Function} callback
    * @param {number} ms
    * @return {Function} unregister
    */
-  registerHook (callback, ms = 0) {
+  registerHook (type, callback, ms = 0) {
     const hook = {
       callback: callback,
       throttle: ms,
       skip: false
     }
-    this.hooks.push(hook)
+    this.hooks[type].push(hook)
     return () => {
-      const index = this.hooks.indexOf(hook)
+      const index = this.hooks[type].indexOf(hook)
       if (index !== -1) {
-        this.hooks.splice(index, 1)
+        this.hooks[type].splice(index, 1)
       }
     }
   }

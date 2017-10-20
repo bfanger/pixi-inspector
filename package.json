@@ -13,7 +13,9 @@
   },
   "eslintConfig": {
     "parser": "babel-eslint",
-    "extends": "vue",
+    "extends": [
+      "plugin:vue-libs/recommended"
+    ],
     "plugins": [
       "only-warn"
     ],
@@ -24,7 +26,7 @@
   "babel": {
     "presets": [
       [
-        "es2015",
+        "env",
         {
           "modules": false
         }
@@ -34,40 +36,40 @@
       "transform-vue-jsx"
     ]
   },
-  "dependencies": {
-    "@types/chrome": "^0.0.47",
-    "babel-core": "^6.25.0",
-    "babel-eslint": "^7.2.3",
+  "devDependencies": {
+    "@types/chrome": "^0.0.50",
+    "babel-core": "^6.26.0",
+    "babel-eslint": "^8.0.1",
     "babel-helper-vue-jsx-merge-props": "^2.0.2",
-    "babel-loader": "^7.1.1",
+    "babel-loader": "^7.1.2",
     "babel-plugin-syntax-jsx": "^6.18.0",
-    "babel-plugin-transform-vue-jsx": "^3.4.3",
-    "babel-preset-es2015": "^6.24.1",
-    "copy-webpack-plugin": "^4.0.1",
-    "css-loader": "^0.28.4",
-    "eslint": "^4.3.0",
-    "eslint-config-vue": "^2.0.2",
+    "babel-plugin-transform-vue-jsx": "^3.5.0",
+    "babel-preset-env": "^1.6.1",
+    "copy-webpack-plugin": "^4.2.0",
+    "css-loader": "^0.28.7",
+    "eslint": "^4.9.0",
     "eslint-friendly-formatter": "^3.0.0",
     "eslint-loader": "^1.9.0",
+    "eslint-plugin-html": "^3.2.2",
     "eslint-plugin-only-warn": "^1.0.1",
-    "eslint-plugin-vue": "^2.1.0",
-    "file-loader": "^0.11.2",
+    "eslint-plugin-vue-libs": "^1.2.1",
+    "file-loader": "^1.1.5",
     "friendly-errors-webpack-plugin": "^1.6.1",
     "gulp": "^3.9.1",
     "gulp-util": "^3.0.8",
     "node-sass": "^4.5.3",
-    "pixi-spine": "^1.5.3",
-    "pixi.js": "^4.5.3",
-    "rxjs": "^5.4.2",
+    "pixi-spine": "^1.5.7",
+    "pixi.js": "^4.5.6",
+    "rxjs": "^5.5.0",
     "sass-loader": "^6.0.6",
-    "style-loader": "^0.18.2",
-    "url-loader": "^0.5.9",
-    "vue": "^2.4.2",
-    "vue-loader": "^12.2.2",
-    "vue-rx": "^3.2.0",
-    "vue-template-compiler": "^2.4.2",
-    "webpack": "^3.3.0",
-    "webpack-dev-server": "^2.6.1",
+    "style-loader": "^0.19.0",
+    "url-loader": "^0.6.2",
+    "vue": "^2.5.2",
+    "vue-loader": "^13.3.0",
+    "vue-rx": "^4.0.1",
+    "vue-template-compiler": "^2.5.2",
+    "webpack": "^3.8.1",
+    "webpack-dev-server": "^2.9.3",
     "webpack-merge": "^4.1.0"
   }
 }
