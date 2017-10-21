@@ -2,7 +2,7 @@
   <div class="detailview">
     <div v-for="field in fields" class="detailview__item" :key="field.path">
       <div class="detailview__label">{{field.path}}</div>
-      <DetailValue class="detailview__value" :field="field" @change="setProperty(field.path, $event)"></DetailValue>
+      <DetailValue :field="field" @change="setProperty(field.path, $event)"></DetailValue>
     </div>
   </div>
 </template>
@@ -47,15 +47,15 @@ export default {
 
 .detailview__label {
   display: inline-block;
-  color: #c00;
+  color: #c80000;
   padding-right: 5px;
   &:after {
     content: ':';
     color: #000;
   }
+  .dark-mode & {
+    color: #35d4c7;
+  }
 }
 
-.detailview__value {
-  color: #333;
-}
 </style>

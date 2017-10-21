@@ -15,12 +15,15 @@
 import lastestInspector$ from '../services/lastestInspector$'
 
 export default {
-
   subscriptions () {
-    const inspector$ = lastestInspector$.filter(inspector => inspector !== null)
+    const inspector$ = lastestInspector$.filter(
+      inspector => inspector !== null
+    )
     return {
       selected: inspector$.switchMap(inspector => inspector.selected$),
-      rows: inspector$.switchMap(inspector => inspector.tree$.map(this.flattenTree)),
+      rows: inspector$.switchMap(inspector =>
+        inspector.tree$.map(this.flattenTree)
+      ),
       select: lastestInspector$.method('select'),
       expand: lastestInspector$.method('expand'),
       collapse: lastestInspector$.method('collapse'),
@@ -39,7 +42,11 @@ export default {
     },
     flattenNode (node, rows, indent) {
       let title = node.type
-      if (typeof node.name !== 'undefined' && node.name !== null && node.name !== '') {
+      if (
+        typeof node.name !== 'undefined' &&
+        node.name !== null &&
+        node.name !== ''
+      ) {
         title = node.type + ' [' + node.name + ']'
       }
       rows.push({ indent, node, title })
@@ -93,12 +100,11 @@ export default {
     }
   }
 }
-
 </script>
 
 <style lang="scss">
 .treeview {
-  padding: 4px 0
+  padding: 4px 0;
 }
 
 .treeview__item {
@@ -106,6 +112,9 @@ export default {
   padding: 1px;
   display: flex;
   user-select: none;
+  .dark-mode & {
+    color: #5db0d7;
+  }
 }
 
 .treeview__toggle {
@@ -121,6 +130,9 @@ export default {
   position: absolute;
   top: 2px;
   left: 4px;
+  .dark-mode & {
+    border-left-color: #bdc6cf;
+  }
 }
 
 .treeview__toggle__collapse {
@@ -130,15 +142,24 @@ export default {
   position: absolute;
   top: 3px;
   left: 2px;
+  .dark-mode & {
+    border-top-color: #bdc6cf;
+  }
 }
 
 .treeview__item--hovered,
 .treeview__item:hover:not(.treeview__item--selected) {
   background: #eaf1fb;
+  .dark-mode & {
+    background: #342e25;
+  }
 }
 
 .treeview__item--selected {
   background: #d4d4d4;
+  .dark-mode.dark-mode & {
+    background: #342e25;
+  }
 }
 
 .treeview:focus {
@@ -147,12 +168,22 @@ export default {
   .treeview__item--selected {
     background: #3879d9;
     color: white;
+    .dark-mode & {
+      background: #c58532;
+      color: #333;
+    }
 
     .treeview__toggle__collapse {
       border-top-color: white;
+      .dark-mode & {
+        border-top-color: #333;
+      }
     }
     .treeview__toggle__expand {
       border-left-color: white;
+      .dark-mode & {
+        border-left-color: #333;
+      }
     }
   }
 }

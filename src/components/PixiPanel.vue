@@ -1,5 +1,5 @@
 <template>
-  <div class="pixi-panel">
+  <div class="pixi-panel" :class="{'dark-mode': darkMode}">
     <Toolbar>
       <!-- <Toggle icon="node-search" v-if="isConnected" :value="selectMode" @change="toggleSelectMode" title="Select a node in the scene to inspect it"></Toggle> -->
       <button @click="reload">Reconnect</button>
@@ -29,12 +29,24 @@ import lastestInspector$ from '../services/lastestInspector$'
 
 export default {
   components: { Toolbar, Toggle, SplitView, TreeView, DetailView },
+  computed: {
+    darkMode () {
+      return (
+        typeof chrome !== 'undefined' &&
+        typeof chrome.devtools !== 'undefined' &&
+        typeof chrome.devtools.panels !== 'undefined' &&
+        chrome.devtools.panels.themeName === 'dark'
+      )
+    }
+  },
   subscriptions () {
     return {
       injected: lastestInspector$.map(inspector => inspector !== null),
       messageVisible: active$.switchMap(active => {
         if (active) {
-          return Observable.timer(100).map(() => true).startWith(false)
+          return Observable.timer(100)
+            .map(() => true)
+            .startWith(false)
         }
         return Observable.of(false)
       })
@@ -42,9 +54,11 @@ export default {
   },
   methods: {
     toggleSelectMode (value) {
-      this.selectModeSubscription = this.inspector$.first().subscribe(inspector => {
-        inspector.selectMode(value)
-      })
+      this.selectModeSubscription = this.inspector$
+        .first()
+        .subscribe(inspector => {
+          inspector.selectMode(value)
+        })
     },
     reload () {
       window.location.reload()
@@ -65,6 +79,11 @@ export default {
   flex-direction: column;
   width: 100%;
   height: 100vh;
+  color: #222;
+}
+
+.dark-mode {
+    color: #bdc6cf;
 }
 
 .pixi-panel__body {
