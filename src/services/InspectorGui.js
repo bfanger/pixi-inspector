@@ -61,11 +61,15 @@ export default class InspectorGui {
         Observable.fromEvent(canvas, 'contextmenu').do(event => {
           event.preventDefault()
         }),
-        Observable.fromEvent(canvas, 'mousedown', { capture: true }).withLatestFrom(iframe$).do(([event, iframe]) => {
+        Observable.fromEvent(canvas, 'mousedown', { capture: true }).withLatestFrom(iframe$, this.renderer$).do(([event, iframe, renderer]) => {
           if (event.which === 3) {
             this.calculateOffset(canvas, iframe)
-            const x = (event.clientX - this.offset.canvas.x) * this.resolution.x
-            const y = (event.clientY - this.offset.canvas.y) * this.resolution.y
+            const scale = {
+              x: this.resolution.x / renderer.resolution,
+              y: this.resolution.y / renderer.resolution
+            }
+            const x = (event.clientX - this.offset.canvas.x) * scale.x
+            const y = (event.clientY - this.offset.canvas.y) * scale.y
             this.rightclick$.next({ x, y, event })
           }
         })

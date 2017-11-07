@@ -11,7 +11,7 @@ export default class InspectorHighlight {
     inspector.registerHook('afterRender', this.update.bind(this))
   }
 
-  update () {
+  update (_, renderer) {
     const box = this.graphics
     const node = InspectorHighlight.node
     if (node && node.parent) {
@@ -38,7 +38,16 @@ export default class InspectorHighlight {
       box.beginFill(0x007eff, 0.3)
       box.lineStyle(1, 0x007eff, 0.6)
       var bounds = node.getBounds()
-      box.drawRect((bounds.x / this.gui.resolution.x), (bounds.y / this.gui.resolution.y), (bounds.width / this.gui.resolution.x), (bounds.height / this.gui.resolution.y))
+      const scale = {
+        x: this.gui.resolution.x / renderer.resolution,
+        y: this.gui.resolution.y / renderer.resolution
+      }
+      box.drawRect(
+        bounds.x * scale.x,
+        bounds.y * scale.y,
+        bounds.width * scale.x,
+        bounds.height * scale.y
+      )
       box.endFill()
     } else {
       box.visible = false

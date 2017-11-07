@@ -37,9 +37,9 @@
     ]
   },
   "devDependencies": {
-    "@types/chrome": "^0.0.50",
+    "@types/chrome": "^0.0.52",
     "babel-core": "^6.26.0",
-    "babel-eslint": "^8.0.1",
+    "babel-eslint": "^8.0.2",
     "babel-helper-vue-jsx-merge-props": "^2.0.2",
     "babel-loader": "^7.1.2",
     "babel-plugin-syntax-jsx": "^6.18.0",
@@ -66,7 +66,7 @@
     "url-loader": "^0.6.2",
     "vue": "^2.5.2",
     "vue-loader": "^13.3.0",
-    "vue-rx": "^4.0.1",
+    "vue-rx": "^5.0.0",
     "vue-template-compiler": "^2.5.2",
     "webpack": "^3.8.1",
     "webpack-dev-server": "^2.9.3",
