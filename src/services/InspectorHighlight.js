@@ -48,6 +48,22 @@ export default class InspectorHighlight {
         bounds.width * scale.x,
         bounds.height * scale.y
       );
+      
+      const offDisplay =
+          bounds.x + bounds.width < 0
+        || bounds.y + bounds.height < 0
+        || renderer.width / renderer.resolution < bounds.x * scale.x
+        || renderer.height / renderer.resolution < bounds.y * scale.y;
+        
+      box.lineStyle(2, offDisplay ? 0xff0000 : 0x007eff, 0.3)
+        .moveTo(
+          renderer.width / renderer.resolution / 2 , 
+          renderer.height / renderer.resolution / 2
+        )
+        .lineTo(
+          bounds.x * scale.x + bounds.width * scale.x / 2, 
+          bounds.y * scale.y + bounds.height * scale.y / 2
+        );
       box.endFill();
     } else {
       box.visible = false;
