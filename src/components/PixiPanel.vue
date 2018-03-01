@@ -3,9 +3,11 @@
     <Toolbar>
       <!-- <Toggle icon="node-search" v-if="isConnected" :value="selectMode" @change="toggleSelectMode" title="Select a node in the scene to inspect it"></Toggle> -->
       <button @click="reload">Reconnect</button>
+        <input v-model="searchKey" title="search" placeholder="Search"/>
+        <span @click="clearSearch" class="pixi-panel__search--clear">x</span>
     </Toolbar>
     <SplitView class="pixi-panel__body" v-if="injected">
-      <TreeView></TreeView>
+      <TreeView :search-key="searchKey"></TreeView>
       <DetailView></DetailView>
     </SplitView>
     <div class="pixi-panel__message" v-if="!injected && messageVisible">
@@ -52,6 +54,9 @@ export default {
       })
     }
   },
+  data: {
+    searchKey: ''
+  },
   methods: {
     toggleSelectMode (value) {
       this.selectModeSubscription = this.inspector$
@@ -59,6 +64,9 @@ export default {
         .subscribe(inspector => {
           inspector.selectMode(value)
         })
+    },
+    clearSearch () {
+      this.searchKey = '';
     },
     reload () {
       window.location.reload()
@@ -111,5 +119,14 @@ export default {
   margin-left: 15px;
   margin-right: 10px;
   margin-top: -5px;
+}
+
+.pixi-panel__search--clear {
+  background: #ccc;
+  text-align: center;
+  font-family: sans-serif;
+  padding: 2px 8px 3px;
+  border-radius: 50%;
+  font-size: 15px;
 }
 </style>
