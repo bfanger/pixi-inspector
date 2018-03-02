@@ -35,6 +35,9 @@ export default {
   props: {
     searchKey: {
       type: String
+    },
+    searchCnt: {
+      type: Number
     }
   },
   methods: {
@@ -65,11 +68,14 @@ export default {
       }
     },
     searchFilter (nodes) {
+      let searchCnt = 0;
       if (this.searchKey) {
         for (let node of nodes) {
           node.found = node.title.toLowerCase().includes(this.searchKey.toLowerCase());
+          searchCnt += node.found;
         }
       }
+      this.$emit('updateSearchCnt', searchCnt);
       return nodes;
     },
     navigateUp () {
