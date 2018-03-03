@@ -2,7 +2,7 @@
   <div class="pixi-panel" :class="{'dark-mode': darkMode}">
     <Toolbar>
       <!-- <Toggle icon="node-search" v-if="isConnected" :value="selectMode" @change="toggleSelectMode" title="Select a node in the scene to inspect it"></Toggle> -->
-      <button @click="reload">Reconnect</button>
+      <button @click="reload" class="pixi-panel__button--reconnect">Reconnect</button>
       <div class="pixi-panel__search">
         <span class="pixi-panel__search__counter" v-if="searchCounter">{{ searchCounter }} found</span>
         <input required v-model="searchKey" class="pixi-panel__search__input" title="search" placeholder="Search"/>
@@ -128,6 +128,17 @@ export default {
   margin-top: -5px;
 }
 
+.pixi-panel__button--reconnect {
+    background: white;
+    border: 1px solid #ccc;
+    padding: 3px 10px;
+    cursor: pointer;
+}
+
+.pixi-panel__button--reconnect:hover {
+    background: #eee;
+}
+
 .pixi-panel__search {
     min-width: 185px;
     position: absolute;
@@ -143,8 +154,8 @@ export default {
     border: 1px solid #ccc;
     outline: 0;
     border-radius: 15px;
-    padding: 5px;
-    padding-left: 10px;
+    margin-top: 1px;
+    padding: 5px 5px 5px 10px;
 }
 
 .pixi-panel__search__input:not(:valid) ~ .pixi-panel__search--clear {
