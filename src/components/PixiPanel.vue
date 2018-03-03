@@ -2,10 +2,15 @@
   <div class="pixi-panel" :class="{'dark-mode': darkMode}">
     <Toolbar>
       <!-- <Toggle icon="node-search" v-if="isConnected" :value="selectMode" @change="toggleSelectMode" title="Select a node in the scene to inspect it"></Toggle> -->
-      <button @click="reload">Reconnect</button>
+      <button @click="reload" class="pixi-panel__button--reconnect">Reconnect</button>
+      <div class="pixi-panel__search">
+        <span class="pixi-panel__search__counter" v-if="searchCounter">{{ searchCounter }} found</span>
+        <input required v-model="searchKey" class="pixi-panel__search__input" title="search" placeholder="Search"/>
+        <span @click="clearSearch" class="pixi-panel__search--clear"></span>
+      </div>
     </Toolbar>
     <SplitView class="pixi-panel__body" v-if="injected">
-      <TreeView></TreeView>
+      <TreeView :search-key="searchKey" :search-cnt="searchCounter" @updateSearchCnt="updateSearchCnt"></TreeView>
       <DetailView></DetailView>
     </SplitView>
     <div class="pixi-panel__message" v-if="!injected && messageVisible">
@@ -52,6 +57,10 @@ export default {
       })
     }
   },
+  data: {
+    searchKey: '',
+    searchCounter: 0
+  },
   methods: {
     toggleSelectMode (value) {
       this.selectModeSubscription = this.inspector$
@@ -59,6 +68,12 @@ export default {
         .subscribe(inspector => {
           inspector.selectMode(value)
         })
+    },
+    updateSearchCnt (value) {
+        this.searchCounter = value;
+    },
+    clearSearch () {
+      this.searchKey = '';
     },
     reload () {
       window.location.reload()
@@ -111,5 +126,71 @@ export default {
   margin-left: 15px;
   margin-right: 10px;
   margin-top: -5px;
+}
+
+.pixi-panel__button--reconnect {
+    background: white;
+    border: 1px solid #ccc;
+    padding: 3px 10px;
+    cursor: pointer;
+}
+
+.pixi-panel__button--reconnect:hover {
+    background: #eee;
+}
+
+.pixi-panel__search {
+    min-width: 185px;
+    position: absolute;
+    right: 5px;
+    top: 0;
+}
+
+.pixi-panel__search__counter {
+    font-size: 14px;
+}
+
+.pixi-panel__search__input {
+    border: 1px solid #ccc;
+    outline: 0;
+    border-radius: 15px;
+    margin-top: 1px;
+    padding: 5px 5px 5px 10px;
+}
+
+.pixi-panel__search__input:not(:valid) ~ .pixi-panel__search--clear {
+    display: none;
+}
+
+.pixi-panel__search--clear {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 3px;
+    bottom: 0;
+    border:1px solid transparent;
+    background-color: transparent;
+    display: inline-block;
+    vertical-align: middle;
+    outline: 0;
+    cursor: pointer;
+}
+
+.pixi-panel__search--clear:after {
+    content: "X";
+    display: block;
+    width: 15px;
+    height: 15px;
+    background-color: #FA9595;
+    z-index:1;
+    margin: auto;
+    padding: 2px;
+    border-radius: 50%;
+    text-align: center;
+    color: white;
+    font-weight: normal;
+    font-size: 12px;
+    box-shadow: 0 0 2px #E50F0F;
+    cursor: pointer;
 }
 </style>

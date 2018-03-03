@@ -6,7 +6,7 @@
         <div class="treeview__toggle__expand" v-if="row.node.children && row.node.collapsed" @click="expand(row.node)"></div>
         <div class="treeview__toggle__collapse" v-if="row.node.children && !row.node.collapsed" @click="collapse(row.node)"></div>
       </div>
-      <div class="treeview__label">{{row.title}}</div>
+      <div class="treeview__label" :class="{'treeview__label--found': row.node.found}">{{row.title}}</div>
     </div>
   </div>
 </template>
@@ -22,12 +22,22 @@ export default {
     return {
       selected: inspector$.switchMap(inspector => inspector.selected$),
       rows: inspector$.switchMap(inspector =>
-        inspector.tree$.map(this.flattenTree)
+        inspector.tree$
+            .do(this.searchMap)
+            .map(this.flattenTree)
       ),
       select: lastestInspector$.method('select'),
       expand: lastestInspector$.method('expand'),
       collapse: lastestInspector$.method('collapse'),
       highlight: lastestInspector$.method('highlight')
+    }
+  },
+  props: {
+    searchKey: {
+      type: String
+    },
+    searchCnt: {
+      type: Number
     }
   },
   methods: {
@@ -41,14 +51,7 @@ export default {
       return rows
     },
     flattenNode (node, rows, indent) {
-      let title = node.type
-      if (
-        typeof node.name !== 'undefined' &&
-        node.name !== null &&
-        node.name !== ''
-      ) {
-        title = node.type + ' [' + node.name + ']'
-      }
+      let title = this.makeTitle(node);
       rows.push({ indent, node, title })
       indent++
       if (!node.collapsed && node.children) {
@@ -57,7 +60,38 @@ export default {
         }
       }
     },
-
+    makeTitle (node) {
+      let title = node.type
+      if (
+        typeof node.name !== 'undefined' &&
+        node.name !== null &&
+        node.name !== ''
+      ) {
+        title = node.type + ' [' + node.name + ']'
+      }
+      return title;
+    },
+    searchMap (tree) {
+      let searchCnt = 0;
+      if (this.searchKey) {
+        searchCnt += this.searchInTree(tree)
+      }
+      this.$emit('updateSearchCnt', searchCnt);
+      return tree;
+    },
+    searchInTree (node) {
+      node.found = this.isContain(this.makeTitle(node), this.searchKey);
+      let cnt =  1 * node.found
+      if (!node.collapsed && node.children) {
+        for (const subnode of node.children) {
+          cnt += this.searchInTree(subnode);
+        }
+      }
+      return cnt;
+    },
+    isContain (title, key) {
+        return title.toLowerCase().includes(key.toLowerCase())
+    },
     navigateUp () {
       const index = this.findRowIndex(this.selected.id)
       if (index > 0) {
@@ -160,6 +194,13 @@ export default {
   .dark-mode.dark-mode & {
     background: #342e25;
   }
+}
+
+.treeview__label--found {
+  color: hsl(27, 100%, 30%);
+  box-shadow: 0px 0px 10px #ffff00a6;
+  background: #ffff0070;
+  padding: 1px 0;
 }
 
 .treeview:focus {

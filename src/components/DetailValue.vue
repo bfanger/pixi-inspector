@@ -1,6 +1,6 @@
 <template>
   <span>
-    <span v-if="field.type === 'number' || field.type === 'string'" contenteditable="true" @keydown="keydown" @input="input">{{field.value}}</span>
+    <span class="detailvalue__input" v-if="field.type === 'number' || field.type === 'string'" contenteditable="true" @keydown="keydown" @input="input">{{field.value}}</span>
     <label class="detailvalue__label" v-if="field.type === 'boolean'"><input type="checkbox"  v-model="field.value" @change="toggle()">{{field.value}}</label>
     <span>{{type()}}</span>
   </span>
@@ -66,6 +66,11 @@ export default {
 </script>
 
 <style>
+.detailvalue__input {
+  border: 1px solid #ddd;
+  min-width: 50px;
+  display: block;
+}
 .detailvalue__label {
   position: relative;
   padding-left: 12px;
