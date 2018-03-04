@@ -1,17 +1,17 @@
-import { Observable } from 'rxjs/Observable'
+import { Observable } from "rxjs/Observable";
 
-export default function fromEvent (onEvent) {
+export default function fromEvent(onEvent) {
   return Observable.create(observer => {
-    function listener (event) {
+    function listener(event, ...args) {
       if (arguments.length === 1) {
-        observer.next(event)
+        observer.next(event);
       } else {
-        observer.next(arguments)
+        observer.next([event, args]);
       }
     }
-    onEvent.addListener(listener)
+    onEvent.addListener(listener);
     return () => {
-      onEvent.removeListener(listener)
-    }
-  })
+      onEvent.removeListener(listener);
+    };
+  });
 }

@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Pixi Inspector</title>
     <script type="text/javascript" src="http://localhost:8080/webpack-dev-server.js"></script>
 </head>
+
 <body style="display: flex">
 
     <canvas id="example" style="width: 480;height: 360px;"></canvas>
 
     <div id="devpanel" style="flex: 1">
-        <pixi-panel></pixi-panel><!-- this is where the PixiPanel will get rendered -->
+        <pixi-panel></pixi-panel>
+        <!-- this is where the PixiPanel will get rendered -->
     </div>
 
     <script src="../node_modules/pixi.js/dist/pixi.js"></script>
@@ -18,20 +21,20 @@
         var viewHeight = 360;
 
         var renderer = PIXI.autoDetectRenderer(viewWidth, viewHeight, {
-            backgroundColor : 0xFFFFFF, //0x1099bb,
+            backgroundColor: 0xFFFFFF, //0x1099bb,
             view: document.getElementById('example')
-         });
+        });
 
         // create an new instance of a pixi stage
         var stage = new PIXI.Container();
 
         stage._inspector = {
-          type: 'stage',
-          whitelist: ['position']
+            type: 'stage',
+            whitelist: ['position']
         };
 
         // create a background texture
-        var pondFloorTexture = PIXI.Texture.fromImage("http://www.goodboydigital.com/pixijs/examples/17/BGrotate.jpg");
+        var pondFloorTexture = PIXI.Texture.fromImage("assets/BGrotate.jpg");
         // create a new background sprite
         var pondFloorSprite = new PIXI.Sprite(pondFloorTexture);
         stage.addChild(pondFloorSprite);
@@ -44,11 +47,10 @@
 
         var totalDude = 10;
 
-        for (var i = 0; i < totalDude; i++)
-        {
+        for (var i = 0; i < totalDude; i++) {
 
             // create a new Sprite that uses the image name that we just generated as its source
-            var dude =  PIXI.Sprite.fromImage("http://www.goodboydigital.com/pixijs/examples/17/eggHead.png");
+            var dude = PIXI.Sprite.fromImage("assets/eggHead.png");
 
             // set the anchor point so the the dude texture is centerd on the sprite
             dude.anchor.x = dude.anchor.y = 0.5;
@@ -84,9 +86,9 @@
         // create a bounding box box for the little dudes
         var dudeBoundsPadding = 100;
         var dudeBounds = new PIXI.Rectangle(-dudeBoundsPadding,
-                                            -dudeBoundsPadding,
-                                            viewWidth + dudeBoundsPadding * 2,
-                                            viewHeight + dudeBoundsPadding * 2);
+            -dudeBoundsPadding,
+            viewWidth + dudeBoundsPadding * 2,
+            viewHeight + dudeBoundsPadding * 2);
 
 
 
@@ -96,23 +98,21 @@
         var tick = 0;
         requestAnimationFrame(animate);
 
-        function animate()
-        {
+        function animate() {
             // iterate through the dude and update the positiond
-            for (var i = 0; i < dudeArray.length; i++)
-            {
+            for (var i = 0; i < dudeArray.length; i++) {
                 var dude = dudeArray[i];
                 dude.direction += dude.turningSpeed * 0.01;
                 dude.position.x += Math.sin(dude.direction) * dude.speed;
                 dude.position.y += Math.cos(dude.direction) * dude.speed;
-                dude.rotation = -dude.direction - Math.PI/2;
+                dude.rotation = -dude.direction - Math.PI / 2;
 
                 // wrap the dudes by testing there bounds..
-                if(dude.position.x < dudeBounds.x)dude.position.x += dudeBounds.width;
-                else if(dude.position.x > dudeBounds.x + dudeBounds.width)dude.position.x -= dudeBounds.width
+                if (dude.position.x < dudeBounds.x) dude.position.x += dudeBounds.width;
+                else if (dude.position.x > dudeBounds.x + dudeBounds.width) dude.position.x -= dudeBounds.width
 
-                if(dude.position.y < dudeBounds.y)dude.position.y += dudeBounds.height;
-                else if(dude.position.y > dudeBounds.y + dudeBounds.height)dude.position.y -= dudeBounds.height
+                if (dude.position.y < dudeBounds.y) dude.position.y += dudeBounds.height;
+                else if (dude.position.y > dudeBounds.y + dudeBounds.height) dude.position.y -= dudeBounds.height
             }
 
             // increment the ticker
@@ -124,7 +124,7 @@
             renderer.render(stage);
 
             // request another animation frame..
-            requestAnimationFrame( animate );
+            requestAnimationFrame(animate);
         }
         // renderer.view.addEventListener('click', () => {
         //     renderer.render(stage);
@@ -134,4 +134,5 @@
 
     <script type="text/javascript" src="../pixi.panel.bundle.js"></script>
 </body>
+
 </html>

@@ -1,23 +1,25 @@
 <script>
 export default {
-  render (h) {
-    const items = this.children().map(vnode => <div class='splitview__item' >{vnode}</div>)
-    return <div class='splitview'>{items}</div>
-  },
   methods: {
-    children () {
+    children() {
       if (!this.$slots.default) {
-        return []
+        return [];
       }
       return this.$slots.default.filter(vnode => {
-        if (typeof vnode.tag === 'undefined' && vnode.text === ' ') {
-          return false
+        if (typeof vnode.tag === "undefined" && vnode.text === " ") {
+          return false;
         }
-        return true
-      })
+        return true;
+      });
     }
+  },
+  render() {
+    const items = this.children().map(vnode => (
+      <div class="splitview__item">{vnode}</div>
+    ));
+    return <div class="splitview">{items}</div>;
   }
-}
+};
 </script>
 
 <style lang="scss">

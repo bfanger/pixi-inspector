@@ -1,27 +1,33 @@
-import { Observable } from 'rxjs/Observable'
-import stream from './stream'
-import debug from './debug'
+/* eslint-disable no-console */
+import { Observable } from "rxjs/Observable";
+import stream from "./stream";
+import debug from "./debug";
 
 export default class Client {
   /**
    * @param {*} connection
    * @param {number|object} recipient
    */
-  constructor (connection, recipient) {
-    this.isBroadcast = (typeof recipient !== 'number')
-    if (typeof recipient === 'string') {
-      this.recipient = { name: recipient }
+  constructor(connection, recipient) {
+    this.isBroadcast = typeof recipient !== "number";
+    if (typeof recipient === "string") {
+      this.recipient = { name: recipient };
     } else {
-      this.recipient = recipient
+      this.recipient = recipient;
     }
-    this.connection = connection
+    this.connection = connection;
   }
 
-  get disconnect$ () {
+  get disconnect$() {
     if (this.isBroadcast) {
-      return Observable.throw(new Error('disconnect$ is not available for broadcast clients'))
+      return Observable.throw(
+        new Error("disconnect$ is not available for broadcast clients")
+      );
     }
-    return this.connection.on('DISCONNECTED').filter(message => message.from === this.recipient).take(1)
+    return this.connection
+      .on("DISCONNECTED")
+      .filter(message => message.from === this.recipient)
+      .take(1);
   }
 
   /**
@@ -31,41 +37,50 @@ export default class Client {
    * @param {*} data
    * @returns {Observable}
    */
-  send (command, data, options = {}) {
-    const message = Object.assign({ data }, options)
+  send(command, data, options = {}) {
+    const message = Object.assign({ data }, options);
     if (this.isBroadcast) {
-      message.broadcast = command
-      message.filter = Object.assign({
-        tabId: this.recipient.tabId || chrome.devtools && chrome.devtools.inspectedWindow && chrome.devtools.inspectedWindow.tabId
-      }, this.recipient)
+      message.broadcast = command;
+      message.filter = Object.assign(
+        {
+          tabId:
+            this.recipient.tabId ||
+            (chrome.devtools &&
+              chrome.devtools.inspectedWindow &&
+              chrome.devtools.inspectedWindow.tabId)
+        },
+        this.recipient
+      );
     } else {
-      message.command = command
-      message.to = this.recipient
+      message.command = command;
+      message.to = this.recipient;
     }
     if (debug) {
-      const logMessage = (message.id ? 'stream "' + command + '" from' : 'send "' + command + '" to')
-      if (typeof data === 'undefined') {
-        console.log(logMessage, this.recipient)
+      const logMessage = message.id
+        ? 'stream "' + command + '" from'
+        : 'send "' + command + '" to';
+      if (typeof data === "undefined") {
+        console.log(logMessage, this.recipient);
       } else {
-        console.log(logMessage, this.recipient, data)
+        console.log(logMessage, this.recipient, data);
       }
     }
-    this.connection.postMessage(message)
+    this.connection.postMessage(message);
   }
 
   /**
-     * Send a command and stream the replys
-     *
-     * @param {string} command
-     * @param {*} data
-     * @returns {Observable}
-     */
-  stream (command, data) {
-    const message$ = stream(this, command, data)
+   * Send a command and stream the replys
+   *
+   * @param {string} command
+   * @param {*} data
+   * @returns {Observable}
+   */
+  stream(command, data) {
+    const message$ = stream(this, command, data);
     if (this.isBroadcast) {
-      return message$
+      return message$;
     }
-    return message$.takeUntil(this.disconnect$)
+    return message$.takeUntil(this.disconnect$);
   }
 
   /**
@@ -76,24 +91,34 @@ export default class Client {
    * @param {*} data
    * @returns {Observable}
    */
-  get (command, data) {
+  get(command, data) {
     if (this.isBroadcast) {
-      throw new Error('Invalid recipient') // Prevent accidental race conditions
+      throw new Error("Invalid recipient"); // Prevent accidental race conditions
     }
     if (debug) {
       if (arguments.length === 1) {
-        console.log('client[' + this.recipient + '] get "' + command + '"')
+        console.log("client[" + this.recipient + '] get "' + command + '"');
       } else {
-        console.log('client[' + this.recipient + '] get "' + command + '"(', data, ')')
+        console.log(
+          "client[" + this.recipient + '] get "' + command + '"(',
+          data,
+          ")"
+        );
       }
     }
-    const message$ = stream(this, command, data)
+    const message$ = stream(this, command, data);
     return message$.take(1).map(message => {
       if (message.response !== command) {
-        throw new Error('Unexpected response "' + message.response + '", expecting "' + command + '"')
+        throw new Error(
+          'Unexpected response "' +
+            message.response +
+            '", expecting "' +
+            command +
+            '"'
+        );
       }
-      return message.data
-    })
+      return message.data;
+    });
   }
 
   /**
@@ -102,15 +127,19 @@ export default class Client {
    * @param {string} command
    * @param {*} data
    */
-  set (command, data) {
+  set(command, data) {
     if (this.isBroadcast) {
-      throw new Error('Invalid recipient') // Prevent accidental race conditions
+      throw new Error("Invalid recipient"); // Prevent accidental race conditions
     }
-    debug && console.log('client[' + this.recipient + '] set "' + command + '" = ', data)
+    debug &&
+      console.log(
+        "client[" + this.recipient + '] set "' + command + '" = ',
+        data
+      );
     this.connection.postMessage({
-      command: command,
+      command,
       to: this.recipient,
-      data: data
-    })
+      data
+    });
   }
 }

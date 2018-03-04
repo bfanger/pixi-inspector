@@ -1,18 +1,21 @@
 <template>
-  <span :class="{toggle:true, 'toggle--on': value, 'toggle--off': !value}"
-        @click="$emit('change', !value)">
-  			<span :class="['toggle__icon', 'toggle__icon--' + icon]" :title="title"></span>
+  <span 
+    :class="{toggle:true, 'toggle--on': value, 'toggle--off': !value}"
+    @click="$emit('change', !value)">
+    <span 
+      :class="['toggle__icon', 'toggle__icon--' + icon]" 
+      :title="title"/>
   </span>
 </template>
 
 <script>
 export default {
   props: {
-    value: Boolean,
-    title: String,
-    icon: String
+    value: { type: Boolean, required: true },
+    title: { type: String, required: true },
+    icon: { type: String, required: true }
   }
-}
+};
 </script>
 
 <style lang="scss">
@@ -30,11 +33,11 @@ export default {
     background: rgb(66, 129, 235);
   }
   .toggle--off & {
-    background: #5a5a5a
+    background: #5a5a5a;
   }
 }
 
 .toggle__icon--node-search {
-  -webkit-mask-image: url(../../img/select-to-inspect.png)
+  -webkit-mask-image: url(../../img/select-to-inspect.png);
 }
 </style>

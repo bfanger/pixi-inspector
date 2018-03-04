@@ -5,8 +5,6 @@ export default Observable.merge(
   Observable.of(null),
   fromEvent(chrome.tabs.onHighlighted),
   fromEvent(chrome.tabs.onRemoved)
-).switchMap(() => {
-  return new Promise(resolve => {
+).switchMap(() => new Promise(resolve => {
     chrome.tabs.query({ highlighted: true }, resolve)
-  })
-})
+  }))
