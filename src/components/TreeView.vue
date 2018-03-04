@@ -39,9 +39,7 @@ import lastestInspector$ from "../services/lastestInspector$";
 
 export default {
   subscriptions() {
-    const inspector$ = lastestInspector$.filter(
-      inspector => inspector !== null
-    );
+    const inspector$ = lastestInspector$.filter(inspector => inspector !== null);
     return {
       selected: inspector$.switchMap(inspector => inspector.selected$),
       rows: inspector$.switchMap(inspector =>
@@ -54,7 +52,7 @@ export default {
     };
   },
   props: {
-    searchKey: {
+    search: {
       type: String,
       default: ""
     }
@@ -71,11 +69,7 @@ export default {
     },
     flattenNode(node, rows, indent) {
       let title = node.type;
-      if (
-        typeof node.name !== "undefined" &&
-        node.name !== null &&
-        node.name !== ""
-      ) {
+      if (typeof node.name !== "undefined" && node.name !== null && node.name !== "") {
         title = node.type + " [" + node.name + "]";
       }
       rows.push({ indent, node, title });
@@ -87,11 +81,9 @@ export default {
       }
     },
     searchFilter(nodes) {
-      if (this.searchKey) {
+      if (this.search) {
         for (const node of nodes) {
-          node.found = node.title
-            .toLowerCase()
-            .includes(this.searchKey.toLowerCase());
+          node.found = node.title.toLowerCase().includes(this.search.toLowerCase());
         }
       }
       return nodes;

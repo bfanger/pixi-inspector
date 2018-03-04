@@ -102,7 +102,7 @@ if (isDevServer) {
       })
     ],
     devServer: {
-      quiet: true
+      noInfo: false
     }
   });
 }

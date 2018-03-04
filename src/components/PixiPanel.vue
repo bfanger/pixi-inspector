@@ -6,14 +6,15 @@
       <!-- <Toggle icon="node-search" v-if="isConnected" :value="selectMode" @change="toggleSelectMode" title="Select a node in the scene to inspect it"></Toggle> -->
       <button @click="reload">Reconnect</button>
       <input 
-        v-model="searchKey" 
+        v-model="search" 
+        class="pixi-panel__search"
         type="search" 
-        placeholder="Search">
+        placeholder="Find">
     </Toolbar>
     <SplitView 
       v-if="injected" 
       class="pixi-panel__body">
-      <TreeView :search-key="searchKey"/>
+      <TreeView :search="search"/>
       <DetailView/>
     </SplitView>
     <div 
@@ -41,7 +42,7 @@ export default {
   components: { Toolbar, Toggle, SplitView, TreeView, DetailView },
   data() {
     return {
-      searchKey: ""
+      search: ""
     };
   },
   computed: {
@@ -69,11 +70,9 @@ export default {
   },
   methods: {
     toggleSelectMode(value) {
-      this.selectModeSubscription = this.inspector$
-        .first()
-        .subscribe(inspector => {
-          inspector.selectMode(value);
-        });
+      this.selectModeSubscription = this.inspector$.first().subscribe(inspector => {
+        inspector.selectMode(value);
+      });
     },
     reload() {
       window.location.reload();
@@ -126,5 +125,14 @@ export default {
   margin-left: 15px;
   margin-right: 10px;
   margin-top: -5px;
+}
+.pixi-panel__search {
+  border: 1px solid #d8d8d8;
+  padding: 2px 3px 1px 3px;
+  border-radius: 2px;
+  font: 12px ".SFNSDisplay-Regular", "Helvetica Neue", "Lucida Grande", sans-serif;
+  &:focus {
+    outline: none;
+  }
 }
 </style>
