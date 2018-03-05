@@ -1,16 +1,15 @@
 {
   "manifest_version": 2,
-  "version": "0.8.0",
+  "version": "0.8.1",
   "name": "PixiJS devtools",
-  "description": "Developer Tools for inspecting and debugging games written with Pixi.js",
+  "description":
+    "Developer Tools for inspecting and debugging games written with Pixi.js",
   "icons": {
     "16": "webstore-icon.png",
     "48": "webstore-icon.png",
     "128": "webstore-icon.png"
   },
-  "permissions": [
-    "<all_urls>"
-  ],
+  "permissions": ["<all_urls>"],
   "devtools_page": "pixi.devtools.html",
   "page_action": {
     "default_icon": {
@@ -21,18 +20,15 @@
   },
 
   "background": {
-    "scripts": [
-      "pixi.background.bundle.js"
-    ]
+    "scripts": ["pixi.background.bundle.js"]
   },
-  "content_scripts": [{
-      "matches": [ "<all_urls>" ],
-      "js": [ "pixi.content.js" ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["pixi.content.js"],
       "all_frames": true,
       "run_at": "document_start"
     }
   ],
-  "web_accessible_resources": [
-    "pixi.inspector.bundle.js"
-  ]
+  "web_accessible_resources": ["pixi.inspector.bundle.js"]
 }

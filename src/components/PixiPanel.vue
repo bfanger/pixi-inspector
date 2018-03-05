@@ -1,14 +1,25 @@
 <template>
-  <div class="pixi-panel" :class="{'dark-mode': darkMode}">
+  <div 
+    :class="{'dark-mode': darkMode}" 
+    class="pixi-panel">
     <Toolbar>
       <!-- <Toggle icon="node-search" v-if="isConnected" :value="selectMode" @change="toggleSelectMode" title="Select a node in the scene to inspect it"></Toggle> -->
       <button @click="reload">Reconnect</button>
+      <input 
+        v-model="search" 
+        class="pixi-panel__search"
+        type="search" 
+        placeholder="Find">
     </Toolbar>
-    <SplitView class="pixi-panel__body" v-if="injected">
-      <TreeView></TreeView>
-      <DetailView></DetailView>
+    <SplitView 
+      v-if="injected" 
+      class="pixi-panel__body">
+      <TreeView :search="search"/>
+      <DetailView/>
     </SplitView>
-    <div class="pixi-panel__message" v-if="!injected && messageVisible">
+    <div 
+      v-if="!injected && messageVisible"
+      class="pixi-panel__message">
       Looking for
       <span class="pixi-panel__inline-logo">pixijs</span> ...
       <!-- <button v-if="instance === null" @click="detect">Retry</button> -->
@@ -17,57 +28,60 @@
 </template>
 
 <script>
-import { Observable } from 'rxjs/Observable'
-import Toolbar from './Toolbar'
-import Toggle from './Toggle'
-import SplitView from './SplitView'
-import TreeView from './TreeView'
-import DetailView from './DetailView'
-import connection from '../services/connection'
-import active$ from '../services/active$'
-import lastestInspector$ from '../services/lastestInspector$'
+import { Observable } from "rxjs/Observable";
+import Toolbar from "./Toolbar.vue";
+import Toggle from "./Toggle.vue";
+import SplitView from "./SplitView.vue";
+import TreeView from "./TreeView.vue";
+import DetailView from "./DetailView.vue";
+import connection from "../services/connection";
+import active$ from "../services/active$";
+import lastestInspector$ from "../services/lastestInspector$";
 
 export default {
   components: { Toolbar, Toggle, SplitView, TreeView, DetailView },
+  data() {
+    return {
+      search: ""
+    };
+  },
   computed: {
-    darkMode () {
+    darkMode() {
       return (
-        typeof chrome !== 'undefined' &&
-        typeof chrome.devtools !== 'undefined' &&
-        typeof chrome.devtools.panels !== 'undefined' &&
-        chrome.devtools.panels.themeName === 'dark'
-      )
+        typeof chrome !== "undefined" &&
+        typeof chrome.devtools !== "undefined" &&
+        typeof chrome.devtools.panels !== "undefined" &&
+        chrome.devtools.panels.themeName === "dark"
+      );
     }
   },
-  subscriptions () {
+  subscriptions() {
     return {
       injected: lastestInspector$.map(inspector => inspector !== null),
       messageVisible: active$.switchMap(active => {
         if (active) {
           return Observable.timer(100)
             .map(() => true)
-            .startWith(false)
+            .startWith(false);
         }
-        return Observable.of(false)
+        return Observable.of(false);
       })
-    }
+    };
   },
   methods: {
-    toggleSelectMode (value) {
-      this.selectModeSubscription = this.inspector$
-        .first()
-        .subscribe(inspector => {
-          inspector.selectMode(value)
-        })
+    toggleSelectMode(value) {
+      this.selectModeSubscription = this.inspector$.first().subscribe(inspector => {
+        inspector.selectMode(value);
+      });
     },
-    reload () {
-      window.location.reload()
+    reload() {
+      window.location.reload();
     },
-    detect () {
-      connection.to('content_scripts').send('DETECT')
+    detect() {
+      connection.to("content_scripts").send("DETECT");
     }
   }
-}
+};
 </script>
 
 <style lang="scss">
@@ -83,7 +97,7 @@ export default {
 }
 
 .dark-mode {
-    color: #bdc6cf;
+  color: #bdc6cf;
 }
 
 .pixi-panel__body {
@@ -111,5 +125,14 @@ export default {
   margin-left: 15px;
   margin-right: 10px;
   margin-top: -5px;
+}
+.pixi-panel__search {
+  border: 1px solid #d8d8d8;
+  padding: 2px 3px 1px 3px;
+  border-radius: 2px;
+  font: 12px ".SFNSDisplay-Regular", "Helvetica Neue", "Lucida Grande", sans-serif;
+  &:focus {
+    outline: none;
+  }
 }
 </style>

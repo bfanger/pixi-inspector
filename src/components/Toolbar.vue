@@ -1,6 +1,6 @@
 <template>
   <div class="toolbar">
-    <slot></slot>
+    <slot/>
   </div>
 </template>
 
