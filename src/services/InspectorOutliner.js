@@ -93,7 +93,14 @@ export default class InspectorOutliner {
       return this.serialize(node).children;
     }
   }
-
+  searchFilter(search) {
+    if (search) {
+      for (const node of this.nodes) {
+        node.found = (node.name) && node.name.toLowerCase().includes(search.toLowerCase());
+      }
+    }
+    this.inspector.emit("TREE", this.serialize(this.root));
+  }
   highlight(id) {
     const node = this.nodes[id];
     if (node) {
