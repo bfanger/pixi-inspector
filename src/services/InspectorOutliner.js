@@ -96,10 +96,10 @@ export default class InspectorOutliner {
   searchFilter(search) {
     if (search) {
       for (const node of this.nodes) {
-        node.found = (node.name) && node.name.toLowerCase().includes(search.toLowerCase());
+        node[outliner].found = (node[outliner].name) && node[outliner].name.toLowerCase().includes(search.toLowerCase());
       }
     }
-    this.inspector.emit("TREE", this.serialize(this.root));
+    this.inspector.emit("TREE", this.serialize(this.nodes));
   }
   highlight(id) {
     const node = this.nodes[id];
