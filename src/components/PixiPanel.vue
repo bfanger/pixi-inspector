@@ -6,7 +6,7 @@
       <!-- <Toggle icon="node-search" v-if="isConnected" :value="selectMode" @change="toggleSelectMode" title="Select a node in the scene to inspect it"></Toggle> -->
       <button @click="reload">Reconnect</button>
       <input 
-        v-model="search"
+        v-model="search" 
         v-on:keyup.enter="searchFilter(search)"
         class="pixi-panel__search"
         type="search" 
@@ -43,8 +43,7 @@ export default {
   components: { Toolbar, Toggle, SplitView, TreeView, DetailView },
   data() {
     return {
-      search: "",
-      lastestInspector$,
+      search: ""
     };
   },
   computed: {
