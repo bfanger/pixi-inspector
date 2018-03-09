@@ -10,7 +10,7 @@
       v-for="row in rows" 
       :key="row.node.id" 
       :data-id="row.node.id" 
-      :class="{'treeview__item--selected': selected && row.node.id === selected.id, 'treeview__item--found': row.found}" 
+      :class="{'treeview__item--selected': selected && row.node.id === selected.id, 'treeview__item--found': row.node.found}" 
       class="treeview__item" 
       @mousedown="select(row.node)" 
       @mouseenter="highlight(row.node)" 
@@ -43,7 +43,10 @@ export default {
     return {
       selected: inspector$.switchMap(inspector => inspector.selected$),
       rows: inspector$.switchMap(inspector =>
-        inspector.tree$.map(this.flattenTree)
+        inspector.tree$.map(this.flattenTree).do(rows => {
+          console.log(rows);
+          return rows;
+        })
       ),
       select: lastestInspector$.method("select"),
       expand: lastestInspector$.method("expand"),
@@ -56,7 +59,7 @@ export default {
       const rows = [];
       if (Array.isArray(tree.children)) {
         for (const node of tree.children) {
-          this.flattenNode(node, rows, 0);
+          this.flattenNode(node, rows, 0, null);
         }
       }
       return rows;
