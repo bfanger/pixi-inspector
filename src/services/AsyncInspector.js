@@ -57,7 +57,11 @@ export default class AsyncInspector {
       this.local.treeChange$.next(node);
     });
   }
-
+  searchFilter(search) {
+    this.call("outliner.searchFilter", search).then(() => {
+      this.local.treeChange$.next(search);
+    });
+  }
   collapse(node) {
     return this.call("outliner.collapse", node.id).then(children => {
       node.collapsed = true;

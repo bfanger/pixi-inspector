@@ -24,6 +24,7 @@ export default class InspectorOutliner {
     // @todo Garbage collect nodes
 
     this.previousTree = {};
+    this.previewSearth = "";
 
     this.inspector.registerHook("beforeRender", this.detectScene.bind(this));
     this.inspector.registerHook(
@@ -91,6 +92,28 @@ export default class InspectorOutliner {
     if (node) {
       node[outliner].collapsed = true;
       return this.serialize(node).children;
+    }
+  }
+  searchFilter(search) {
+    if (search) {
+      for (const node of this.nodes) {
+        node[outliner].found = (node[outliner].name) && node[outliner].name.toLowerCase().includes(search.toLowerCase());
+        node[outliner].found && this.extendAllParents(node);
+      }
+    } else {
+      for (const node of this.nodes) {
+        node[outliner].found = false;
+      }
+    }
+    //this.inspector.emit("TREE", this.serialize(this.root));
+  }
+
+  extendAllParents(node) {
+    for (const nodeF of this.nodes) {
+      if (node[outliner].parent === nodeF[outliner].id) {
+        nodeF[outliner].collapsed = false;
+        this.extendAllParents(nodeF);
+      }
     }
   }
 

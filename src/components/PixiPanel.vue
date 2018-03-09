@@ -9,7 +9,8 @@
         v-model="search" 
         class="pixi-panel__search"
         type="search" 
-        placeholder="Find">
+        placeholder="Find by name"
+        @keyup.enter="searchFilter(search)">
     </Toolbar>
     <SplitView 
       v-if="injected" 
@@ -65,7 +66,8 @@ export default {
             .startWith(false);
         }
         return Observable.of(false);
-      })
+      }),
+      searchFilter: lastestInspector$.method("searchFilter")
     };
   },
   methods: {

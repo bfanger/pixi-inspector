@@ -10,7 +10,7 @@
       v-for="row in rows" 
       :key="row.node.id" 
       :data-id="row.node.id" 
-      :class="{'treeview__item--selected': selected && row.node.id === selected.id, 'treeview__item--found': row.found}" 
+      :class="{'treeview__item--selected': selected && row.node.id === selected.id, 'treeview__item--found': row.node.found}" 
       class="treeview__item" 
       @mousedown="select(row.node)" 
       @mouseenter="highlight(row.node)" 
@@ -43,19 +43,13 @@ export default {
     return {
       selected: inspector$.switchMap(inspector => inspector.selected$),
       rows: inspector$.switchMap(inspector =>
-        inspector.tree$.map(this.flattenTree).filter(this.searchFilter)
+        inspector.tree$.map(this.flattenTree)
       ),
       select: lastestInspector$.method("select"),
       expand: lastestInspector$.method("expand"),
       collapse: lastestInspector$.method("collapse"),
       highlight: lastestInspector$.method("highlight")
     };
-  },
-  props: {
-    search: {
-      type: String,
-      default: ""
-    }
   },
   methods: {
     flattenTree(tree) {
@@ -79,14 +73,6 @@ export default {
           this.flattenNode(subnode, rows, indent);
         }
       }
-    },
-    searchFilter(nodes) {
-      if (this.search) {
-        for (const node of nodes) {
-          node.found = node.title.toLowerCase().includes(this.search.toLowerCase());
-        }
-      }
-      return nodes;
     },
     navigateUp() {
       const index = this.findRowIndex(this.selected.id);
