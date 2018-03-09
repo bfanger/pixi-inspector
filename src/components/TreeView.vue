@@ -59,7 +59,7 @@ export default {
       const rows = [];
       if (Array.isArray(tree.children)) {
         for (const node of tree.children) {
-          this.flattenNode(node, rows, 0, null);
+          this.flattenNode(node, rows, 0);
         }
       }
       return rows;
