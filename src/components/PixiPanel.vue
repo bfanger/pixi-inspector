@@ -10,7 +10,7 @@
         v-on:keyup.enter="searchFilter(search)"
         class="pixi-panel__search"
         type="search" 
-        placeholder="Find">
+        placeholder="Find by name">
     </Toolbar>
     <SplitView 
       v-if="injected" 
