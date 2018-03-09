@@ -7,10 +7,10 @@
       <button @click="reload">Reconnect</button>
       <input 
         v-model="search" 
-        v-on:keyup.enter="searchFilter(search)"
         class="pixi-panel__search"
         type="search" 
-        placeholder="Find by name">
+        placeholder="Find by name"
+        @keyup.enter="searchFilter(search)">
     </Toolbar>
     <SplitView 
       v-if="injected" 
