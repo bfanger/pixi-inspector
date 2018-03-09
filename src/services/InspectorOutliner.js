@@ -112,6 +112,7 @@ export default class InspectorOutliner {
     for (const nodeF of this.nodes) {
       if (node[outliner].parent === nodeF[outliner].id) {
         nodeF[outliner].collapsed = false;
+        this.extendAllParents(nodeF);
       }
     }
   }
