@@ -43,10 +43,7 @@ export default {
     return {
       selected: inspector$.switchMap(inspector => inspector.selected$),
       rows: inspector$.switchMap(inspector =>
-        inspector.tree$.map(this.flattenTree).do(rows => {
-          console.log(rows);
-          return rows;
-        })
+        inspector.tree$.map(this.flattenTree)
       ),
       select: lastestInspector$.method("select"),
       expand: lastestInspector$.method("expand"),
