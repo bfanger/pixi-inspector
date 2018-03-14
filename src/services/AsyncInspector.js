@@ -57,16 +57,22 @@ export default class AsyncInspector {
       this.local.treeChange$.next(node);
     });
   }
-  searchFilter(search) {
-    this.call("outliner.searchFilter", search).then(() => {
-      this.local.treeChange$.next(search);
-    });
-  }
   collapse(node) {
     return this.call("outliner.collapse", node.id).then(children => {
       node.collapsed = true;
       node.children = children;
       this.local.treeChange$.next(node);
+    });
+  }
+  toggle(node) {
+    if (node.collapsed) {
+      return this.expand(node);
+    }
+    return this.collapse(node);
+  }
+  searchFilter(search) {
+    this.call("outliner.searchFilter", search).then(() => {
+      this.local.treeChange$.next(search);
     });
   }
   select(node) {
