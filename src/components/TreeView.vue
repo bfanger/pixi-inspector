@@ -13,7 +13,8 @@
       :class="{'treeview__item--selected': selected && row.node.id === selected.id, 'treeview__item--found': row.node.found}" 
       class="treeview__item" 
       @mousedown="select(row.node)" 
-      @mouseenter="highlight(row.node)" 
+      @mouseenter="highlight(row.node)"
+      @dblclick="toggle(row.node)" 
       @mouseleave="highlight(false)">
       <div 
         :style="{width: (row.indent * 14) + 'px'}"
@@ -21,7 +22,7 @@
       <div class="treeview__toggle">
         <div 
           v-if="row.node.children && row.node.collapsed" 
-          class="treeview__toggle__expand" 
+          class="treeview__toggle__expand"
           @click="expand(row.node)"/>
         <div 
           v-if="row.node.children && !row.node.collapsed" 
@@ -47,6 +48,7 @@ export default {
       ),
       select: lastestInspector$.method("select"),
       expand: lastestInspector$.method("expand"),
+      toggle: lastestInspector$.method("toggle"),
       collapse: lastestInspector$.method("collapse"),
       highlight: lastestInspector$.method("highlight")
     };
