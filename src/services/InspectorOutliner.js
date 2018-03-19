@@ -105,7 +105,7 @@ export default class InspectorOutliner {
         node[outliner].found = false;
       }
     }
-    //this.inspector.emit("TREE", this.serialize(this.root));
+    return this.serialize(this.root).children;
   }
 
   extendAllParents(node) {
@@ -198,7 +198,7 @@ export default class InspectorOutliner {
     if (Array.isArray(node.children)) {
       if (node.children.length === 0) {
         node[outliner].children = false;
-      } else if (node[outliner].collapsed === false) {
+      } else if (node[outliner].collapsed === false || !node[outliner].parent.found) {
         node[outliner].children = node.children.map(childNode =>
           this.serialize(childNode)
         );
