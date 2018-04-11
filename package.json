@@ -22,8 +22,15 @@
     "parserOptions": {
       "parser": "babel-eslint"
     },
-    "extends": ["recommended/esnext", "plugin:vue/recommended", "prettier"],
-    "plugins": ["vue", "only-warn"],
+    "extends": [
+      "recommended/esnext",
+      "plugin:vue/recommended",
+      "prettier"
+    ],
+    "plugins": [
+      "vue",
+      "only-warn"
+    ],
     "globals": {
       "chrome": true,
       "process": true
@@ -38,7 +45,9 @@
         }
       ]
     ],
-    "plugins": ["transform-vue-jsx"]
+    "plugins": [
+      "transform-vue-jsx"
+    ]
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
