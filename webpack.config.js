@@ -7,8 +7,7 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const FriendlyErrorsPlugin = require("friendly-errors-webpack-plugin");
 
 if (!process.env.NODE_ENV) {
-  process.env.NODE_ENV =
-    process.argv.indexOf("-p") !== -1 ? "production" : "development";
+  process.env.NODE_ENV = process.argv.indexOf("-p") !== -1 ? "production" : "development";
 }
 const mode = process.env.NODE_ENV;
 
@@ -87,9 +86,7 @@ if (process.env.NODE_ENV === "development") {
     plugins: [new FriendlyErrorsPlugin()]
   });
 }
-const isDevServer = process.argv.find(
-  arg => arg.substr(-18) === "webpack-dev-server"
-);
+const isDevServer = process.argv.find(arg => arg.substr(-18) === "webpack-dev-server");
 let webpackConfig = devConfig;
 if (isDevServer) {
   webpackConfig = merge(devConfig, {
@@ -102,7 +99,7 @@ if (isDevServer) {
       })
     ],
     devServer: {
-      noInfo: false
+      // noInfo: false
     }
   });
 }

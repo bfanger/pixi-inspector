@@ -3,17 +3,15 @@
   "version": "0.8.1",
   "license": "MIT",
   "scripts": {
-    "dev": "webpack-dev-server",
+    "dev": "webpack-dev-server --mode development",
     "test": "npm run lint",
     "lint": "eslint --ext js,vue --max-warnings 0 src",
     "clean": "rm -rf build",
-    "build": "webpack -p --progress",
-    "build:clean": "npm run clean && webpack -p",
-    "build:watch": "webpack -w --display none"
+    "build": "webpack --mode production -p --progress",
+    "build:clean": "npm run clean && webpack --mode production -p",
+    "build:watch": "webpack --mode development -w --display none"
   },
-  "prettier": {
-    "printWidth": 100
-  },
+
   "eslintConfig": {
     "root": true,
     "env": {
@@ -22,15 +20,8 @@
     "parserOptions": {
       "parser": "babel-eslint"
     },
-    "extends": [
-      "recommended/esnext",
-      "plugin:vue/recommended",
-      "prettier"
-    ],
-    "plugins": [
-      "vue",
-      "only-warn"
-    ],
+    "extends": ["esnext", "plugin:vue/recommended", "plugin:prettier/recommended"],
+    "plugins": ["only-warn"],
     "globals": {
       "chrome": true,
       "process": true
@@ -45,9 +36,7 @@
         }
       ]
     ],
-    "plugins": [
-      "transform-vue-jsx"
-    ]
+    "plugins": ["transform-vue-jsx"]
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
@@ -57,15 +46,14 @@
     "babel-plugin-syntax-jsx": "^6.18.0",
     "babel-plugin-transform-vue-jsx": "^3.5.1",
     "babel-preset-env": "^1.6.1",
-    "copy-webpack-plugin": "^4.5.0",
+    "copy-webpack-plugin": "^4.5.1",
     "css-loader": "^0.28.10",
     "eslint": "^4.18.2",
     "eslint-config-esnext": "^2.0.0",
     "eslint-config-prettier": "^2.9.0",
-    "eslint-config-recommended": "^2.0.0",
-    "eslint-friendly-formatter": "^3.0.0",
+    "eslint-friendly-formatter": "^4.0.1",
     "eslint-loader": "^2.0.0",
-    "eslint-plugin-babel": "^4.1.2",
+    "eslint-plugin-babel": "^5.0.0",
     "eslint-plugin-import": "^2.9.0",
     "eslint-plugin-only-warn": "^1.0.1",
     "eslint-plugin-prettier": "^2.6.0",
@@ -74,7 +62,7 @@
     "node-sass": "^4.7.2",
     "pixi.js": "^4.7.0",
     "prettier": "^1.11.1",
-    "sass-loader": "^6.0.7",
+    "sass-loader": "^7.0.1",
     "style-loader": "^0.20.2",
     "url-loader": "^1.0.1",
     "vue-loader": "^14.1.1",

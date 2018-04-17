@@ -97,7 +97,9 @@ export default class InspectorOutliner {
   searchFilter(search) {
     if (search) {
       for (const node of this.nodes) {
-        node[outliner].found = (node[outliner].name) && node[outliner].name.toLowerCase().includes(search.toLowerCase());
+        node[outliner].found =
+          node[outliner].name &&
+          node[outliner].name.toLowerCase().includes(search.toLowerCase());
         node[outliner].found && this.extendAllParents(node);
       }
     } else {
@@ -198,7 +200,10 @@ export default class InspectorOutliner {
     if (Array.isArray(node.children)) {
       if (node.children.length === 0) {
         node[outliner].children = false;
-      } else if (node[outliner].collapsed === false || !node[outliner].parent.found) {
+      } else if (
+        node[outliner].collapsed === false ||
+        !node[outliner].parent.found
+      ) {
         node[outliner].children = node.children.map(childNode =>
           this.serialize(childNode)
         );

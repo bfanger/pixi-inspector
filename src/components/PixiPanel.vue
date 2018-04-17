@@ -72,9 +72,11 @@ export default {
   },
   methods: {
     toggleSelectMode(value) {
-      this.selectModeSubscription = this.inspector$.first().subscribe(inspector => {
-        inspector.selectMode(value);
-      });
+      this.selectModeSubscription = this.inspector$
+        .first()
+        .subscribe(inspector => {
+          inspector.selectMode(value);
+        });
     },
     reload() {
       window.location.reload();
@@ -132,7 +134,8 @@ export default {
   border: 1px solid #d8d8d8;
   padding: 2px 3px 1px 3px;
   border-radius: 2px;
-  font: 12px ".SFNSDisplay-Regular", "Helvetica Neue", "Lucida Grande", sans-serif;
+  font: 12px ".SFNSDisplay-Regular", "Helvetica Neue", "Lucida Grande",
+    sans-serif;
   &:focus {
     outline: none;
   }

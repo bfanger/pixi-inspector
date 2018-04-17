@@ -40,7 +40,9 @@ import lastestInspector$ from "../services/lastestInspector$";
 
 export default {
   subscriptions() {
-    const inspector$ = lastestInspector$.filter(inspector => inspector !== null);
+    const inspector$ = lastestInspector$.filter(
+      inspector => inspector !== null
+    );
     return {
       selected: inspector$.switchMap(inspector => inspector.selected$),
       rows: inspector$.switchMap(inspector =>
@@ -65,7 +67,11 @@ export default {
     },
     flattenNode(node, rows, indent) {
       let title = node.type;
-      if (typeof node.name !== "undefined" && node.name !== null && node.name !== "") {
+      if (
+        typeof node.name !== "undefined" &&
+        node.name !== null &&
+        node.name !== ""
+      ) {
         title = node.type + " [" + node.name + "]";
       }
       rows.push({ indent, node, title });
