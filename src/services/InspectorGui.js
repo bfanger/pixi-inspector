@@ -75,10 +75,11 @@ export default class InspectorGui {
         Observable.fromEvent(canvas, "contextmenu").do(event => {
           event.preventDefault();
         }),
-        Observable.fromEvent(canvas, "mousedown", { capture: true })
+        Observable.fromEvent(canvas, "pointerdown", { capture: true })
           .withLatestFrom(iframe$, this.renderer$)
           .do(([event, iframe, renderer]) => {
-            if (event.which === 3) {
+            if (event.which === 3
+              || (event.pointerType === "touch" && event.altKey)) {
               this.calculateOffset(canvas, iframe);
               const scale = {
                 x: this.resolution.x / renderer.resolution,
