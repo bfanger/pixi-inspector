@@ -1,7 +1,6 @@
 /* global PIXI */
 /* eslint-disable no-console, class-methods-use-this */
-import { Observable } from "rxjs/Observable";
-import { Subject } from "rxjs/Subject";
+import { Subject, of, never } from "rxjs";
 import Inspector from "./Inspector";
 
 const commands = {
@@ -31,15 +30,15 @@ export class DevClient {
   }
   stream(command) {
     if (command === "INSTANCES") {
-      return Observable.of({
+      return of({
         data: [{ status: "INJECTED", version: PIXI.VERSION }]
       });
     }
     if (command === "PANEL_VISIBLE") {
-      return Observable.of({ data: true });
+      return of({ data: true });
     }
     console.warn("Unsupported stream", command);
-    return Observable.never();
+    return never();
   }
   get(command) {
     if (command === "INSPECTOR") {
@@ -47,7 +46,7 @@ export class DevClient {
         inspector = new Inspector({ PIXI, Phaser: window.Phaser }, emit);
       }
       window.pixiInspector = inspector;
-      return Observable.of(inspector);
+      return of(inspector);
     }
     throw new Error('Unsupported get "' + command + '"');
   }
@@ -64,12 +63,12 @@ export default class DevConnection {
       return commands[command];
     }
     if (command === "DETECTED") {
-      return Observable.never();
+      return never();
     }
     if (command === "DISCONNECTED") {
-      return Observable.never();
+      return never();
     }
     console.warn("Unsupported connection.on", command);
-    return Observable.never();
+    return never();
   }
 }

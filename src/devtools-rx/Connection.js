@@ -1,4 +1,5 @@
-import fromEvent from "./fromEvent";
+import { take, takeUntil, map, filter } from "rxjs/operators";
+import fromChromeEvent from "./fromChromeEvent";
 import Command from "./Command";
 import Client from "./Client";
 
@@ -34,13 +35,14 @@ export default class Connection {
   }
 
   get message$() {
-    return fromEvent(this._port.onMessage)
-      .takeUntil(this.disconnect$)
-      .map(([message]) => message);
+    return fromChromeEvent(this._port.onMessage).pipe(
+      takeUntil(this.disconnect$),
+      map(([message]) => message)
+    );
   }
 
   get disconnect$() {
-    return fromEvent(this._port.onDisconnect).take(1);
+    return fromChromeEvent(this._port.onDisconnect).pipe(take(1));
   }
 
   postMessage(message) {
@@ -58,9 +60,10 @@ export default class Connection {
    * @return {Observable}
    */
   on(command) {
-    return this.message$
-      .filter(message => message.command === command)
-      .map(message => new Command(this, message));
+    return this.message$.pipe(
+      filter(message => message.command === command),
+      map(message => new Command(this, message))
+    );
   }
 
   /**

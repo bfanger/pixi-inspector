@@ -1,6 +1,11 @@
-import { Observable } from "rxjs/Observable";
+import { Observable } from "rxjs";
 
-export default function fromEvent(onEvent) {
+/**
+ * Use an event object from the Chrome API as observable.
+ * https://developer.chrome.com/extensions/events
+ * @return {Observable}
+ */
+export default function fromChromeEvent(onEvent) {
   return Observable.create(observer => {
     function listener(event, ...args) {
       if (arguments.length === 1) {

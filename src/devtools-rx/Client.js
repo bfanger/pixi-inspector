@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
-import { Observable } from "rxjs/Observable";
+import { throwError } from "rxjs";
+import { filter, take, takeUntil, map } from "rxjs/operators";
 import stream from "./stream";
 import debug from "./debug";
 
@@ -20,14 +21,14 @@ export default class Client {
 
   get disconnect$() {
     if (this.isBroadcast) {
-      return Observable.throw(
+      return throwError(
         new Error("disconnect$ is not available for broadcast clients")
       );
     }
-    return this.connection
-      .on("DISCONNECTED")
-      .filter(message => message.from === this.recipient)
-      .take(1);
+    return this.connection.on("DISCONNECTED").pipe(
+      filter(message => message.from === this.recipient),
+      take(1)
+    );
   }
 
   /**
@@ -80,7 +81,7 @@ export default class Client {
     if (this.isBroadcast) {
       return message$;
     }
-    return message$.takeUntil(this.disconnect$);
+    return message$.pipe(takeUntil(this.disconnect$));
   }
 
   /**
@@ -107,18 +108,21 @@ export default class Client {
       }
     }
     const message$ = stream(this, command, data);
-    return message$.take(1).map(message => {
-      if (message.response !== command) {
-        throw new Error(
-          'Unexpected response "' +
-            message.response +
-            '", expecting "' +
-            command +
-            '"'
-        );
-      }
-      return message.data;
-    });
+    return message$.pipe(
+      take(1),
+      map(message => {
+        if (message.response !== command) {
+          throw new Error(
+            'Unexpected response "' +
+              message.response +
+              '", expecting "' +
+              command +
+              '"'
+          );
+        }
+        return message.data;
+      })
+    );
   }
 
   /**

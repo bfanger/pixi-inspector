@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
-import { Observable } from "rxjs/Observable";
+import { Observable } from "rxjs";
+import { publishReplay } from "rxjs/operators";
 import connection$ from "./connection$";
 import debug from "./debug";
 
@@ -28,7 +29,7 @@ const connections$ = Observable.create(observer => {
     connectSubscription.unsubscribe();
     disconnectSubscriptions.forEach(subscription => subscription.unsubscribe());
   };
-}).publishReplay(1);
+}).pipe(publishReplay(1));
 
 export const subscription = connections$.connect();
 

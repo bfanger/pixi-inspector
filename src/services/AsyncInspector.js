@@ -1,5 +1,5 @@
-import { Observable } from "rxjs/Observable";
-import { Subject } from "rxjs/Subject";
+import { Subject, defer, concat, merge as mergeObservables } from "rxjs";
+import { tap, merge, publishReplay, refCount, map } from "rxjs/operators";
 import asyncEval from "../devtools-rx/asyncEval";
 import connection from "./connection";
 
@@ -21,23 +21,25 @@ export default class AsyncInspector {
       selected$: new Subject(),
       treeChange$: new Subject()
     };
-    this.tree$ = Observable.defer(() => {
+    this.tree$ = defer(() => {
       let root;
-      return Observable.concat(
+      return concat(
         this.call("outliner.tree"),
-        connection.on("TREE").map(message => message.data)
-      )
-        .do(tree => {
+        connection.on("TREE").pipe(map(message => message.data))
+      ).pipe(
+        tap(tree => {
           root = tree;
-        })
-        .merge(this.local.treeChange$.map(() => root));
-    })
-      .publishReplay(1)
-      .refCount();
+        }),
+        merge(this.local.treeChange$.pipe(map(() => root)))
+      );
+    }).pipe(
+      publishReplay(1),
+      refCount()
+    );
 
-    this.selected$ = Observable.merge(
-      Observable.defer(() => this.call("outliner.selected")),
-      connection.on("SELECTED").map(message => message.data),
+    this.selected$ = mergeObservables(
+      defer(() => this.call("outliner.selected")),
+      connection.on("SELECTED").pipe(map(message => message.data)),
       this.local.selected$
     );
   }

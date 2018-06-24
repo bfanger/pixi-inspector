@@ -1,3 +1,3 @@
-import fromEvent from "./fromEvent";
+import fromChromeEvent from "./fromChromeEvent";
 
-export default fromEvent(chrome.runtime.onMessage);
+export default fromChromeEvent(chrome.runtime.onMessage);

@@ -1,4 +1,4 @@
-import { ReplaySubject } from "rxjs/ReplaySubject";
+import { ReplaySubject } from "rxjs";
 import TypeDetection from "./TypeDetection";
 import Outliner from "./InspectorOutliner";
 import Properties from "./InspectorProperties";

@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { Observable } from "rxjs/Observable";
+import { of, timer } from "rxjs";
 import Toolbar from "./Toolbar.vue";
 import Toggle from "./Toggle.vue";
 import SplitView from "./SplitView.vue";
@@ -37,7 +37,8 @@ import TreeView from "./TreeView.vue";
 import DetailView from "./DetailView.vue";
 import connection from "../services/connection";
 import active$ from "../services/active$";
-import lastestInspector$ from "../services/lastestInspector$";
+import latestInspector$ from "../services/latestInspector$";
+import { map, switchMap, startWith } from "rxjs/operators";
 
 export default {
   components: { Toolbar, Toggle, SplitView, TreeView, DetailView },
@@ -58,16 +59,19 @@ export default {
   },
   subscriptions() {
     return {
-      injected: lastestInspector$.map(inspector => inspector !== null),
-      messageVisible: active$.switchMap(active => {
-        if (active) {
-          return Observable.timer(100)
-            .map(() => true)
-            .startWith(false);
-        }
-        return Observable.of(false);
-      }),
-      searchFilter: lastestInspector$.method("searchFilter")
+      injected: latestInspector$.pipe(map(inspector => inspector !== null)),
+      messageVisible: active$.pipe(
+        switchMap(active => {
+          if (active) {
+            return timer(100).pipe(
+              map(() => true),
+              startWith(false)
+            );
+          }
+          return of(false);
+        })
+      ),
+      searchFilter: latestInspector$.method("searchFilter")
     };
   },
   methods: {

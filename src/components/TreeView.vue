@@ -36,23 +36,25 @@
 </template>
 
 <script>
-import lastestInspector$ from "../services/lastestInspector$";
+import { filter, map, switchMap } from "rxjs/operators";
+import latestInspector$ from "../services/latestInspector$";
 
 export default {
   subscriptions() {
-    const inspector$ = lastestInspector$.filter(
-      inspector => inspector !== null
+    const inspector$ = latestInspector$.pipe(
+      filter(inspector => inspector !== null)
     );
     return {
-      selected: inspector$.switchMap(inspector => inspector.selected$),
-      rows: inspector$.switchMap(inspector =>
-        inspector.tree$.map(this.flattenTree)
+      selected: inspector$.pipe(switchMap(inspector => inspector.selected$)),
+      rows: inspector$.pipe(
+        switchMap(inspector => inspector.tree$),
+        map(this.flattenTree)
       ),
-      select: lastestInspector$.method("select"),
-      expand: lastestInspector$.method("expand"),
-      toggle: lastestInspector$.method("toggle"),
-      collapse: lastestInspector$.method("collapse"),
-      highlight: lastestInspector$.method("highlight")
+      select: latestInspector$.method("select"),
+      expand: latestInspector$.method("expand"),
+      toggle: latestInspector$.method("toggle"),
+      collapse: latestInspector$.method("collapse"),
+      highlight: latestInspector$.method("highlight")
     };
   },
   methods: {

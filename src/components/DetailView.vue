@@ -13,9 +13,10 @@
 </template>
 
 <script>
-import { Observable } from "rxjs/Observable";
+import { empty, interval } from "rxjs";
+import { switchMap, merge } from "rxjs/operators";
 import DetailValue from "./DetailValue.vue";
-import lastestInspector$ from "../services/lastestInspector$.js";
+import latestInspector$ from "../services/latestInspector$.js";
 
 const POLL_INTERVAL = 567; // Weird interval to be sure to be out of sync with a looping animation.
 
@@ -24,15 +25,18 @@ export default {
 
   subscriptions() {
     return {
-      fields: lastestInspector$.switchMap(inspector => {
-        if (inspector === null) {
-          return Observable.empty();
-        }
-        return Observable.interval(POLL_INTERVAL)
-          .merge(inspector.selected$)
-          .switchMap(() => inspector.call("properties.all"));
-      }),
-      setProperty: lastestInspector$.method("setProperty")
+      fields: latestInspector$.pipe(
+        switchMap(inspector => {
+          if (inspector === null) {
+            return empty();
+          }
+          return interval(POLL_INTERVAL).pipe(
+            merge(inspector.selected$),
+            switchMap(() => inspector.call("properties.all"))
+          );
+        })
+      ),
+      setProperty: latestInspector$.method("setProperty")
     };
   }
 };
@@ -40,7 +44,6 @@ export default {
 
 <style lang="scss">
 .detailview {
-  // white-space: nowrap;
   padding: 4px;
 }
 

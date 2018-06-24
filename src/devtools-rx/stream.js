@@ -1,19 +1,21 @@
-import { Observable } from "rxjs/Observable";
+import { defer } from "rxjs";
+import { filter, tap } from "rxjs/operators";
 
 let autoIncrement = 1;
 
 export default function stream(client, command, data) {
-  return Observable.defer(() => {
+  return defer(() => {
     const id = autoIncrement;
     autoIncrement++;
     client.send(command, data, { id });
 
-    return client.connection.message$
-      .filter(message => message.id === id)
-      .do(message => {
+    return client.connection.message$.pipe(
+      filter(message => message.id === id),
+      tap(message => {
         if (message.response === "ERROR") {
           throw new Error(message.data);
         }
-      });
+      })
+    );
   });
 }

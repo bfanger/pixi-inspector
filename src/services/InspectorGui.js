@@ -1,6 +1,14 @@
-import { Observable } from "rxjs/Observable";
-import { Subject } from "rxjs/Subject";
-import { ReplaySubject } from "rxjs/ReplaySubject";
+import { Subject, ReplaySubject, fromEvent, merge, empty } from "rxjs";
+import {
+  map,
+  distinctUntilChanged,
+  shareReplay,
+  withLatestFrom,
+  tap,
+  switchMap,
+  debounceTime,
+  combineLatest
+} from "rxjs/operators";
 
 export const overlay = {
   div: null,
@@ -42,12 +50,13 @@ export default class InspectorGui {
     this.rightclick$ = new Subject();
     this.renderer$ = new ReplaySubject(1);
 
-    const canvas$ = this.renderer$
-      .map(renderer => renderer.view)
-      .distinctUntilChanged();
+    const canvas$ = this.renderer$.pipe(
+      map(renderer => renderer.view),
+      distinctUntilChanged()
+    );
 
-    const iframe$ = canvas$
-      .map(reference => {
+    const iframe$ = canvas$.pipe(
+      map(reference => {
         for (const canvas of document.querySelectorAll("canvas")) {
           if (canvas === reference) {
             return null; // canvas found in current frame
@@ -67,84 +76,102 @@ export default class InspectorGui {
           }
         }
         return null;
-      })
-      .shareReplay(1);
+      }),
+      shareReplay(1)
+    );
 
-    const handleClick$ = canvas$.switchMap(canvas =>
-      Observable.merge(
-        Observable.fromEvent(canvas, "contextmenu").do(event => {
-          event.preventDefault();
-        }),
-        Observable.fromEvent(canvas, "pointerdown", { capture: true })
-          .withLatestFrom(iframe$, this.renderer$)
-          .do(([event, iframe, renderer]) => {
-            const mobSelectKey = event.pointerType === "touch" && event.altKey;
-            if (event.which === 3 || mobSelectKey) {
-              this.calculateOffset(canvas, iframe);
-              const scale = {
-                x: this.resolution.x / renderer.resolution,
-                y: this.resolution.y / renderer.resolution
-              };
-              const x = (event.clientX - this.offset.canvas.x) * scale.x;
-              const y = (event.clientY - this.offset.canvas.y) * scale.y;
-              this.rightclick$.next({ x, y, event });
-            }
-          })
+    const handleClick$ = canvas$.pipe(
+      switchMap(canvas =>
+        merge(
+          fromEvent(canvas, "contextmenu").pipe(
+            tap(event => {
+              event.preventDefault();
+            })
+          ),
+          fromEvent(canvas, "pointerdown", { capture: true }).pipe(
+            withLatestFrom(iframe$, this.renderer$),
+            tap(([event, iframe, renderer]) => {
+              const mobSelectKey =
+                event.pointerType === "touch" && event.altKey;
+              if (event.which === 3 || mobSelectKey) {
+                this.calculateOffset(canvas, iframe);
+                const scale = {
+                  x: this.resolution.x / renderer.resolution,
+                  y: this.resolution.y / renderer.resolution
+                };
+                const x = (event.clientX - this.offset.canvas.x) * scale.x;
+                const y = (event.clientY - this.offset.canvas.y) * scale.y;
+                this.rightclick$.next({ x, y, event });
+              }
+            })
+          )
+        )
       )
     );
 
-    const handleResize$ = Observable.fromEvent(window, "resize")
-      .debounceTime(100)
-      .do(() => {
+    const handleResize$ = fromEvent(window, "resize").pipe(
+      debounceTime(100),
+      tap(() => {
         overlay.renderer.resize(window.innerWidth, window.innerHeight);
         overlay.renderer.view.style.width = window.innerWidth + "px";
         overlay.renderer.view.style.height = window.innerHeight + "px";
-      })
-      .switchMap(() =>
-        iframe$.combineLatest(canvas$).do(([iframe, canvas]) => {
-          this.calculateOffset(canvas, iframe);
-        })
-      );
+      }),
+      switchMap(() =>
+        iframe$.pipe(
+          combineLatest(canvas$),
+          tap(([iframe, canvas]) => {
+            this.calculateOffset(canvas, iframe);
+          })
+        )
+      )
+    );
 
-    const handleScroll$ = iframe$
-      .combineLatest(canvas$)
-      .switchMap(([iframe, canvas]) => {
+    const handleScroll$ = iframe$.pipe(
+      combineLatest(canvas$),
+      switchMap(([iframe, canvas]) => {
         const elements = [window]
           .concat(parentElements(iframe))
           .concat(parentElements(canvas));
         if (iframe) {
           elements.push(iframe.contentWindow);
         }
-        return Observable.merge(
-          ...elements.map(element => Observable.fromEvent(element, "scroll"))
-        )
-          .debounceTime(50)
-          .do(() => {
-            this.calculateOffset(canvas, iframe);
-          });
-      });
-
-    this.subscription = inspector.enabled$
-      .do(enabled => {
-        if (enabled) {
-          overlay.div.removeAttribute("style");
-        } else {
-          overlay.div.removeAttribute("style");
-        }
-      })
-      .switchMap(enabled => {
-        if (enabled === false) {
-          return Observable.empty();
-        }
-        return Observable.merge(
-          handleResize$,
-          handleScroll$,
-          handleClick$,
-          canvas$.combineLatest(iframe$).do(([canvas, iframe]) => {
+        return merge(
+          ...elements.map(element => fromEvent(element, "scroll"))
+        ).pipe(
+          debounceTime(50),
+          tap(() => {
             this.calculateOffset(canvas, iframe);
           })
         );
       })
+    );
+
+    this.subscription = inspector.enabled$
+      .pipe(
+        tap(enabled => {
+          if (enabled) {
+            overlay.div.removeAttribute("style");
+          } else {
+            overlay.div.removeAttribute("style");
+          }
+        }),
+        switchMap(enabled => {
+          if (enabled === false) {
+            return empty();
+          }
+          return merge(
+            handleResize$,
+            handleScroll$,
+            handleClick$,
+            canvas$.pipe(
+              combineLatest(iframe$),
+              tap(([canvas, iframe]) => {
+                this.calculateOffset(canvas, iframe);
+              })
+            )
+          );
+        })
+      )
       .subscribe();
   }
 

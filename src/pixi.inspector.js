@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-import "./common";
 import Inspector from "./services/Inspector";
 
 if (typeof window.__PIXI_INSPECTOR_GLOBAL_HOOK__ === "undefined") {

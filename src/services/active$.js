@@ -1,6 +1,10 @@
+import { shareReplay, map } from "rxjs/operators";
 import connection from "./connection";
+
 export default connection
   .to("devtools_page")
   .stream("PANEL_VISIBLE")
-  .map(message => message.data)
-  .shareReplay(1);
+  .pipe(
+    map(message => message.data),
+    shareReplay(1)
+  );

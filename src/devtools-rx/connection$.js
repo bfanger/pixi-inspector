@@ -1,9 +1,10 @@
-import fromEvent from "./fromEvent";
+import { publish, refCount, map } from "rxjs/operators";
+import fromChromeEvent from "./fromChromeEvent";
 import Connection from "./Connection";
 let autoIncrement = 1;
 
-export default fromEvent(chrome.runtime.onConnect)
-  .map(port => {
+export default fromChromeEvent(chrome.runtime.onConnect).pipe(
+  map(port => {
     const connection = new Connection(port);
     connection.id = autoIncrement;
     autoIncrement++;
@@ -11,6 +12,7 @@ export default fromEvent(chrome.runtime.onConnect)
       connection.tabId = port.sender.tab.id;
     }
     return connection;
-  })
-  .publish()
-  .refCount();
+  }),
+  publish(),
+  refCount()
+);

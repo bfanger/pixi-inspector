@@ -2,18 +2,19 @@
  * https://developer.chrome.com/extensions/devtools_panels
  */
 
-import fromEvent from "./fromEvent";
-import { ReplaySubject } from "rxjs/ReplaySubject";
+import { ReplaySubject } from "rxjs";
+import { map } from "rxjs/operators";
+import fromChromeEvent from "./fromChromeEvent";
 
 export default class Panel {
   constructor(title, iconPath, pagePath) {
     this.visible$ = new ReplaySubject(1);
     chrome.devtools.panels.create(title, iconPath, pagePath, panel => {
-      fromEvent(panel.onShown)
-        .map(() => true)
+      fromChromeEvent(panel.onShown)
+        .pipe(map(() => true))
         .subscribe(this.visible$);
-      fromEvent(panel.onHidden)
-        .map(() => false)
+      fromChromeEvent(panel.onHidden)
+        .pipe(map(() => false))
         .subscribe(this.visible$);
     });
   }

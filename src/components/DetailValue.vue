@@ -77,7 +77,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
 .detailvalue__input {
   border: none;
   min-width: 50px;

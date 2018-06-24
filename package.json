@@ -11,7 +11,6 @@
     "build:clean": "npm run clean && webpack --mode production -p",
     "build:watch": "webpack --mode development -w --display none"
   },
-
   "eslintConfig": {
     "root": true,
     "env": {
@@ -20,8 +19,14 @@
     "parserOptions": {
       "parser": "babel-eslint"
     },
-    "extends": ["esnext", "plugin:vue/recommended", "plugin:prettier/recommended"],
-    "plugins": ["only-warn"],
+    "extends": [
+      "esnext",
+      "plugin:vue/recommended",
+      "plugin:prettier/recommended"
+    ],
+    "plugins": [
+      "only-warn"
+    ],
     "globals": {
       "chrome": true,
       "process": true
@@ -36,8 +41,13 @@
         }
       ]
     ],
-    "plugins": ["transform-vue-jsx"]
+    "plugins": [
+      "transform-vue-jsx"
+    ]
   },
+  "browserslist": [
+    "last 2 Chrome versions"
+  ],
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.2.2",
@@ -48,8 +58,8 @@
     "babel-preset-env": "^1.6.1",
     "copy-webpack-plugin": "^4.5.1",
     "css-loader": "^0.28.10",
-    "eslint": "^4.18.2",
-    "eslint-config-esnext": "^2.0.0",
+    "eslint": "^5.0.0",
+    "eslint-config-esnext": "^3.0.0",
     "eslint-config-prettier": "^2.9.0",
     "eslint-friendly-formatter": "^4.0.1",
     "eslint-loader": "^2.0.0",
@@ -63,18 +73,18 @@
     "pixi.js": "^4.7.0",
     "prettier": "^1.11.1",
     "sass-loader": "^7.0.1",
-    "style-loader": "^0.20.2",
+    "style-loader": "^0.21.0",
     "url-loader": "^1.0.1",
-    "vue-loader": "^14.1.1",
+    "vue-loader": "^15.2.4",
     "vue-template-compiler": "^2.5.13",
     "webpack": "^4.1.0",
-    "webpack-cli": "^2.0.10",
+    "webpack-cli": "^3.0.8",
     "webpack-dev-server": "^3.1.0",
     "webpack-merge": "^4.1.2"
   },
   "dependencies": {
-    "rxjs": "^5.5.6",
+    "rxjs": "^6.2.1",
     "vue": "^2.5.13",
-    "vue-rx": "^5.0.0"
+    "vue-rx": "^6.0.0"
   }
 }

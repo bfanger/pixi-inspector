@@ -1,13 +1,16 @@
-import { Observable } from "rxjs/Observable";
-import fromEvent from "./fromEvent";
+import { merge, of } from "rxjs";
+import { switchMap } from "rxjs/operators";
+import fromChromeEvent from "./fromChromeEvent";
 
-export default Observable.merge(
-  Observable.of(null),
-  fromEvent(chrome.tabs.onHighlighted),
-  fromEvent(chrome.tabs.onRemoved)
-).switchMap(
-  () =>
-    new Promise(resolve => {
-      chrome.tabs.query({ highlighted: true }, resolve);
-    })
+export default merge(
+  of(null),
+  fromChromeEvent(chrome.tabs.onHighlighted),
+  fromChromeEvent(chrome.tabs.onRemoved)
+).pipe(
+  switchMap(
+    () =>
+      new Promise(resolve => {
+        chrome.tabs.query({ highlighted: true }, resolve);
+      })
+  )
 );
