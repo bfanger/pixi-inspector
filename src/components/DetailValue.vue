@@ -4,10 +4,10 @@
       v-if="field.type === 'number' || field.type === 'string'" 
       class="detailvalue__input" 
       contenteditable="true" 
-      v-html="fieldValue"
       @focus="onFocus"
       @blur="onBlur"
-      @keydown="keydown"></span>
+      @keydown="keydown"
+      v-html="fieldValue"/>
     <label 
       v-if="field.type === 'boolean'"
       class="detailvalue__label">
@@ -28,6 +28,14 @@ export default {
     isEdit: false,
     fieldValue: undefined
   }),
+  watch: {
+    field(newField) {
+      this.field = newField;
+      if (!this.isEdit) {
+        this.fieldValue = this.field.value;
+      }
+    }
+  },
   methods: {
     onFocus() {
       this.isEdit = true;
@@ -39,7 +47,7 @@ export default {
       const oldValue = this.fieldValue;
       this.fieldValue = e.target.innerText;
       this.isEdit = false;
-      if (oldValue != this.fieldValue) {
+      if (oldValue !== this.fieldValue) {
         this.sentNewValue(this.fieldValue);
       }
     },
@@ -95,14 +103,6 @@ export default {
       }
       this.fieldValue = newValue;
       this.$emit("change", newValue);
-    }
-  },
-  watch: {
-    field: function(newField, oldField) {
-      this.field = newField;
-      if (!this.isEdit) {
-        this.fieldValue = this.field.value;
-      }
     }
   }
 };
