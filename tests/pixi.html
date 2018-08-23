@@ -45,7 +45,7 @@
         // create an array to store a refference to the fish in the pond
         var dudeArray = [];
 
-        var totalDude = 10;
+        var totalDude = 2;
 
         for (var i = 0; i < totalDude; i++) {
 
@@ -125,7 +125,9 @@
             renderer.render(stage);
 
             // request another animation frame..
-            requestAnimationFrame(animate);
+            setInterval(() => {
+                requestAnimationFrame(animate);
+            }, 3000);
         }
         // renderer.view.addEventListener('click', () => {
         //     renderer.render(stage);
