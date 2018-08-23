@@ -36,9 +36,12 @@ export default {
       }
     },
     onBlur(e) {
+      const oldValue = this.fieldValue;
       this.fieldValue = e.target.innerText;
       this.isEdit = false;
-      this.sentNewValue(this.fieldValue);
+      if (oldValue != this.fieldValue) {
+        this.sentNewValue(this.fieldValue);
+      }
     },
     type() {
       const type = this.field.type;
@@ -64,6 +67,7 @@ export default {
       }
       switch (e.key) {
         case "Enter":
+          update = true;
           e.preventDefault();
           break;
         case "ArrowUp":
@@ -77,8 +81,7 @@ export default {
       }
       if (update) {
         e.target.innerText = value;
-        this.fieldValue = value;
-        this.sentNewValue(value);
+        this.sentNewValue(e.target.innerText);
       }
     },
     sentNewValue(value) {
