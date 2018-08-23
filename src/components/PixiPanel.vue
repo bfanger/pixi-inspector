@@ -63,7 +63,10 @@ export default {
       messageVisible: active$.pipe(
         switchMap(active => {
           if (active) {
-            return timer(100).pipe(map(() => true), startWith(false));
+            return timer(100).pipe(
+              map(() => true),
+              startWith(false)
+            );
           }
           return of(false);
         })
