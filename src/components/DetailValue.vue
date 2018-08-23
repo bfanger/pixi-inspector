@@ -4,11 +4,10 @@
       v-if="field.type === 'number' || field.type === 'string'" 
       class="detailvalue__input" 
       contenteditable="true" 
-      v-html="content()"
+      v-html="fieldValue"
       @focus="onFocus"
       @blur="onBlur"
-      @keydown="keydown" 
-      @input="input"></span>
+      @keydown="keydown"></span>
     <label 
       v-if="field.type === 'boolean'"
       class="detailvalue__label">
@@ -25,30 +24,21 @@ export default {
   props: {
     field: { type: Object, required: true }
   },
-  data: {
+  data: () => ({
     isEdit: false,
-    value: ""
-  },
+    fieldValue: undefined
+  }),
   methods: {
-    content() {
-      if (this.isEdit) {
-        if (this.value === undefined) {
-          this.value = this.field.value;
-        }
-        return this.value;
-      } else {
-        return this.field.value;
-      }
-    },
     onFocus() {
       this.isEdit = true;
-      if (this.isEdit && this.value === undefined) {
-        this.value = this.field.value;
+      if (this.isEdit && this.fieldValue === undefined) {
+        this.fieldValue = this.field.value;
       }
     },
-    onBlur() {
+    onBlur(e) {
+      this.fieldValue = e.target.innerText;
       this.isEdit = false;
-      this.setValue(this.value);
+      this.sentNewValue(this.fieldValue);
     },
     type() {
       const type = this.field.type;
@@ -60,13 +50,8 @@ export default {
       }
       return type;
     },
-    input(e) {
-      const value = e.target.innerText;
-      this.value = value;
-      this.setValue(value);
-    },
     toggle() {
-      this.setValue(this.field.value);
+      this.sentNewValue(this.field.value);
     },
     keydown(e) {
       let value = parseFloat(e.target.innerText, 10);
@@ -92,21 +77,28 @@ export default {
       }
       if (update) {
         e.target.innerText = value;
-        this.setValue(value);
+        this.fieldValue = value;
+        this.sentNewValue(value);
       }
     },
-    setValue(value) {
+    sentNewValue(value) {
+      let newValue;
+      if (value.match(/[0-9.]+/)) {
+        newValue = parseFloat(value, 10);
+      } else if (
+        ["true", "false", "null"].indexOf(value.toLowerCase()) !== -1
+      ) {
+        newValue = value.toLowerCase();
+      }
+      this.fieldValue = newValue;
+      this.$emit("change", newValue);
+    }
+  },
+  watch: {
+    field: function(newField, oldField) {
+      this.field = newField;
       if (!this.isEdit) {
-        let newValue;
-        if (value.match(/[0-9.]+/)) {
-          newValue = parseFloat(newValue, 10);
-        } else if (
-          ["true", "false", "null"].indexOf(newValue.toLowerCase()) !== -1
-        ) {
-          newValue = newValue.toLowerCase();
-        }
-        this.$emit("change", newValue);
-        this.value = newValue;
+        this.fieldValue = this.field.value;
       }
     }
   }
