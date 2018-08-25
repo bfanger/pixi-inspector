@@ -52,6 +52,8 @@
             // create a new Sprite that uses the image name that we just generated as its source
             var dude = PIXI.Sprite.fromImage("assets/eggHead.png");
             dude.name = 'name_' + i;
+            dude.interactive = true;
+            dude.cursor = 'help';
 
             // set the anchor point so the the dude texture is centerd on the sprite
             dude.anchor.x = dude.anchor.y = 0.5;

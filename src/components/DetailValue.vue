@@ -48,6 +48,7 @@ export default {
       this.fieldValue = e.target.innerText;
       this.isEdit = false;
       if (oldValue !== this.fieldValue) {
+        console.log('onBlur', this.fieldValue);
         this.sentNewValue(this.fieldValue);
       }
     },
@@ -89,17 +90,20 @@ export default {
       }
       if (update) {
         e.target.innerText = value;
-        this.sentNewValue(e.target.innerText);
+        console.log('keydown', value);
+        this.sentNewValue(value);
       }
     },
     sentNewValue(value) {
       let newValue;
-      if (value.match(/[0-9.]+/)) {
-        newValue = parseFloat(value, 10);
-      } else if (
-        ["true", "false", "null"].indexOf(value.toLowerCase()) !== -1
-      ) {
-        newValue = value.toLowerCase();
+      const isNumber = parseFloat(value, 10);
+      const isNullOrNaN = typeof value === 'string' ? value.match(/^(\\null|\\NaN)$/) : false;
+      if (!isNaN(isNumber)) { // is number
+        newValue = isNumber;
+      } else if (isNullOrNaN) { // is null or NaN sent not like string
+        newValue = value === "\\null" ? null : NaN;
+      } else { // is just string
+        newValue = value;
       }
       this.fieldValue = newValue;
       this.$emit("change", newValue);
