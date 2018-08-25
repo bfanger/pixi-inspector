@@ -32,7 +32,10 @@ export default class AsyncInspector {
         }),
         merge(this.local.treeChange$.pipe(map(() => root)))
       );
-    }).pipe(publishReplay(1), refCount());
+    }).pipe(
+      publishReplay(1),
+      refCount()
+    );
 
     this.selected$ = mergeObservables(
       defer(() => this.call("outliner.selected")),

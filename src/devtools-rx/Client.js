@@ -25,9 +25,10 @@ export default class Client {
         new Error("disconnect$ is not available for broadcast clients")
       );
     }
-    return this.connection
-      .on("DISCONNECTED")
-      .pipe(filter(message => message.from === this.recipient), take(1));
+    return this.connection.on("DISCONNECTED").pipe(
+      filter(message => message.from === this.recipient),
+      take(1)
+    );
   }
 
   /**

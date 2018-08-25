@@ -62,8 +62,8 @@ export default class InspectorHighlight {
           renderer.height / renderer.resolution / 2
         )
         .lineTo(
-          bounds.x * scale.x + bounds.width * scale.x / 2,
-          bounds.y * scale.y + bounds.height * scale.y / 2
+          bounds.x * scale.x + (bounds.width * scale.x) / 2,
+          bounds.y * scale.y + (bounds.height * scale.y) / 2
         );
       box.endFill();
     } else {
