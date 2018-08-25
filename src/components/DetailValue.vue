@@ -108,13 +108,13 @@ export default {
         // is null or NaN or undefined sent not like string
         switch (value) {
           case "\\null":
-            newValue = null
+            newValue = null;
             break;
           case "\\NaN":
-            newValue = NaN
+            newValue = NaN;
             break;
           case "\\undefined":
-            newValue = undefined
+            newValue = undefined;
             break;
         }
       } else {
