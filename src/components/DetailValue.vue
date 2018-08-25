@@ -48,7 +48,6 @@ export default {
       this.fieldValue = e.target.innerText;
       this.isEdit = false;
       if (oldValue !== this.fieldValue) {
-        console.log('onBlur', this.fieldValue);
         this.sentNewValue(this.fieldValue);
       }
     },
@@ -66,6 +65,12 @@ export default {
       this.sentNewValue(this.field.value);
     },
     keydown(e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        this.sentNewValue(e.target.innerText);
+      } else if (this.field.type !== "number") {
+        return;
+      }
       let value = parseFloat(e.target.innerText, 10);
       let update = false;
       let size = 1;
@@ -75,10 +80,6 @@ export default {
         size = 10;
       }
       switch (e.key) {
-        case "Enter":
-          update = true;
-          e.preventDefault();
-          break;
         case "ArrowUp":
           update = !isNaN(value);
           value += size;
@@ -90,19 +91,34 @@ export default {
       }
       if (update) {
         e.target.innerText = value;
-        console.log('keydown', value);
         this.sentNewValue(value);
       }
     },
     sentNewValue(value) {
       let newValue;
       const isNumber = parseFloat(value, 10);
-      const isNullOrNaN = typeof value === 'string' ? value.match(/^(\\null|\\NaN)$/) : false;
-      if (!isNaN(isNumber)) { // is number
+      const isNullOrNaN =
+        typeof value === "string"
+          ? value.match(/^(\\null|\\NaN|\\undefined)$/)
+          : false;
+      if (!isNaN(isNumber)) {
+        // is number
         newValue = isNumber;
-      } else if (isNullOrNaN) { // is null or NaN sent not like string
-        newValue = value === "\\null" ? null : NaN;
-      } else { // is just string
+      } else if (isNullOrNaN) {
+        // is null or NaN or undefined sent not like string
+        switch (value) {
+          case "\\null":
+            newValue = null
+            break;
+          case "\\NaN":
+            newValue = NaN
+            break;
+          case "\\undefined":
+            newValue = undefined
+            break;
+        }
+      } else {
+        // is just string
         newValue = value;
       }
       this.fieldValue = newValue;
