@@ -12,7 +12,7 @@ Install (Pixi Inspector from the Chrome Web Store)[https://chrome.google.com/web
 * View and edit the properties of the selected node
 * The selected node is available in the Console as `$pixi`
 * Highlight (the bounds of) the node on hover
-* Right click on the canvas to select the node at that position.
+* Right click(Right click + Alt for mobile) on the canvas to select the node at that position.
 
 ## Build from source
 
