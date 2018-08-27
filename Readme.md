@@ -13,6 +13,8 @@ Install (Pixi Inspector from the Chrome Web Store)[https://chrome.google.com/web
 * The selected node is available in the Console as `$pixi`
 * Highlight (the bounds of) the node on hover
 * Right click(Right click + Alt for mobile) on the canvas to select the node at that position.
+* Use shielded symbols("\") for set value null or NaN or undefined otherwise will be set "null" or "NaN" or "undefined" like string. Example use "\null" => null, "\NaN" => NaN, "\undefined" => undefined
+
 
 ## Build from source
 

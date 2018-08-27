@@ -4,8 +4,10 @@
       v-if="field.type === 'number' || field.type === 'string'" 
       class="detailvalue__input" 
       contenteditable="true" 
-      @keydown="keydown" 
-      @input="input">{{ field.value }}</span>
+      @focus="onFocus"
+      @blur="onBlur"
+      @keydown="keydown"
+      v-html="fieldValue"/>
     <label 
       v-if="field.type === 'boolean'"
       class="detailvalue__label">
@@ -22,7 +24,33 @@ export default {
   props: {
     field: { type: Object, required: true }
   },
+  data: () => ({
+    isEdit: false,
+    fieldValue: undefined
+  }),
+  watch: {
+    field(newField) {
+      this.field = newField;
+      if (!this.isEdit) {
+        this.fieldValue = this.field.value;
+      }
+    }
+  },
   methods: {
+    onFocus() {
+      this.isEdit = true;
+      if (this.isEdit && this.fieldValue === undefined) {
+        this.fieldValue = this.field.value;
+      }
+    },
+    onBlur(e) {
+      const oldValue = this.fieldValue;
+      this.fieldValue = e.target.innerText;
+      this.isEdit = false;
+      if (oldValue !== this.fieldValue) {
+        this.sentNewValue(this.fieldValue);
+      }
+    },
     type() {
       const type = this.field.type;
       if (type === "object" && this.field.value === null) {
@@ -33,20 +61,16 @@ export default {
       }
       return type;
     },
-    input(e) {
-      const value = e.target.innerText;
-      if (value.match(/[0-9.]+/)) {
-        this.$emit("change", parseFloat(value, 10));
-      } else if (
-        ["true", "false", "null"].indexOf(value.toLowerCase()) !== -1
-      ) {
-        this.$emit("change", value.toLowerCase());
-      }
-    },
     toggle() {
-      this.$emit("change", this.field.value);
+      this.sentNewValue(this.field.value);
     },
     keydown(e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        this.sentNewValue(e.target.innerText);
+      } else if (this.field.type !== "number") {
+        return;
+      }
       let value = parseFloat(e.target.innerText, 10);
       let update = false;
       let size = 1;
@@ -56,9 +80,6 @@ export default {
         size = 10;
       }
       switch (e.key) {
-        case "Enter":
-          e.preventDefault();
-          break;
         case "ArrowUp":
           update = !isNaN(value);
           value += size;
@@ -70,8 +91,38 @@ export default {
       }
       if (update) {
         e.target.innerText = value;
-        this.$emit("change", value);
+        this.sentNewValue(value);
       }
+    },
+    sentNewValue(value) {
+      let newValue;
+      const isNumber = parseFloat(value, 10);
+      const isNullOrNaN =
+        typeof value === "string"
+          ? value.match(/^(\\null|\\NaN|\\undefined)$/)
+          : false;
+      if (!isNaN(isNumber)) {
+        // is number
+        newValue = isNumber;
+      } else if (isNullOrNaN) {
+        // is null or NaN or undefined sent not like string
+        switch (value) {
+          case "\\null":
+            newValue = null;
+            break;
+          case "\\NaN":
+            newValue = NaN;
+            break;
+          case "\\undefined":
+            newValue = undefined;
+            break;
+        }
+      } else {
+        // is just string
+        newValue = value;
+      }
+      this.fieldValue = newValue;
+      this.$emit("change", newValue);
     }
   }
 };
