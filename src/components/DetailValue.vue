@@ -1,7 +1,7 @@
 <template>
   <span>
     <span 
-      v-if="field.type === 'number' || field.type === 'string'" 
+      v-if="field.type === 'number' || field.type === 'string' || field.type === 'object'" 
       class="detailvalue__input" 
       contenteditable="true" 
       @focus="onFocus"
@@ -15,11 +15,13 @@
         v-model="field.value" 
         type="checkbox" 
         @change="toggle()">{{ field.value }}</label>
-    <span>{{ type() }}</span>
+    <span v-if="field.type !== 'object'">{{ type() }}</span>
   </span>
 </template>
 
 <script>
+import DataTypeConverter from "../util.dataTypeConverter";
+
 export default {
   props: {
     field: { type: Object, required: true }
@@ -32,7 +34,7 @@ export default {
     field(newField) {
       this.field = newField;
       if (!this.isEdit) {
-        this.fieldValue = this.field.value;
+        this.fieldValue = DataTypeConverter.encript(this.field.value);
       }
     }
   },
@@ -40,12 +42,12 @@ export default {
     onFocus() {
       this.isEdit = true;
       if (this.isEdit && this.fieldValue === undefined) {
-        this.fieldValue = this.field.value;
+        this.fieldValue = DataTypeConverter.encript(this.field.value);
       }
     },
     onBlur(e) {
       const oldValue = this.fieldValue;
-      this.fieldValue = e.target.innerText;
+      this.fieldValue = DataTypeConverter.encript(e.target.innerText);
       this.isEdit = false;
       if (oldValue !== this.fieldValue) {
         this.sentNewValue(this.fieldValue);
@@ -95,33 +97,8 @@ export default {
       }
     },
     sentNewValue(value) {
-      let newValue;
-      const isNumber = parseFloat(value, 10);
-      const isNullOrNaN =
-        typeof value === "string"
-          ? value.match(/^(\\null|\\NaN|\\undefined)$/)
-          : false;
-      if (!isNaN(isNumber)) {
-        // is number
-        newValue = isNumber;
-      } else if (isNullOrNaN) {
-        // is null or NaN or undefined sent not like string
-        switch (value) {
-          case "\\null":
-            newValue = null;
-            break;
-          case "\\NaN":
-            newValue = NaN;
-            break;
-          case "\\undefined":
-            newValue = undefined;
-            break;
-        }
-      } else {
-        // is just string
-        newValue = value;
-      }
-      this.fieldValue = newValue;
+      const newValue = DataTypeConverter.decode(value);
+      this.fieldValue = DataTypeConverter.encript(newValue);
       this.$emit("change", newValue);
     }
   }
