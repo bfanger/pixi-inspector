@@ -2,25 +2,32 @@
   <span>
     <!-- eslint-disable vue/no-v-html -->
     <span
-      v-if="field.type === 'number' || field.type === 'string'"
+      v-if="
+        field.type === 'number' ||
+        field.type === 'string' ||
+        field.type === 'object'
+      "
       class="detailvalue__input"
+      :class="{
+        detailvalue__encrypted: isEncrypted,
+      }"
       contenteditable="true"
       @focus="onFocus"
       @blur="onBlur"
       @keydown="keydown"
       v-html="fieldValue"
     />
-    <label v-if="field.type === 'boolean'" class="detailvalue__label">
-      <!-- eslint-disable vue/no-mutating-props -->
-      <input v-model="field.value" type="checkbox" @change="toggle()" />{{
-        field.value
-      }}</label
-    >
-    <span>{{ type() }}</span>
+    <label v-if="field.type === 'boolean'" class="detailvalue__checkbox">
+      <input v-model="fieldValue" type="checkbox" @change="toggle()" />
+      {{ field.value }}
+    </label>
+    <span v-if="field.type !== 'object'" class="detailvalue__static">{{ staticType }}</span>
   </span>
 </template>
 
 <script>
+import DataTypeConverter from "../util.dataTypeConverter";
+
 export default {
   props: {
     field: { type: Object, required: true },
@@ -28,32 +35,10 @@ export default {
   data: () => ({
     isEdit: false,
     fieldValue: undefined,
+    isEncrypted: false,
   }),
-  watch: {
-    field(newField) {
-      // eslint-disable-next-line vue/no-mutating-props
-      this.field = newField;
-      if (!this.isEdit) {
-        this.fieldValue = this.field.value;
-      }
-    },
-  },
-  methods: {
-    onFocus() {
-      this.isEdit = true;
-      if (this.isEdit && this.fieldValue === undefined) {
-        this.fieldValue = this.field.value;
-      }
-    },
-    onBlur(e) {
-      const oldValue = this.fieldValue;
-      this.fieldValue = e.target.innerText;
-      this.isEdit = false;
-      if (oldValue !== this.fieldValue) {
-        this.sentNewValue(this.fieldValue);
-      }
-    },
-    type() {
+  computed: {
+    staticType() {
       const type = this.field.type;
       if (type === "object" && this.field.value === null) {
         return "null";
@@ -63,8 +48,34 @@ export default {
       }
       return type;
     },
+  },
+  watch: {
+    field(newField) {
+      // eslint-disable-next-line vue/no-mutating-props
+      this.field = newField;
+      if (!this.isEdit) {
+        this.setFieldValue(this.field.value);
+      }
+    },
+  },
+  methods: {
+    onFocus() {
+      this.isEdit = true;
+      if (this.isEdit && this.fieldValue === undefined) {
+        this.setFieldValue(this.field.value);
+      }
+    },
+    onBlur(e) {
+      const oldValue = this.fieldValue;
+      this.setFieldValue(e.target.innerText);
+      this.isEdit = false;
+      if (oldValue !== this.fieldValue) {
+        this.sentNewValue(this.fieldValue);
+      }
+    },
+
     toggle() {
-      this.sentNewValue(this.field.value);
+      this.sentNewValue(!this.field.value);
     },
     keydown(e) {
       if (e.key === "Enter") {
@@ -96,34 +107,14 @@ export default {
         this.sentNewValue(value);
       }
     },
+    setFieldValue(newValue) {
+      const encryption = DataTypeConverter.encryption(newValue, true);
+      this.fieldValue = encryption.newValue;
+      this.isEncrypted = encryption.isSpecial;
+    },
     sentNewValue(value) {
-      let newValue;
-      const isNumber = parseFloat(value, 10);
-      const isNullOrNaN =
-        typeof value === "string"
-          ? value.match(/^(\\null|\\NaN|\\undefined)$/)
-          : false;
-      if (!isNaN(isNumber)) {
-        // is number
-        newValue = isNumber;
-      } else if (isNullOrNaN) {
-        // is null or NaN or undefined sent not like string
-        switch (value) {
-          case "\\null":
-            newValue = null;
-            break;
-          case "\\NaN":
-            newValue = NaN;
-            break;
-          case "\\undefined":
-            newValue = undefined;
-            break;
-        }
-      } else {
-        // is just string
-        newValue = value;
-      }
-      this.fieldValue = newValue;
+      const newValue = DataTypeConverter.decode(value);
+      this.setFieldValue(newValue);
       this.$emit("change", newValue);
     },
   },
@@ -136,11 +127,18 @@ export default {
   min-width: 50px;
   display: block;
 }
-.detailvalue__label {
-  position: relative;
-  padding-left: 12px;
+.detailvalue__encrypted {
+  font-style: italic;
 }
-.detailvalue__label input {
+.detailvalue__static {
+  font-style: italic;
+  opacity: 0.5;
+}
+.detailvalue__checkbox {
+  position: relative;
+  padding-left: 14px;
+}
+.detailvalue__checkbox input {
   position: absolute;
   top: -2px;
   left: -6px;

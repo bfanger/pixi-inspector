@@ -217,10 +217,14 @@ export default class InspectorGui {
     canvas.style.height = window.innerHeight + "px";
 
     const options = {
-      transparent: true,
       resolution: window.devicePixelRatio,
       view: canvas,
     };
+    if (parseInt(PIXI.VERSION, 10) >= 6) {
+      options.backgroundAlpha = 0;
+    } else {
+      options.transparent = true;
+    }
     let overlayRendererType;
     if (typeof overlay.PIXI.Renderer !== "undefined") {
       overlayRendererType = overlay.PIXI.Renderer;
