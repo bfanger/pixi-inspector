@@ -1,9 +1,12 @@
 <template>
   <span>
-    <span 
-      v-if="field.type === 'number' || field.type === 'string' || field.type === 'object'" 
+    <span
+      v-if="field.type === 'number' || field.type === 'string' || field.type === 'object'"
+      :class="{
+        'encrypted__input': isEncrypted
+      }" 
       class="detailvalue__input" 
-      contenteditable="true" 
+      contenteditable="true"
       @focus="onFocus"
       @blur="onBlur"
       @keydown="keydown"
@@ -15,7 +18,10 @@
         v-model="field.value" 
         type="checkbox" 
         @change="toggle()">{{ field.value }}</label>
-    <span v-if="field.type !== 'object'">{{ type() }}</span>
+    <span 
+      v-if="field.type !== 'object'"
+      class="static__output"
+    >{{ type() }}</span>
   </span>
 </template>
 
@@ -28,13 +34,14 @@ export default {
   },
   data: () => ({
     isEdit: false,
-    fieldValue: undefined
+    fieldValue: undefined,
+    isEncrypted: false
   }),
   watch: {
     field(newField) {
       this.field = newField;
       if (!this.isEdit) {
-        this.fieldValue = DataTypeConverter.encript(this.field.value);
+        this.setFieldValue(this.field.value);
       }
     }
   },
@@ -42,12 +49,12 @@ export default {
     onFocus() {
       this.isEdit = true;
       if (this.isEdit && this.fieldValue === undefined) {
-        this.fieldValue = DataTypeConverter.encript(this.field.value);
+        this.setFieldValue(this.field.value);
       }
     },
     onBlur(e) {
       const oldValue = this.fieldValue;
-      this.fieldValue = DataTypeConverter.encript(e.target.innerText);
+      this.setFieldValue(e.target.innerText);
       this.isEdit = false;
       if (oldValue !== this.fieldValue) {
         this.sentNewValue(this.fieldValue);
@@ -96,9 +103,14 @@ export default {
         this.sentNewValue(value);
       }
     },
+    setFieldValue(newValue) {
+      const encryption = DataTypeConverter.encryption(newValue, true);
+      this.fieldValue = encryption.newValue;
+      this.isEncrypted = encryption.isSpecial;
+    },
     sentNewValue(value) {
       const newValue = DataTypeConverter.decode(value);
-      this.fieldValue = DataTypeConverter.encript(newValue);
+      this.setFieldValue(newValue);
       this.$emit("change", newValue);
     }
   }
@@ -110,6 +122,12 @@ export default {
   border: none;
   min-width: 50px;
   display: block;
+}
+.encrypted__input {
+  font-style: italic;
+}
+.static__output {
+  font-weight: bold;
 }
 .detailvalue__label {
   position: relative;

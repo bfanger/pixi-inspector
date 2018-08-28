@@ -1,10 +1,17 @@
+function isSpecial(value) {
+  if (
+    typeof value === "string" &&
+    value.match(/^(\\null|\\NaN|\\undefined)$/)
+  ) {
+    return true;
+  }
+  return false;
+}
+
 function decode(value) {
   let newValue;
   const isNumber = parseFloat(value, 10);
-  const isNullOrNaN =
-    typeof value === "string"
-      ? value.match(/^(\\null|\\NaN|\\undefined)$/)
-      : false;
+  const isNullOrNaN = isSpecial(value);
   if (!isNaN(isNumber)) {
     // is number
     newValue = isNumber;
@@ -28,18 +35,31 @@ function decode(value) {
   return newValue;
 }
 
-function encript(value) {
+function encryption(value, detailedResponse) {
+  let newValue;
+  let isSpecial;
   if (
     value === null ||
     value === undefined ||
     (typeof value !== "string" && isNaN(value))
   ) {
-    return "\\" + value;
+    isSpecial = true;
+    newValue = String(value);
+  } else {
+    isSpecial = false;
+    newValue = value;
   }
-  return value;
+  return detailedResponse
+    ? {
+        oldValue: value,
+        isSpecial,
+        newValue
+      }
+    : newValue;
 }
 
 export default {
   decode,
-  encript
+  encryption,
+  isSpecial
 };
