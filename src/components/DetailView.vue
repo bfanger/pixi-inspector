@@ -9,6 +9,7 @@
         :field="field" 
         @change="setProperty(field.path, $event)"/>
     </div>
+    <button @click="selectToConsole">Details in console</button>
   </div>
 </template>
 
@@ -36,8 +37,14 @@ export default {
           );
         })
       ),
-      setProperty: latestInspector$.method("setProperty")
+      setProperty: latestInspector$.method("setProperty"),
+      showInConsole: latestInspector$.method("showInConsole")
     };
+  },
+  methods: {
+    selectToConsole() {
+      this.showInConsole();
+    }
   }
 };
 </script>

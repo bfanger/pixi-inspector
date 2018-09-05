@@ -66,6 +66,10 @@ export default class InspectorOutliner {
     }
   }
 
+  showInConsole() {
+    console.log(window.$pixi);
+  }
+
   selected() {
     if (window.$pixi) {
       const id = window.$pixi[outliner].id;
