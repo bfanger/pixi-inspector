@@ -66,9 +66,11 @@ export default class InspectorOutliner {
     }
   }
 
+  /* eslint-disable class-methods-use-this, no-console*/
   showInConsole() {
     console.log(window.$pixi);
   }
+  /* eslint-enable */
 
   selected() {
     if (window.$pixi) {
