@@ -1,24 +1,24 @@
 <template>
-  <div 
-    :class="{'dark-mode': darkMode}" 
+  <div
+    :class="{'dark-mode': darkMode}"
     class="pixi-panel">
     <Toolbar>
       <!-- <Toggle icon="node-search" v-if="isConnected" :value="selectMode" @change="toggleSelectMode" title="Select a node in the scene to inspect it"></Toggle> -->
       <button @click="reload">Reconnect</button>
-      <input 
-        v-model="search" 
+      <input
+        v-model="search"
         class="pixi-panel__search"
-        type="search" 
+        type="search"
         placeholder="Find by name"
         @keyup.enter="searchFilter(search)">
     </Toolbar>
-    <SplitView 
-      v-if="injected" 
+    <SplitView
+      v-if="injected"
       class="pixi-panel__body">
       <TreeView :search="search"/>
       <DetailView/>
     </SplitView>
-    <div 
+    <div
       v-if="!injected && messageVisible"
       class="pixi-panel__message">
       Looking for
@@ -110,6 +110,7 @@ export default {
 
 .pixi-panel__body {
   flex-grow: 1;
+  height: calc(100% - 28px); // minus toolbar height
 }
 
 .pixi-panel__message {
