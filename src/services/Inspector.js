@@ -44,6 +44,10 @@ export default class Inspector {
     if (!this.unpatched.WebGLRenderer) {
       this.patch("WebGLRenderer");
     }
+    // Support for pixi v5
+    if (!this.unpatched.Renderer) {
+      this.patch("Renderer");
+    }
     this.enabled$.next(true);
   }
 
