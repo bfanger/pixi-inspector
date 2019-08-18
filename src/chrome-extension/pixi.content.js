@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
-/* global crypto */
+/* global __PIXI_INSPECTOR_GLOBAL_HOOK__ */
+
 const debug = false;
 
 const uid = crypto.getRandomValues(new Uint16Array(3)).join("-");
@@ -9,8 +10,8 @@ if (debug) {
 }
 
 const globalHook = {
+  /* global RECIPIENT */
   reportDetection(recipient = {}) {
-    /* global __PIXI_INSPECTOR_GLOBAL_HOOK__ RECIPIENT */
     this.executeInContext(
       function() {
         __PIXI_INSPECTOR_GLOBAL_HOOK__.reportDetection(window, RECIPIENT);
@@ -21,7 +22,6 @@ const globalHook = {
     );
   },
   reportInstances(recipient) {
-    /* global __PIXI_INSPECTOR_GLOBAL_HOOK__ RECIPIENT */
     this.executeInContext(
       function() {
         __PIXI_INSPECTOR_GLOBAL_HOOK__.reportInstances(RECIPIENT);
@@ -32,7 +32,7 @@ const globalHook = {
     );
   },
   reportInspector(index, recipient) {
-    /* global __PIXI_INSPECTOR_GLOBAL_HOOK__ INDEX RECIPIENT */
+    /* global INDEX */
     this.executeInContext(
       function() {
         __PIXI_INSPECTOR_GLOBAL_HOOK__.reportInspector(INDEX, RECIPIENT);
@@ -68,7 +68,7 @@ const globalHook = {
 };
 
 (function() {
-  /* global DEBUG, UID, INSPECTOR_SCRIPT_URL */
+  /* global UID, DEBUG, INSPECTOR_SCRIPT_URL */
   function injectedScript(window) {
     // Private
     const uid = UID;

@@ -99,6 +99,7 @@ if (isDevServer) {
       })
     ],
     devServer: {
+      port: process.env.PORT || 8080
       // noInfo: false
     }
   });

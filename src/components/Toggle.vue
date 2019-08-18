@@ -1,10 +1,9 @@
 <template>
-  <span 
-    :class="{toggle:true, 'toggle--on': value, 'toggle--off': !value}"
-    @click="$emit('change', !value)">
-    <span 
-      :class="['toggle__icon', 'toggle__icon--' + icon]" 
-      :title="title"/>
+  <span
+    :class="{ toggle: true, 'toggle--on': value, 'toggle--off': !value }"
+    @click="$emit('change', !value)"
+  >
+    <span :class="['toggle__icon', 'toggle__icon--' + icon]" :title="title" />
   </span>
 </template>
 

@@ -1,20 +1,20 @@
 <template>
   <span>
-    <span 
-      v-if="field.type === 'number' || field.type === 'string'" 
-      class="detailvalue__input" 
-      contenteditable="true" 
+    <!-- eslint-disable vue/no-v-html -->
+    <span
+      v-if="field.type === 'number' || field.type === 'string'"
+      class="detailvalue__input"
+      contenteditable="true"
       @focus="onFocus"
       @blur="onBlur"
       @keydown="keydown"
-      v-html="fieldValue"/>
-    <label 
-      v-if="field.type === 'boolean'"
-      class="detailvalue__label">
-      <input 
-        v-model="field.value" 
-        type="checkbox" 
-        @change="toggle()">{{ field.value }}</label>
+      v-html="fieldValue"
+    />
+    <label v-if="field.type === 'boolean'" class="detailvalue__label">
+      <input v-model="field.value" type="checkbox" @change="toggle()" />{{
+        field.value
+      }}</label
+    >
     <span>{{ type() }}</span>
   </span>
 </template>

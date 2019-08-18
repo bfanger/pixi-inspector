@@ -1,36 +1,45 @@
 <template>
-  <div 
-    class="treeview" 
-    tabindex="1" 
-    @keydown.right.prevent="navigateRight" 
-    @keydown.left.prevent="navigateLeft" 
-    @keydown.up.prevent="navigateUp" 
-    @keydown.down.prevent="navigateDown">
-    <div 
-      v-for="row in rows" 
-      :key="row.node.id" 
-      :data-id="row.node.id" 
-      :class="{'treeview__item--selected': selected && row.node.id === selected.id, 'treeview__item--found': row.node.found}" 
-      class="treeview__item" 
-      @mousedown="select(row.node)" 
+  <div
+    class="treeview"
+    tabindex="1"
+    @keydown.right.prevent="navigateRight"
+    @keydown.left.prevent="navigateLeft"
+    @keydown.up.prevent="navigateUp"
+    @keydown.down.prevent="navigateDown"
+  >
+    <div
+      v-for="row in rows"
+      :key="row.node.id"
+      :data-id="row.node.id"
+      :class="{
+        'treeview__item--selected': selected && row.node.id === selected.id,
+        'treeview__item--found': row.node.found
+      }"
+      class="treeview__item"
+      @mousedown="select(row.node)"
       @mouseenter="highlight(row.node)"
-      @dblclick="toggle(row.node)" 
-      @mouseleave="highlight(false)">
-      <div 
-        :style="{width: (row.indent * 14) + 'px'}"
-        class="treeview__indent" />
+      @dblclick="toggle(row.node)"
+      @mouseleave="highlight(false)"
+    >
+      <div
+        :style="{ width: row.indent * 14 + 'px' }"
+        class="treeview__indent"
+      />
       <div class="treeview__toggle">
-        <div 
-          v-if="row.node.children && row.node.collapsed" 
+        <div
+          v-if="row.node.children && row.node.collapsed"
           class="treeview__toggle__expand"
-          @click="expand(row.node)"/>
-        <div 
-          v-if="row.node.children && !row.node.collapsed" 
-          class="treeview__toggle__collapse" 
-          @click="collapse(row.node)"/>
+          @click="expand(row.node)"
+        />
+        <div
+          v-if="row.node.children && !row.node.collapsed"
+          class="treeview__toggle__collapse"
+          @click="collapse(row.node)"
+        />
       </div>
-      <div 
-        class="treeview__label" >{{ row.title }}</div>
+      <div class="treeview__label">
+        {{ row.title }}
+      </div>
     </div>
   </div>
 </template>

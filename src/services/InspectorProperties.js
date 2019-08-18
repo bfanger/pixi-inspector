@@ -18,10 +18,12 @@ class MismatchConstructor {}
 export default class InspectorProperties {
   constructor(inspector) {
     const PIXI = inspector.instance.PIXI;
-    this.TransformBaseRef =
-      typeof PIXI.TransformBase === "function"
-        ? PIXI.TransformBase
-        : MismatchConstructor;
+    this.TransformRef = MismatchConstructor;
+    if (typeof PIXI.Transform === "function") {
+      this.TransformRef = PIXI.Transform;
+    } else if (typeof PIXI.TransformBase === "function") {
+      this.TransformRef = PIXI.Transform;
+    }
     this.ObservablePointRef =
       typeof PIXI.ObservablePoint === "function"
         ? PIXI.ObservablePoint
@@ -98,7 +100,7 @@ export default class InspectorProperties {
             }
           );
         }
-        if (value instanceof this.TransformBaseRef) {
+        if (value instanceof this.TransformRef) {
           properties.push({
             path: path.join(".") + ".rotation",
             type: "number",

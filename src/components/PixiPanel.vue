@@ -1,29 +1,24 @@
 <template>
-  <div
-    :class="{'dark-mode': darkMode}"
-    class="pixi-panel">
+  <div :class="{ 'dark-mode': darkMode }" class="pixi-panel">
     <Toolbar>
-      <!-- <Toggle icon="node-search" v-if="isConnected" :value="selectMode" @change="toggleSelectMode" title="Select a node in the scene to inspect it"></Toggle> -->
-      <button @click="reload">Reconnect</button>
+      <button @click="reload">
+        Reconnect
+      </button>
       <input
         v-model="search"
         class="pixi-panel__search"
         type="search"
         placeholder="Find by name"
-        @keyup.enter="searchFilter(search)">
+        @keyup.enter="searchFilter(search)"
+      />
     </Toolbar>
-    <SplitView
-      v-if="injected"
-      class="pixi-panel__body">
-      <TreeView :search="search"/>
-      <DetailView/>
+    <SplitView v-if="injected" class="pixi-panel__body">
+      <TreeView :search="search" />
+      <DetailView />
     </SplitView>
-    <div
-      v-if="!injected && messageVisible"
-      class="pixi-panel__message">
+    <div v-if="!injected && messageVisible" class="pixi-panel__message">
       Looking for
       <span class="pixi-panel__inline-logo">pixijs</span> ...
-      <!-- <button v-if="instance === null" @click="detect">Retry</button> -->
     </div>
   </div>
 </template>
@@ -31,7 +26,6 @@
 <script>
 import { of, timer } from "rxjs";
 import Toolbar from "./Toolbar.vue";
-import Toggle from "./Toggle.vue";
 import SplitView from "./SplitView.vue";
 import TreeView from "./TreeView.vue";
 import DetailView from "./DetailView.vue";
@@ -41,7 +35,7 @@ import latestInspector$ from "../services/latestInspector$";
 import { map, switchMap, startWith } from "rxjs/operators";
 
 export default {
-  components: { Toolbar, Toggle, SplitView, TreeView, DetailView },
+  components: { Toolbar, SplitView, TreeView, DetailView },
   data() {
     return {
       search: ""

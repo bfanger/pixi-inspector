@@ -41,12 +41,10 @@ export default class Inspector {
     if (!this.unpatched.CanvasRenderer) {
       this.patch("CanvasRenderer");
     }
-    if (!this.unpatched.WebGLRenderer) {
-      this.patch("WebGLRenderer");
-    }
-    // Support for pixi v5
     if (!this.unpatched.Renderer) {
       this.patch("Renderer");
+    } else if (!this.unpatched.WebGLRenderer) {
+      this.patch("WebGLRenderer");
     }
     this.enabled$.next(true);
   }

@@ -221,9 +221,11 @@ export default class InspectorGui {
       resolution: window.devicePixelRatio,
       view: canvas
     };
-    let overlayRendererType = overlay.PIXI.WebGLRenderer;
+    let overlayRendererType;
     if (typeof overlay.PIXI.Renderer !== "undefined") {
       overlayRendererType = overlay.PIXI.Renderer;
+    } else {
+      overlayRendererType = overlay.PIXI.WebGLRenderer;
     }
     if (overlayRendererType.length === 1) {
       // Expects a Phaser Game object?

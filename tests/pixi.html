@@ -1,141 +1,139 @@
 <!DOCTYPE html>
 <html>
-
-<head>
+  <head>
     <title>Pixi Inspector</title>
-    <script type="text/javascript" src="http://localhost:8080/webpack-dev-server.js"></script>
-</head>
+    <script
+      type="text/javascript"
+      src="http://localhost:8080/webpack-dev-server.js"
+    ></script>
+  </head>
 
-<body style="display: flex">
-
+  <body style="display: flex">
     <canvas id="example" style="width: 480;height: 360px;"></canvas>
 
     <div id="devpanel" style="flex: 1">
-        <pixi-panel></pixi-panel>
-        <!-- this is where the PixiPanel will get rendered -->
+      <pixi-panel></pixi-panel>
+      <!-- this is where the PixiPanel will get rendered -->
     </div>
 
     <script src="../node_modules/pixi.js/dist/pixi.js"></script>
     <script>
-        var viewWidth = 480;
-        var viewHeight = 360;
+      var viewWidth = 480;
+      var viewHeight = 360;
 
-        var renderer = PIXI.autoDetectRenderer(viewWidth, viewHeight, {
-            backgroundColor: 0xFFFFFF, //0x1099bb,
-            view: document.getElementById('example')
-        });
+      var renderer = new PIXI.Renderer({
+        view: document.getElementById("example"),
+        width: viewWidth,
+        height: viewHeight
+      });
 
-        // create an new instance of a pixi stage
-        var stage = new PIXI.Container();
+      // create an new instance of a pixi stage
+      var stage = new PIXI.Container();
 
-        stage._inspector = {
-            type: 'stage',
-            whitelist: ['position']
-        };
+      stage._inspector = {
+        type: "stage",
+        whitelist: ["position"]
+      };
 
-        // create a background texture
-        var pondFloorTexture = PIXI.Texture.fromImage("assets/BGrotate.jpg");
-        // create a new background sprite
-        var pondFloorSprite = new PIXI.Sprite(pondFloorTexture);
-        stage.addChild(pondFloorSprite);
+      // create a background texture
+      var pondFloorTexture = PIXI.Texture.from("assets/BGrotate.jpg");
+      // create a new background sprite
+      var pondFloorSprite = new PIXI.Sprite(pondFloorTexture);
+      stage.addChild(pondFloorSprite);
 
+      var dudesContainer = new PIXI.Container();
+      stage.addChild(dudesContainer);
+      // create an array to store a refference to the fish in the pond
+      var dudeArray = [];
 
-        var dudesContainer = new PIXI.Container();
-        stage.addChild(dudesContainer);
-        // create an array to store a refference to the fish in the pond
-        var dudeArray = [];
+      var totalDude = 10;
 
-        var totalDude = 10;
+      for (var i = 0; i < totalDude; i++) {
+        // create a new Sprite that uses the image name that we just generated as its source
+        var dude = PIXI.Sprite.from("assets/eggHead.png");
+        dude.name = "name_" + i;
+        dude.interactive = true;
+        dude.cursor = "help";
 
-        for (var i = 0; i < totalDude; i++) {
+        // set the anchor point so the the dude texture is centerd on the sprite
+        dude.anchor.x = dude.anchor.y = 0.5;
 
-            // create a new Sprite that uses the image name that we just generated as its source
-            var dude = PIXI.Sprite.fromImage("assets/eggHead.png");
-            dude.name = 'name_' + i;
-            dude.interactive = true;
-            dude.cursor = 'help';
+        // set a random scale for the dude - no point them all being the same size!
+        dude.scale.x = dude.scale.y = 0.8 + Math.random() * 0.3;
 
-            // set the anchor point so the the dude texture is centerd on the sprite
-            dude.anchor.x = dude.anchor.y = 0.5;
+        // finally lets set the dude to be a random position..
+        dude.position.x = Math.random() * viewWidth;
+        dude.position.y = Math.random() * viewHeight;
 
-            // set a random scale for the dude - no point them all being the same size!
-            dude.scale.x = dude.scale.y = 0.8 + Math.random() * 0.3;
+        // time to add the dude to the pond container!
+        dudesContainer.addChild(dude);
 
-            // finally lets set the dude to be a random position..
-            dude.position.x = Math.random() * viewWidth;
-            dude.position.y = Math.random() * viewHeight;
+        // create some extra properties that will control movment
 
-            // time to add the dude to the pond container!
-            dudesContainer.addChild(dude);
+        dude.tint = Math.random() * 0xffffff;
 
-            // create some extra properties that will control movment
+        // create a random direction in radians. This is a number between 0 and PI*2 which is the equivalent of 0 - 360 degrees
+        dude.direction = Math.random() * Math.PI * 2;
 
-            dude.tint = Math.random() * 0xFFFFFF;
+        // this number will be used to modify the direction of the dude over time
+        dude.turningSpeed = Math.random() - 0.8;
 
-            // create a random direction in radians. This is a number between 0 and PI*2 which is the equivalent of 0 - 360 degrees
-            dude.direction = Math.random() * Math.PI * 2;
+        // create a random speed for the dude between 0 - 2
+        dude.speed = 2 + Math.random() * 2;
 
-            // this number will be used to modify the direction of the dude over time
-            dude.turningSpeed = Math.random() - 0.8;
+        // finally we push the dude into the dudeArray so it it can be easily accessed later
+        dudeArray.push(dude);
+      }
 
-            // create a random speed for the dude between 0 - 2
-            dude.speed = 2 + Math.random() * 2;
+      // create a bounding box box for the little dudes
+      var dudeBoundsPadding = 100;
+      var dudeBounds = new PIXI.Rectangle(
+        -dudeBoundsPadding,
+        -dudeBoundsPadding,
+        viewWidth + dudeBoundsPadding * 2,
+        viewHeight + dudeBoundsPadding * 2
+      );
 
-            // finally we push the dude into the dudeArray so it it can be easily accessed later
-            dudeArray.push(dude);
+      // create a displacment map
 
+      var tick = 0;
+      requestAnimationFrame(animate);
+
+      function animate() {
+        // iterate through the dude and update the positiond
+        for (var i = 0; i < dudeArray.length; i++) {
+          var dude = dudeArray[i];
+          dude.direction += dude.turningSpeed * 0.01;
+          dude.position.x += Math.sin(dude.direction) * dude.speed;
+          dude.position.y += Math.cos(dude.direction) * dude.speed;
+          dude.rotation = -dude.direction - Math.PI / 2;
+
+          // wrap the dudes by testing there bounds..
+          if (dude.position.x < dudeBounds.x)
+            dude.position.x += dudeBounds.width;
+          else if (dude.position.x > dudeBounds.x + dudeBounds.width)
+            dude.position.x -= dudeBounds.width;
+
+          if (dude.position.y < dudeBounds.y)
+            dude.position.y += dudeBounds.height;
+          else if (dude.position.y > dudeBounds.y + dudeBounds.height)
+            dude.position.y -= dudeBounds.height;
         }
 
-        // create a bounding box box for the little dudes
-        var dudeBoundsPadding = 100;
-        var dudeBounds = new PIXI.Rectangle(-dudeBoundsPadding,
-            -dudeBoundsPadding,
-            viewWidth + dudeBoundsPadding * 2,
-            viewHeight + dudeBoundsPadding * 2);
+        // increment the ticker
+        tick += 0.1;
 
+        // time to render the state!
+        renderer.render(stage);
 
-
-        // create a displacment map
-
-
-        var tick = 0;
+        // request another animation frame..
         requestAnimationFrame(animate);
-
-        function animate() {
-            // iterate through the dude and update the positiond
-            for (var i = 0; i < dudeArray.length; i++) {
-                var dude = dudeArray[i];
-                dude.direction += dude.turningSpeed * 0.01;
-                dude.position.x += Math.sin(dude.direction) * dude.speed;
-                dude.position.y += Math.cos(dude.direction) * dude.speed;
-                dude.rotation = -dude.direction - Math.PI / 2;
-
-                // wrap the dudes by testing there bounds..
-                if (dude.position.x < dudeBounds.x) dude.position.x += dudeBounds.width;
-                else if (dude.position.x > dudeBounds.x + dudeBounds.width) dude.position.x -= dudeBounds.width
-
-                if (dude.position.y < dudeBounds.y) dude.position.y += dudeBounds.height;
-                else if (dude.position.y > dudeBounds.y + dudeBounds.height) dude.position.y -= dudeBounds.height
-            }
-
-            // increment the ticker
-            tick += 0.1;
-
-
-
-            // time to render the state!
-            renderer.render(stage);
-
-            // request another animation frame..
-            requestAnimationFrame(animate);
-        }
-        // renderer.view.addEventListener('click', () => {
-        //     renderer.render(stage);
-        // })
-
+      }
+      // renderer.view.addEventListener('click', () => {
+      //     renderer.render(stage);
+      // })
     </script>
 
     <script type="text/javascript" src="../pixi.panel.bundle.js"></script>
-</body>
-
+  </body>
 </html>
