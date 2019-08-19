@@ -41,8 +41,10 @@ export default class Inspector {
     if (!this.unpatched.CanvasRenderer) {
       this.patch("CanvasRenderer");
     }
-    if (!this.unpatched.Renderer) {
-      this.patch("Renderer");
+    if (typeof this.instance.PIXI.Renderer !== "undefined") {
+      if (!this.unpatched.Renderer) {
+        this.patch("Renderer");
+      }
     } else if (!this.unpatched.WebGLRenderer) {
       this.patch("WebGLRenderer");
     }
@@ -58,7 +60,7 @@ export default class Inspector {
   }
 
   /**
-   * Path the Renderer.render method to get a hold of the stage object(s)
+   * Patch the Renderer.render method to get a hold of the stage object(s)
    */
   patch(renderer) {
     if (this.unpatched[renderer]) {

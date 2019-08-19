@@ -62,7 +62,12 @@ connection$
               title: "PixiJS " + message.data.version
             });
             const version = parseInt(message.data.version, 10);
-            if (version === 4) {
+            if (version === 5) {
+              chrome.pageAction.setIcon({
+                tabId,
+                path: { "16": "icons/v5@1x.png", "32": "icons/v5@2x.png" }
+              });
+            } else if (version === 4) {
               chrome.pageAction.setIcon({
                 tabId,
                 path: { "16": "icons/v4@1x.png", "32": "icons/v4@2x.png" }

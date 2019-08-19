@@ -1,6 +1,6 @@
 {
   "name": "pixi-inspector",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "license": "MIT",
   "scripts": {
     "dev": "webpack-dev-server --mode development",
@@ -9,7 +9,7 @@
     "clean": "rm -rf build",
     "build": "webpack --mode production -p --progress",
     "build:clean": "npm run clean && webpack --mode production -p",
-    "build:watch": "webpack --mode development -w --display none"
+    "build:watch": "webpack --mode development --watch --display none"
   },
   "eslintConfig": {
     "root": true,
