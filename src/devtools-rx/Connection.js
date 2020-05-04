@@ -21,7 +21,7 @@ export default class Connection {
       this._port.postMessage({
         command: "TAB_ID",
         to: 0,
-        data: chrome.devtools.inspectedWindow.tabId
+        data: chrome.devtools.inspectedWindow.tabId,
       });
     }
   }
@@ -61,8 +61,8 @@ export default class Connection {
    */
   on(command) {
     return this.message$.pipe(
-      filter(message => message.command === command),
-      map(message => new Command(this, message))
+      filter((message) => message.command === command),
+      map((message) => new Command(this, message))
     );
   }
 
@@ -86,7 +86,7 @@ export default class Connection {
     this.postMessage({
       command: "LOG",
       to: 0,
-      data: args === 1 ? args[0] : args
+      data: args === 1 ? args[0] : args,
     });
   }
 }

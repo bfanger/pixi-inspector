@@ -9,7 +9,7 @@ export default merge(
 ).pipe(
   switchMap(
     () =>
-      new Promise(resolve => {
+      new Promise((resolve) => {
         chrome.tabs.query({ highlighted: true }, resolve);
       })
   )

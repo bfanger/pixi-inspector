@@ -10,7 +10,7 @@ import {
   refCount,
   take,
   filter,
-  merge
+  merge,
 } from "rxjs/operators";
 import Connection from "./devtools-rx/Connection";
 import { debug } from "./services/config";
@@ -27,7 +27,7 @@ const pixiDetected$ = connection.on("DETECTED").pipe(
     connection
       .to("content_scripts")
       .stream("INSTANCES")
-      .pipe(filter(message => message.data.length > 0))
+      .pipe(filter((message) => message.data.length > 0))
   )
 );
 
@@ -47,10 +47,10 @@ connection.to("content_scripts").send("DETECT");
 connection
   .on("PANEL_VISIBLE")
   .pipe(
-    switchMap(command =>
+    switchMap((command) =>
       panel$.pipe(
-        switchMap(panel => panel.visible$),
-        tap(visible => {
+        switchMap((panel) => panel.visible$),
+        tap((visible) => {
           command.respond("PANEL_VISIBLE", visible);
         })
       )

@@ -7,7 +7,7 @@ import active$ from "./active$";
  * @var {Observable} All frames which have detected one ore more PIXI instances.
  */
 export default active$.pipe(
-  switchMap(active => {
+  switchMap((active) => {
     if (!active) {
       return of([]);
     }
@@ -17,8 +17,8 @@ export default active$.pipe(
     return connection.on("DETECTED").pipe(
       startWith(null),
       switchMap(() => connection.to("content_scripts").stream("INSTANCES")),
-      switchMap(message => {
-        const index = frames.findIndex(frame => frame.from === message.from);
+      switchMap((message) => {
+        const index = frames.findIndex((frame) => frame.from === message.from);
         if (message.data.length === 0) {
           if (index === -1) {
             return empty();
@@ -40,7 +40,9 @@ export default active$.pipe(
         connection
           .on("DISCONNECTED")
           .pipe(
-            map(message => frames.filter(frame => frame.from !== message.from))
+            map((message) =>
+              frames.filter((frame) => frame.from !== message.from)
+            )
           )
       )
     );

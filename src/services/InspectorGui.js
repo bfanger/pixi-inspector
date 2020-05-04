@@ -7,14 +7,14 @@ import {
   tap,
   switchMap,
   debounceTime,
-  combineLatest
+  combineLatest,
 } from "rxjs/operators";
 
 export const overlay = {
   div: null,
   renderer: null,
   PIXI: null,
-  Stage: null
+  Stage: null,
 };
 
 export default class InspectorGui {
@@ -34,11 +34,11 @@ export default class InspectorGui {
     }
     this.offset = {
       canvas: { x: 0, y: 0 },
-      iframe: { x: 0, y: 0 }
+      iframe: { x: 0, y: 0 },
     };
     this.size = {
       canvas: { width: 800, y: 600 },
-      renderer: { width: 800, y: 600 }
+      renderer: { width: 800, y: 600 },
     };
 
     inspector.registerHook(
@@ -51,12 +51,12 @@ export default class InspectorGui {
     this.renderer$ = new ReplaySubject(1);
 
     const canvas$ = this.renderer$.pipe(
-      map(renderer => renderer.view),
+      map((renderer) => renderer.view),
       distinctUntilChanged()
     );
 
     const iframe$ = canvas$.pipe(
-      map(reference => {
+      map((reference) => {
         for (const canvas of document.querySelectorAll("canvas")) {
           if (canvas === reference) {
             return null; // canvas found in current frame
@@ -81,10 +81,10 @@ export default class InspectorGui {
     );
 
     const handleClick$ = canvas$.pipe(
-      switchMap(canvas =>
+      switchMap((canvas) =>
         merge(
           fromEvent(canvas, "contextmenu").pipe(
-            tap(event => {
+            tap((event) => {
               event.preventDefault();
             })
           ),
@@ -97,7 +97,7 @@ export default class InspectorGui {
                 this.calculateOffset(canvas, iframe);
                 const scale = {
                   x: this.resolution.x / renderer.resolution,
-                  y: this.resolution.y / renderer.resolution
+                  y: this.resolution.y / renderer.resolution,
                 };
                 const x = (event.clientX - this.offset.canvas.x) * scale.x;
                 const y = (event.clientY - this.offset.canvas.y) * scale.y;
@@ -136,7 +136,7 @@ export default class InspectorGui {
           elements.push(iframe.contentWindow);
         }
         return merge(
-          ...elements.map(element => fromEvent(element, "scroll"))
+          ...elements.map((element) => fromEvent(element, "scroll"))
         ).pipe(
           debounceTime(50),
           tap(() => {
@@ -148,14 +148,14 @@ export default class InspectorGui {
 
     this.subscription = inspector.enabled$
       .pipe(
-        tap(enabled => {
+        tap((enabled) => {
           if (enabled) {
             overlay.div.removeAttribute("style");
           } else {
             overlay.div.removeAttribute("style");
           }
         }),
-        switchMap(enabled => {
+        switchMap((enabled) => {
           if (enabled === false) {
             return empty();
           }
@@ -178,7 +178,7 @@ export default class InspectorGui {
   get resolution() {
     return {
       x: this.size.renderer.width / this.size.canvas.width,
-      y: this.size.renderer.height / this.size.canvas.height
+      y: this.size.renderer.height / this.size.canvas.height,
     };
   }
 
@@ -219,7 +219,7 @@ export default class InspectorGui {
     const options = {
       transparent: true,
       resolution: window.devicePixelRatio,
-      view: canvas
+      view: canvas,
     };
     let overlayRendererType;
     if (typeof overlay.PIXI.Renderer !== "undefined") {
@@ -234,10 +234,10 @@ export default class InspectorGui {
           {
             canvas,
             camera: {
-              _shake: { x: 0, y: 0 }
+              _shake: { x: 0, y: 0 },
             },
             width: window.innerWidth,
-            height: window.innerHeight
+            height: window.innerHeight,
           },
           options
         )

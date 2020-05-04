@@ -6,7 +6,7 @@ import { Observable } from "rxjs";
  * @return {Observable}
  */
 export default function fromChromeEvent(onEvent) {
-  return Observable.create(observer => {
+  return Observable.create((observer) => {
     function listener(event, ...args) {
       if (arguments.length === 1) {
         observer.next(event);

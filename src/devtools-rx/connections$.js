@@ -4,10 +4,10 @@ import { publishReplay } from "rxjs/operators";
 import connection$ from "./connection$";
 import debug from "./debug";
 
-const connections$ = Observable.create(observer => {
+const connections$ = Observable.create((observer) => {
   const connections = {};
   const disconnectSubscriptions = [];
-  const connectSubscription = connection$.subscribe(connection => {
+  const connectSubscription = connection$.subscribe((connection) => {
     connections[connection.id] = connection;
     debug &&
       console.log(
@@ -27,7 +27,9 @@ const connections$ = Observable.create(observer => {
   });
   return () => {
     connectSubscription.unsubscribe();
-    disconnectSubscriptions.forEach(subscription => subscription.unsubscribe());
+    disconnectSubscriptions.forEach((subscription) =>
+      subscription.unsubscribe()
+    );
   };
 }).pipe(publishReplay(1));
 

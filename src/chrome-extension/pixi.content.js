@@ -13,39 +13,39 @@ const globalHook = {
   /* global RECIPIENT */
   reportDetection(recipient = {}) {
     this.executeInContext(
-      function() {
+      function () {
         __PIXI_INSPECTOR_GLOBAL_HOOK__.reportDetection(window, RECIPIENT);
       }.toString(),
       {
-        RECIPIENT: recipient
+        RECIPIENT: recipient,
       }
     );
   },
   reportInstances(recipient) {
     this.executeInContext(
-      function() {
+      function () {
         __PIXI_INSPECTOR_GLOBAL_HOOK__.reportInstances(RECIPIENT);
       }.toString(),
       {
-        RECIPIENT: recipient
+        RECIPIENT: recipient,
       }
     );
   },
   reportInspector(index, recipient) {
     /* global INDEX */
     this.executeInContext(
-      function() {
+      function () {
         __PIXI_INSPECTOR_GLOBAL_HOOK__.reportInspector(INDEX, RECIPIENT);
       }.toString(),
       {
         INDEX: index,
-        RECIPIENT: recipient
+        RECIPIENT: recipient,
       }
     );
   },
   disable() {
     this.executeInContext(
-      function() {
+      function () {
         __PIXI_INSPECTOR_GLOBAL_HOOK__.disable();
       }.toString()
     );
@@ -64,10 +64,10 @@ const globalHook = {
     script.textContent = ";(" + code + ")(window)";
     document.documentElement.appendChild(script);
     script.parentNode.removeChild(script);
-  }
+  },
 };
 
-(function() {
+(function () {
   /* global UID, DEBUG, INSPECTOR_SCRIPT_URL */
   function injectedScript(window) {
     // Private
@@ -80,7 +80,7 @@ const globalHook = {
           {
             response,
             data,
-            _pixiInspector: uid
+            _pixiInspector: uid,
           },
           recipient
         ),
@@ -95,7 +95,7 @@ const globalHook = {
           broadcast: command,
           filter: recipient,
           data,
-          _pixiInspector: uid
+          _pixiInspector: uid,
         },
         "*"
       );
@@ -109,7 +109,7 @@ const globalHook = {
           command,
           to: pixiPanelId,
           data,
-          _pixiInspector: uid
+          _pixiInspector: uid,
         },
         "*"
       );
@@ -121,7 +121,7 @@ const globalHook = {
       inspectors: [],
       register(instance) {
         const exists = _instances.find(
-          existing => existing.PIXI === instance.PIXI
+          (existing) => existing.PIXI === instance.PIXI
         );
         if (exists) {
           if (instance.Phaser) {
@@ -136,16 +136,16 @@ const globalHook = {
           {
             index: i - 1,
             version: instance.PIXI.VERSION,
-            phaser: instance.Phaser ? instance.Phaser.VERSION : false
+            phaser: instance.Phaser ? instance.Phaser.VERSION : false,
           }
         );
       },
 
       reportInstances(recipient) {
         this.reportDetection(window, recipient);
-        const data = _instances.map(instance => ({
+        const data = _instances.map((instance) => ({
           version: instance.PIXI.VERSION,
-          status: instance.status
+          status: instance.status,
         }));
         respond("INSTANCES", data, recipient);
       },
@@ -192,13 +192,13 @@ const globalHook = {
         }
         _instances[index].status = "LOADING";
         this.injectInspector()
-          .then(Inspector => {
+          .then((Inspector) => {
             this.inspectors.push(new Inspector(_instances[index], emit));
             _instances[index].inspector = this.inspectors.length - 1;
             _instances[index].status = "INJECTED";
             respond("INSPECTOR", _instances[index].inspector, recipient);
           })
-          .catch(error => {
+          .catch((error) => {
             respond("ERROR", error.message, recipient);
           });
       },
@@ -209,7 +209,7 @@ const globalHook = {
         if (InspectorPromise) {
           return InspectorPromise;
         }
-        InspectorPromise = new Promise(resolve => {
+        InspectorPromise = new Promise((resolve) => {
           const script = window.document.createElement("script");
           script.src = INSPECTOR_SCRIPT_URL;
           const html = document.getElementsByTagName("html")[0];
@@ -225,7 +225,7 @@ const globalHook = {
         for (const inspector of this.inspectors) {
           inspector.disable();
         }
-      }
+      },
     };
   }
 
@@ -233,12 +233,12 @@ const globalHook = {
   globalHook.executeInContext(code, {
     UID: uid,
     DEBUG: debug,
-    INSPECTOR_SCRIPT_URL: chrome.extension.getURL("pixi.inspector.bundle.js")
+    INSPECTOR_SCRIPT_URL: chrome.extension.getURL("pixi.inspector.bundle.js"),
   });
 })();
 
 const port = chrome.runtime.connect({ name: "content_scripts" });
-port.onMessage.addListener(message => {
+port.onMessage.addListener((message) => {
   debug && console.log("port.onMessage", message);
   switch (message.command) {
     case "DETECT":
@@ -250,7 +250,7 @@ port.onMessage.addListener(message => {
     case "INSPECTOR":
       globalHook.reportInspector(message.data, {
         to: message.from,
-        id: message.id
+        id: message.id,
       });
       break;
     case "DISCONNECTED":
@@ -259,7 +259,7 @@ port.onMessage.addListener(message => {
   }
 });
 
-window.onmessage = function(event) {
+window.onmessage = function (event) {
   debug && console.log("window.onmessage", event);
   if (typeof event.data === "object" && event.data._pixiInspector === uid) {
     delete event.data._pixiInspector;
@@ -276,7 +276,7 @@ port.onDisconnect.addListener(() => {
   // Extension was restarted
   window.onmessage = null;
 });
-window.onload = function() {
+window.onload = function () {
   globalHook.reportDetection();
   setTimeout(() => {
     if (!isDetected) {

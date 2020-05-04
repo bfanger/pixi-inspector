@@ -11,7 +11,7 @@ export default class TypeDetection {
     const index = this.constructors.indexOf(node.constructor);
     if (index === -1) {
       return this.resolveType(node.constructor.name || "Anonymous", node, [
-        node.constructor
+        node.constructor,
       ]);
     }
     return this.names[index];

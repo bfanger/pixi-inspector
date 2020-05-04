@@ -4,7 +4,7 @@ import Connection from "./Connection";
 let autoIncrement = 1;
 
 export default fromChromeEvent(chrome.runtime.onConnect).pipe(
-  map(port => {
+  map((port) => {
     const connection = new Connection(port);
     connection.id = autoIncrement;
     autoIncrement++;

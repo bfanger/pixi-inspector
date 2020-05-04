@@ -5,6 +5,6 @@ export default connection
   .to("devtools_page")
   .stream("PANEL_VISIBLE")
   .pipe(
-    map(message => message.data),
+    map((message) => message.data),
     shareReplay(1)
   );

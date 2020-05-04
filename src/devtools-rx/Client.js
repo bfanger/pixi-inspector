@@ -26,7 +26,7 @@ export default class Client {
       );
     }
     return this.connection.on("DISCONNECTED").pipe(
-      filter(message => message.from === this.recipient),
+      filter((message) => message.from === this.recipient),
       take(1)
     );
   }
@@ -48,7 +48,7 @@ export default class Client {
             this.recipient.tabId ||
             (chrome.devtools &&
               chrome.devtools.inspectedWindow &&
-              chrome.devtools.inspectedWindow.tabId)
+              chrome.devtools.inspectedWindow.tabId),
         },
         this.recipient
       );
@@ -110,7 +110,7 @@ export default class Client {
     const message$ = stream(this, command, data);
     return message$.pipe(
       take(1),
-      map(message => {
+      map((message) => {
         if (message.response !== command) {
           throw new Error(
             'Unexpected response "' +
@@ -143,7 +143,7 @@ export default class Client {
     this.connection.postMessage({
       command,
       to: this.recipient,
-      data
+      data,
     });
   }
 }

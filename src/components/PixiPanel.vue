@@ -38,7 +38,7 @@ export default {
   components: { Toolbar, SplitView, TreeView, DetailView },
   data() {
     return {
-      search: ""
+      search: "",
     };
   },
   computed: {
@@ -49,13 +49,13 @@ export default {
         typeof chrome.devtools.panels !== "undefined" &&
         chrome.devtools.panels.themeName === "dark"
       );
-    }
+    },
   },
   subscriptions() {
     return {
-      injected: latestInspector$.pipe(map(inspector => inspector !== null)),
+      injected: latestInspector$.pipe(map((inspector) => inspector !== null)),
       messageVisible: active$.pipe(
-        switchMap(active => {
+        switchMap((active) => {
           if (active) {
             return timer(100).pipe(
               map(() => true),
@@ -65,14 +65,14 @@ export default {
           return of(false);
         })
       ),
-      searchFilter: latestInspector$.method("searchFilter")
+      searchFilter: latestInspector$.method("searchFilter"),
     };
   },
   methods: {
     toggleSelectMode(value) {
       this.selectModeSubscription = this.inspector$
         .first()
-        .subscribe(inspector => {
+        .subscribe((inspector) => {
           inspector.selectMode(value);
         });
     },
@@ -81,8 +81,8 @@ export default {
     },
     detect() {
       connection.to("content_scripts").send("DETECT");
-    }
-  }
+    },
+  },
 };
 </script>
 

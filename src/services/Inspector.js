@@ -13,7 +13,7 @@ export default class Inspector {
     this.unpatched = {};
     this.hooks = {
       beforeRender: [],
-      afterRender: []
+      afterRender: [],
     };
     this.enabled$ = new ReplaySubject(1);
 
@@ -23,7 +23,7 @@ export default class Inspector {
     window.console = {
       warn() {
         // Prevent lots of "Deprecation Warning: PIXI.${oldthing} has been deprecated, please use PIXI.${newthing}"
-      }
+      },
     };
     this.typeDetection.registerTypes("PIXI.", instance.PIXI, 2);
     instance.Phaser &&
@@ -74,7 +74,7 @@ export default class Inspector {
       const renderMethod = Renderer.prototype.render;
       this.unpatched[renderer] = renderMethod;
       const self = this;
-      Renderer.prototype.render = function(container, ...args) {
+      Renderer.prototype.render = function (container, ...args) {
         runHooks(self.hooks.beforeRender, container, this);
         const result = renderMethod.apply(this, [container, ...args]);
         runHooks(self.hooks.afterRender, container, this);
@@ -93,7 +93,7 @@ export default class Inspector {
     const hook = {
       callback,
       throttle: ms,
-      skip: false
+      skip: false,
     };
     this.hooks[type].push(hook);
     return () => {

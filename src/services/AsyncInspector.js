@@ -19,15 +19,15 @@ export default class AsyncInspector {
     }
     this.local = {
       selected$: new Subject(),
-      treeChange$: new Subject()
+      treeChange$: new Subject(),
     };
     this.tree$ = defer(() => {
       let root;
       return concat(
         this.call("outliner.tree"),
-        connection.on("TREE").pipe(map(message => message.data))
+        connection.on("TREE").pipe(map((message) => message.data))
       ).pipe(
-        tap(tree => {
+        tap((tree) => {
           root = tree;
         }),
         merge(this.local.treeChange$.pipe(map(() => root)))
@@ -36,7 +36,7 @@ export default class AsyncInspector {
 
     this.selected$ = mergeObservables(
       defer(() => this.call("outliner.selected")),
-      connection.on("SELECTED").pipe(map(message => message.data)),
+      connection.on("SELECTED").pipe(map((message) => message.data)),
       this.local.selected$
     );
   }
@@ -50,14 +50,14 @@ export default class AsyncInspector {
   }
 
   expand(node) {
-    return this.call("outliner.expand", node.id).then(children => {
+    return this.call("outliner.expand", node.id).then((children) => {
       node.collapsed = false;
       node.children = children;
       this.local.treeChange$.next(node);
     });
   }
   collapse(node) {
-    return this.call("outliner.collapse", node.id).then(children => {
+    return this.call("outliner.collapse", node.id).then((children) => {
       node.collapsed = true;
       node.children = children;
       this.local.treeChange$.next(node);
@@ -109,7 +109,7 @@ export default class AsyncInspector {
       "." +
       method +
       "(" +
-      args.map(arg => JSON.stringify(arg)).join(", ") +
+      args.map((arg) => JSON.stringify(arg)).join(", ") +
       ")";
     return asyncEval(code, this.target);
   }

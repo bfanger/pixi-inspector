@@ -13,7 +13,7 @@
       :data-id="row.node.id"
       :class="{
         'treeview__item--selected': selected && row.node.id === selected.id,
-        'treeview__item--found': row.node.found
+        'treeview__item--found': row.node.found,
       }"
       class="treeview__item"
       @mousedown="select(row.node)"
@@ -51,19 +51,19 @@ import latestInspector$ from "../services/latestInspector$";
 export default {
   subscriptions() {
     const inspector$ = latestInspector$.pipe(
-      filter(inspector => inspector !== null)
+      filter((inspector) => inspector !== null)
     );
     return {
-      selected: inspector$.pipe(switchMap(inspector => inspector.selected$)),
+      selected: inspector$.pipe(switchMap((inspector) => inspector.selected$)),
       rows: inspector$.pipe(
-        switchMap(inspector => inspector.tree$),
+        switchMap((inspector) => inspector.tree$),
         map(this.flattenTree)
       ),
       select: latestInspector$.method("select"),
       expand: latestInspector$.method("expand"),
       toggle: latestInspector$.method("toggle"),
       collapse: latestInspector$.method("collapse"),
-      highlight: latestInspector$.method("highlight")
+      highlight: latestInspector$.method("highlight"),
     };
   },
   methods: {
@@ -132,8 +132,8 @@ export default {
         }
       }
       return -1;
-    }
-  }
+    },
+  },
 };
 </script>
 

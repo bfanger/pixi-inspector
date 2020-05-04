@@ -5,20 +5,20 @@ export default {
       if (!this.$slots.default) {
         return [];
       }
-      return this.$slots.default.filter(vnode => {
+      return this.$slots.default.filter((vnode) => {
         if (typeof vnode.tag === "undefined" && vnode.text === " ") {
           return false;
         }
         return true;
       });
-    }
+    },
   },
   render() {
-    const items = this.children().map(vnode => (
+    const items = this.children().map((vnode) => (
       <div class="splitview__item">{vnode}</div>
     ));
     return <div class="splitview">{items}</div>;
-  }
+  },
 };
 </script>
 

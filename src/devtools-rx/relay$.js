@@ -7,7 +7,7 @@ import { mergeMap, tap, withLatestFrom } from "rxjs/operators";
 
 const opened = {};
 export default connection$.pipe(
-  mergeMap(connection =>
+  mergeMap((connection) =>
     merge(
       connection.disconnect$.pipe(
         withLatestFrom(connections$),
@@ -19,7 +19,7 @@ export default connection$.pipe(
                 connections[id].postMessage({
                   command: "DISCONNECTED",
                   from: connection.id,
-                  name: connection.name
+                  name: connection.name,
                 });
                 count++;
               }
@@ -55,13 +55,13 @@ export default connection$.pipe(
               command: message.broadcast,
               from: connection.id,
               id: message.id,
-              data: message.data
+              data: message.data,
             };
             const filter = message.filter;
             if (!filter.tabId) {
               filter.tabId = connection.tabId;
             }
-            const targets = Object.values(connections).filter(target => {
+            const targets = Object.values(connections).filter((target) => {
               if (target.id === connection.id) {
                 return false; // Don't broadcast back to sender
               }
@@ -92,7 +92,7 @@ export default connection$.pipe(
                   " clients"
               );
 
-            targets.forEach(target => {
+            targets.forEach((target) => {
               target.postMessage(command);
             });
           } else if (message.to === 0) {
@@ -124,7 +124,7 @@ export default connection$.pipe(
               connection.postMessage({
                 response: "ERROR",
                 data: "DISCONNECTED",
-                id: message.id
+                id: message.id,
               });
               return;
             }

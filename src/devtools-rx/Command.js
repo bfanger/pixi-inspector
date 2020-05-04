@@ -22,7 +22,7 @@ export default class Command {
       response,
       to: this.from,
       data,
-      id: this.id
+      id: this.id,
     });
   }
 }

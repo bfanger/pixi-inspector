@@ -23,7 +23,7 @@ export default {
   subscriptions() {
     return {
       fields: latestInspector$.pipe(
-        switchMap(inspector => {
+        switchMap((inspector) => {
           if (inspector === null) {
             return empty();
           }
@@ -33,9 +33,9 @@ export default {
           );
         })
       ),
-      setProperty: latestInspector$.method("setProperty")
+      setProperty: latestInspector$.method("setProperty"),
     };
-  }
+  },
 };
 </script>
 

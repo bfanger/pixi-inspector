@@ -10,8 +10,8 @@ export default function stream(client, command, data) {
     client.send(command, data, { id });
 
     return client.connection.message$.pipe(
-      filter(message => message.id === id),
-      tap(message => {
+      filter((message) => message.id === id),
+      tap((message) => {
         if (message.response === "ERROR") {
           throw new Error(message.data);
         }

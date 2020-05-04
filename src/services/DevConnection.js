@@ -5,7 +5,7 @@ import Inspector from "./Inspector";
 
 const commands = {
   TREE: new Subject(),
-  SELECTED: new Subject()
+  SELECTED: new Subject(),
 };
 let inspector = null;
 
@@ -31,7 +31,7 @@ export class DevClient {
   stream(command) {
     if (command === "INSTANCES") {
       return of({
-        data: [{ status: "INJECTED", version: PIXI.VERSION }]
+        data: [{ status: "INJECTED", version: PIXI.VERSION }],
       });
     }
     if (command === "PANEL_VISIBLE") {

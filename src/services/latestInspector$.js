@@ -8,7 +8,7 @@ import instances$ from "./instances$";
  * Select in the last frame (with pixi) the last detected pixi instance.
  */
 export const latestInstance$ = instances$.pipe(
-  map(frames => {
+  map((frames) => {
     if (frames.length === 0) {
       return null;
     }
@@ -22,7 +22,7 @@ export const latestInstance$ = instances$.pipe(
       status: instance.status,
       connection: frame.from,
       frameURL: frame.frameURL,
-      index: frame.data.length - 1
+      index: frame.data.length - 1,
     };
   })
 );
@@ -30,7 +30,7 @@ export const latestInstance$ = instances$.pipe(
  * Create a AsyncInspector for the detected instance
  */
 const latestInspector$ = latestInstance$.pipe(
-  switchMap(instance => {
+  switchMap((instance) => {
     if (instance === null) {
       return of(null);
     }
@@ -38,10 +38,10 @@ const latestInspector$ = latestInstance$.pipe(
       .to(instance.connection)
       .get("INSPECTOR", instance.index)
       .pipe(
-        switchMap(index =>
-          Observable.create(observer => {
+        switchMap((index) =>
+          Observable.create((observer) => {
             const inspector = new AsyncInspector(index, {
-              frameURL: instance.frameURL
+              frameURL: instance.frameURL,
             });
             observer.next(inspector);
             inspector.enable();
@@ -56,11 +56,11 @@ const latestInspector$ = latestInstance$.pipe(
   shareReplay(1)
 );
 
-latestInspector$.method = function(method) {
+latestInspector$.method = function (method) {
   return this.pipe(
     map(
-      inspector =>
-        function(...args) {
+      (inspector) =>
+        function (...args) {
           if (inspector === null) {
             /* eslint-disable no-console */
             console.log("No inspector available");

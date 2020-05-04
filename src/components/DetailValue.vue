@@ -22,11 +22,11 @@
 <script>
 export default {
   props: {
-    field: { type: Object, required: true }
+    field: { type: Object, required: true },
   },
   data: () => ({
     isEdit: false,
-    fieldValue: undefined
+    fieldValue: undefined,
   }),
   watch: {
     field(newField) {
@@ -34,7 +34,7 @@ export default {
       if (!this.isEdit) {
         this.fieldValue = this.field.value;
       }
-    }
+    },
   },
   methods: {
     onFocus() {
@@ -123,8 +123,8 @@ export default {
       }
       this.fieldValue = newValue;
       this.$emit("change", newValue);
-    }
-  }
+    },
+  },
 };
 </script>
 

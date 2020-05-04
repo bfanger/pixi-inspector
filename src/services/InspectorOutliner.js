@@ -17,8 +17,8 @@ export default class InspectorOutliner {
         id: 0,
         type: "root",
         collapsed: false,
-        parent: null
-      }
+        parent: null,
+      },
     };
     this.nodes = [this.root];
     // @todo Garbage collect nodes
@@ -187,7 +187,7 @@ export default class InspectorOutliner {
           node.parent && node.parent[outliner]
             ? node.parent[outliner].parent !== null
             : false,
-        children: null
+        children: null,
       };
       node[outliner].id = this.nodes.push(node) - 1;
     }
@@ -204,7 +204,7 @@ export default class InspectorOutliner {
         node[outliner].collapsed === false ||
         !node[outliner].parent.found
       ) {
-        node[outliner].children = node.children.map(childNode =>
+        node[outliner].children = node.children.map((childNode) =>
           this.serialize(childNode)
         );
       } else {

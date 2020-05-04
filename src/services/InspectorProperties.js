@@ -2,7 +2,7 @@ export const blacklist = [
   "children",
   "parent",
   "tempDisplayObjectParent",
-  "scope"
+  "scope",
 ];
 export const whitelist = [
   "transform",
@@ -11,7 +11,7 @@ export const whitelist = [
   "rotation",
   "pivot",
   "skew",
-  "anchor"
+  "anchor",
 ];
 class MismatchConstructor {}
 
@@ -90,7 +90,7 @@ export default class InspectorProperties {
           properties.push({
             path: path.join(".") + ".rotation",
             type: "number",
-            value: value.rotation
+            value: value.rotation,
           });
         }
         if (properties.length !== 0) {
@@ -106,8 +106,8 @@ export default class InspectorProperties {
         type:
           typeof value.constructor !== "undefined"
             ? value.constructor.name || type
-            : type
-      }
+            : type,
+      },
     ];
   }
 }
