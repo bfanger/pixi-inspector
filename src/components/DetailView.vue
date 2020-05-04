@@ -11,7 +11,7 @@
 
 <script>
 import { empty, interval } from "rxjs";
-import { switchMap, merge } from "rxjs/operators";
+import { switchMap, merge, map } from "rxjs/operators";
 import DetailValue from "./DetailValue.vue";
 import latestInspector$ from "../services/latestInspector$.js";
 
@@ -29,7 +29,18 @@ export default {
           }
           return interval(POLL_INTERVAL).pipe(
             merge(inspector.selected$),
-            switchMap(() => inspector.call("properties.all"))
+            switchMap(() => inspector.call("properties.all")),
+            map((fields) => {
+              // Remove duplicates
+              const exists = {};
+              return fields.reduce((acc, item) => {
+                if (exists[item.path]) {
+                  return acc;
+                }
+                exists[item.path] = true;
+                return [...acc, item];
+              }, []);
+            })
           );
         })
       ),
