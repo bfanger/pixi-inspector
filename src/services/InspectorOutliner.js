@@ -202,7 +202,7 @@ export default class InspectorOutliner {
         node[outliner].children = false;
       } else if (
         node[outliner].collapsed === false ||
-        !node[outliner].parent.found
+        (node[outliner].parent && !node[outliner].parent.found)
       ) {
         node[outliner].children = node.children.map((childNode) =>
           this.serialize(childNode)

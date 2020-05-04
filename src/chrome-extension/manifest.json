@@ -1,6 +1,6 @@
 {
   "manifest_version": 2,
-  "version": "0.9.1",
+  "version": "0.9.2",
   "name": "PixiJS devtools",
   "description": "Developer Tools for inspecting and debugging games written with Pixi.js",
   "icons": {
