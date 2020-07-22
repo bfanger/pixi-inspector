@@ -94,12 +94,13 @@ export default class InspectorOutliner {
       return this.serialize(node).children;
     }
   }
-  searchFilter(search) {
+  searchFilter(search) {  
+    const checkParameter = (node, parameter) => node[outliner][parameter] &&
+      node[outliner][parameter].toLowerCase().includes(search.toLowerCase());
+
     if (search) {
       for (const node of this.nodes) {
-        node[outliner].found =
-          node[outliner].name &&
-          node[outliner].name.toLowerCase().includes(search.toLowerCase());
+        node[outliner].found = checkParameter(node, "name") || checkParameter(node, "type"); 
         node[outliner].found && this.extendAllParents(node);
       }
     } else {

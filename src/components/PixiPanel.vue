@@ -8,7 +8,7 @@
         v-model="search"
         class="pixi-panel__search"
         type="search"
-        placeholder="Find by name"
+        placeholder="Find by type or name"
         @keyup.enter="searchFilter(search)"
       />
     </Toolbar>
