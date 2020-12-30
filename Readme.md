@@ -15,6 +15,9 @@ Install (Pixi Inspector from the Chrome Web Store)[https://chrome.google.com/web
 * Right click(Right click + Alt for mobile) on the canvas to select the node at that position.
 * Use shielded symbols("\") for set value null or NaN or undefined otherwise will be set "null" or "NaN" or "undefined" like string. Example use "\null" => null, "\NaN" => NaN, "\undefined" => undefined
 
+## FAQ
+* How to make plugin work with webpack and pixi5 -> https://github.com/bfanger/pixi-inspector/issues/42
+* Electron support -> https://github.com/bfanger/pixi-inspector/issues/20
 
 ## Build from source
 
