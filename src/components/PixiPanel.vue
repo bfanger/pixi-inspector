@@ -1,9 +1,7 @@
 <template>
   <div :class="{ 'dark-mode': darkMode }" class="pixi-panel">
     <Toolbar>
-      <button @click="reload">
-        Reconnect
-      </button>
+      <button @click="reload">Reconnect</button>
       <input
         v-model="search"
         class="pixi-panel__search"

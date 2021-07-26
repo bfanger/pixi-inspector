@@ -11,6 +11,7 @@
       v-html="fieldValue"
     />
     <label v-if="field.type === 'boolean'" class="detailvalue__label">
+      <!-- eslint-disable vue/no-mutating-props -->
       <input v-model="field.value" type="checkbox" @change="toggle()" />{{
         field.value
       }}</label
@@ -30,6 +31,7 @@ export default {
   }),
   watch: {
     field(newField) {
+      // eslint-disable-next-line vue/no-mutating-props
       this.field = newField;
       if (!this.isEdit) {
         this.fieldValue = this.field.value;
