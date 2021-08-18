@@ -38,9 +38,10 @@ export default class InspectorHighlight {
       box.beginFill(0x007eff, 0.3);
       box.lineStyle(1, 0x007eff, 0.6);
       const bounds = node.getBounds();
+      const canvasScale = InspectorHighlight.getHtmlElementScale(renderer.view);
       const scale = {
-        x: this.gui.resolution.x / renderer.resolution,
-        y: this.gui.resolution.y / renderer.resolution,
+        x: (renderer.view.offsetWidth * canvasScale) / renderer.screen.width,
+        y: (renderer.view.offsetHeight * canvasScale) / renderer.screen.height,
       };
       box.drawRect(
         bounds.x * scale.x,
@@ -69,6 +70,24 @@ export default class InspectorHighlight {
     } else {
       box.visible = false;
     }
+  }
+
+  static getHtmlElementScale(element) {
+    if (!window.getComputedStyle || !element) return 1;
+
+    const { transform } = window.getComputedStyle(element);
+
+    const transformMatrix3d = transform.match(/^matrix3d\((.+)\)$/);
+
+    if (transformMatrix3d)
+      return parseFloat(transformMatrix3d[1].split(", ")[13]);
+
+    const transformMatrix2d = transform.match(/^matrix\((.+)\)$/);
+
+    if (transformMatrix2d)
+      return parseFloat(transformMatrix2d[1].split(", ")[3]);
+
+    return 1;
   }
 }
 
