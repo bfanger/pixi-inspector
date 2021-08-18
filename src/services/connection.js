@@ -1,4 +1,3 @@
-/* eslint-disable import/no-mutable-exports */
 let connection = null;
 if (process.env.DEV_SERVER) {
   const DevConnection = require("./DevConnection").default;

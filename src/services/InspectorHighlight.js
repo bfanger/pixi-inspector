@@ -39,10 +39,19 @@ export default class InspectorHighlight {
       box.lineStyle(1, 0x007eff, 0.6);
       const bounds = node.getBounds();
       const canvasScale = InspectorHighlight.getHtmlElementScale(renderer.view);
-      const scale = {
-        x: (renderer.view.offsetWidth * canvasScale) / renderer.screen.width,
-        y: (renderer.view.offsetHeight * canvasScale) / renderer.screen.height,
-      };
+
+      const scale = renderer.screen
+        ? {
+            x:
+              (renderer.view.offsetWidth * canvasScale) / renderer.screen.width,
+            y:
+              (renderer.view.offsetHeight * canvasScale) /
+              renderer.screen.height,
+          }
+        : {
+            x: this.gui.resolution.x / renderer.resolution,
+            y: this.gui.resolution.y / renderer.resolution,
+          };
       box.drawRect(
         bounds.x * scale.x,
         bounds.y * scale.y,

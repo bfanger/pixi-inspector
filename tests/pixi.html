@@ -9,22 +9,24 @@
   </head>
 
   <body style="display: flex">
-    <canvas id="example" style="width: 480;height: 360px;"></canvas>
+    <canvas id="example" style="width: 480; height: 360px"></canvas>
 
     <div id="devpanel" style="flex: 1">
       <pixi-panel></pixi-panel>
       <!-- this is where the PixiPanel will get rendered -->
     </div>
 
-    <script src="../node_modules/pixi.js/dist/pixi.js"></script>
-    <script>
+    <script type="module">
+      import * as PIXI from "https://cdn.skypack.dev/pixi.js@6";
+      window.PIXI = PIXI;
+
       var viewWidth = 480;
       var viewHeight = 360;
 
       var renderer = new PIXI.Renderer({
         view: document.getElementById("example"),
         width: viewWidth,
-        height: viewHeight
+        height: viewHeight,
       });
 
       // create an new instance of a pixi stage
@@ -32,7 +34,7 @@
 
       stage._inspector = {
         type: "stage",
-        whitelist: ["position"]
+        whitelist: ["position"],
       };
 
       // create a background texture
@@ -132,8 +134,7 @@
       // renderer.view.addEventListener('click', () => {
       //     renderer.render(stage);
       // })
+      import("/pixi.panel.bundle.js");
     </script>
-
-    <script type="text/javascript" src="../pixi.panel.bundle.js"></script>
   </body>
 </html>

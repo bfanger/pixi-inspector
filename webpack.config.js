@@ -4,7 +4,8 @@ const webpack = require("webpack");
 const { merge } = require("webpack-merge");
 const path = require("path");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
-const FriendlyErrorsPlugin = require("friendly-errors-webpack-plugin");
+const Webpackbar = require("webpackbar");
+const FriendlyErrorsWebpackPlugin = require("@nuxt/friendly-errors-webpack-plugin");
 const { VueLoaderPlugin } = require("vue-loader");
 
 if (!process.env.NODE_ENV) {
@@ -31,19 +32,6 @@ const baseConfig = {
       {
         test: /\.js$/,
         include: path.join(__dirname, "/src"),
-        enforce: "pre",
-        loader: "eslint-loader",
-        options: {
-          failOnError: false,
-          failOnWarning: false,
-          emitError: false,
-          emitWarning: true,
-          formatter: require("eslint-friendly-formatter"),
-        },
-      },
-      {
-        test: /\.js$/,
-        include: path.join(__dirname, "/src"),
         loader: "babel-loader",
       },
       {
@@ -67,6 +55,8 @@ const baseConfig = {
     ],
   },
   plugins: [
+    new FriendlyErrorsWebpackPlugin(),
+    new Webpackbar(),
     new webpack.DefinePlugin({
       "process.env": {
         DEBUG_DEVTOOLS_RX: JSON.stringify(process.env.DEBUG_DEVTOOLS_RX),
@@ -82,12 +72,9 @@ let devConfig = baseConfig;
 if (process.env.NODE_ENV === "development") {
   devConfig = merge(baseConfig, {
     devtool: "source-map",
-    plugins: [new FriendlyErrorsPlugin()],
   });
 }
-const isDevServer = process.argv.find(
-  (arg) => arg.substr(-18) === "webpack-dev-server"
-);
+const isDevServer = /webpack serve/.test(process.argv.join(" "));
 let webpackConfig = devConfig;
 if (isDevServer) {
   webpackConfig = merge(devConfig, {
@@ -101,7 +88,8 @@ if (isDevServer) {
     ],
     devServer: {
       port: process.env.PORT || 8080,
-      // noInfo: false
+      contentBase: path.join(__dirname, "tests"),
+      quiet: true,
     },
   });
 }
