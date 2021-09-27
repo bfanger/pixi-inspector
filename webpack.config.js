@@ -88,8 +88,7 @@ if (isDevServer) {
     ],
     devServer: {
       port: process.env.PORT || 8080,
-      contentBase: path.join(__dirname, "tests"),
-      quiet: true,
+      static: path.join(__dirname, "tests"),
     },
   });
 }
