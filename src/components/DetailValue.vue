@@ -21,7 +21,9 @@
       <input v-model="fieldValue" type="checkbox" @change="toggle()" />
       {{ field.value }}
     </label>
-    <span v-if="field.type !== 'object'" class="detailvalue__static">{{ staticType }}</span>
+    <span v-if="field.type !== 'object'" class="detailvalue__static">{{
+      staticType
+    }}</span>
   </span>
 </template>
 

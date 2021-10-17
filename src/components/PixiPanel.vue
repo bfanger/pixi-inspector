@@ -16,7 +16,12 @@
     </SplitView>
     <div v-if="!injected && messageVisible" class="pixi-panel__message">
       Looking for
-      <span class="pixi-panel__inline-logo">pixijs</span> ...
+      <span
+        class="pixi-panel__inline-logo"
+        :style="`background-image: url('${logoSrc}')`"
+        >pixijs</span
+      >
+      ...
     </div>
   </div>
 </template>
@@ -31,12 +36,14 @@ import connection from "../services/connection";
 import active$ from "../services/active$";
 import latestInspector$ from "../services/latestInspector$";
 import { map, switchMap, startWith } from "rxjs/operators";
+import logoSrc from "../../img/pixijs.png";
 
 export default {
   components: { Toolbar, SplitView, TreeView, DetailView },
   data() {
     return {
       search: "",
+      logoSrc,
     };
   },
   computed: {
@@ -118,7 +125,7 @@ export default {
 
 .pixi-panel__inline-logo {
   display: inline-block;
-  background: url(../../img/pixijs.png) no-repeat;
+  background: no-repeat;
   background-size: contain;
   color: transparent;
   width: 86px;

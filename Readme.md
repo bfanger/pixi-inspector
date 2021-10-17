@@ -17,7 +17,7 @@ Install (Pixi Inspector from the Chrome Web Store)[https://chrome.google.com/web
 
 ## FAQ
 
-- How to make plugin work with webpack and pixi5 -> https://github.com/bfanger/pixi-inspector/issues/42
+- How to make plugin work with webpack and pixi -> https://github.com/bfanger/pixi-inspector/issues/42
 - Electron support -> https://github.com/bfanger/pixi-inspector/issues/20
 
 ## Build from source
