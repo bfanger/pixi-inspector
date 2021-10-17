@@ -66,6 +66,12 @@ export default class InspectorOutliner {
     }
   }
 
+  /* eslint-disable class-methods-use-this, no-console*/
+  logToConsole() {
+    console.log(window.$pixi);
+  }
+  /* eslint-enable */
+
   selected() {
     if (window.$pixi) {
       const id = window.$pixi[outliner].id;
@@ -94,13 +100,15 @@ export default class InspectorOutliner {
       return this.serialize(node).children;
     }
   }
-  searchFilter(search) {  
-    const checkParameter = (node, parameter) => node[outliner][parameter] &&
+  searchFilter(search) {
+    const checkParameter = (node, parameter) =>
+      node[outliner][parameter] &&
       node[outliner][parameter].toLowerCase().includes(search.toLowerCase());
 
     if (search) {
       for (const node of this.nodes) {
-        node[outliner].found = checkParameter(node, "name") || checkParameter(node, "type"); 
+        node[outliner].found =
+          checkParameter(node, "name") || checkParameter(node, "type");
         node[outliner].found && this.extendAllParents(node);
       }
     } else {

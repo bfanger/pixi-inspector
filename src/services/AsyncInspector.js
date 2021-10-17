@@ -74,6 +74,9 @@ export default class AsyncInspector {
       this.local.treeChange$.next(search);
     });
   }
+  logToConsole() {
+    this.call("outliner.logToConsole");
+  }
   select(node) {
     return this.call("outliner.select", node.id).then(() => {
       this.local.selected$.next(node);

@@ -1,11 +1,10 @@
 <template>
   <div class="detailview">
     <div v-for="field in fields" :key="field.path" class="detailview__item">
-      <div class="detailview__label">
-        {{ field.path }}
-      </div>
+      <div class="detailview__label">{{ field.path }}</div>
       <DetailValue :field="field" @change="setProperty(field.path, $event)" />
     </div>
+    <button @click="logToConsole">Log to console</button>
   </div>
 </template>
 
@@ -45,6 +44,7 @@ export default {
         })
       ),
       setProperty: latestInspector$.method("setProperty"),
+      logToConsole: latestInspector$.method("logToConsole"),
     };
   },
 };
