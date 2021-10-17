@@ -1,5 +1,4 @@
 /* eslint-env node */
-/* eslint-disable import/no-commonjs,import/no-nodejs-modules */
 const webpack = require("webpack");
 const { merge } = require("webpack-merge");
 const path = require("path");
@@ -8,14 +7,11 @@ const Webpackbar = require("webpackbar");
 const FriendlyErrorsWebpackPlugin = require("@nuxt/friendly-errors-webpack-plugin");
 const { VueLoaderPlugin } = require("vue-loader");
 
-if (!process.env.NODE_ENV) {
-  process.env.NODE_ENV =
-    process.argv.indexOf("-p") !== -1 ? "production" : "development";
-}
-const mode = process.env.NODE_ENV;
+const pos = process.argv.indexOf("--mode");
+const mode = pos === -1 ? "production" : process.argv[pos + 1];
+const isDevServer = /webpack serve/.test(process.argv.join(" "));
 
 const baseConfig = {
-  mode,
   entry: {
     "pixi.panel": "./src/pixi.panel.js",
     "pixi.devtools": "./src/pixi.devtools.js",
@@ -58,9 +54,10 @@ const baseConfig = {
     new FriendlyErrorsWebpackPlugin(),
     new Webpackbar(),
     new webpack.DefinePlugin({
-      "process.env": {
-        DEBUG_DEVTOOLS_RX: JSON.stringify(process.env.DEBUG_DEVTOOLS_RX),
-      },
+      "process.env.DEBUG_DEVTOOLS_RX": JSON.stringify(
+        process.env.DEBUG_DEVTOOLS_RX
+      ),
+      "process.env.DEV_SERVER": JSON.stringify(isDevServer),
     }),
     new VueLoaderPlugin(),
     new CopyWebpackPlugin({
@@ -69,23 +66,19 @@ const baseConfig = {
   ],
 };
 let devConfig = baseConfig;
-if (process.env.NODE_ENV === "development") {
+
+if (mode === "development") {
   devConfig = merge(baseConfig, {
     devtool: "source-map",
   });
 }
-const isDevServer = /webpack serve/.test(process.argv.join(" "));
+
 let webpackConfig = devConfig;
 if (isDevServer) {
   webpackConfig = merge(devConfig, {
     entry: {
       example: "./tests/example.js",
     },
-    plugins: [
-      new webpack.DefinePlugin({
-        "process.env.DEV_SERVER": "true",
-      }),
-    ],
     devServer: {
       port: process.env.PORT || 8080,
       static: path.join(__dirname, "tests"),

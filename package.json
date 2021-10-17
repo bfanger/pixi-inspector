@@ -7,10 +7,8 @@
     "test": "npm run lint",
     "lint": "eslint --ext js,vue --max-warnings 0 src",
     "format": "npm run lint -- --fix",
-    "clean": "rm -rf build",
-    "build": "webpack --mode production --progress",
-    "build:clean": "npm run clean && webpack --mode production",
-    "build:watch": "webpack --mode development --watch "
+    "build": "rimraf build && webpack --mode production --progress",
+    "build:watch": "webpack --mode development --watch"
   },
   "eslintConfig": {
     "root": true,

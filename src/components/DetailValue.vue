@@ -103,6 +103,10 @@ export default {
           break;
       }
       if (update) {
+        const match = e.target.innerText.match(/^[0-9]+\.([0-9]+)$/);
+        if (match) {
+          value = parseFloat(value.toFixed(Math.max(1, match[1].length)));
+        }
         e.target.innerText = value;
         this.sentNewValue(value);
       }
