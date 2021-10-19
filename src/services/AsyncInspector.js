@@ -11,7 +11,11 @@ import connection from "./connection";
  */
 export default class AsyncInspector {
   constructor(index, target) {
-    if (typeof index === "object") {
+    if (typeof index === "undefined") {
+      throw new Error(
+        "Expecting an Inspector or an index, got: " + typeof index
+      );
+    } else if (typeof index === "object") {
       this.inspector = index;
     } else {
       this.path = "__PIXI_INSPECTOR_GLOBAL_HOOK__.inspectors[" + index + "]";
@@ -92,6 +96,7 @@ export default class AsyncInspector {
   }
 
   call(method, ...args) {
+    console.log("call", this.inspector);
     if (!chrome.devtools) {
       const dot = method.indexOf(".");
       let value;

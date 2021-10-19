@@ -220,7 +220,7 @@ export default class InspectorGui {
       resolution: window.devicePixelRatio,
       view: canvas,
     };
-    if (parseInt(PIXI.VERSION, 10) >= 6) {
+    if (parseInt(overlay.PIXI.VERSION, 10) >= 6) {
       options.backgroundAlpha = 0;
     } else {
       options.transparent = true;

@@ -54,6 +54,7 @@ const baseConfig = {
     new FriendlyErrorsWebpackPlugin(),
     new Webpackbar(),
     new webpack.DefinePlugin({
+      "process.env.NODE_ENV": JSON.stringify(mode),
       "process.env.DEBUG_DEVTOOLS_RX": JSON.stringify(
         process.env.DEBUG_DEVTOOLS_RX
       ),
@@ -69,7 +70,7 @@ let devConfig = baseConfig;
 
 if (mode === "development") {
   devConfig = merge(baseConfig, {
-    devtool: "source-map",
+    devtool: isDevServer ? "source-map" : "inline-source-map",
   });
 }
 
