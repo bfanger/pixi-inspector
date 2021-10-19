@@ -96,7 +96,6 @@ export default class AsyncInspector {
   }
 
   call(method, ...args) {
-    console.log("call", this.inspector);
     if (!chrome.devtools) {
       const dot = method.indexOf(".");
       let value;
