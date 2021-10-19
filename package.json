@@ -1,6 +1,6 @@
 {
   "name": "pixi-inspector",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "license": "MIT",
   "scripts": {
     "dev": "webpack serve --mode development",
