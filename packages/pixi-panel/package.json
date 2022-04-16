@@ -1,4 +1,7 @@
 {
   "name": "pixi-panel",
-  "version": "0.0.0"
+  "version": "0.0.0",
+  "dependencies": {
+    "svelte": "^3.47.0"
+  }
 }
