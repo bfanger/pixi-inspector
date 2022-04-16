@@ -1,0 +1,7 @@
+{
+  "name": "Pixi.js Devtools",
+  "description": "Debug games and apps written with Pixi.js",
+  "version": "2.0",
+  "manifest_version": 3,
+  "devtools_page": "pixi-devtools.html"
+}

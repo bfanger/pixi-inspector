@@ -1,0 +1,20 @@
+{
+  "name": "pixi-devtools-monorepo",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "lint": "turbo run lint",
+    "format": "turbo run format",
+    "preinstall": "npx only-allow yarn"
+  },
+  "devDependencies": {
+    "only-allow": "^1.1.0",
+    "turbo": "^1.2.4"
+  },
+  "packageManager": "yarn@1.22.18"
+}
