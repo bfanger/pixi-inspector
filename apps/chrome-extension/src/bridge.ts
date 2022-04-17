@@ -1,18 +1,18 @@
 import type { Bridge } from "pixi-panel/types";
-const bridge: Bridge = {
-  eval<T>(code: string): Promise<T> {
-    return new Promise((resolve, reject) => {
-      console.log(code);
-      chrome.devtools.inspectedWindow.eval(code, (result, err) => {
-        console.log(err);
-        if (err) {
-          reject(new Error(err.value));
-        } else {
-          console.log(result);
-          resolve(result as T);
-        }
-      });
+function execute<T>(code: string): Promise<T> {
+  return new Promise((resolve, reject) => {
+    chrome.devtools.inspectedWindow.eval(code, (result, err) => {
+      if (err) {
+        reject(new Error(err.value || err.description || err.code));
+      } else {
+        resolve(result as T);
+      }
     });
-  },
-};
+  });
+}
+function inject(global: string, factory: Function): Promise<void> {
+  const code = `(window['${global}'] = (${factory.toString()})()) && true`;
+  return execute(code);
+}
+const bridge: Bridge = { execute, inject };
 export default bridge;

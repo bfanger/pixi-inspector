@@ -30,7 +30,9 @@ esbuild
     bundle: true,
     outdir: "build/",
     
-    plugins: [sveltePlugin({preprocess: preprocess()})],
+    plugins: [sveltePlugin({
+      compilerOptions: {css: true},
+      preprocess: preprocess()})],
     logLevel: "info",
     watch,
   })

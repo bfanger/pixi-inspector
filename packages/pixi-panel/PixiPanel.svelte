@@ -10,8 +10,12 @@
   const connected = isConnected(bridge);
 </script>
 
+<div>
+  <button on:click={() => location.reload()}>Reload Panel</button>
+</div>
+
 {#if $connected}
-  <Outline path="stage" level={0} />
+  <Outline />
 {:else}
   No Pixi application configured for debugging.
 {/if}

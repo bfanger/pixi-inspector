@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "noEmit": true
+    "noEmit": true,
+    "importsNotUsedAsValues": "error"
   },
   "include": ["apps/**/*.ts", "apps/**/*.svelte"]
 }

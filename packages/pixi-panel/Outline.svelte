@@ -1,61 +1,50 @@
 <script lang="ts">
-  import { tick } from "svelte";
-  import { getBridgeContext } from "./bridge-fns";
-  import { OutlineNode } from "./types";
+  import { onMount, update_slot } from "svelte/internal";
 
-  export let path: string;
-  export let level: number;
+  import { getBridgeContext } from "./bridge-fns";
+  import OutlineTree from "./OutlineTree.svelte";
+  import type { OutlineNode } from "./types";
 
   const bridge = getBridgeContext();
+  let promise: Promise<OutlineNode>;
+  let stage: OutlineNode | undefined;
 
-  let promise: Promise<OutlineNode[]>;
-  function update() {
-    promise = bridge.eval<OutlineNode[]>(
-      "__PIXI_APP__." +
-        path +
-        `.children.map(c => ({
-          name: c.constructor.name,
-          length: c.children.length,
-          expanded: window['__PIXI_DEVTOOLS__'] && window['__PIXI_DEVTOOLS__'][${level}] === c
-      }))`
-    );
+  async function update() {
+    promise = bridge.execute<OutlineNode>("__PIXI_DEVTOOLS__.outlineTree()");
+    stage = await promise;
   }
   update();
-  async function expand(index: number) {
-    await bridge.eval(
-      "(window['__PIXI_DEVTOOLS__'][" +
-        level +
-        "] = __PIXI_APP__." +
-        path +
-        ".children[" +
-        index +
-        "]) && true"
+
+  async function expand(path: string[]) {
+    await bridge.execute(
+      `__PIXI_DEVTOOLS__.outlineExpand(${JSON.stringify(path)})`
     );
     update();
   }
-  async function collapse(index: number) {
-    await bridge.eval("window['__PIXI_DEVTOOLS__'].length =  " + level);
+  async function collapse(path: string[]) {
+    await bridge.execute(
+      `__PIXI_DEVTOOLS__.outlineCollapse(${JSON.stringify(path)})`
+    );
     update();
   }
+  onMount(() => {
+    const timer = setInterval(() => {
+      update();
+    }, 1000);
+    return () => {
+      clearInterval(timer);
+    };
+  });
 </script>
 
-{#await promise then children}
-  {#each children as { name, length, expanded }, index}
-    <div>
-      [{index}]
-      {name}
-      {#if length}
-        ({length})
-        {#if expanded}
-          <button on:click={() => collapse(index)}>v</button>
-          <svelte:self
-            path={path + ".children[" + index + "]"}
-            level={level + 1}
-          />
-        {:else}
-          <button on:click={() => expand(index)}>&gt;</button>
-        {/if}
-      {/if}
-    </div>
-  {/each}
-{/await}
+{#if stage}
+  <OutlineTree
+    id={stage.id}
+    name={stage.name}
+    leaf={stage.leaf}
+    active={stage.active}
+    children={stage.children}
+    on:expand={({ detail }) => expand(detail)}
+    on:collapse={({ detail }) => collapse(detail)}
+  />
+{/if}
