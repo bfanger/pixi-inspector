@@ -1,0 +1,22 @@
+{
+  "name": "blender-elements",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "start-storybook --quiet --no-open --port 6006",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "@babel/core": "^7.17.9",
+    "@storybook/addon-actions": "^6.4.22",
+    "@storybook/addon-essentials": "^6.4.22",
+    "@storybook/addon-links": "^6.4.22",
+    "@storybook/addon-svelte-csf": "^2.0.2",
+    "@storybook/builder-vite": "^0.1.29",
+    "@storybook/builder-webpack4": "^6.4.22",
+    "@storybook/manager-webpack4": "^6.4.22",
+    "@storybook/svelte": "^6.4.22",
+    "@sveltejs/vite-plugin-svelte": "^1.0.0-next.41",
+    "babel-loader": "^8.2.4",
+    "svelte-loader": "^3.1.2"
+  }
+}

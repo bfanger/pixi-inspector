@@ -2,7 +2,7 @@ export default function livereload() {
   const ws = new WebSocket("ws://localhost:10808/");
   ws.onmessage = (e) => {
     if (e.data === "RELOAD") {
-      location.reload();
+      window.location.reload();
     }
   };
   ws.onclose = () => {

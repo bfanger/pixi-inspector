@@ -1,12 +1,10 @@
-export type Bridge = {
-  inject(global: string, factory: Function): Promise<void>;
-  execute<T>(code: string): Promise<T>;
-};
+export type BridgeFn = <T>(code: string) => Promise<T>;
 
-export type OutlineNode = {
+export type OutlinerNode = {
   id: string;
   name: string;
   leaf: boolean;
   active: boolean;
-  children?: OutlineNode[];
+  visible: boolean;
+  children?: OutlinerNode[];
 };

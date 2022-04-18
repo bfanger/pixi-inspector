@@ -5,13 +5,9 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "svelte": "^3.47.0"
+    "blender-elements": "link:../blender-elements"
   },
   "devDependencies": {
-    "@pixi/app": "^6.3.0",
-    "@pixi/core": "^6.3.0",
-    "pixi.js": "^6.3.0",
-    "prettier": "^2.6.2",
-    "prettier-plugin-svelte": "^2.7.0"
+    "pixi.js": "^6.3.0"
   }
 }

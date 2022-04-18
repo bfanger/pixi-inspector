@@ -1,7 +1,7 @@
 import esbuild from "esbuild";
 import sveltePlugin from "esbuild-svelte";
 import WebSocket, { WebSocketServer } from "ws";
-import preprocess from "svelte-preprocess";
+import svelteConfig from "../../svelte.config.cjs";
 
 const port = 10808;
 let watch = undefined;
@@ -30,9 +30,7 @@ esbuild
     bundle: true,
     outdir: "build/",
     
-    plugins: [sveltePlugin({
-      compilerOptions: {css: true},
-      preprocess: preprocess()})],
+    plugins: [sveltePlugin(svelteConfig)],
     logLevel: "info",
     watch,
   })

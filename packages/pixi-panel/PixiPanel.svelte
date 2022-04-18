@@ -1,21 +1,25 @@
 <script lang="ts">
-  import { Bridge } from "./types";
+  import type { BridgeFn } from "./types";
   import isConnected from "./isConnected";
   import { setBridgeContext } from "./bridge-fns";
-  import Outline from "./Outline.svelte";
+  import SceneGraph from "./SceneGraph.svelte";
+  import ReloadButton from "./ReloadButton.svelte";
+  import Base from "blender-elements/Base.svelte";
 
-  export let bridge: Bridge;
+  export let bridge: BridgeFn;
 
   setBridgeContext(bridge);
   const connected = isConnected(bridge);
 </script>
 
-<div>
-  <button on:click={() => location.reload()}>Reload Panel</button>
-</div>
-
-{#if $connected}
-  <Outline />
-{:else}
-  No Pixi application configured for debugging.
-{/if}
+<Base>
+  {#if $connected}
+    <SceneGraph />
+  {:else}
+    No Pixi application configured for debugging. After
+    <code>const app = new PIXI.Application(...);</code>
+    Add:
+    <code>window['__PIXI_APP__'] = app;</code>
+    <ReloadButton />
+  {/if}
+</Base>
