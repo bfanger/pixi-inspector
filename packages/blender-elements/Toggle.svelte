@@ -2,9 +2,15 @@
   import type { Icon } from "./icons";
 
   export let icon: Icon;
+  export let hint: string | undefined = undefined;
 </script>
 
-<button class="toggle" style="background-image: var(--icon-{icon})" on:click />
+<button
+  class="toggle"
+  style="background-image: var(--icon-{icon})"
+  title={hint}
+  on:click
+/>
 
 <style lang="scss">
   .toggle {

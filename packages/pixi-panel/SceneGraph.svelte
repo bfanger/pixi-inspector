@@ -5,7 +5,7 @@
   import type { OutlinerNode } from "./types";
 
   const bridge = getBridgeContext();
-  const tree = poll<OutlinerNode>(bridge, "__PIXI_DEVTOOLS__.tree()", 1000);
+  const tree = poll<OutlinerNode>(bridge, "__PIXI_DEVTOOLS__.tree()", 2000);
   $: stage = $tree.data;
   $: error = $tree.error;
 

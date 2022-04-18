@@ -24,7 +24,7 @@ export default function isConnected(bridge: BridgeFn): Readable<boolean> {
   return readable<boolean>(false, (set) => {
     const timer = setInterval(async () => {
       set(await findPixiApp());
-    }, 5000);
+    }, 7500);
     findPixiApp().then(set);
     return () => clearInterval(timer);
   });

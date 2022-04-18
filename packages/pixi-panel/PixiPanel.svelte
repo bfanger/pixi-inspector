@@ -23,3 +23,13 @@
     <ReloadButton />
   {/if}
 </Base>
+
+<style lang="scss">
+  :global {
+    body {
+      margin: 0;
+      background: #303030;
+      color: #e5e5e5;
+    }
+  }
+</style>

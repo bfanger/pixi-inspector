@@ -45,6 +45,7 @@
         e.preventDefault();
       } else {
         let cursor: Element = el;
+        // eslint-disable-next-line no-constant-condition
         while (true) {
           cursor = cursor.previousElementSibling;
           const controller = (cursor as any)?.outlineRow;
@@ -71,6 +72,13 @@
         }
       }
     }
+    if (e.key === "h") {
+      if (visible) {
+        dispatch("hide");
+      } else {
+        dispatch("show");
+      }
+    }
   }
 </script>
 
@@ -93,9 +101,17 @@
   {/if}
   <span class="title">{title}</span>
   {#if visible === true}
-    <Toggle icon="eye-opened" on:click={() => dispatch("hide")} />
+    <Toggle
+      icon="eye-opened"
+      hint="Hide (h)"
+      on:click={() => dispatch("hide")}
+    />
   {:else if visible === false}
-    <Toggle icon="eye-closed" on:click={() => dispatch("show")} />
+    <Toggle
+      icon="eye-closed"
+      hint="Show (h)"
+      on:click={() => dispatch("show")}
+    />
   {/if}
 </div>
 

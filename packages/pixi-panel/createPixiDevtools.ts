@@ -94,6 +94,44 @@ export default function createPixiDevtools() {
     return findBySubpath(path.slice(1), stage);
   }
 
+  function highlight() {
+    // @todo Scale and offset
+    const div = document.createElement("div");
+    Object.assign(div.style, {
+      position: "absolute",
+      top: "0",
+      left: "0",
+      width: "0",
+      height: "0",
+      border: "3px solid #ffaf29",
+      pointerEvents: "none",
+    });
+    document.body.appendChild(div);
+    let prevSize = { width: -1, height: -1 };
+    getApp().ticker.add(() => {
+      const $pixi = (window as any).$pixi as DisplayObject;
+      if (!$pixi) {
+        div.style.transform = "scale(0)";
+        return;
+      }
+      if (!$pixi.parent || $pixi.visible === false) {
+        div.style.transform = "scale(0)";
+        return;
+      }
+      const size = $pixi.getLocalBounds();
+      if (prevSize.width !== size.width && prevSize.height !== size.height) {
+        prevSize = { width: size.width, height: size.height };
+        div.style.width = `${size.width}px`;
+        div.style.height = `${size.height}px`;
+      }
+      const m = $pixi.worldTransform;
+      const offset = `translate(${size.x - 3}px, ${size.y - 3}px)`;
+      div.style.transform = `matrix(${m.a}, ${m.b}, ${m.c}, ${m.d}, ${m.tx}, ${m.ty}) ${offset}`;
+      div.style.transformOrigin = "top left";
+    });
+  }
+  highlight();
+
   return {
     tree() {
       return buildTree(getStage());
