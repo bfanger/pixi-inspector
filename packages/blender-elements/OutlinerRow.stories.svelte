@@ -6,7 +6,7 @@
 
 <Meta title="OutlinerRow" component={OutlinerRow} />
 
-<Template let:args>
+<Template>
   <Base>
     <OutlinerRow indent={0} title="Scene Collection" expanded />
     <OutlinerRow indent={1} title="Collection" expanded />

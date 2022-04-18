@@ -18,6 +18,7 @@ const bridge: BridgeFn = (code: string) => {
   });
 };
 
+// eslint-disable-next-line no-new
 new PixiPanel({
   target: document.body,
   props: { bridge },

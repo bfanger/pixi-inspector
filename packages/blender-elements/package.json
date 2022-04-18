@@ -2,8 +2,7 @@
   "name": "blender-elements",
   "version": "0.0.0",
   "scripts": {
-    "dev": "start-storybook --quiet --no-open --port 6006",
-    "format": "prettier --write ."
+    "dev": "start-storybook --quiet --no-open --port 6006"
   },
   "devDependencies": {
     "@babel/core": "^7.17.9",

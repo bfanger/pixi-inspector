@@ -1,23 +1,24 @@
 import type { Application, Container, DisplayObject } from "pixi.js";
-import type { rNode } from "./types";
+import type { OutlinerNode } from "./types";
 
-export default function () {
+export default function createPixiDevtools() {
   const devtools = Symbol("devtools");
   function getApp(): Application {
-    const app = window["__PIXI_APP__"];
+    // eslint-disable-next-line no-underscore-dangle
+    const app = (window as any).__PIXI_APP__;
     if (!app) {
       throw new Error("__PIXI_APP__ not a PIXI.Application");
     }
     return app;
   }
   function getStage() {
-    const stage = getApp().stage;
+    const { stage } = getApp();
     if (stage[devtools] === undefined) {
       const meta = buildMeta(stage);
       meta.expanded = true;
       meta.name = "Stage";
-      if (!window["$pixi"]) {
-        window["$pixi"] = stage;
+      if (!(window as any).$pixi) {
+        (window as any).$pixi = stage;
       }
     }
     return stage;
@@ -28,7 +29,7 @@ export default function () {
     if (autoId.current > Number.MAX_SAFE_INTEGER) {
       autoId.current = 0;
     }
-    return autoId.current + "_" + Math.floor(Math.random() * 4096).toString(16);
+    return `${autoId.current}_${Math.floor(Math.random() * 4096).toString(16)}`;
   }
   autoId.current = 0;
 
@@ -46,17 +47,18 @@ export default function () {
       id: autoId(),
       expanded: false,
     };
+    // eslint-disable-next-line no-param-reassign
     node[devtools] = meta;
     return meta;
   }
 
-  function buildTree(node: DisplayObject): rNode {
+  function buildTree(node: DisplayObject): OutlinerNode {
     const meta = buildMeta(node);
-    const tree: rNode = {
+    const tree: OutlinerNode = {
       id: meta.id,
       name: meta.name || node.constructor.name,
       leaf: true,
-      active: node === window["$pixi"],
+      active: node === (window as any).$pixi,
       visible: node.visible,
     };
     const container = node as Container;
@@ -87,7 +89,7 @@ export default function () {
     const id = path[0];
     const stage = getStage();
     if (stage[devtools].id !== id) {
-      return;
+      return undefined;
     }
     return findBySubpath(path.slice(1), stage);
   }
@@ -109,7 +111,7 @@ export default function () {
       }
     },
     activateByPath(path: string[]) {
-      window["$pixi"] = findByPath(path);
+      (window as any).$pixi = findByPath(path);
     },
     hideByPath(path: string[]) {
       const node = findByPath(path);

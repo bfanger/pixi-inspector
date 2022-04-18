@@ -11,7 +11,8 @@ export default function isConnected(bridge: BridgeFn): Readable<boolean> {
       );
       if (type === "object-object") {
         return true;
-      } else if (type === "object-undefined") {
+      }
+      if (type === "object-undefined") {
         await injectGlobal(bridge, "__PIXI_DEVTOOLS__", createPixiDevtools);
         return true;
       }

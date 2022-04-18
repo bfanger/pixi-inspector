@@ -1,7 +1,10 @@
 {
   "compilerOptions": {
     "noEmit": true,
-    "importsNotUsedAsValues": "error"
+    "importsNotUsedAsValues": "error",
+    "esModuleInterop": true
   },
-  "include": ["apps/**/*.ts", "apps/**/*.svelte"]
+  "paths": {
+    "pixi-panel/*": ["node_modules/pixi-panel/*"]
+  }
 }

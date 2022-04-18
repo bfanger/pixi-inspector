@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "**/*.d.ts",
+    "**/*.js",
+    "**/*.jsx",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.svelte",
+    ".*.js",
+    "**/*.js",
+    "**/*.jsx",
+    ".*.cjs",
+    "**/*.cjs"
+  ]
+}

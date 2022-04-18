@@ -17,6 +17,7 @@ export function getBridgeContext(): BridgeFn {
 export function injectGlobal(
   bridge: BridgeFn,
   global: string,
+  // eslint-disable-next-line @typescript-eslint/ban-types
   factory: Function
 ): Promise<void> {
   const code = `(window['${global}'] = (${factory.toString()})()) && true`;

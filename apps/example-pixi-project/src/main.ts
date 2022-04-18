@@ -22,7 +22,7 @@ const texture = Texture.from(
   "https://pixijs.io/examples/examples/assets/bunny.png"
 );
 
-for (let i = 0; i < 25; i++) {
+for (let i = 0; i < 25; i += 1) {
   const bunny = new Sprite(texture);
   bunny.anchor.set(0.5);
   bunny.x = (i % 5) * 40;
@@ -39,4 +39,5 @@ container.pivot.y = container.height / 2;
 app.ticker.add((delta) => {
   container.rotation -= 0.01 * delta;
 });
-window["__PIXI_APP__"] = app;
+// eslint-disable-next-line no-underscore-dangle
+(window as any).__PIXI_APP__ = app;

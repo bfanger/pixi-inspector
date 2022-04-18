@@ -5,5 +5,5 @@ module.exports = {
   stories: ["../**/*.stories.svelte"],
   addons: ["@storybook/addon-links", "@storybook/addon-essentials"],
   framework: "@storybook/svelte",
-  svelteOptions: {preprocess: svelteConfig.preprocess},
+  svelteOptions: { preprocess: svelteConfig.preprocess },
 };
