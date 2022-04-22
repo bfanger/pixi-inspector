@@ -1,31 +1,25 @@
-import { Readable, readable } from "svelte/store";
-import { injectGlobal } from "./bridge-fns";
+import { derived, Readable, writable } from "svelte/store";
+import { injectGlobal, poll } from "./bridge-fns";
 import type { BridgeFn } from "./types";
 import createPixiDevtools from "./createPixiDevtools";
 
 export default function isConnected(bridge: BridgeFn): Readable<boolean> {
-  async function findPixiApp() {
-    try {
-      const type = await bridge(
-        "typeof window['__PIXI_APP__'] + '-' + typeof window['__PIXI_DEVTOOLS__']"
-      );
-      if (type === "object-object") {
-        return true;
-      }
-      if (type === "object-undefined") {
-        await injectGlobal(bridge, "__PIXI_DEVTOOLS__", createPixiDevtools);
-        return true;
-      }
-      return false;
-    } catch (err) {
-      return false;
+  const detected = poll<string>(
+    bridge,
+    "typeof (window.__PIXI_APP__ || window.frames[0]?.__PIXI_APP__) + '-' + typeof window['__PIXI_DEVTOOLS__']",
+    1000
+  );
+  const injected = writable<"NEW" | "INJECTING" | "INJECTED">("NEW");
+  return derived([detected, injected], ([$detected, $injected]) => {
+    if ($detected.data === "object-object") {
+      return true;
     }
-  }
-  return readable<boolean>(false, (set) => {
-    const timer = setInterval(async () => {
-      set(await findPixiApp());
-    }, 7500);
-    findPixiApp().then(set);
-    return () => clearInterval(timer);
+    if ($detected.data === "object-undefined" && $injected !== "INJECTING") {
+      injected.set("INJECTING");
+      injectGlobal(bridge, "__PIXI_DEVTOOLS__", createPixiDevtools).then(() => {
+        injected.set("INJECTED");
+      });
+    }
+    return false;
   });
 }

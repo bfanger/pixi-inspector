@@ -4,8 +4,9 @@ import type { OutlinerNode } from "./types";
 export default function createPixiDevtools() {
   const devtools = Symbol("devtools");
   function getApp(): Application {
-    // eslint-disable-next-line no-underscore-dangle
-    const app = (window as any).__PIXI_APP__;
+    const app =
+      // eslint-disable-next-line no-underscore-dangle
+      (window as any).__PIXI_APP__ || (window.frames[0] as any)?.__PIXI_APP__;
     if (!app) {
       throw new Error("__PIXI_APP__ not a PIXI.Application");
     }
