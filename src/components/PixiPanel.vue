@@ -105,6 +105,7 @@ export default {
 
 .dark-mode {
   color: #bdc6cf;
+  #222
 }
 
 .pixi-panel__body {
