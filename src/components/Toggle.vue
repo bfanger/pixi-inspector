@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <span
     :class="{ toggle: true, 'toggle--on': value, 'toggle--off': !value }"

@@ -228,8 +228,8 @@ export default {
     background: #3879d9;
     color: white;
     .dark-mode & {
-      background: #c58532;
-      color: #333;
+      background: #073d69;
+      color: #7ac3e4;
     }
 
     .treeview__toggle__collapse {

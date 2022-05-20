@@ -39,11 +39,12 @@ The response is send back to the background_script but with the connection id in
 
 ## API Example
 
-##  In the background page:
+## In the background page:
 
 ```
 relay$.subscribe()
 ```
+
 - Sets up listeners so other processen can connect
 - Handles messages and relays them to the specified targets.
 
@@ -64,11 +65,14 @@ connection.on('WORK').subscribe(message => {
 ### In yet another (extension) process:
 
 ```js
-const connection = new Connection('directors')
-connection.to('workers').stream('WORK', { do:'stuff' }).subscribe(message => {
+const connection = new Connection("directors");
+connection
+  .to("workers")
+  .stream("WORK", { do: "stuff" })
+  .subscribe((message) => {
     // worker X has completed work
-    conn.to(message.from).send('THANKS', { well: 'done' })
-})
+    conn.to(message.from).send("THANKS", { well: "done" });
+  });
 ```
 
 - Open a connection with a differrent name ('directors').

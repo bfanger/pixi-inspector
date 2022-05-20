@@ -32,6 +32,9 @@ export default {
   overflow: auto; // max-height: 100%;
   &:not(:first-child) {
     border-left: 1px solid #ccc;
+    .dark-mode & {
+      border-color: #494c50;
+    }
   }
 }
 </style>

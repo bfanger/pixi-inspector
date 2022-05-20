@@ -105,6 +105,18 @@ export default {
 
 .dark-mode {
   color: #bdc6cf;
+  background-color: #202124;
+
+  button {
+    border: 1px solid #494c50;
+    background-color: #292a2d;
+    color: #979da2;
+    cursor: pointer;
+    &:hover {
+      background-color: #494c50;
+      color: #fff;
+    }
+  }
 }
 
 .pixi-panel__body {
@@ -142,6 +154,14 @@ export default {
     sans-serif;
   &:focus {
     outline: none;
+  }
+  .dark-mode & {
+    background-color: #202124;
+    color: #bdc6cf;
+    border-color: #494c50;
+    &:focus {
+      border-color: #0e639c;
+    }
   }
 }
 </style>
