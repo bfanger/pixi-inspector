@@ -46,7 +46,7 @@ export default class TypeDetection {
       return;
     }
     for (const prop in object) {
-      if (typeof object[prop] === "function") {
+      if (typeof object[prop] === "function" && object[prop].prototype) {
         this.constructors.push(object[prop]);
         this.names.push(name + prop);
       } else if (typeof object[prop] === "object") {
