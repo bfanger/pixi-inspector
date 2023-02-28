@@ -5,7 +5,7 @@ import type { OutlinerNode, PixiDevtools } from "../types";
  * Treeview operations
  */
 export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
-  const metaProperty = Symbol("outline");
+  const metaProperty = Symbol("pixi-devtools-outline");
 
   function autoId() {
     autoId.current += 1;

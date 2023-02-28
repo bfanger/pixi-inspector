@@ -1,0 +1,81 @@
+<script lang="ts">
+  import { createEventDispatcher } from "svelte";
+
+  export let value: number | undefined;
+  export let location: "ALONE" | "TOP" | "MIDDLE" | "BOTTOM" = "ALONE";
+  export let id: string | undefined = undefined;
+
+  const dispatch = createEventDispatcher();
+
+  let el: HTMLInputElement;
+  let wanted = value;
+  let text = format(value);
+
+  $: if (wanted !== value && document.activeElement !== el) {
+    text = format(value);
+    wanted = value;
+  }
+
+  function format(val: number | undefined) {
+    if (val === undefined || Number.isNaN(val)) {
+      return "";
+    }
+    return val.toString();
+  }
+
+  function onInput() {
+    if (Number.isNaN(Number(el.value))) {
+      return;
+    }
+    value = Number(el.value);
+    wanted = value;
+    dispatch("change", value);
+  }
+  function onBlur() {
+    text = format(value);
+  }
+</script>
+
+<input
+  {id}
+  class="number-input"
+  data-location={location}
+  bind:this={el}
+  bind:value={text}
+  on:input={onInput}
+  on:blur={onBlur}
+/>
+
+<style lang="scss">
+  .number-input {
+    background: #545454;
+    color: #e5e5e5;
+    border: 0;
+    text-align: center;
+    outline: none;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    font: 12px system-ui, sans-serif;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    text-shadow: 0 1px 2px rgba(black, 0.8);
+
+    &:focus {
+      background: #161616;
+      color: #e5e5e5;
+    }
+    &[data-location="ALONE"] {
+      border-radius: 2px;
+    }
+    &[data-location="TOP"] {
+      border-top-left-radius: 2px;
+      border-top-right-radius: 2px;
+      margin-bottom: 0.5px;
+    }
+    &[data-location="BOTTOM"] {
+      border-bottom-left-radius: 2px;
+      border-bottom-right-radius: 2px;
+    }
+  }
+</style>

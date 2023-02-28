@@ -3,10 +3,11 @@ import type { BridgeFn } from "./types";
 import pixiDevtools from "./pixi-devtools/pixiDevtools";
 import pixiDevtoolsOutline from "./pixi-devtools/pixiDevtoolsOutline";
 import pixiDevtoolsOverlay from "./pixi-devtools/pixiDevtoolsOverlay";
+import pixiDevtoolsProperties from "./pixi-devtools/pixiDevtoolsProperties";
 
 import { poll } from "./bridge-fns";
 
-export default function isConnected(bridge: BridgeFn): Readable<boolean> {
+export default function connect(bridge: BridgeFn): Readable<boolean> {
   const detected = poll<string>(
     bridge,
     // eslint-disable-next-line no-template-curly-in-string
@@ -21,7 +22,8 @@ export default function isConnected(bridge: BridgeFn): Readable<boolean> {
       bridge(`(() => {
         window.__PIXI_DEVTOOLS__ = (${pixiDevtools.toString()}());
         window.__PIXI_DEVTOOLS__.outline = (${pixiDevtoolsOutline.toString()}(window.__PIXI_DEVTOOLS__));
-        window.__PIXI_DEVTOOLS__.highlight = (${pixiDevtoolsOverlay.toString()}(window.__PIXI_DEVTOOLS__));
+        window.__PIXI_DEVTOOLS__.overlay = (${pixiDevtoolsOverlay.toString()}(window.__PIXI_DEVTOOLS__));
+        window.__PIXI_DEVTOOLS__.properties = (${pixiDevtoolsProperties.toString()}(window.__PIXI_DEVTOOLS__));
       })();`).then(() => detected.sync());
     }
     if ($detected.data === "object-false") {

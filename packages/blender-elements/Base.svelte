@@ -4,8 +4,11 @@
 
 <div class="base" style={icons()}><slot /></div>
 
-<style>
+<style lang="scss">
   .base {
-    font: 14px system-ui, sans-serif;
+    font: 12px system-ui, sans-serif;
+    height: 100vh;
+    text-shadow: 0 1px 1px rgba(black, 0.8);
+    -webkit-font-smoothing: antialiased;
   }
 </style>

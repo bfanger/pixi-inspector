@@ -72,6 +72,7 @@
         }
       }
     }
+
     if (e.key === "h") {
       if (visible) {
         dispatch("hide");

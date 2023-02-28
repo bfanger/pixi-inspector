@@ -1,9 +1,11 @@
 <script lang="ts">
+  import { createEventDispatcher } from "svelte";
   import { getBridgeContext, poll } from "./bridge-fns";
   import ReloadButton from "./ReloadButton.svelte";
   import Tree from "./Tree.svelte";
   import type { OutlinerNode } from "./types";
 
+  const dispatch = createEventDispatcher();
   const bridge = getBridgeContext();
   const tree = poll<OutlinerNode>(
     bridge,
@@ -24,6 +26,7 @@
   async function activate(path: string[]) {
     await bridge(`__PIXI_DEVTOOLS__.outline.activate(${JSON.stringify(path)})`);
     tree.sync();
+    dispatch("activate");
   }
   async function show(path: string[]) {
     await bridge(`__PIXI_DEVTOOLS__.outline.show(${JSON.stringify(path)})`);

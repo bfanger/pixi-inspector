@@ -17,3 +17,11 @@ export type OutlinerNode = {
   visible: boolean;
   children?: OutlinerNode[];
 };
+
+export type NodeProperties = {
+  x: number;
+  y: number;
+  rotation: number;
+  scaleX: number;
+  scaleY: number;
+};
