@@ -14,15 +14,6 @@ export function getBridgeContext(): BridgeFn {
   return ctx;
 }
 
-export function injectGlobal(
-  bridge: BridgeFn,
-  global: string,
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  factory: Function
-): Promise<void> {
-  const code = `(window['${global}'] = (${factory.toString()})()) && true`;
-  return bridge(code);
-}
 type AsyncResult<T> = { data: T | undefined; error: Error | undefined };
 type Pollable<T> = Readable<AsyncResult<T>> & {
   polling: Readable<boolean>;

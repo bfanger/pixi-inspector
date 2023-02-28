@@ -1,11 +1,5 @@
-import PixiPanel from "pixi-panel/PixiPanel.svelte";
-import type { BridgeFn } from "pixi-panel/types";
-import livereload from "./livereload";
-
-declare const WATCH: string;
-if (WATCH) {
-  livereload();
-}
+import PixiPanel from "pixi-panel/src/PixiPanel.svelte";
+import type { BridgeFn } from "pixi-panel/src/types";
 
 const bridge: BridgeFn = (code: string) => {
   return new Promise((resolve, reject) => {
@@ -23,3 +17,14 @@ new PixiPanel({
   target: document.body,
   props: { bridge },
 });
+
+declare const WATCH: boolean | undefined;
+if (WATCH) {
+  new EventSource("http://localhost:10808/esbuild").addEventListener(
+    "change",
+    () => {
+      bridge("window.location.reload()");
+      window.location.reload();
+    }
+  );
+}

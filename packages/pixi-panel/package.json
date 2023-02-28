@@ -1,13 +1,8 @@
 {
   "name": "pixi-panel",
-  "version": "0.0.0",
-  "scripts": {
-    "format": "prettier --write ."
-  },
-  "dependencies": {
-    "blender-elements": "link:../blender-elements"
-  },
+  "description": "Browser agnostic DevTools for PixiJS",
   "devDependencies": {
-    "pixi.js": "^6.3.0"
+    "blender-elements": "workspace:*",
+    "pixi.js": "^7.1.3"
   }
 }

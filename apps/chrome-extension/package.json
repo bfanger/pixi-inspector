@@ -4,23 +4,16 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "rimraf build && mkdir -p build && concurrently --kill-others npm:dev:*",
-    "dev:panel": "node build.js --watch",
-    "build": "rimraf build && mkdir -p build && concurrently npm:build:*",
-    "build:panel": "node build.js",
+    "dev": "node build.js --watch",
+    "build": "node build.js",
     "format": "prettier --write ."
   },
   "devDependencies": {
-    "@types/chrome": "^0.0.181",
-    "@types/node": "^17.0.24",
-    "concurrently": "^7.1.0",
-    "esbuild": "^0.14.36",
-    "esbuild-svelte": "^0.7.0",
-    "rimraf": "^3.0.2",
-    "sass": "^1.50.0",
-    "ws": "^8.5.0"
-  },
-  "dependencies": {
-    "pixi-panel": "link:../../packages/pixi-panel"
+    "pixi-panel": "workspace:*",
+    "concurrently": "^7.6.0",
+    "esbuild": "^0.17.10",
+    "esbuild-svelte": "^0.7.3",
+    "rimraf": "^4.1.2",
+    "svelte": "^3.55.1"
   }
 }

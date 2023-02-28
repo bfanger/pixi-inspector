@@ -5,28 +5,32 @@
   import type { OutlinerNode } from "./types";
 
   const bridge = getBridgeContext();
-  const tree = poll<OutlinerNode>(bridge, "__PIXI_DEVTOOLS__.tree()", 2000);
+  const tree = poll<OutlinerNode>(
+    bridge,
+    "__PIXI_DEVTOOLS__.outline.tree()",
+    2000
+  );
   $: stage = $tree.data;
   $: error = $tree.error;
 
   async function expand(path: string[]) {
-    await bridge(`__PIXI_DEVTOOLS__.expandByPath(${JSON.stringify(path)})`);
+    await bridge(`__PIXI_DEVTOOLS__.outline.expand(${JSON.stringify(path)})`);
     tree.sync();
   }
   async function collapse(path: string[]) {
-    await bridge(`__PIXI_DEVTOOLS__.collapseByPath(${JSON.stringify(path)})`);
+    await bridge(`__PIXI_DEVTOOLS__.outline.collapse(${JSON.stringify(path)})`);
     tree.sync();
   }
   async function activate(path: string[]) {
-    await bridge(`__PIXI_DEVTOOLS__.activateByPath(${JSON.stringify(path)})`);
+    await bridge(`__PIXI_DEVTOOLS__.outline.activate(${JSON.stringify(path)})`);
     tree.sync();
   }
   async function show(path: string[]) {
-    await bridge(`__PIXI_DEVTOOLS__.showByPath(${JSON.stringify(path)})`);
+    await bridge(`__PIXI_DEVTOOLS__.outline.show(${JSON.stringify(path)})`);
     tree.sync();
   }
   async function hide(path: string[]) {
-    await bridge(`__PIXI_DEVTOOLS__.hideByPath(${JSON.stringify(path)})`);
+    await bridge(`__PIXI_DEVTOOLS__.outline.hide(${JSON.stringify(path)})`);
     tree.sync();
   }
 </script>

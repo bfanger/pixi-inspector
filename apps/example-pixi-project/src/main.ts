@@ -10,9 +10,10 @@ const app = new Application({
   backgroundColor: 0x1099bb,
   resolution: window.devicePixelRatio || 1,
 });
-app.view.style.width = "640px";
-app.view.style.maxWidth = "100%";
-document.body.appendChild(app.view);
+const canvas = app.view as HTMLCanvasElement;
+canvas.style.width = "640px";
+canvas.style.maxWidth = "100%";
+document.body.appendChild(canvas);
 
 const container = new Container();
 

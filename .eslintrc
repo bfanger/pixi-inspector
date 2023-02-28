@@ -6,10 +6,14 @@
   },
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "project": "./tsconfig.eslint.json",
+    "project": "./tsconfig.json",
     "extraFileExtensions": [".cjs", ".svelte"]
   },
   "rules": {
-    "import/no-extraneous-dependencies": "off"
+    "import/no-extraneous-dependencies": "off",
+    "no-underscore-dangle": [
+      "warn",
+      { "allow": ["__PIXI_DEVTOOLS__", "__PIXI_APP__"] }
+    ]
   }
 }

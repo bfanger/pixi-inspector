@@ -2,9 +2,23 @@
   "compilerOptions": {
     "noEmit": true,
     "importsNotUsedAsValues": "error",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "lib": ["ESNext", "DOM"]
   },
   "paths": {
     "pixi-panel/*": ["node_modules/pixi-panel/*"]
-  }
+  },
+  "include": [
+    "**/*.d.ts",
+    "**/*.js",
+    "**/*.jsx",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.svelte",
+    ".*.js",
+    "**/*.js",
+    "**/*.jsx",
+    ".*.cjs",
+    "**/*.cjs"
+  ]
 }
