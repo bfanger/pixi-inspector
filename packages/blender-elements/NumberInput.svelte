@@ -1,5 +1,8 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
+  import blurOnEnter from "./blurOnEnter";
+  import revertOnEscape from "./revertOnEscape";
+  import selectOnFocus from "./selectOnFocus";
 
   export let value: number | undefined;
   export let location: "ALONE" | "TOP" | "MIDDLE" | "BOTTOM" = "ALONE";
@@ -40,6 +43,9 @@
   {id}
   class="number-input"
   data-location={location}
+  use:blurOnEnter
+  use:revertOnEscape
+  use:selectOnFocus
   bind:this={el}
   bind:value={text}
   on:input={onInput}
@@ -48,7 +54,7 @@
 
 <style lang="scss">
   .number-input {
-    background: #545454;
+    background-color: #545454;
     color: #e5e5e5;
     border: 0;
     text-align: center;
@@ -60,9 +66,16 @@
     padding-top: 2px;
     padding-bottom: 2px;
     text-shadow: 0 1px 2px rgba(black, 0.8);
+    &::selection {
+      background-color: #4570b5;
+    }
+    &:hover {
+      background-color: #797979;
+      color: #fcfcfc;
+    }
 
     &:focus {
-      background: #161616;
+      background-color: #222222;
       color: #e5e5e5;
     }
     &[data-location="ALONE"] {

@@ -15,7 +15,12 @@ const srcDir = path.resolve(cwd, "src");
 rimraf.sync(outdir);
 
 fs.mkdirSync(outdir, { recursive: true });
-for (const file of ["manifest.json", "pixi-devtools.html", "pixi-panel.html"]) {
+for (const file of [
+  "manifest.json",
+  "pixi-devtools.html",
+  "pixi-panel.html",
+  "icon.png",
+]) {
   fs.copyFileSync(path.join(srcDir, file), path.join(outdir, file));
 }
 const WATCH = process.argv.indexOf("--watch") !== -1;

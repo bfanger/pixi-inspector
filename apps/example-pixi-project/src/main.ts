@@ -3,6 +3,7 @@
  * https://pixijs.io/examples/#/demos-basic/container.js
  */
 import { Application, Container, Sprite, Texture } from "pixi.js";
+import * as PIXI from "pixi.js";
 
 const app = new Application({
   width: 640,
@@ -42,3 +43,4 @@ app.ticker.add((delta) => {
 });
 // eslint-disable-next-line no-underscore-dangle
 (window as any).__PIXI_APP__ = app;
+(window as any).PIXI = PIXI;

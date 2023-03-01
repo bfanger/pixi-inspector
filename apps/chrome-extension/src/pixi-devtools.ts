@@ -1,1 +1,1 @@
-chrome.devtools.panels.create("Pixi", "img/pixi.png", "pixi-panel.html");
+chrome.devtools.panels.create("PixiJS", "img/pixi.png", "pixi-panel.html");

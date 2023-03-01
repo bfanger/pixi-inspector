@@ -39,7 +39,7 @@
   :global {
     body {
       margin: 0;
-      background: #161616; //  #303030;;
+      background: #161616;
       color: #e5e5e5;
     }
     code {
@@ -48,20 +48,22 @@
     }
   }
   .pixi-panel {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: 1fr minmax(200px, 35%);
+    grid-template-columns: 1fr;
     height: 100%;
     gap: 3px;
+    @media (min-width: 600px) {
+      grid-template-rows: 1fr;
+      grid-template-columns: 1fr minmax(300px, 40%);
+    }
   }
   .outliner {
-    flex: 1;
-    max-height: 50%;
-    overflow: scroll;
+    overflow: auto;
     background: #303030;
   }
   .properties {
     background: #303030;
-    flex-grow: 1;
   }
   .info {
     padding: 8px;
