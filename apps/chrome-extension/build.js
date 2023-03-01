@@ -20,6 +20,7 @@ for (const file of [
   "pixi-devtools.html",
   "pixi-panel.html",
   "icon.png",
+  "panel-icon.png",
 ]) {
   fs.copyFileSync(path.join(srcDir, file), path.join(outdir, file));
 }

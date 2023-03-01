@@ -41,6 +41,6 @@ container.pivot.y = container.height / 2;
 app.ticker.add((delta) => {
   container.rotation -= 0.01 * delta;
 });
-// eslint-disable-next-line no-underscore-dangle
-(window as any).__PIXI_APP__ = app;
+
+(window as any).__PIXI_APP__ = app; // eslint-disable-line
 (window as any).PIXI = PIXI;

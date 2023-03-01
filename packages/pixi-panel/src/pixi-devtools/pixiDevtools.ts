@@ -13,6 +13,7 @@ export default function pixiDevtools() {
       this.app = undefined;
     },
     reconnect() {
+      // eslint-disable-next-line no-underscore-dangle
       const app = win.__PIXI_APP__ ?? win.frames[0]?.__PIXI_APP__;
       if (!app) {
         return false;

@@ -10,10 +10,6 @@
     "extraFileExtensions": [".cjs", ".svelte"]
   },
   "rules": {
-    "import/no-extraneous-dependencies": "off",
-    "no-underscore-dangle": [
-      "warn",
-      { "allow": ["__PIXI_DEVTOOLS__", "__PIXI_APP__"] }
-    ]
+    "import/no-extraneous-dependencies": "off"
   }
 }
