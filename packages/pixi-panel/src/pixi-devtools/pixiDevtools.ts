@@ -1,4 +1,10 @@
-import type { Application } from "pixi.js";
+import type { Application, DisplayObject } from "pixi.js";
+
+type EventDetail = {
+  connect: Application;
+  disconnect: undefined;
+  activate: DisplayObject | undefined;
+};
 
 export default function pixiDevtools() {
   const el = document.createElement("div");
@@ -6,9 +12,16 @@ export default function pixiDevtools() {
 
   return {
     app: undefined as Application | undefined,
+    active(): DisplayObject | undefined {
+      return (window as any).$pixi;
+    },
+    activate(node?: DisplayObject) {
+      (window as any).$pixi = node;
+      this.dispatchEvent("activate", node);
+    },
     disconnect() {
       if (this.app) {
-        this.dispatch("disconnect");
+        this.dispatchEvent("disconnect");
       }
       this.app = undefined;
     },
@@ -22,14 +35,33 @@ export default function pixiDevtools() {
         this.disconnect();
       }
       this.app = app;
-      this.dispatch("connect");
+      this.dispatchEvent("connect", app);
       return true;
     },
-    on(event: string, callback: () => void) {
-      el.addEventListener(`pixi:${event}`, callback);
-      return () => el.removeEventListener(`pixi:${event}`, callback);
+    on<T extends keyof EventDetail>(
+      event: T,
+      callback: (detail: EventDetail[T]) => void
+    ) {
+      const listener = (e) => {
+        callback(e.detail);
+      };
+      el.addEventListener(`pixi:${event}`, listener);
+      return () => el.removeEventListener(`pixi:${event}`, listener);
     },
-    dispatch(event: string, detail?: any) {
+    once<T extends keyof EventDetail>(
+      event: T,
+      callback: (detail: EventDetail[T]) => void
+    ) {
+      const off = this.on(event, (e) => {
+        off();
+        callback(e);
+      });
+      return off;
+    },
+    dispatchEvent<T extends keyof EventDetail>(
+      event: T,
+      detail: EventDetail[T]
+    ) {
       el.dispatchEvent(new CustomEvent(`pixi:${event}`, { detail }));
     },
   };

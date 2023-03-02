@@ -1,4 +1,3 @@
-import type { DisplayObject } from "pixi.js";
 import type { PixiDevtools } from "../types";
 
 export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
@@ -44,33 +43,34 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
   }
 
   function updateHighlight() {
-    const $pixi = (window as any).$pixi as DisplayObject;
-    if (!$pixi) {
+    const node = devtools.active();
+    if (!node) {
       highlightEl.style.transform = "scale(0)";
       return;
     }
-    if (!$pixi.parent || $pixi.visible === false) {
+    if (!node.parent || node.visible === false) {
       highlightEl.style.transform = "scale(0)";
       return;
     }
     calibrateOverlay();
-    const size = $pixi.getLocalBounds();
+    const size = node.getLocalBounds();
     if (prevSize.width !== size.width && prevSize.height !== size.height) {
       prevSize = { width: size.width, height: size.height };
       highlightEl.style.width = `${size.width}px`;
       highlightEl.style.height = `${size.height}px`;
     }
-    const m = $pixi.worldTransform;
+    const m = node.worldTransform;
     const offset = `translate(${size.x}px, ${size.y}px)`;
     highlightEl.style.transform = `matrix(${m.a}, ${m.b}, ${m.c}, ${m.d}, ${m.tx}, ${m.ty}) ${offset}`;
   }
-  devtools.on("connect", () => {
-    devtools.app?.ticker.add(updateHighlight);
+  devtools.on("connect", (app) => {
+    app.ticker.add(updateHighlight);
     updateHighlight();
     document.body.appendChild(overlayEl);
-  });
-  devtools.on("disconnect", () => {
-    devtools.app?.ticker.remove(updateHighlight);
-    overlayEl.remove();
+
+    devtools.once("disconnect", () => {
+      app.ticker.remove(updateHighlight);
+      overlayEl.remove();
+    });
   });
 }

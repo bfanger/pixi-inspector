@@ -7,6 +7,12 @@ import type { OutlinerNode, PixiDevtools } from "../types";
 export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
   const metaProperty = Symbol("pixi-devtools-outline");
 
+  devtools.on("activate", (node) => {
+    if (node) {
+      expandNode(node);
+    }
+  });
+
   function autoId() {
     autoId.current += 1;
     if (autoId.current > Number.MAX_SAFE_INTEGER) {
@@ -77,6 +83,15 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
     }
     return tree;
   }
+
+  function expandNode(node: DisplayObject) {
+    const meta = augment(node);
+    meta.expanded = true;
+    if (node.parent) {
+      expandNode(node.parent);
+    }
+  }
+
   return {
     tree() {
       if (!devtools.app) {

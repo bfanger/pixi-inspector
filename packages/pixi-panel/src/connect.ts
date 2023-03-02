@@ -4,6 +4,7 @@ import pixiDevtools from "./pixi-devtools/pixiDevtools";
 import pixiDevtoolsOutline from "./pixi-devtools/pixiDevtoolsOutline";
 import pixiDevtoolsOverlay from "./pixi-devtools/pixiDevtoolsOverlay";
 import pixiDevtoolsProperties from "./pixi-devtools/pixiDevtoolsProperties";
+import pixiDevtoolsClickToSelect from "./pixi-devtools/pixiDevtoolsClickToSelect";
 
 import { poll } from "./bridge-fns";
 
@@ -24,6 +25,7 @@ export default function connect(bridge: BridgeFn): Readable<boolean> {
         window.__PIXI_DEVTOOLS__.outline = (${pixiDevtoolsOutline.toString()}(window.__PIXI_DEVTOOLS__));
         window.__PIXI_DEVTOOLS__.overlay = (${pixiDevtoolsOverlay.toString()}(window.__PIXI_DEVTOOLS__));
         window.__PIXI_DEVTOOLS__.properties = (${pixiDevtoolsProperties.toString()}(window.__PIXI_DEVTOOLS__));
+        window.__PIXI_DEVTOOLS__.clickToSelect = (${pixiDevtoolsClickToSelect.toString()}(window.__PIXI_DEVTOOLS__));
       })();`).then(() => detected.sync());
     }
     if ($detected.data === "object-false") {

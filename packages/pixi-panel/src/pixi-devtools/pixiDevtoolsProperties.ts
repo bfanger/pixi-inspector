@@ -1,32 +1,31 @@
-import type { DisplayObject, Sprite } from "pixi.js";
-import type { NodeProperties } from "../types";
+import type { NodeProperties, PixiDevtools } from "../types";
 
-export default function pixiDevtoolsProperties() {
+export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
   return {
     getAll(): NodeProperties | undefined {
-      const $pixi = (window as any).$pixi as DisplayObject | Sprite | undefined;
-      if (!$pixi) {
+      const node = devtools.active();
+      if (!node) {
         return undefined;
       }
       return {
-        x: $pixi.x,
-        y: $pixi.y,
-        rotation: $pixi.rotation,
-        scaleX: $pixi.scale.x,
-        scaleY: $pixi.scale.y,
+        x: node.x,
+        y: node.y,
+        rotation: node.rotation,
+        scaleX: node.scale.x,
+        scaleY: node.scale.y,
       };
     },
     set(property: string, value: number) {
-      const $pixi = (window as any).$pixi as DisplayObject | Sprite | undefined;
-      if (!$pixi) {
+      const node = devtools.active();
+      if (!node) {
         return;
       }
       if (property === "scaleX") {
-        $pixi.scale.x = value;
+        node.scale.x = value;
       } else if (property === "scaleY") {
-        $pixi.scale.y = value;
+        node.scale.y = value;
       } else {
-        $pixi[property] = value;
+        node[property] = value;
       }
     },
   };

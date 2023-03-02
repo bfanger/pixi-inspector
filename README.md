@@ -2,6 +2,14 @@
 
 Browser extension to debug games and apps written with [Pixi.js](http://pixijs.com/).
 
+## Features
+
+- Show the scene graph
+- View and edit properties
+- Highlight the active node in the view.
+- The active node is available in the developer console as `$pixi`
+- Right-click on the view to activate a node
+
 ## Installation
 
 Install [PixiJS Devtools from the Chrome Web Store](https://chrome.google.com/webstore/detail/pixi-inspector/aamddddknhcagpehecnhphigffljadon)

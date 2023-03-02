@@ -6,9 +6,9 @@
 
 <style lang="scss">
   .base {
-    font: 12px system-ui, sans-serif;
+    font: 13px system-ui, sans-serif;
     height: 100vh;
-    text-shadow: 0 1px 1px rgba(black, 0.8);
     -webkit-font-smoothing: antialiased;
+    text-shadow: 0 1px 1px rgba(black, 0.4);
   }
 </style>
