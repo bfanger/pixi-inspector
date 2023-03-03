@@ -26,11 +26,23 @@
     </div>
   {:else}
     <div class="info">
-      No Pixi application configured for debugging.<br /><br />
-      To enable debugging, after creating the PIXI.Application
-      <code>const app = new PIXI.Application(...);</code>
-      add the line:
-      <code>window.__PIXI_APP__ = app;</code>
+      <p>No Application or Game configured for debugging.</p>
+      <div class="engines">
+        <div>
+          <strong style="color: #e91e63">PixiJS</strong>: After creating the
+          PIXI.Application
+          <code>const app = new PIXI.Application(...);</code>
+          add the line:
+          <code>globalThis.__PIXI_APP__ = app;</code>
+        </div>
+        <div>
+          <strong style="color: #9e00d9">Phaser</strong>: After creating the
+          Phaser.Game
+          <code>const game = new Phaser.Game(...);</code>
+          add the line:
+          <code>globalThis.__PHASER_GAME__ = game;</code>
+        </div>
+      </div>
     </div>
   {/if}
 </Base>
@@ -67,5 +79,18 @@
   }
   .info {
     padding: 8px;
+    code {
+      background-color: #202020;
+      color: #74a5ee;
+      margin-block: 8px;
+    }
+  }
+  .engines {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    @media (min-width: 600px) {
+      flex-direction: row;
+    }
   }
 </style>

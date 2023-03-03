@@ -3,7 +3,6 @@
  * https://pixijs.io/examples/#/demos-basic/container.js
  */
 import { Application, Container, Sprite, Texture } from "pixi.js";
-import * as PIXI from "pixi.js";
 
 const app = new Application({
   width: 640,
@@ -42,5 +41,4 @@ app.ticker.add((delta) => {
   container.rotation -= 0.01 * delta;
 });
 
-(window as any).__PIXI_APP__ = app; // eslint-disable-line
-(window as any).PIXI = PIXI;
+(globalThis as any).__PIXI_APP__ = app; // eslint-disable-line

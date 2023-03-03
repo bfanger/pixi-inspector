@@ -1,3 +1,4 @@
+import type { DisplayObject } from "pixi.js";
 import type { PixiDevtools } from "../types";
 
 export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
@@ -32,7 +33,7 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
     overlayEl.style.height = `${
       app.renderer.height / app.renderer.resolution
     }px`;
-    const canvasBounds = app.view.getBoundingClientRect();
+    const canvasBounds = devtools.viewport.element().getBoundingClientRect();
     overlayEl.style.transform = "";
     const overlayBounds = overlayEl.getBoundingClientRect();
     overlayEl.style.transform = `translate(${
@@ -41,9 +42,10 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
       canvasBounds.width / overlayBounds.width
     }, ${canvasBounds.height / overlayBounds.height})`;
   }
-
+  let raf: number;
   function updateHighlight() {
-    const node = devtools.active();
+    raf = requestAnimationFrame(updateHighlight);
+    const node = devtools.active() as DisplayObject | undefined;
     if (!node) {
       highlightEl.style.transform = "scale(0)";
       return;
@@ -63,14 +65,15 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
     const offset = `translate(${size.x}px, ${size.y}px)`;
     highlightEl.style.transform = `matrix(${m.a}, ${m.b}, ${m.c}, ${m.d}, ${m.tx}, ${m.ty}) ${offset}`;
   }
-  devtools.on("connect", (app) => {
-    app.ticker.add(updateHighlight);
-    updateHighlight();
-    document.body.appendChild(overlayEl);
+  devtools.on("connect", ({ app }) => {
+    if (app) {
+      raf = requestAnimationFrame(updateHighlight);
+      document.body.appendChild(overlayEl);
 
-    devtools.once("disconnect", () => {
-      app.ticker.remove(updateHighlight);
-      overlayEl.remove();
-    });
+      devtools.once("disconnect", () => {
+        cancelAnimationFrame(raf);
+        overlayEl.remove();
+      });
+    }
   });
 }

@@ -3,7 +3,9 @@
     "noEmit": true,
     "importsNotUsedAsValues": "error",
     "esModuleInterop": true,
-    "lib": ["ESNext", "DOM"]
+    "lib": ["ESNext", "DOM"],
+    "skipLibCheck": true,
+    "strict": true
   },
   "paths": {
     "pixi-panel/*": ["node_modules/pixi-panel/*"]

@@ -30,9 +30,11 @@
     if (Number.isNaN(Number(el.value))) {
       return;
     }
-    value = Number(el.value);
-    wanted = value;
-    dispatch("change", value);
+    wanted = Number(el.value);
+    if (value !== wanted) {
+      value = wanted;
+      dispatch("change", value);
+    }
   }
   function onBlur() {
     text = format(value);
@@ -44,7 +46,7 @@
   class="number-input"
   data-location={location}
   use:blurOnEnter
-  use:revertOnEscape
+  use:revertOnEscape={value?.toString() ?? ""}
   use:selectOnFocus
   bind:this={el}
   bind:value={text}

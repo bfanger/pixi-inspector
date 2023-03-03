@@ -1,12 +1,12 @@
 {
-  "name": "example-pixi-project",
+  "name": "example-phaser-project",
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
-    "dev": "vite dev"
+    "dev": "vite dev --port 5174"
   },
   "dependencies": {
-    "pixi.js": "^7.1.4",
+    "phaser": "^3.55.2",
     "vite": "^4.1.4"
   }
 }

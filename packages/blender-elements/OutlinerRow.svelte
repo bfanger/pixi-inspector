@@ -44,10 +44,10 @@
         dispatch("collapse");
         e.preventDefault();
       } else {
-        let cursor: Element = el;
+        let cursor: Element | null | undefined = el;
         // eslint-disable-next-line no-constant-condition
         while (true) {
-          cursor = cursor.previousElementSibling;
+          cursor = cursor?.previousElementSibling;
           const controller = (cursor as any)?.outlineRow;
           if (!controller) {
             break;
@@ -73,7 +73,7 @@
       }
     }
 
-    if (e.key === "h") {
+    if (e.key === "h" && visible !== undefined) {
       if (visible) {
         dispatch("hide");
       } else {

@@ -34,7 +34,7 @@ export function poll<T>(
       // @todo Detect if data was changed?
       state.data = await bridge<T>(code);
       state.error = undefined;
-    } catch (err) {
+    } catch (err: any) {
       state.error = err;
       state.data = undefined;
     }

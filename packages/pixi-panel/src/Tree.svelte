@@ -7,7 +7,7 @@
   export let name: string;
   export let leaf: boolean;
   export let active: boolean;
-  export let visible: boolean;
+  export let visible: boolean | undefined;
   export let muted = false;
   export let children: OutlinerNode[] | undefined = undefined;
   export let depth = 0;

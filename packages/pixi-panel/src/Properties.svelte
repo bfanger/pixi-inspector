@@ -8,7 +8,7 @@
   const props = poll<NodeProperties>(
     bridge,
     "__PIXI_DEVTOOLS__.properties.getAll()",
-    1000
+    250
   );
   export const refresh = props.sync;
 
@@ -20,7 +20,7 @@
   }
 </script>
 
-{#if $props.data}
+{#if $props.data && typeof $props.data.x !== "undefined"}
   <section class="section">
     <div class="title">Transform</div>
     <div class="properties">
@@ -53,11 +53,19 @@
     <div class="properties">
       <label class="label" for="">Scale X</label>
       <div class="input">
-        <NumberInput value={$props.data.scaleX} location="TOP" />
+        <NumberInput
+          value={$props.data.scaleX}
+          location="TOP"
+          on:change={(e) => onChange("scaleX", e.detail)}
+        />
       </div>
       <label class="label" for="">Y</label>
       <div class="input">
-        <NumberInput value={$props.data.scaleY} location="BOTTOM" />
+        <NumberInput
+          value={$props.data.scaleY}
+          location="BOTTOM"
+          on:change={(e) => onChange("scaleY", e.detail)}
+        />
       </div>
     </div>
   </section>

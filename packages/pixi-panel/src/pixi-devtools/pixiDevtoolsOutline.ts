@@ -1,3 +1,4 @@
+import type { GameObjects, Scene } from "phaser";
 import type { Container, DisplayObject } from "pixi.js";
 import type { OutlinerNode, PixiDevtools } from "../types";
 
@@ -31,8 +32,8 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
   /**
    * Get the metadata from a node or create it if it doesn't exist
    */
-  function augment(node: DisplayObject) {
-    let meta: Meta = node[metaProperty];
+  function augment(node: DisplayObject | GameObjects.GameObject | Scene) {
+    let meta: Meta = (node as any)[metaProperty];
     if (meta) {
       return meta;
     }
@@ -41,17 +42,24 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
       expanded: false,
     };
     // eslint-disable-next-line no-param-reassign
-    node[metaProperty] = meta;
+    (node as any)[metaProperty] = meta;
     return meta;
   }
 
-  function findIn(path: string[], container: DisplayObject) {
+  function findIn(
+    path: string[],
+    container: DisplayObject | GameObjects.GameObject
+  ): DisplayObject | GameObjects.GameObject | undefined {
     if (path.length === 0) {
       return container;
     }
     const id = path[0];
-    const node = (container as Container).children?.find(
-      (c) => c[metaProperty]?.id === id
+    const children = devtools.childrenOf(container);
+    if (!children) {
+      return undefined;
+    }
+    const node = children.find(
+      (child) => (child as any)[metaProperty]?.id === id
     );
     if (node) {
       return findIn(path.slice(1), node);
@@ -60,50 +68,53 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
   }
 
   function find(path: string[]) {
-    return findIn(path, {
-      children: [devtools.app?.stage],
-    } as any as Container);
+    const root = devtools.root();
+    const container = devtools.app
+      ? ({ children: [root] } as any as Container)
+      : ({ list: [root] } as any as GameObjects.Container);
+    return findIn(path, container);
   }
 
-  function buildTree(node: DisplayObject): OutlinerNode {
+  function buildTree(
+    node: DisplayObject | GameObjects.GameObject | Scene
+  ): OutlinerNode {
     const meta = augment(node);
     const tree: OutlinerNode = {
       id: meta.id,
       name: meta.name ?? node.constructor?.name ?? "anonymous",
       leaf: true,
-      active: node === globalThis.$pixi,
-      visible: node.visible,
+      active: node === devtools.active(),
+      visible: "visible" in node ? node.visible : undefined,
     };
     const container = node as Container;
     if (container.children?.length > 0) {
       tree.leaf = false;
       if (meta.expanded) {
-        tree.children = (node as Container).children.map(buildTree);
+        tree.children = devtools.childrenOf(node as Container)?.map(buildTree);
       }
     }
     return tree;
   }
 
-  function expandNode(node: DisplayObject) {
+  function expandNode(node: DisplayObject | GameObjects.GameObject) {
     const meta = augment(node);
     meta.expanded = true;
-    if (node.parent) {
-      expandNode(node.parent);
+    const parent = devtools.parentOf(node);
+    if (parent) {
+      expandNode(parent);
     }
   }
 
   return {
     tree() {
-      if (!devtools.app) {
-        throw new Error("__PIXI_APP__ not a PIXI.Application");
-      }
-      const meta = augment(devtools.app.stage);
+      const meta = augment(devtools.root());
       if (!meta.name) {
         meta.expanded = true;
-        meta.name = "Stage";
-        globalThis.$pixi = devtools.app.stage;
+        if (devtools.app) {
+          meta.name = "Stage";
+        }
       }
-      return buildTree(devtools.app.stage);
+      return buildTree(devtools.root());
     },
     expand(path: string[]) {
       const node = find(path);
@@ -119,18 +130,18 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
     },
     hide(path: string[]) {
       const node = find(path);
-      if (node) {
+      if (node && "visible" in node) {
         node.visible = false;
       }
     },
     show(path: string[]) {
       const node = find(path);
-      if (node) {
+      if (node && "visible" in node) {
         node.visible = true;
       }
     },
     activate(path: string[]) {
-      globalThis.$pixi = find(path);
+      devtools.activate(find(path));
     },
   };
 }
