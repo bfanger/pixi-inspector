@@ -9,7 +9,7 @@
   class="toggle"
   style="background-image: var(--icon-{icon})"
   title={hint}
-  on:click
+  on:click|stopPropagation
 />
 
 <style lang="scss">
