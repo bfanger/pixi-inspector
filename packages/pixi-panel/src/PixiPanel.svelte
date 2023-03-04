@@ -10,8 +10,14 @@
 
   let refresh: () => void;
 
-  setBridgeContext(bridge);
   const connection = connect(bridge);
+
+  setBridgeContext(<T>(code: string) =>
+    bridge<T>(code).catch((err) => {
+      connection.retry();
+      throw err;
+    })
+  );
 </script>
 
 <Base>
@@ -29,14 +35,14 @@
       <p>No Application or Game configured for debugging.</p>
       <div class="engines">
         <div>
-          <strong style="color: #e91e63">PixiJS</strong>: After creating the
+          <strong style="color: #df5584">PixiJS</strong>: After creating the
           PIXI.Application
           <code>const app = new PIXI.Application(...);</code>
           add the line:
           <code>globalThis.__PIXI_APP__ = app;</code>
         </div>
         <div>
-          <strong style="color: #9e00d9">Phaser</strong>: After creating the
+          <strong style="color: #bb73d6">Phaser</strong>: After creating the
           Phaser.Game
           <code>const game = new Phaser.Game(...);</code>
           add the line:
@@ -89,8 +95,9 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
-    @media (min-width: 600px) {
+    @media (min-width: 700px) {
       flex-direction: row;
+      gap: 32px;
     }
   }
 </style>

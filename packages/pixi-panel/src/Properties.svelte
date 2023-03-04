@@ -8,7 +8,7 @@
   const props = poll<NodeProperties>(
     bridge,
     "__PIXI_DEVTOOLS__.properties.getAll()",
-    250
+    200
   );
   export const refresh = props.sync;
 

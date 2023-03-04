@@ -1,15 +1,9 @@
 import type { GameObjects } from "phaser";
-import type { DisplayObject } from "pixi.js";
-import type { NodeProperties, PixiDevtools } from "../types";
+import type { NodeProperties, PixiDevtools, UniversalNode } from "../types";
 
 export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
-  function isDisplayObject(
-    node: DisplayObject | GameObjects.GameObject
-  ): node is DisplayObject {
-    return !!devtools.app;
-  }
-  function isImage(node: GameObjects.GameObject): node is GameObjects.Image {
-    return !!devtools.game && "x" in node;
+  function isImage(node: UniversalNode): node is GameObjects.Image {
+    return !!devtools.game && "x" in node && typeof node.x === "number";
   }
   return {
     getAll(): NodeProperties | undefined {
@@ -17,7 +11,7 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
       if (!node) {
         return undefined;
       }
-      if (isDisplayObject(node)) {
+      if (devtools.isDisplayObject(node)) {
         return {
           x: node.x,
           y: node.y,
@@ -43,7 +37,7 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
       if (!node) {
         return;
       }
-      if (isDisplayObject(node)) {
+      if (devtools.isDisplayObject(node)) {
         if (property === "scaleX") {
           node.scale.x = value;
           return;

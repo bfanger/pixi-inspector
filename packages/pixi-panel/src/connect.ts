@@ -12,35 +12,36 @@ import { poll } from "./bridge-fns";
 
 function detect() {
   const win = window as any;
-  if (typeof win.__PIXI_DEVTOOLS__ !== "undefined") {
-    if (typeof win.__PIXI_APP__ !== "undefined") {
-      if (win.__PIXI_DEVTOOLS__.app !== win.__PIXI_APP__) {
-        return "CONNECT";
-      }
+  const app = win.__PIXI_APP__ ?? win.frames[0]?.__PIXI_APP__;
+  const game = win.__PHASER_GAME__ ?? win.frames[0]?.__PHASER_GAME__;
+  if (win.__PIXI_DEVTOOLS__ !== undefined) {
+    if (win.__PIXI_DEVTOOLS__.app && win.__PIXI_DEVTOOLS__.app === app) {
+      return "CONNECTED";
     }
-    if (typeof win.__PHASER_GAME__ !== "undefined") {
-      if (win.__PIXI_DEVTOOLS__.game !== win.__PHASER_GAME__) {
-        return "CONNECT";
-      }
+    if (win.__PIXI_DEVTOOLS__.game && win.__PIXI_DEVTOOLS__.game === game) {
+      return "CONNECTED";
     }
-    return "CONNECTED";
+    if (app !== undefined || game !== undefined) {
+      return "CONNECT";
+    }
+    return "DISCONNECTED";
   }
-  if (
-    typeof win.__PIXI_APP__ !== "undefined" ||
-    typeof win.__PHASER_GAME__ !== "undefined"
-  ) {
+
+  if (app !== undefined || game !== undefined) {
     return "INJECT";
   }
   return "DETECTING";
 }
-export default function connect(bridge: BridgeFn): Readable<boolean> {
+export default function connect(
+  bridge: BridgeFn
+): Readable<boolean> & { retry: () => void } {
   const detected = poll<ReturnType<typeof detect>>(
     bridge,
     `(${detect.toString()}())`,
 
     2500
   );
-  return derived(detected, ({ data, error }) => {
+  const readable = derived(detected, ({ data, error }) => {
     if (error) {
       console.warn(error);
     }
@@ -67,4 +68,10 @@ export default function connect(bridge: BridgeFn): Readable<boolean> {
 
     return false;
   });
+  return {
+    subscribe: readable.subscribe,
+    retry() {
+      detected.sync();
+    },
+  };
 }

@@ -1,3 +1,5 @@
+import type { GameObjects, Scene } from "phaser";
+import type { DisplayObject } from "pixi.js";
 import type pixiDevtools from "./pixi-devtools/pixiDevtools";
 import type pixiDevtoolsViewport from "./pixi-devtools/pixiDevtoolsViewport";
 import type pixiDevtoolsOverlay from "./pixi-devtools/pixiDevtoolsOverlay";
@@ -21,6 +23,12 @@ export type OutlinerNode = {
   visible?: boolean;
   children?: OutlinerNode[];
 };
+/** A node in an PixiJS stage or Phaser scene */
+export type UniversalNode =
+  | DisplayObject
+  | Scene
+  | GameObjects.GameObject
+  | GameObjects.Particles.ParticleEmitter;
 
 export type NodeProperties = {
   x?: number;

@@ -1,10 +1,11 @@
 import type { Application, Container, DisplayObject } from "pixi.js";
 import type { Game, GameObjects, Scene } from "phaser";
+import type { UniversalNode } from "../types";
 
 type EventDetail = {
   connect: { app: Application | undefined; game: Game | undefined };
   disconnect: undefined;
-  activate: DisplayObject | GameObjects.GameObject | undefined;
+  activate: UniversalNode | undefined;
 };
 
 export default function pixiDevtools() {
@@ -22,30 +23,43 @@ export default function pixiDevtools() {
       }
       throw new Error("Not connected");
     },
-
-    childrenOf(
-      node: DisplayObject | GameObjects.GameObject | Scene
-    ): Array<DisplayObject | GameObjects.GameObject> | undefined {
+    childrenOf(node: UniversalNode | Scene): Array<UniversalNode> | undefined {
       if (this.app) {
         return (node as Container).children;
       }
       if ("children" in node) {
         return (node as Scene).children.list;
       }
-      return (node as GameObjects.Container).list;
+      if ("list" in node) {
+        return (node as GameObjects.Container).list;
+      }
+      if ("emitters" in node) {
+        return (node as GameObjects.Particles.ParticleEmitterManager).emitters
+          .list;
+      }
+      if ("alive" in node) {
+        // GameObjects.Particles.ParticleEmitter
+        return (node as any).alive;
+      }
+      return undefined;
     },
-    parentOf(
-      node: DisplayObject | GameObjects.GameObject
-    ): DisplayObject | GameObjects.Container | undefined {
+    parentOf(node: UniversalNode) {
       if (this.app) {
         return (node as DisplayObject).parent;
       }
-      return (node as GameObjects.GameObject).parentContainer;
+      if (this.game) {
+        const container = (node as GameObjects.GameObject).parentContainer;
+        if (container === null) {
+          return (node as GameObjects.GameObject).scene;
+        }
+        return container;
+      }
+      return undefined;
     },
-    active(): DisplayObject | GameObjects.GameObject | undefined {
+    active(): UniversalNode | undefined {
       return (window as any).$pixi;
     },
-    activate(node?: DisplayObject | GameObjects.GameObject) {
+    activate(node?: UniversalNode) {
       (window as any).$pixi = node;
       this.dispatchEvent("activate", node);
     },
@@ -76,6 +90,9 @@ export default function pixiDevtools() {
       win.$pixi = this.root();
       this.dispatchEvent("connect", { app, game });
       return true;
+    },
+    isDisplayObject(node: UniversalNode): node is DisplayObject {
+      return !!this.app;
     },
     on<T extends keyof EventDetail>(
       event: T,

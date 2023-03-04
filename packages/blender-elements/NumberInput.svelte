@@ -23,7 +23,14 @@
     if (val === undefined || Number.isNaN(val)) {
       return "";
     }
-    return val.toString();
+    if (val > 1000000) {
+      return Math.round(val).toString();
+    }
+    return val
+      .toFixed(6)
+      .toString()
+      .substring(0, 7)
+      .replace(/\.?0+$/, "");
   }
 
   function onInput() {

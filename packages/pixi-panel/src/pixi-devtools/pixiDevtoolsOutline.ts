@@ -1,6 +1,6 @@
-import type { GameObjects, Scene } from "phaser";
-import type { Container, DisplayObject } from "pixi.js";
-import type { OutlinerNode, PixiDevtools } from "../types";
+import type { GameObjects } from "phaser";
+import type { Container } from "pixi.js";
+import type { OutlinerNode, PixiDevtools, UniversalNode } from "../types";
 
 /**
  * Treeview operations
@@ -32,7 +32,7 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
   /**
    * Get the metadata from a node or create it if it doesn't exist
    */
-  function augment(node: DisplayObject | GameObjects.GameObject | Scene) {
+  function augment(node: UniversalNode) {
     let meta: Meta = (node as any)[metaProperty];
     if (meta) {
       return meta;
@@ -48,8 +48,8 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
 
   function findIn(
     path: string[],
-    container: DisplayObject | GameObjects.GameObject
-  ): DisplayObject | GameObjects.GameObject | undefined {
+    container: UniversalNode
+  ): UniversalNode | undefined {
     if (path.length === 0) {
       return container;
     }
@@ -75,28 +75,37 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
     return findIn(path, container);
   }
 
-  function buildTree(
-    node: DisplayObject | GameObjects.GameObject | Scene
-  ): OutlinerNode {
+  function buildTree(node: UniversalNode): OutlinerNode {
     const meta = augment(node);
+    let { name } = meta;
+    if ("name" in node && node.name !== null && node.name !== "") {
+      name = "";
+      if (node.constructor?.name) {
+        name += `${node.constructor.name} `;
+      }
+      name += `"${node.name}"`;
+    }
+    if (!name) {
+      name = node.constructor?.name ?? "anonymous";
+    }
     const tree: OutlinerNode = {
       id: meta.id,
-      name: meta.name ?? node.constructor?.name ?? "anonymous",
+      name,
       leaf: true,
       active: node === devtools.active(),
       visible: "visible" in node ? node.visible : undefined,
     };
-    const container = node as Container;
-    if (container.children?.length > 0) {
+    const children = devtools.childrenOf(node) ?? [];
+    if (children.length > 0) {
       tree.leaf = false;
       if (meta.expanded) {
-        tree.children = devtools.childrenOf(node as Container)?.map(buildTree);
+        tree.children = children.map(buildTree);
       }
     }
     return tree;
   }
 
-  function expandNode(node: DisplayObject | GameObjects.GameObject) {
+  function expandNode(node: UniversalNode) {
     const meta = augment(node);
     meta.expanded = true;
     const parent = devtools.parentOf(node);
