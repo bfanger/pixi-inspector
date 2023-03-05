@@ -50,7 +50,7 @@
   }
   .pixi-panel {
     display: grid;
-    grid-template-rows: 1fr minmax(200px, 35%);
+    grid-template-rows: minmax(50px, 1fr) minmax(210px, 55%);
     grid-template-columns: 1fr;
     height: 100%;
     gap: 3px;
@@ -65,5 +65,6 @@
   }
   .properties {
     background: #303030;
+    overflow: auto;
   }
 </style>

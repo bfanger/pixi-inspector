@@ -8,7 +8,7 @@
   const props = poll<NodeProperties>(
     bridge,
     "__PIXI_DEVTOOLS__.properties.getAll()",
-    200
+    250
   );
   export const refresh = props.sync;
 
@@ -41,15 +41,18 @@
         />
       </div>
     </div>
-    <div class="properties">
-      <label class="label" for="">Rotation</label>
-      <div class="input">
-        <NumberInput
-          value={$props.data.rotation}
-          on:change={(e) => onChange("rotation", e.detail)}
-        />
+    {#if typeof $props.data.angle === "number"}
+      <div class="properties">
+        <label class="label" for="">Angle</label>
+        <div class="input">
+          <NumberInput
+            value={$props.data.angle}
+            suffix="°"
+            on:change={(e) => onChange("angle", e.detail)}
+          />
+        </div>
       </div>
-    </div>
+    {/if}
     <div class="properties">
       <label class="label" for="">Scale X</label>
       <div class="input">
@@ -69,6 +72,53 @@
       </div>
     </div>
   </section>
+  {#if typeof $props.data.width === "number" || typeof $props.data.skewX === "number"}
+    <section class="section">
+      <div class="title" />
+      {#if typeof $props.data.width === "number"}
+        <div class="properties">
+          <label class="label" for="">Width</label>
+          <div class="input">
+            <NumberInput
+              value={$props.data.width}
+              location="TOP"
+              on:change={(e) => onChange("width", e.detail)}
+            />
+          </div>
+          <label class="label" for="">Height</label>
+          <div class="input">
+            <NumberInput
+              value={$props.data.height}
+              location="BOTTOM"
+              on:change={(e) => onChange("height", e.detail)}
+            />
+          </div>
+        </div>
+      {/if}
+      {#if typeof $props.data.skewX === "number"}
+        <div class="properties">
+          <label class="label" for="">Skew X</label>
+          <div class="input">
+            <NumberInput
+              value={$props.data.skewX}
+              suffix="r"
+              location="TOP"
+              on:change={(e) => onChange("skewX", e.detail)}
+            />
+          </div>
+          <label class="label" for="">Y</label>
+          <div class="input">
+            <NumberInput
+              value={$props.data.skewY}
+              suffix="r"
+              location="BOTTOM"
+              on:change={(e) => onChange("skewY", e.detail)}
+            />
+          </div>
+        </div>
+      {/if}
+    </section>
+  {/if}
 {/if}
 
 <style>
@@ -84,12 +134,15 @@
   }
   .properties {
     display: grid;
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: minmax(100px, 1fr) 2fr;
     margin-bottom: 6px;
   }
   .label {
     text-align: right;
     margin-right: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .input {
     margin-right: 16px;

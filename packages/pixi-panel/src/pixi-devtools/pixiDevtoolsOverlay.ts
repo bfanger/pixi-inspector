@@ -47,6 +47,7 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
     }, ${canvasBounds.height / overlayBounds.height})`;
   }
   let raf: number;
+  let throttle = 0;
   function updateHighlight() {
     raf = requestAnimationFrame(updateHighlight);
     const node = devtools.active();
@@ -60,7 +61,12 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
       highlightEl.style.transform = "scale(0)";
       return;
     }
-    calibrateOverlay();
+    if (throttle <= 0) {
+      calibrateOverlay();
+      throttle = 15;
+    } else {
+      throttle -= 1;
+    }
     let size: { x: number; y: number; width: number; height: number };
     let m: Matrix | GameObjects.Components.TransformMatrix;
     if (devtools.isDisplayObject(node)) {
@@ -89,9 +95,10 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
   }
   devtools.on("connect", ({ app, game }) => {
     const win = window as any;
-    // eslint-disable-next-line no-underscore-dangle
-    const iframe = app !== win.__PIXI_APP__ && game !== win.__PHASER_GAME__;
-    const container = iframe ? win.frames[0].document.body : document.body;
+    const top =
+      (app && app === win.__PIXI_APP__) || // eslint-disable-line no-underscore-dangle
+      (game && game === win.__PHASER_GAME__); // eslint-disable-line no-underscore-dangle
+    const container = top ? document.body : win.frames[0].document.body;
     updateHighlight();
     container.appendChild(overlayEl);
 

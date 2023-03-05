@@ -11,26 +11,39 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
       if (!node) {
         return undefined;
       }
+      const props: NodeProperties = {};
+
       if (devtools.isDisplayObject(node)) {
-        return {
+        Object.assign(props, {
           x: node.x,
           y: node.y,
-          rotation: node.rotation,
+          angle: node.angle,
           scaleX: node.scale.x,
           scaleY: node.scale.y,
-        };
-      }
-      if (isImage(node)) {
-        return {
+          width: (node as any).width,
+          height: (node as any).height,
+          skewX: node.skew.x,
+          skewY: node.skew.y,
+        } satisfies NodeProperties);
+      } else if (isImage(node)) {
+        Object.assign(props, {
           x: node.x,
           y: node.y,
-          rotation: node.rotation,
+          angle: node.angle,
           scaleX: node.scaleX,
           scaleY: node.scaleY,
-        };
+          width: node.width,
+          height: node.height,
+        } satisfies NodeProperties);
+      }
+      if ("skew" in node && typeof node.skew === "object") {
+        Object.assign(props, {
+          skewX: node.skew.x,
+          skewY: node.skew.y,
+        } satisfies NodeProperties);
       }
 
-      return {};
+      return props;
     },
     set(property: string, value: number) {
       const node = devtools.active();
@@ -44,6 +57,14 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
         }
         if (property === "scaleY") {
           node.scale.y = value;
+          return;
+        }
+        if (property === "skewX") {
+          node.skew.x = value;
+          return;
+        }
+        if (property === "skewY") {
+          node.skew.y = value;
           return;
         }
       }

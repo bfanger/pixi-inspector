@@ -5,6 +5,7 @@
   import selectOnFocus from "./selectOnFocus";
 
   export let value: number | undefined;
+  export let suffix = "";
   export let location: "ALONE" | "TOP" | "MIDDLE" | "BOTTOM" = "ALONE";
   export let id: string | undefined = undefined;
 
@@ -24,13 +25,15 @@
       return "";
     }
     if (val > 1000000) {
-      return Math.round(val).toString();
+      return Math.round(val).toString() + suffix;
     }
-    return val
-      .toFixed(6)
-      .toString()
-      .substring(0, 7)
-      .replace(/\.?0+$/, "");
+    return (
+      val
+        .toFixed(6)
+        .toString()
+        .substring(0, 7)
+        .replace(/\.?0+$/, "") + suffix
+    );
   }
 
   function onInput() {
@@ -43,6 +46,13 @@
       dispatch("change", value);
     }
   }
+  function onFocus() {
+    if (suffix && text.endsWith(suffix)) {
+      text = text.substring(0, text.length - suffix.length);
+      el.value = text;
+    }
+    el.select();
+  }
   function onBlur() {
     text = format(value);
   }
@@ -54,10 +64,10 @@
   data-location={location}
   use:blurOnEnter
   use:revertOnEscape={value?.toString() ?? ""}
-  use:selectOnFocus
   bind:this={el}
   bind:value={text}
   on:input={onInput}
+  on:focus={onFocus}
   on:blur={onBlur}
 />
 

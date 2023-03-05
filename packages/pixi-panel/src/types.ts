@@ -33,7 +33,11 @@ export type UniversalNode =
 export type NodeProperties = {
   x?: number;
   y?: number;
-  rotation?: number;
+  angle?: number;
   scaleX?: number;
   scaleY?: number;
+  skewX?: number;
+  skewY?: number;
+  width?: number;
+  height?: number;
 };
