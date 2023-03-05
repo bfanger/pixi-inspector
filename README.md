@@ -8,7 +8,7 @@ Browser extension to debug games and apps written with [PixiJS](http://pixijs.co
 - View and edit properties
 - Outline the active node in the viewport.
 - The active node is available in the developer console as `$pixi`
-- Right-click in the viewport to activate a node
+- Right-click (or alt click) in the viewport to activate a node
 
 ## Installation
 

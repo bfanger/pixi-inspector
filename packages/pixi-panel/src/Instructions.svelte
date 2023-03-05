@@ -49,7 +49,7 @@
     gap: 8px;
     @media (min-width: 700px) {
       flex-direction: row;
-      gap: 32px;
+      gap: 64px;
     }
   }
 </style>
