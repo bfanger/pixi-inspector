@@ -12,26 +12,37 @@ import { poll } from "./bridge-fns";
 
 function detect() {
   const win = window as any;
-  const app = win.__PIXI_APP__ ?? win.frames[0]?.__PIXI_APP__;
-  const game = win.__PHASER_GAME__ ?? win.frames[0]?.__PHASER_GAME__;
+  function hasGlobal(varname: string) {
+    if (win[varname]) {
+      return win[varname];
+    }
+    if (win.frames) {
+      for (let i = 0; i < win.frames.length; i += 1) {
+        if (win.frames[i][varname]) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+  const detected =
+    hasGlobal("__PIXI_APP__") ||
+    hasGlobal("__PHASER_GAME__") ||
+    hasGlobal("__PIXI_STAGE__") ||
+    hasGlobal("__PIXI_RENDERER__");
+
   if (win.__PIXI_DEVTOOLS__ !== undefined) {
-    if (win.__PIXI_DEVTOOLS__.app && win.__PIXI_DEVTOOLS__.app === app) {
+    if (detected) {
       return "CONNECTED";
-    }
-    if (win.__PIXI_DEVTOOLS__.game && win.__PIXI_DEVTOOLS__.game === game) {
-      return "CONNECTED";
-    }
-    if (app !== undefined || game !== undefined) {
-      return "CONNECT";
     }
     return "DISCONNECTED";
   }
-
-  if (app !== undefined || game !== undefined) {
+  if (detected) {
     return "INJECT";
   }
-  return "DETECTING";
+  return "NOT_FOUND";
 }
+
 export default function connect(
   bridge: BridgeFn
 ): Readable<boolean> & { retry: () => void } {
@@ -57,13 +68,6 @@ export default function connect(
         window.__PIXI_DEVTOOLS__.properties = (${pixiDevtoolsProperties.toString()}(window.__PIXI_DEVTOOLS__));
         window.__PIXI_DEVTOOLS__.clickToSelect = (${pixiDevtoolsClickToSelect.toString()}(window.__PIXI_DEVTOOLS__));
       })();`).then(() => detected.sync());
-    }
-    if (data === "CONNECT") {
-      bridge("window.__PIXI_DEVTOOLS__.reconnect()").then((success) => {
-        if (success) {
-          detected.sync();
-        }
-      });
     }
 
     return false;

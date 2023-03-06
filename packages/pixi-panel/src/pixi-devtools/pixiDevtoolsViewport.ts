@@ -6,9 +6,6 @@ export default function pixiDevtoolsViewport(devtools: PixiDevtools) {
     point: IPointData,
     node: UniversalNode
   ): UniversalNode | undefined {
-    if (!devtools.app) {
-      return undefined;
-    }
     const children = devtools.childrenOf(node);
     if (children) {
       for (let i = children.length - 1; i >= 0; i -= 1) {
@@ -52,47 +49,40 @@ export default function pixiDevtoolsViewport(devtools: PixiDevtools) {
     return undefined;
   }
   return {
-    element() {
-      if (devtools.app) {
-        return devtools.app.view;
-      }
-      if (devtools.game) {
-        return devtools.game.canvas;
-      }
-      throw new Error("Not connected");
-    },
     size() {
-      if (devtools.app) {
+      const renderer = devtools.renderer();
+      if (renderer) {
+        if ("width" in renderer) {
+          return {
+            width: renderer.width,
+            height: renderer.height,
+          };
+        }
         return {
-          width: devtools.app.renderer.width,
-          height: devtools.app.renderer.height,
+          width: renderer.scale.displaySize.width,
+          height: renderer.scale.displaySize.height,
         };
       }
-      if (devtools.game) {
-        return {
-          width: devtools.game.scale.displaySize.width,
-          height: devtools.game.scale.displaySize.height,
-        };
-      }
-      throw new Error("Not connected");
+      return undefined;
     },
-    scale() {
-      if (devtools.app) {
-        return {
-          x: devtools.app.renderer.resolution,
-          y: devtools.app.renderer.resolution,
-        };
+    scale(): IPointData | undefined {
+      const renderer = devtools.renderer();
+      if (renderer) {
+        if ("resolution" in renderer) {
+          return {
+            x: renderer.resolution,
+            y: renderer.resolution,
+          };
+        }
+        return renderer.scale.displayScale;
       }
-      if (devtools.game) {
-        return devtools.game.scale.displayScale;
-      }
-      throw new Error("Not connected");
+      return undefined;
     },
     fromClient(clientX: number, clientY: number): IPointData {
-      const el = this.element();
-      if ("getBoundingClientRect" in el) {
+      const el = devtools.canvas();
+      const scale = this.scale();
+      if (el && scale && "getBoundingClientRect" in el) {
         const bounds = (el as HTMLCanvasElement).getBoundingClientRect();
-        const scale = this.scale();
         return {
           x: (clientX - bounds.x) * (el.width / scale.x / bounds.width),
           y: (clientY - bounds.y) * (el.height / scale.y / bounds.height),
@@ -102,6 +92,9 @@ export default function pixiDevtoolsViewport(devtools: PixiDevtools) {
     },
     ray(point: IPointData): UniversalNode | undefined {
       const root = devtools.root();
+      if (!root) {
+        return undefined;
+      }
       const node = findNodeAt(point, root);
       if (node) {
         return node;

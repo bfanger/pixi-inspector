@@ -117,6 +117,17 @@
           </div>
         </div>
       {/if}
+      {#if typeof $props.data.skewX === "number"}
+        <div class="properties">
+          <label class="label" for="">Alpha</label>
+          <div class="input">
+            <NumberInput
+              value={$props.data.alpha}
+              on:change={(e) => onChange("alpha", e.detail)}
+            />
+          </div>
+        </div>
+      {/if}
     </section>
   {/if}
 {/if}

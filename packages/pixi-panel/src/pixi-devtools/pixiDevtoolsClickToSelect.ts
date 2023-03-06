@@ -22,15 +22,11 @@ export default function pixiDevtoolsClickToSelect(devtools: PixiDevtools) {
     }
   }
 
-  devtools.on("connect", () => {
-    const canvas = devtools.viewport.element() as HTMLCanvasElement;
+  const canvas = devtools.canvas() as HTMLCanvasElement;
+  if (canvas) {
     canvas.addEventListener?.("contextmenu", onContextMenu);
     canvas.addEventListener?.("pointerdown", onPointerDown);
-    devtools.once("disconnect", () => {
-      canvas.removeEventListener?.("contextmenu", onContextMenu);
-      canvas.removeEventListener?.("pointerdown", onPointerDown);
-    });
-  });
+  }
 
   return {};
 }

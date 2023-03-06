@@ -8,8 +8,6 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
     position: "absolute",
     top: "0",
     left: "0",
-    width: `${devtools.app?.renderer.width}px`,
-    height: `${devtools.app?.renderer.height}px`,
     pointerEvents: "none",
     transformOrigin: "top left",
   });
@@ -22,18 +20,22 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
     height: "0",
     outline: "3px solid #ffaf29",
     transformOrigin: "top left",
+    transform: "scale(0)",
   });
   overlayEl.appendChild(highlightEl);
 
   let prevSize = { width: -1, height: -1 };
 
   function calibrateOverlay() {
-    const canvas = devtools.viewport.element() as HTMLCanvasElement;
-    if (!("getBoundingClientRect" in canvas)) {
+    const canvas = devtools.canvas() as HTMLCanvasElement;
+    if (!canvas || !("getBoundingClientRect" in canvas)) {
       return;
     }
     const size = devtools.viewport.size();
     const scale = devtools.viewport.scale();
+    if (!size || !scale) {
+      return;
+    }
 
     overlayEl.style.width = `${size.width / scale.x}px`;
     overlayEl.style.height = `${size.height / scale.y}px`;
@@ -46,10 +48,9 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
       canvasBounds.width / overlayBounds.width
     }, ${canvasBounds.height / overlayBounds.height})`;
   }
-  let raf: number;
   let throttle = 0;
   function updateHighlight() {
-    raf = requestAnimationFrame(updateHighlight);
+    requestAnimationFrame(updateHighlight);
     const node = devtools.active();
 
     if (!node) {
@@ -69,7 +70,7 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
     }
     let size: { x: number; y: number; width: number; height: number };
     let m: Matrix | GameObjects.Components.TransformMatrix;
-    if (devtools.isDisplayObject(node)) {
+    if ("getLocalBounds" in node) {
       size = node.getLocalBounds();
       m = node.worldTransform;
     } else if ("getLocalTransformMatrix" in node && "width" in node) {
@@ -93,18 +94,15 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
     const offset = `translate(${size.x}px, ${size.y}px)`;
     highlightEl.style.transform = `matrix(${m.a}, ${m.b}, ${m.c}, ${m.d}, ${m.tx}, ${m.ty}) ${offset}`;
   }
-  devtools.on("connect", ({ app, game }) => {
-    const win = window as any;
-    const top =
-      (app && app === win.__PIXI_APP__) || // eslint-disable-line no-underscore-dangle
-      (game && game === win.__PHASER_GAME__); // eslint-disable-line no-underscore-dangle
-    const container = top ? document.body : win.frames[0].document.body;
-    updateHighlight();
-    container.appendChild(overlayEl);
 
-    devtools.once("disconnect", () => {
-      cancelAnimationFrame(raf);
-      overlayEl.remove();
-    });
-  });
+  const canvas = devtools.canvas() as HTMLCanvasElement;
+  let parent: HTMLElement | null = canvas;
+  while (parent) {
+    parent = parent?.parentElement;
+    if (parent?.tagName === "BODY") {
+      parent.appendChild(overlayEl);
+      updateHighlight();
+      break;
+    }
+  }
 }

@@ -14,6 +14,11 @@
       <code>const app = new PIXI.Application(...)</code>
       add the line:
       <code>globalThis.__PIXI_APP__ = app;</code>
+      or when you're not using a PIXI.Application:
+      <code>
+        globalThis.__PIXI_STAGE__ = stage;<br />
+        globalThis.__PIXI_RENDERER__ = renderer;
+      </code>
     </div>
     <div>
       or when using <strong class="phaser">Phaser</strong><br />

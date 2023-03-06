@@ -40,4 +40,5 @@ export type NodeProperties = {
   skewY?: number;
   width?: number;
   height?: number;
+  alpha?: number;
 };

@@ -1,4 +1,3 @@
-import type { GameObjects } from "phaser";
 import type { Container } from "pixi.js";
 import type { OutlinerNode, PixiDevtools, UniversalNode } from "../types";
 
@@ -26,7 +25,6 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
   type Meta = {
     id: string;
     expanded: boolean;
-    name?: string;
   };
 
   /**
@@ -69,17 +67,16 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
 
   function find(path: string[]) {
     const root = devtools.root();
-    const container = devtools.app
-      ? ({ children: [root] } as any as Container)
-      : ({ list: [root] } as any as GameObjects.Container);
-    return findIn(path, container);
+    if (!root) {
+      return undefined;
+    }
+    return findIn(path, { children: [root] } as any as Container);
   }
 
   function buildTree(node: UniversalNode): OutlinerNode {
     const meta = augment(node);
-    let { name } = meta;
+    let name = "";
     if ("name" in node && node.name !== null && node.name !== "") {
-      name = "";
       if (node.constructor?.name) {
         name += `${node.constructor.name} `;
       }
@@ -115,15 +112,23 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
   }
 
   return {
-    tree() {
-      const meta = augment(devtools.root());
-      if (!meta.name) {
-        meta.expanded = true;
-        if (devtools.app) {
-          meta.name = "Stage";
-        }
+    tree(): OutlinerNode {
+      const root = devtools.root();
+      if (!root) {
+        return {
+          id: "disconnected",
+          active: false,
+          leaf: true,
+          name: "(disconnected))",
+          visible: false,
+        };
       }
-      return buildTree(devtools.root());
+      if (!(root as any)[metaProperty]) {
+        const meta = augment(root);
+        meta.expanded = true;
+      }
+
+      return buildTree(root);
     },
     expand(path: string[]) {
       const node = find(path);

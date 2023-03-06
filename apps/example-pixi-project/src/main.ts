@@ -40,5 +40,10 @@ container.pivot.y = container.height / 2;
 app.ticker.add((delta) => {
   container.rotation -= 0.01 * delta;
 });
-
-(globalThis as any).__PIXI_APP__ = app; // eslint-disable-line
+const exposeApp = true;
+if (exposeApp) {
+  (globalThis as any).__PIXI_APP__ = app; // eslint-disable-line
+} else {
+  (globalThis as any).__PIXI_STAGE__ = app.stage; // eslint-disable-line
+  (globalThis as any).__PIXI_RENDERER__ = app.renderer; // eslint-disable-line
+}

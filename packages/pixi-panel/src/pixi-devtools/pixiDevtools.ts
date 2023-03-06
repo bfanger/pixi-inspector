@@ -1,4 +1,10 @@
-import type { Application, Container, DisplayObject } from "pixi.js";
+import type {
+  Application,
+  Container,
+  DisplayObject,
+  ICanvas,
+  IRenderer,
+} from "pixi.js";
 import type { Game, GameObjects, Scene } from "phaser";
 import type { UniversalNode } from "../types";
 
@@ -10,24 +16,72 @@ type EventDetail = {
 
 export default function pixiDevtools() {
   const eventTarget = new EventTarget();
+  const win = window as any;
+
+  function getGlobal(varname: string) {
+    if (win[varname]) {
+      return win[varname];
+    }
+    if (win.frames) {
+      for (let i = 0; i < win.frames.length; i += 1) {
+        if (win.frames[i][varname]) {
+          return win.frames[i][varname];
+        }
+      }
+    }
+    return undefined;
+  }
 
   return {
-    app: undefined as Application | undefined,
-    game: undefined as Game | undefined,
-    root(): Container | Scene {
-      if (this.app) {
-        return this.app.stage;
+    root(): Container | Scene | undefined {
+      const app = getGlobal("__PIXI_APP__");
+      if (app) {
+        return app.stage;
       }
-      if (this.game) {
-        return this.game.scene.scenes[0];
+      const stage = getGlobal("__PIXI_STAGE__");
+      if (stage) {
+        return stage;
       }
-      throw new Error("Not connected");
+      const game = getGlobal("__PHASER_GAME__");
+      if (game) {
+        return game.scene.scenes[0];
+      }
+      return undefined;
     },
-    childrenOf(node: UniversalNode | Scene): Array<UniversalNode> | undefined {
-      if (this.app) {
-        return (node as Container).children;
+    renderer(): IRenderer<ICanvas> | Game | undefined {
+      const app = getGlobal("__PIXI_APP__");
+      if (app) {
+        return app.renderer;
       }
+      const game = getGlobal("__PHASER_GAME__");
+      if (game) {
+        return game;
+      }
+      const renderer = getGlobal("__PIXI_RENDERER__");
+      if (renderer) {
+        return renderer;
+      }
+      return undefined;
+    },
+    canvas(): ICanvas | HTMLCanvasElement | undefined {
+      const renderer = this.renderer();
+      if (renderer) {
+        if ("view" in renderer) {
+          return renderer.view;
+        }
+        if ("canvas" in renderer) {
+          return renderer.canvas;
+        }
+      }
+      return undefined;
+    },
+
+    childrenOf(node: UniversalNode | Scene): Array<UniversalNode> | undefined {
       if ("children" in node) {
+        const { children } = node;
+        if (Array.isArray(children)) {
+          return children;
+        }
         return (node as Scene).children.list;
       }
       if ("list" in node) {
@@ -38,16 +92,16 @@ export default function pixiDevtools() {
           .list;
       }
       if ("alive" in node) {
-        // GameObjects.Particles.ParticleEmitter
+        // node is GameObjects.Particles.ParticleEmitter
         return (node as any).alive;
       }
       return undefined;
     },
     parentOf(node: UniversalNode) {
-      if (this.app) {
+      if ("parent" in node) {
         return (node as DisplayObject).parent;
       }
-      if (this.game) {
+      if ("parentContainer" in node) {
         const container = (node as GameObjects.GameObject).parentContainer;
         if (container === null) {
           return (node as GameObjects.GameObject).scene;
@@ -57,42 +111,11 @@ export default function pixiDevtools() {
       return undefined;
     },
     active(): UniversalNode | undefined {
-      return (window as any).$pixi;
+      return win.$pixi;
     },
     activate(node?: UniversalNode) {
-      (window as any).$pixi = node;
+      win.$pixi = node;
       this.dispatchEvent("activate", node);
-    },
-    disconnect() {
-      if (this.app || this.game) {
-        this.dispatchEvent("disconnect", undefined);
-      }
-      this.app = undefined;
-      this.game = undefined;
-    },
-    reconnect() {
-      const win = window as any;
-      /* eslint-disable no-underscore-dangle */
-      const app = win.__PIXI_APP__ ?? win.frames[0]?.__PIXI_APP__;
-      const game = win.__PHASER_GAME__ ?? win.frames[0]?.__PHASER_GAME__;
-      /* eslint-enable no-underscore-dangle */
-      if (!app && !game) {
-        return false;
-      }
-      if (this.app && this.app !== app) {
-        this.disconnect();
-      }
-      if (this.game && this.game !== game) {
-        this.disconnect();
-      }
-      this.app = app;
-      this.game = game;
-      win.$pixi = this.root();
-      this.dispatchEvent("connect", { app, game });
-      return true;
-    },
-    isDisplayObject(node: UniversalNode): node is DisplayObject {
-      return !!this.app;
     },
     on<T extends keyof EventDetail>(
       event: T,
