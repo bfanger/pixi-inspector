@@ -1,16 +1,8 @@
-import type {
-  Application,
-  Container,
-  DisplayObject,
-  ICanvas,
-  IRenderer,
-} from "pixi.js";
-import type { Game, GameObjects, Scene } from "phaser";
+import type { Container, DisplayObject, ICanvas, IRenderer } from "pixi.js";
+import type { Game, GameObjects, Scene, Scenes } from "phaser";
 import type { UniversalNode } from "../types";
 
 type EventDetail = {
-  connect: { app: Application | undefined; game: Game | undefined };
-  disconnect: undefined;
   activate: UniversalNode | undefined;
 };
 
@@ -34,17 +26,20 @@ export default function pixiDevtools() {
 
   return {
     root(): Container | Scene | undefined {
-      const app = getGlobal("__PIXI_APP__");
-      if (app) {
-        return app.stage;
-      }
       const stage = getGlobal("__PIXI_STAGE__");
       if (stage) {
         return stage;
       }
+      const app = getGlobal("__PIXI_APP__");
+      if (app) {
+        return app.stage;
+      }
       const game = getGlobal("__PHASER_GAME__");
       if (game) {
-        return game.scene.scenes[0];
+        if (game.scene.scenes.length === 1) {
+          return game.scene.scenes[0];
+        }
+        return game.scene;
       }
       const renderer = getGlobal("__PIXI_RENDERER__");
       if (renderer) {
@@ -90,6 +85,9 @@ export default function pixiDevtools() {
       }
       if ("list" in node) {
         return (node as GameObjects.Container).list;
+      }
+      if ("scenes" in node) {
+        return (node as Scenes.SceneManager).scenes;
       }
       if ("emitters" in node) {
         return (node as GameObjects.Particles.ParticleEmitterManager).emitters

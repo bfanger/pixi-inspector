@@ -9,7 +9,7 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
 
   devtools.on("activate", (node) => {
     if (node) {
-      expandNode(node);
+      expandParentsFor(node);
     }
   });
 
@@ -102,12 +102,12 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
     return tree;
   }
 
-  function expandNode(node: UniversalNode) {
-    const meta = augment(node);
-    meta.expanded = true;
+  function expandParentsFor(node: UniversalNode) {
     const parent = devtools.parentOf(node);
     if (parent) {
-      expandNode(parent);
+      const meta = augment(parent);
+      meta.expanded = true;
+      expandParentsFor(parent);
     }
   }
 

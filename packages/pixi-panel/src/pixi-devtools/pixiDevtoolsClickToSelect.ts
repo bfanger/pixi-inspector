@@ -21,12 +21,23 @@ export default function pixiDevtoolsClickToSelect(devtools: PixiDevtools) {
       devtools.activate(node ?? devtools.root());
     }
   }
-
-  const canvas = devtools.canvas() as HTMLCanvasElement;
-  if (canvas) {
-    canvas.addEventListener?.("contextmenu", onContextMenu);
-    canvas.addEventListener?.("pointerdown", onPointerDown);
+  let previous: HTMLCanvasElement;
+  function bindEvents() {
+    const canvas = devtools.canvas() as HTMLCanvasElement;
+    if (canvas !== previous) {
+      if (previous) {
+        previous.removeEventListener?.("contextmenu", onContextMenu);
+        previous.removeEventListener?.("pointerdown", onPointerDown);
+      }
+      if (canvas) {
+        canvas.addEventListener?.("contextmenu", onContextMenu);
+        canvas.addEventListener?.("pointerdown", onPointerDown);
+      }
+      previous = canvas;
+    }
   }
+  bindEvents();
+  setInterval(bindEvents, 2500);
 
   return {};
 }

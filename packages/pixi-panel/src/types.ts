@@ -1,4 +1,4 @@
-import type { GameObjects, Scene } from "phaser";
+import type { GameObjects, Scene, Scenes } from "phaser";
 import type { DisplayObject } from "pixi.js";
 import type pixiDevtools from "./pixi-devtools/pixiDevtools";
 import type pixiDevtoolsViewport from "./pixi-devtools/pixiDevtoolsViewport";
@@ -28,6 +28,7 @@ export type UniversalNode =
   | DisplayObject
   | Scene
   | GameObjects.GameObject
+  | Scenes.SceneManager
   | GameObjects.Particles.ParticleEmitter;
 
 export type NodeProperties = {

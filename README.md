@@ -53,3 +53,18 @@ Expose that `game` to the **PixiJS Devtools** by adding the line:
 ```js
 globalThis.__PHASER_GAME__ = game;
 ```
+
+## Custom setup?
+
+If you don't use a `PIXI.Application` or `Phaser.Game`?
+you can specify the root-node manually with:
+
+```js
+globalThis.__PIXI_STAGE__ = yourContainer;
+```
+
+And to enable highlighting and selecting the nodes in the viewport add:
+
+```js
+globalThis.__PIXI_RENDERER__ = yourRenderer;
+```
