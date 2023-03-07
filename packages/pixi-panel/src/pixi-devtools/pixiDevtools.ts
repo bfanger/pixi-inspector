@@ -46,6 +46,10 @@ export default function pixiDevtools() {
       if (game) {
         return game.scene.scenes[0];
       }
+      const renderer = getGlobal("__PIXI_RENDERER__");
+      if (renderer) {
+        return renderer.lastObjectRendered;
+      }
       return undefined;
     },
     renderer(): IRenderer<ICanvas> | Game | undefined {
