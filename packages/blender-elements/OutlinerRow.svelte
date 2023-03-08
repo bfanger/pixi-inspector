@@ -91,6 +91,7 @@
   class:muted
   style:--indent={indent}
   on:click={() => dispatch("activate")}
+  on:dblclick={() => dispatch("log")}
   on:keydown={onKeyDown}
   tabindex="0"
 >

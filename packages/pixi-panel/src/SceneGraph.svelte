@@ -36,6 +36,10 @@
     await bridge(`__PIXI_DEVTOOLS__.outline.hide(${JSON.stringify(path)})`);
     tree.sync();
   }
+
+  async function log(path: string[]) {
+    await bridge(`__PIXI_DEVTOOLS__.outline.log(${JSON.stringify(path)})`);
+  }
 </script>
 
 {#if error}
@@ -55,5 +59,6 @@
     on:activate={({ detail }) => activate(detail)}
     on:show={({ detail }) => show(detail)}
     on:hide={({ detail }) => hide(detail)}
+    on:log={({ detail }) => log(detail)}
   />
 {/if}

@@ -6,6 +6,7 @@ Browser extension to debug games and apps written with [PixiJS](http://pixijs.co
 
 - Show the scene graph
 - View and edit properties
+- Double-click in the outliner to console.log a node
 - Outline the active node in the viewport.
 - The active node is available in the developer console as `$pixi`
 - Right-click (or alt click) in the viewport to activate a node

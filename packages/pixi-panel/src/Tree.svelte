@@ -27,6 +27,7 @@
   on:activate={() => dispatch("activate", [id])}
   on:show={() => dispatch("show", [id])}
   on:hide={() => dispatch("hide", [id])}
+  on:log={() => dispatch("log", [id])}
 />
 
 {#if children}
@@ -45,6 +46,7 @@
       on:activate={({ detail }) => dispatch("activate", [id, ...detail])}
       on:show={({ detail }) => dispatch("show", [id, ...detail])}
       on:hide={({ detail }) => dispatch("hide", [id, ...detail])}
+      on:log={({ detail }) => dispatch("log", [id, ...detail])}
     />
   {/each}
 {/if}
