@@ -60,7 +60,7 @@
 
 <input
   {id}
-  type='number'
+  type="number"
   class="number-input"
   data-location={location}
   use:blurOnEnter
