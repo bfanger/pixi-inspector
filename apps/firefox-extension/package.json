@@ -1,0 +1,24 @@
+{
+  "name": "pixi-devtools-firefox",
+  "version": "2.1.0",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "node build.js && concurrently --kill-others \"npm:dev:*\"",
+    "dev:web-ext": "web-ext run --source-dir build --url http://localhost:5173/",
+    "dev:esbuild": "node build.js --watch",
+    "build": "node build.js && web-ext lint --source-dir build && web-ext build --source-dir build --overwrite-dest",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0",
+    "esbuild": "^0.17.10",
+    "esbuild-svelte": "^0.7.3",
+    "pixi-panel": "workspace:*",
+    "rimraf": "^4.2.0",
+    "svelte": "^3.55.1"
+  },
+  "dependencies": {
+    "web-ext": "^7.5.0"
+  }
+}

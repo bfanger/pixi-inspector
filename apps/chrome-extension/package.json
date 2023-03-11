@@ -1,5 +1,5 @@
 {
-  "name": "pixi-devtools",
+  "name": "pixi-devtools-chrome",
   "version": "2.1.0",
   "license": "MIT",
   "type": "module",
@@ -9,7 +9,6 @@
     "format": "prettier --write ."
   },
   "devDependencies": {
-    "concurrently": "^7.6.0",
     "esbuild": "^0.17.10",
     "esbuild-svelte": "^0.7.3",
     "pixi-panel": "workspace:*",

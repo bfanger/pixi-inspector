@@ -1,3 +1,5 @@
 node_modules
 /apps/chrome-extension/build
 /apps/chrome-extension/build.zip
+/apps/firefox-extension/build
+/apps/firefox-extension/web-ext-artifacts
