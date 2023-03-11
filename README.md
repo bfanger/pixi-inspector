@@ -13,7 +13,10 @@ Browser extension to debug games and apps written with [PixiJS](http://pixijs.co
 
 ## Installation
 
-Install [PixiJS Devtools from the Chrome Web Store](https://chrome.google.com/webstore/detail/pixi-inspector/aamddddknhcagpehecnhphigffljadon)
+Install PixiJS Devtools from:
+
+- [Chrome Web Store](https://chrome.google.com/webstore/detail/pixi-inspector/aamddddknhcagpehecnhphigffljadon)
+- [Add-ons for Firefox](https://addons.mozilla.org/en-US/firefox/addon/pixijs-devtools/)
 
 ## Usage
 
