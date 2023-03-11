@@ -1,2 +1,3 @@
 /apps/chrome-extension/build
+/apps/firefox-extension/build
 /pnpm-lock.yaml

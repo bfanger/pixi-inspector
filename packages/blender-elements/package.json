@@ -1,5 +1,17 @@
 {
   "name": "blender-elements",
   "version": "0.0.0",
-  "devDependencies": {}
+  "type": "module",
+  "scripts": {
+    "dev": "histoire dev",
+    "build": "histoire build",
+    "preview": "histoire preview"
+  },
+  "devDependencies": {
+    "@histoire/plugin-svelte": "^0.15.8",
+    "@sveltejs/vite-plugin-svelte": "^2.0.3",
+    "histoire": "^0.15.8",
+    "svelte": "^3.56.0",
+    "vite": "^4.1.4"
+  }
 }

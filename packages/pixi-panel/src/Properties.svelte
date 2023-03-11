@@ -28,6 +28,7 @@
       <div class="input">
         <NumberInput
           value={$props.data.x}
+          step={1}
           location="TOP"
           on:change={(e) => onChange("x", e.detail)}
         />
@@ -36,6 +37,7 @@
       <div class="input">
         <NumberInput
           value={$props.data.y}
+          step={1}
           location="BOTTOM"
           on:change={(e) => onChange("y", e.detail)}
         />
@@ -47,6 +49,7 @@
         <div class="input">
           <NumberInput
             value={$props.data.angle}
+            step={1}
             suffix="°"
             on:change={(e) => onChange("angle", e.detail)}
           />
@@ -58,6 +61,7 @@
       <div class="input">
         <NumberInput
           value={$props.data.scaleX}
+          step={0.05}
           location="TOP"
           on:change={(e) => onChange("scaleX", e.detail)}
         />
@@ -66,6 +70,7 @@
       <div class="input">
         <NumberInput
           value={$props.data.scaleY}
+          step={0.1}
           location="BOTTOM"
           on:change={(e) => onChange("scaleY", e.detail)}
         />
@@ -81,6 +86,7 @@
           <div class="input">
             <NumberInput
               value={$props.data.width}
+              step={1}
               location="TOP"
               on:change={(e) => onChange("width", e.detail)}
             />
@@ -89,6 +95,7 @@
           <div class="input">
             <NumberInput
               value={$props.data.height}
+              step={1}
               location="BOTTOM"
               on:change={(e) => onChange("height", e.detail)}
             />
@@ -101,6 +108,7 @@
           <div class="input">
             <NumberInput
               value={$props.data.skewX}
+              step={0.01}
               suffix="r"
               location="TOP"
               on:change={(e) => onChange("skewX", e.detail)}
@@ -110,6 +118,7 @@
           <div class="input">
             <NumberInput
               value={$props.data.skewY}
+              step={0.01}
               suffix="r"
               location="BOTTOM"
               on:change={(e) => onChange("skewY", e.detail)}
@@ -123,6 +132,9 @@
           <div class="input">
             <NumberInput
               value={$props.data.alpha}
+              step={0.01}
+              min={0}
+              max={1}
               on:change={(e) => onChange("alpha", e.detail)}
             />
           </div>
@@ -142,6 +154,7 @@
   .title {
     padding: 4px 16px;
     margin-bottom: 8px;
+    user-select: none;
   }
   .properties {
     display: grid;
@@ -154,6 +167,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    user-select: none;
   }
   .input {
     margin-right: 16px;
