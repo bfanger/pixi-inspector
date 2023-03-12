@@ -16,8 +16,12 @@ export default function pixiDevtools() {
     }
     if (win.frames) {
       for (let i = 0; i < win.frames.length; i += 1) {
-        if (win.frames[i][varname]) {
-          return win.frames[i][varname];
+        try {
+          if (win.frames[i][varname]) {
+            return win.frames[i][varname];
+          }
+        } catch (_) {
+          // access to iframe was denied
         }
       }
     }
