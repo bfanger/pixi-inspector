@@ -1,5 +1,6 @@
 node_modules
 /apps/chrome-extension/build
-/apps/chrome-extension/build.zip
+/chrome-extension.zip
 /apps/firefox-extension/build
 /apps/firefox-extension/web-ext-artifacts
+/packages/blender-elements/.histoire/
