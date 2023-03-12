@@ -83,8 +83,12 @@
     value = next;
     dispatch("change", value);
   }
-  function onClick() {
-    el.focus();
+
+  function onClick(e: MouseEvent) {
+    const type = (e.target as HTMLElement)?.nodeName;
+    if (type !== "BUTTON") {
+      el.focus();
+    }
   }
   function onDown() {
     active = true;
@@ -201,7 +205,7 @@
     width: 13px;
     background: #656565 no-repeat center center;
     display: none;
-    cursor: Mouse;
+    cursor: pointer;
 
     .number-input:hover & {
       display: block;

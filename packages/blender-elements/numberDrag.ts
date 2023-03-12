@@ -6,9 +6,9 @@ type Config = {
   min?: number;
   max?: number;
   onChange: (value: number) => void;
-  onClick?: () => void;
-  onDown?: () => void;
-  onUp?: () => void;
+  onClick?: (e: MouseEvent) => void;
+  onDown?: (e: MouseEvent) => void;
+  onUp?: (e: MouseEvent) => void;
 };
 export default function numberDrag(el: HTMLElement, config: Config) {
   let started:
@@ -19,8 +19,8 @@ export default function numberDrag(el: HTMLElement, config: Config) {
       }
     | undefined;
 
-  function onMousedown() {
-    config.onDown?.();
+  function onMousedown(e: MouseEvent) {
+    config.onDown?.(e);
     if (typeof config.value === "number") {
       started = {
         moved: 0,
@@ -32,8 +32,8 @@ export default function numberDrag(el: HTMLElement, config: Config) {
     }
   }
 
-  function onMouseup() {
-    config.onUp?.();
+  function onMouseup(e: MouseEvent) {
+    config.onUp?.(e);
     if (!started) {
       return;
     }
@@ -42,7 +42,7 @@ export default function numberDrag(el: HTMLElement, config: Config) {
       document.exitPointerLock();
     }
     if (started.moved === 0) {
-      config?.onClick?.();
+      config?.onClick?.(e);
     }
     started = undefined;
   }
@@ -58,7 +58,6 @@ export default function numberDrag(el: HTMLElement, config: Config) {
       started.moved += e.movementX;
     }
 
-    e.preventDefault();
     const mouseStep = e.shiftKey ? config.step / 20 : config.step / 2;
     const offset = started.moved * mouseStep;
     let value = started.value + offset;
