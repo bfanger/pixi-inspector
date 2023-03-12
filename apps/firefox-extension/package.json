@@ -7,7 +7,7 @@
     "dev": "node build.js && concurrently --kill-others \"npm:dev:*\"",
     "dev:web-ext": "web-ext run --source-dir build --url http://localhost:5173/",
     "dev:esbuild": "node build.js --watch",
-    "build": "node build.js && web-ext lint --source-dir build && web-ext build --source-dir build --overwrite-dest",
+    "build": "node build.js && web-ext lint --source-dir build && web-ext build --source-dir build --overwrite-dest && git archive main --format zip > web-ext-artifacts/source.zip",
     "format": "prettier --write ."
   },
   "devDependencies": {

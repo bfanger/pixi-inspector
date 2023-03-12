@@ -1,3 +1,5 @@
+let pointerLockSupported = true;
+
 type Config = {
   value?: number;
   step?: number;
@@ -36,7 +38,9 @@ export default function numberDrag(el: HTMLElement, config: Config) {
       return;
     }
     document.removeEventListener("mousemove", onMousemove);
-    document.exitPointerLock?.();
+    if (pointerLockSupported) {
+      document.exitPointerLock();
+    }
     if (started.moved === 0) {
       config?.onClick?.();
     }
@@ -47,7 +51,12 @@ export default function numberDrag(el: HTMLElement, config: Config) {
     if (!started || !config.step) {
       return;
     }
-    started.moved += e.movementX;
+    if (started.moved === 0) {
+      // The first mousemove event Firefox has misbehaving movementX values, bug 1417702
+      started.moved = Math.min(1, Math.max(e.movementX, -1));
+    } else {
+      started.moved += e.movementX;
+    }
 
     e.preventDefault();
     const mouseStep = e.shiftKey ? config.step / 20 : config.step / 2;
@@ -83,14 +92,13 @@ export default function numberDrag(el: HTMLElement, config: Config) {
 }
 
 async function requestPointerLock(el: HTMLElement) {
-  if (!requestPointerLock.supported) {
+  if (!pointerLockSupported) {
     return;
   }
   try {
     await el.requestPointerLock();
   } catch (err) {
     console.warn(err);
-    requestPointerLock.supported = false;
+    pointerLockSupported = false;
   }
 }
-requestPointerLock.supported = true;
