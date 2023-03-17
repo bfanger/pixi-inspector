@@ -21,6 +21,7 @@
   let text = format(value);
   let focused = false;
   let active = false;
+  let previous = value;
 
   $: if (wanted !== value && document.activeElement !== el) {
     text = format(value);
@@ -54,6 +55,7 @@
     }
   }
   function onFocus() {
+    previous = value;
     focused = true;
     if (suffix && text.endsWith(suffix)) {
       text = text.substring(0, text.length - suffix.length);
@@ -118,7 +120,7 @@
     class="input"
     {id}
     use:blurOnEnter
-    use:revertOnEscape={value?.toString() ?? ""}
+    use:revertOnEscape={previous?.toString() ?? ""}
     bind:this={el}
     bind:value={text}
     on:input={onInput}

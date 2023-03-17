@@ -14,4 +14,7 @@
       <NumberInput bind:value step={1} min={0} max={200} location="BOTTOM" />
     </div>
   </Base>
+  <svelte:fragment slot="controls">
+    <Hst.Text bind:value title="value" />
+  </svelte:fragment>
 </Hst.Story>

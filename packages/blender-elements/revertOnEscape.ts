@@ -1,3 +1,8 @@
+/**
+ * Usage:
+ *
+ *   <input bind:value use:revertOnEscape={previousValue} />
+ */
 export default function revertOnEscape(el: HTMLInputElement, previous: string) {
   function onKeydown(e: KeyboardEvent) {
     if (e.key === "Escape") {
