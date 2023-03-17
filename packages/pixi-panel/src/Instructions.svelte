@@ -1,5 +1,13 @@
-<script>
+<script lang="ts">
+  import Toggle from "blender-elements/Toggle.svelte";
+  import { getBridgeContext } from "./bridge-fns";
   import ErrorMessage from "./ErrorMessage.svelte";
+
+  const bridge = getBridgeContext();
+
+  function onCopy(text: string) {
+    bridge(`window.copy(${JSON.stringify(text)})`);
+  }
 </script>
 
 <div class="instructions">
@@ -13,8 +21,18 @@
       After creating the <i>PIXI.Application</i>
       <code>const app = new PIXI.Application(...)</code>
       add the line:
-      <code>globalThis.__PIXI_APP__ = app;</code>
+      <code class="with-copy">
+        <div class="copy">
+          <Toggle
+            icon="copy"
+            transparent
+            on:click={() => onCopy("globalThis.__PIXI_APP__ = app;")}
+          />
+        </div>
+        globalThis.__PIXI_APP__ = app;</code
+      >
       or when you're not using a PIXI.Application:
+
       <code>
         globalThis.__PIXI_STAGE__ = stage;<br />
         globalThis.__PIXI_RENDERER__ = renderer;
@@ -25,7 +43,16 @@
       After creating the <i>Phaser.Game</i>
       <code>const game = new Phaser.Game(...)</code>
       add the line:
-      <code>globalThis.__PHASER_GAME__ = game;</code>
+      <code class="with-copy"
+        ><div class="copy">
+          <Toggle
+            icon="copy"
+            transparent
+            on:click={() => onCopy("globalThis.__PHASER_GAME__ = game;")}
+          />
+        </div>
+        globalThis.__PHASER_GAME__ = game;</code
+      >
     </div>
   </div>
 </div>
@@ -41,6 +68,15 @@
     background-color: #202020;
     color: rgb(145, 168, 203);
     margin-block: 8px;
+  }
+  .with-copy {
+    position: relative;
+    padding-right: 30px;
+  }
+  .copy {
+    position: absolute;
+    top: 6px;
+    right: 6px;
   }
   .pixi {
     color: #df5584;

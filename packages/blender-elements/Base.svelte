@@ -1,8 +1,8 @@
 <script lang="ts">
-  import icons from "./icons";
+  import { css } from "./icons";
 </script>
 
-<div class="base" style={icons()}><slot /></div>
+<div class="base" style={css()}><slot /></div>
 
 <style lang="scss">
   .base {

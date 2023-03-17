@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher, onMount } from "svelte";
-  import Toggle from "./Toggle.svelte";
+  import Toggle from "./IconButton.svelte";
 
   export let indent: number;
   export let title: string;
