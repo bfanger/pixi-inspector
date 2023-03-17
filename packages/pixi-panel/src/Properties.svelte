@@ -102,6 +102,32 @@
           </div>
         </div>
       {/if}
+      {#if typeof $props.data.anchorX === "number"}
+        <div class="properties">
+          <label class="label" for="">Anchor X</label>
+          <div class="input">
+            <NumberInput
+              value={$props.data.anchorX}
+              step={0.01}
+              min={0}
+              max={1}
+              location="TOP"
+              on:change={(e) => onChange("anchorX", e.detail)}
+            />
+          </div>
+          <label class="label" for="">Y</label>
+          <div class="input">
+            <NumberInput
+              value={$props.data.anchorY}
+              step={0.01}
+              min={0}
+              max={1}
+              location="BOTTOM"
+              on:change={(e) => onChange("anchorY", e.detail)}
+            />
+          </div>
+        </div>
+      {/if}
       {#if typeof $props.data.skewX === "number"}
         <div class="properties">
           <label class="label" for="">Skew X</label>

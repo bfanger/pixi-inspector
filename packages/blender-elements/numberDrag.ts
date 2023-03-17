@@ -20,6 +20,9 @@ export default function numberDrag(el: HTMLElement, config: Config) {
     | undefined;
 
   function onMousedown(e: MouseEvent) {
+    if (!config.step) {
+      return;
+    }
     config.onDown?.(e);
     if (typeof config.value === "number") {
       started = {

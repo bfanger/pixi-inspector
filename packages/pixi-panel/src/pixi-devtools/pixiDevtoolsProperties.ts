@@ -26,6 +26,10 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
         definitions.push({ key: "width", path: ["width"] });
         definitions.push({ key: "height", path: ["height"] });
       }
+      if ("anchor" in node && typeof node.anchor === "object") {
+        definitions.push({ key: "anchorX", path: ["anchor", "x"] });
+        definitions.push({ key: "anchorY", path: ["anchor", "y"] });
+      }
       if ("skew" in node && typeof node.skew === "object") {
         definitions.push({ key: "skewX", path: ["skew", "x"] });
         definitions.push({ key: "skewY", path: ["skew", "y"] });

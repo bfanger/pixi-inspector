@@ -37,6 +37,8 @@ export type NodeProperties = {
   angle?: number;
   scaleX?: number;
   scaleY?: number;
+  anchorX?: number;
+  anchorY?: number;
   skewX?: number;
   skewY?: number;
   width?: number;

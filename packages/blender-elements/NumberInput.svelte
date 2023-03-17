@@ -154,10 +154,10 @@
     &[data-location="TOP"] {
       border-top-left-radius: 2px 3px;
       border-top-right-radius: 2px 3px;
-      margin-bottom: 0.5px;
+      margin-bottom: 1px;
     }
     &[data-location="MIDDLE"] {
-      margin-bottom: 0.5px;
+      margin-bottom: 1px;
     }
     &[data-location="BOTTOM"] {
       border-bottom-left-radius: 2px 3px;
