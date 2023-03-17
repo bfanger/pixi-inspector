@@ -30,7 +30,7 @@ for (let i = 0; i < 25; i += 1) {
   bunny.y = Math.floor(i / 5) * 40;
   container.addChild(bunny);
 }
-
+container.children[12].name = "bunny";
 container.x = app.screen.width / 2;
 container.y = app.screen.height / 2;
 

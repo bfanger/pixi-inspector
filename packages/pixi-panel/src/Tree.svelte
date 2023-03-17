@@ -8,6 +8,7 @@
   export let leaf: boolean;
   export let active: boolean;
   export let visible: boolean | undefined;
+  export let match: boolean | undefined;
   export let muted = false;
   export let children: OutlinerNode[] | undefined = undefined;
   export let depth = 0;
@@ -20,6 +21,7 @@
   title={name}
   {active}
   {visible}
+  {match}
   muted={visible === false || muted}
   expanded={leaf ? undefined : !!children}
   on:expand={() => dispatch("expand", [id])}
@@ -38,6 +40,7 @@
       leaf={child.leaf}
       active={child.active}
       visible={child.visible}
+      match={child.match}
       muted={visible === false || muted}
       children={child.children}
       depth={depth + 1}

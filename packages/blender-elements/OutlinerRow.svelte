@@ -7,6 +7,7 @@
   export let expanded: boolean | undefined = undefined; // undefined means no arrow
   export let active = false;
   export let visible: boolean | undefined = undefined; // undefined means no arrow:;
+  export let match: boolean | undefined = undefined;
   export let muted = false;
 
   let el: HTMLDivElement;
@@ -89,6 +90,7 @@
   class="outliner-row"
   class:active
   class:muted
+  class:match
   style:--indent={indent}
   on:click={() => dispatch("activate")}
   on:dblclick={() => dispatch("log")}
@@ -133,6 +135,12 @@
     }
     &:focus {
       background-color: #334d80;
+    }
+    &.match {
+      background-color: #2f552f;
+      &:focus {
+        background-color: #336659;
+      }
     }
     &.active {
       color: #ffaf29;

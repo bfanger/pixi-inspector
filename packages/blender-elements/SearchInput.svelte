@@ -1,17 +1,29 @@
 <script lang="ts">
+  import { createEventDispatcher } from "svelte";
   import blurOnEnter from "./blurOnEnter";
   import revertOnEscape from "./revertOnEscape";
   import selectOnFocus from "./selectOnFocus";
 
   export let value: string;
   export let id: string | undefined = undefined;
+
+  const dispatch = createEventDispatcher();
+
+  let text = value;
   let previous = value;
 
+  function onInput() {
+    if (text !== value) {
+      value = text;
+      dispatch("change", value);
+    }
+  }
   function onFocus() {
-    previous = value;
+    previous = text;
   }
   function clear() {
-    value = "";
+    text = "";
+    dispatch("change", text);
   }
 </script>
 
@@ -20,11 +32,12 @@
     {id}
     type="text"
     class="input"
-    bind:value
+    bind:value={text}
     spellcheck="false"
     use:blurOnEnter
     use:revertOnEscape={previous}
     use:selectOnFocus
+    on:input={onInput}
     on:focus={onFocus}
   />
   <div class="search-icon" />

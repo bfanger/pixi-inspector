@@ -20,6 +20,7 @@ export type OutlinerNode = {
   name: string;
   leaf: boolean;
   active: boolean;
+  match?: boolean;
   visible?: boolean;
   children?: OutlinerNode[];
 };

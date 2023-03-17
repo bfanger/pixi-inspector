@@ -73,8 +73,7 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
     return findIn(path, { children: [root] } as any as Container);
   }
 
-  function buildTree(node: UniversalNode): OutlinerNode {
-    const meta = augment(node);
+  function buildName(node: UniversalNode) {
     let name = "";
     if ("name" in node && node.name !== null && node.name !== "") {
       if (node.constructor?.name) {
@@ -85,9 +84,15 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
     if (!name) {
       name = node.constructor?.name ?? "anonymous";
     }
+    return name;
+  }
+
+  function buildTree(node: UniversalNode): OutlinerNode {
+    const meta = augment(node);
+
     const tree: OutlinerNode = {
       id: meta.id,
-      name,
+      name: buildName(node),
       leaf: true,
       active: node === devtools.active(),
       visible: "visible" in node ? node.visible : undefined,
@@ -102,6 +107,38 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
     return tree;
   }
 
+  function searchResults(query: string, node: UniversalNode): OutlinerNode {
+    const meta = augment(node);
+    const name = buildName(node);
+    const match: boolean | undefined =
+      name.toLowerCase().indexOf(query.toLowerCase()) >= 0;
+    const children = devtools.childrenOf(node);
+    if (!children || children.length === 0) {
+      return {
+        id: meta.id,
+        active: node === devtools.active(),
+        leaf: true,
+        name,
+        visible: "visible" in node ? node.visible : undefined,
+        match,
+      };
+    }
+
+    const results = children
+      .map((child) => searchResults(query, child))
+      .filter((result) => result.match !== false);
+
+    return {
+      id: meta.id,
+      active: node === devtools.active(),
+      leaf: false,
+      name,
+      match: !match && results.length !== 0 ? undefined : match,
+      visible: "visible" in node ? node.visible : undefined,
+      children: results,
+    };
+  }
+
   function expandParentsFor(node: UniversalNode) {
     const parent = devtools.parentOf(node);
     if (parent) {
@@ -112,6 +149,8 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
   }
 
   return {
+    query: "",
+
     tree(): OutlinerNode {
       const root = devtools.root();
       if (!root) {
@@ -127,7 +166,9 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
         const meta = augment(root);
         meta.expanded = true;
       }
-
+      if (this.query) {
+        return searchResults(this.query, root);
+      }
       return buildTree(root);
     },
     expand(path: string[]) {
