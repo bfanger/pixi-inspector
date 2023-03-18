@@ -69,10 +69,11 @@ export default function connect(bridge: BridgeFn): Readable<
   const errorStore = writable<Error | undefined>();
   const readable = derived(detected, ({ data, error }) => {
     if (error || typeof data === "undefined") {
-      console.warn(error);
-      if (error?.message === "Operation failed: %s") {
-        errorStore.set(new Error("Connection failed"));
+      const message = error?.message;
+      if (typeof message === "string" && message.endsWith(": %s")) {
+        errorStore.set(new Error(message.substring(0, message.length - 4)));
       } else {
+        console.warn(error);
         errorStore.set(error);
       }
       return "ERROR";
