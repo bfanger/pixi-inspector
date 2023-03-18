@@ -36,11 +36,11 @@
     ]
   },
   "devDependencies": {
-    "@types/chrome": "^0.0.221",
+    "@types/chrome": "^0.0.224",
     "@types/firefox-webext-browser": "^111.0.0",
-    "@types/node": "^18.15.0",
-    "@typescript-eslint/eslint-plugin": "^5.54.1",
-    "@typescript-eslint/parser": "^5.54.1",
+    "@types/node": "^18.15.3",
+    "@typescript-eslint/eslint-plugin": "^5.55.0",
+    "@typescript-eslint/parser": "^5.55.0",
     "concurrently": "^7.6.0",
     "eslint": "^8.36.0",
     "eslint-config-airbnb-base": "^15.0.0",
@@ -57,10 +57,10 @@
     "only-allow": "^1.1.1",
     "prettier": "^2.8.4",
     "prettier-plugin-svelte": "^2.9.0",
-    "sass": "^1.59.2",
-    "svelte": "^3.56.0",
-    "svelte-check": "^3.1.2",
-    "svelte-preprocess": "^5.0.1",
-    "typescript": "^4.9.5"
+    "sass": "^1.59.3",
+    "svelte": "^3.57.0",
+    "svelte-check": "^3.1.4",
+    "svelte-preprocess": "^5.0.3",
+    "typescript": "^5.0.2"
   }
 }
