@@ -1,7 +1,6 @@
 <script lang="ts">
   import Toggle from "blender-elements/Toggle.svelte";
   import { getBridgeContext } from "./bridge-fns";
-  import ErrorMessage from "./ErrorMessage.svelte";
 
   const bridge = getBridgeContext();
 
@@ -11,10 +10,6 @@
 </script>
 
 <div class="instructions">
-  <div class="intro">
-    <ErrorMessage>No Application or Game configured for debugging.</ErrorMessage
-    >
-  </div>
   <div class="engines">
     <div>
       Using <strong class="pixi">PixiJS</strong>?<br />
@@ -25,6 +20,7 @@
         <div class="copy">
           <Toggle
             icon="copy"
+            hint="Copy to clipboard"
             transparent
             on:click={() => onCopy("globalThis.__PIXI_APP__ = app;")}
           />
@@ -47,6 +43,7 @@
         ><div class="copy">
           <Toggle
             icon="copy"
+            hint="Copy to clipboard"
             transparent
             on:click={() => onCopy("globalThis.__PHASER_GAME__ = game;")}
           />
@@ -60,9 +57,6 @@
 <style lang="scss">
   .instructions {
     padding: 12px;
-  }
-  .intro {
-    margin-bottom: 16px;
   }
   code {
     background-color: #202020;

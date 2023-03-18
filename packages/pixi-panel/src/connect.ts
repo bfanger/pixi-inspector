@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-import { derived, Readable } from "svelte/store";
+import { derived, Readable, writable } from "svelte/store";
 import type { BridgeFn } from "./types";
 import pixiDevtools from "./pixi-devtools/pixiDevtools";
 import pixiDevtoolsViewport from "./pixi-devtools/pixiDevtoolsViewport";
@@ -14,7 +14,7 @@ function detect() {
   const win = window as any;
   function hasGlobal(varname: string) {
     if (win[varname]) {
-      return win[varname];
+      return true;
     }
     if (win.frames) {
       for (let i = 0; i < win.frames.length; i += 1) {
@@ -33,35 +33,49 @@ function detect() {
     hasGlobal("__PIXI_APP__") ||
     hasGlobal("__PHASER_GAME__") ||
     hasGlobal("__PIXI_STAGE__") ||
-    hasGlobal("__PIXI_RENDERER__");
+    hasGlobal("__PIXI_RENDERER__") ||
+    hasGlobal("__PATCHED_RENDERER__");
 
   if (win.__PIXI_DEVTOOLS__ !== undefined) {
     if (detected) {
       return "CONNECTED";
+    }
+    if (hasGlobal("PIXI")) {
+      return "PATCHABLE";
     }
     return "DISCONNECTED";
   }
   if (detected) {
     return "INJECT";
   }
+  if (hasGlobal("PIXI")) {
+    return "PATCHABLE";
+  }
   return "NOT_FOUND";
 }
 
-export default function connect(
-  bridge: BridgeFn
-): Readable<boolean> & { retry: () => void } {
+export default function connect(bridge: BridgeFn): Readable<
+  "NOT_FOUND" | "INJECT" | "CONNECTED" | "DISCONNECTED" | "PATCHABLE" | "ERROR"
+> & {
+  error: Readable<Error | undefined>;
+  retry: () => void;
+} {
   const detected = poll<ReturnType<typeof detect>>(
     bridge,
     `(${detect.toString()}())`,
 
     2500
   );
+  const errorStore = writable<Error | undefined>();
   const readable = derived(detected, ({ data, error }) => {
-    if (error) {
+    if (error || typeof data === "undefined") {
       console.warn(error);
-    }
-    if (data === "CONNECTED") {
-      return true;
+      if (error?.message === "Operation failed: %s") {
+        errorStore.set(new Error("Connection failed"));
+      } else {
+        errorStore.set(error);
+      }
+      return "ERROR";
     }
     if (data === "INJECT") {
       bridge(`(() => {
@@ -74,10 +88,11 @@ export default function connect(
       })();`).then(() => detected.sync());
     }
 
-    return false;
+    return data;
   });
   return {
     subscribe: readable.subscribe,
+    error: { subscribe: errorStore.subscribe },
     retry() {
       detected.sync();
     },

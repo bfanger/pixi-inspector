@@ -2,6 +2,7 @@
   "compilerOptions": {
     "noEmit": true,
     "importsNotUsedAsValues": "error",
+    "ignoreDeprecations": "5.0",
     "esModuleInterop": true,
     "lib": ["ESNext", "DOM"],
     "skipLibCheck": true,

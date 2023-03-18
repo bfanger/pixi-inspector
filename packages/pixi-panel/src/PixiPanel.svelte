@@ -6,12 +6,16 @@
   import Base from "blender-elements/Base.svelte";
   import Properties from "./Properties.svelte";
   import Instructions from "./Instructions.svelte";
+  import Warning from "./Warning.svelte";
+  import patchPixi from "./patchPixi";
+  import Button from "blender-elements/Button.svelte";
 
   export let bridge: BridgeFn;
 
   let refresh: () => void;
 
   const connection = connect(bridge);
+  const { error } = connection;
 
   setBridgeContext(<T>(code: string) =>
     bridge<T>(code).catch((err) => {
@@ -19,10 +23,14 @@
       throw err;
     })
   );
+  async function applyPatch() {
+    await patchPixi(bridge);
+    await connection.retry();
+  }
 </script>
 
 <Base>
-  {#if $connection}
+  {#if $connection === "CONNECTED"}
     <div class="pixi-panel">
       <div class="outliner">
         <SceneGraph on:activate={refresh} />
@@ -31,8 +39,31 @@
         <Properties bind:refresh />
       </div>
     </div>
-  {:else}
-    <Instructions />
+  {:else if $connection !== "INJECT"}
+    <div class="not-connected">
+      <div class="instructions">
+        <Instructions />
+      </div>
+      <div class="status">
+        {#if $connection === "NOT_FOUND"}
+          <Warning>No Application or Game configured for debugging</Warning>
+        {:else if $connection === "DISCONNECTED"}
+          <Warning>Connection lost</Warning>
+        {:else if $connection === "PATCHABLE"}
+          <div class="patch">
+            <Button on:click={applyPatch}>Patch render engine</Button>
+          </div>
+          <Warning
+            >"Patch render engine" is available. This type of Devtools
+            connection is less reliable</Warning
+          >
+        {:else if $connection === "ERROR"}
+          <Warning icon="error">{$error}</Warning>
+        {:else}
+          <Warning icon="error">{$connection}</Warning>
+        {/if}
+      </div>
+    </div>
   {/if}
 </Base>
 
@@ -66,5 +97,20 @@
   .properties {
     background: #303030;
     overflow: auto;
+  }
+  .patch {
+    margin: 4px 12px;
+  }
+  .not-connected {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .instructions {
+    flex: 1;
+    overflow: auto;
+  }
+  .status {
+    margin: 0 2px 2px 2px;
   }
 </style>

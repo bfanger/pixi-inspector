@@ -49,9 +49,17 @@ export default function pixiDevtools() {
       if (renderer) {
         return renderer.lastObjectRendered;
       }
+      const patched = getGlobal("__PATCHED_RENDERER__");
+      if (patched) {
+        return patched.lastObjectRendered;
+      }
       return undefined;
     },
     renderer(): IRenderer<ICanvas> | Game | undefined {
+      const renderer = getGlobal("__PIXI_RENDERER__");
+      if (renderer) {
+        return renderer;
+      }
       const app = getGlobal("__PIXI_APP__");
       if (app) {
         return app.renderer;
@@ -60,9 +68,9 @@ export default function pixiDevtools() {
       if (game) {
         return game;
       }
-      const renderer = getGlobal("__PIXI_RENDERER__");
-      if (renderer) {
-        return renderer;
+      const patched = getGlobal("__PATCHED_RENDERER__");
+      if (patched) {
+        return patched;
       }
       return undefined;
     },

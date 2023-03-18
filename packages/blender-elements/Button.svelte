@@ -1,10 +1,5 @@
 <script lang="ts">
-  import type { Icon } from "./icons";
-
-  export let icon: Icon;
   export let value: boolean | undefined = undefined;
-  export let transparent = false;
-  export let hint: string | undefined = undefined;
   export let location: "ALONE" | "LEFT" | "CENTER" | "RIGHT" = "ALONE";
 
   function onToggle() {
@@ -15,27 +10,25 @@
 </script>
 
 <button
-  class="toggle"
+  class="button"
   class:pressed={value}
-  class:transparent
   data-location={location}
-  style="background-image: var(--icon-{icon})"
-  title={hint}
   on:click={onToggle}
   on:click|stopPropagation
-  on:dblclick|stopPropagation={() => {}}
-/>
+  on:dblclick|stopPropagation={() => {}}><slot /></button
+>
 
 <style lang="scss">
-  .toggle {
+  .button {
     appearance: none;
-    background: transparent no-repeat center center;
-    border: none;
-    width: 20px;
-    height: 20px;
+    background: #545454 no-repeat center center;
+    color: #e6e6e6;
+    border: 1px solid #3d3d3d;
+    padding-inline: 8px;
+    height: 18px;
     flex-shrink: 0;
+    box-shadow: 0 1px 1px rgba(black, 0.6);
     cursor: pointer;
-    opacity: 0.8;
 
     &[data-location="ALONE"] {
       border-radius: 2px / 3px;
@@ -53,17 +46,14 @@
       border-bottom-right-radius: 2px 3px;
     }
 
-    &:not(.transparent) {
-      background-color: #656565;
-    }
-
     &:hover {
-      opacity: 1;
+      background: #656565;
+      color: #ffffff;
     }
     &.pressed,
     &:active {
       background-color: #4772b3;
-      opacity: 1;
+      color: #ffffff;
     }
   }
 </style>

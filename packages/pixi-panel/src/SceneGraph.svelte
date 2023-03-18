@@ -2,9 +2,9 @@
   import { createEventDispatcher } from "svelte";
   import SearchInput from "blender-elements/SearchInput.svelte";
   import { getBridgeContext, poll } from "./bridge-fns";
-  import ReloadButton from "./ReloadButton.svelte";
   import Tree from "./Tree.svelte";
   import type { OutlinerNode } from "./types";
+  import Warning from "./Warning.svelte";
 
   const dispatch = createEventDispatcher();
   const bridge = getBridgeContext();
@@ -61,8 +61,7 @@
   </div>
   <div class="body">
     {#if error}
-      {error.message}
-      <ReloadButton />
+      <Warning>{error.message}</Warning>
     {/if}
     {#if stage}
       <Tree
