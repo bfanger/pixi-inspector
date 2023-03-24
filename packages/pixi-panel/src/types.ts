@@ -40,6 +40,8 @@ export type NodeProperties = {
   scaleY?: number;
   anchorX?: number;
   anchorY?: number;
+  originX?: number;
+  originY?: number;
   skewX?: number;
   skewY?: number;
   width?: number;

@@ -128,6 +128,32 @@
           </div>
         </div>
       {/if}
+      {#if typeof $props.data.originX === "number"}
+        <div class="properties">
+          <label class="label" for="">Origin X</label>
+          <div class="input">
+            <NumberInput
+              value={$props.data.originX}
+              step={0.01}
+              min={0}
+              max={1}
+              location="TOP"
+              on:change={(e) => onChange("originX", e.detail)}
+            />
+          </div>
+          <label class="label" for="">Y</label>
+          <div class="input">
+            <NumberInput
+              value={$props.data.originY}
+              step={0.01}
+              min={0}
+              max={1}
+              location="BOTTOM"
+              on:change={(e) => onChange("originY", e.detail)}
+            />
+          </div>
+        </div>
+      {/if}
       {#if typeof $props.data.skewX === "number"}
         <div class="properties">
           <label class="label" for="">Skew X</label>
