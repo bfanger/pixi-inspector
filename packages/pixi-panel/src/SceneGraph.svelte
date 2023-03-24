@@ -3,9 +3,11 @@
   import SearchInput from "blender-elements/SearchInput.svelte";
   import { getBridgeContext, poll } from "./bridge-fns";
   import Tree from "./Tree.svelte";
+  import SpeedRange from "./SpeedRange.svelte";
   import type { OutlinerNode } from "./types";
   import Warning from "./Warning.svelte";
 
+  let speed: number;
   const dispatch = createEventDispatcher();
   const bridge = getBridgeContext();
   const tree = poll<OutlinerNode>(
@@ -53,10 +55,29 @@
   async function log(path: string[]) {
     await bridge(`__PIXI_DEVTOOLS__.outline.log(${JSON.stringify(path)})`);
   }
+
+  async function getSpeed() {
+    try {
+      speed= await bridge(`__PIXI_DEVTOOLS__.ticker().speed`);
+    } catch {}
+  }
+  async function setSpeed(speed: number) {
+    await bridge(`__PIXI_DEVTOOLS__.ticker().speed = ${speed}`);
+  }
 </script>
 
 <div class="scene-graph">
   <div class="header">
+    {#await getSpeed()}
+      <p>Waiting for speed info...</p>
+    {:then}
+      {#if speed}
+        <SpeedRange
+          value={speed}
+          on:change={({ detail }) => setSpeed(detail)}
+        />
+      {/if}
+    {/await}
     <SearchInput bind:value={query} />
   </div>
   <div class="body">

@@ -10,6 +10,7 @@ Browser extension to debug games and apps written with [PixiJS](http://pixijs.co
 - Outline the active node in the viewport.
 - The active node is available in the developer console as `$pixi`
 - Right-click (or alt click) in the viewport to activate a node
+- Control animations speed (by handling app ticker speed)
 
 ## Installation
 
@@ -71,4 +72,16 @@ And to enable highlighting and selecting the nodes in the viewport add:
 
 ```js
 globalThis.__PIXI_RENDERER__ = yourRenderer;
+```
+
+You can configure the speed controler for your app (as many params as you want):
+
+```js
+globalThis.__PIXI_DEVTOOLS_CONFIG__ = {
+  speedControlConfig: {
+    min: 0,
+    max: 5,
+    step: 0.5,
+  },
+};
 ```
