@@ -15,10 +15,10 @@
     "esbuild": "^0.17.12",
     "esbuild-svelte": "^0.7.3",
     "pixi-panel": "workspace:*",
-    "rimraf": "^4.4.0",
+    "rimraf": "^4.4.1",
     "svelte": "^3.57.0"
   },
   "dependencies": {
-    "web-ext": "^7.5.0"
+    "web-ext": "^7.6.0"
   }
 }

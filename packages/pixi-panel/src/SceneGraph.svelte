@@ -14,7 +14,7 @@
     2000
   );
   $: stage = $tree.data;
-  $: error = $tree.error;
+  $: error   = $tree.error;
 
   let query = "";
   $: {
