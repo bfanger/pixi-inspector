@@ -79,7 +79,8 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
     const dotEl = document.createElement("div");
     dotEl.dataset.pixiDevtools = "dot";
     Object.assign(dotEl.style, {
-      ...position("-3px", "-3px", "6px", "6px"),
+      ...position("-4px", "-4px", "6px", "6px"),
+      transformOrigin: "top left",
       background: "#ff9f2c",
       border: "1px solid #2a2b2b",
       borderRadius: "50%",
@@ -168,6 +169,7 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
       }
       const offset = `translate(${size.x}px, ${size.y}px)`;
       highlightEl.style.transform = `matrix(${m.a}, ${m.b}, ${m.c}, ${m.d}, ${m.tx}, ${m.ty}) ${offset}`;
+
       let unscale = { x: 1, y: 1 };
       if (
         "scale" in node &&
@@ -176,13 +178,17 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
       ) {
         unscale = { x: 1 / node.scale.x, y: 1 / node.scale.y };
       }
-      borderTop.style.transform = `scale(1, ${unscale.y})`;
-      borderRight.style.transform = `scale(${unscale.x}, 1)`;
-      borderBottom.style.transform = `scale(1, ${unscale.y})`;
-      borderLeft.style.transform = `scale(${unscale.x}, 1)`;
+      borderTop.style.transform = `scale(1, ${Math.abs(unscale.y)})`;
+      borderRight.style.transform = `scale(${Math.abs(unscale.x)}, 1)`;
+      borderBottom.style.transform = `scale(1, ${Math.abs(unscale.y)})`;
+      borderLeft.style.transform = `scale(${Math.abs(unscale.x)}, 1)`;
 
-      if ("anchor" in node || "originX" in node) {
-        anchorEl.style.transform = `matrix(${m.a}, ${m.b}, ${m.c}, ${m.d}, ${m.tx}, ${m.ty}) scale(${unscale.x}, ${unscale.y})`;
+      if ("anchor" in node || "originX" in node || "pivot" in node) {
+        let pivot = "";
+        if ("pivot" in node) {
+          pivot = `translate(${node.pivot.x}px, ${node.pivot.y}px)`;
+        }
+        anchorEl.style.transform = `matrix(${m.a}, ${m.b}, ${m.c}, ${m.d}, ${m.tx}, ${m.ty}) ${pivot} scale(${unscale.x}, ${unscale.y})`;
       } else {
         anchorEl.style.transform = "scale(0)";
       }

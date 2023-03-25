@@ -105,6 +105,22 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
           },
         });
       }
+      if ("pivot" in node && typeof node.pivot === "object") {
+        definitions.push({
+          key: "pivotX",
+          get: () => (node.pivot as ObservablePoint).x,
+          set: (value) => {
+            (node.pivot as ObservablePoint).x = value;
+          },
+        });
+        definitions.push({
+          key: "pivotY",
+          get: () => (node.pivot as ObservablePoint).y,
+          set: (value) => {
+            (node.pivot as ObservablePoint).y = value;
+          },
+        });
+      }
       if (
         "originX" in node &&
         typeof node.originX === "number" &&
