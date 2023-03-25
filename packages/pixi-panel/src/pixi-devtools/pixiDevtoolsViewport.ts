@@ -2,18 +2,20 @@ import type { IPointData, Rectangle } from "pixi.js";
 import type { PixiDevtools, UniversalNode } from "../types";
 
 export default function pixiDevtoolsViewport(devtools: PixiDevtools) {
-  function findNodeAt(
+  function findNodesAt(
     point: IPointData,
-    node: UniversalNode
-  ): UniversalNode | undefined {
+    node: UniversalNode,
+    filter: (node: UniversalNode) => boolean
+  ): UniversalNode[] {
+    if (!filter(node)) {
+      return [];
+    }
     const children = devtools.childrenOf(node);
+    const nodes: UniversalNode[] = [];
     if (children) {
       for (let i = children.length - 1; i >= 0; i -= 1) {
         const child = children[i];
-        const found = findNodeAt(point, child);
-        if (found) {
-          return found;
-        }
+        nodes.push(...findNodesAt(point, child, filter));
       }
     }
     if (
@@ -21,33 +23,16 @@ export default function pixiDevtoolsViewport(devtools: PixiDevtools) {
       typeof node.containsPoint === "function" &&
       node.containsPoint(point)
     ) {
-      return node;
-    }
-    return undefined;
-  }
-
-  function findNodeBoundsAt(
-    point: IPointData,
-    node: UniversalNode
-  ): UniversalNode | undefined {
-    const children = devtools.childrenOf(node);
-    if (children) {
-      for (let i = children.length - 1; i >= 0; i -= 1) {
-        const child = children[i];
-        const found = findNodeBoundsAt(point, child);
-        if (found) {
-          return found;
-        }
-      }
-    }
-    if ("getBounds" in node) {
+      nodes.push(node);
+    } else if ("getBounds" in node) {
       const bounds: Rectangle = node.getBounds();
       if (bounds.contains(point.x, point.y)) {
-        return node;
+        nodes.push(node);
       }
     }
-    return undefined;
+    return nodes;
   }
+
   return {
     size() {
       const renderer = devtools.renderer();
@@ -90,16 +75,16 @@ export default function pixiDevtoolsViewport(devtools: PixiDevtools) {
       }
       throw new Error("offscreen canvas?");
     },
-    ray(point: IPointData): UniversalNode | undefined {
+    ray(
+      point: IPointData,
+      filter: (node: UniversalNode) => boolean = () => true
+    ): UniversalNode[] {
       const root = devtools.root();
       if (!root) {
-        return undefined;
+        return [];
       }
-      const node = findNodeAt(point, root);
-      if (node) {
-        return node;
-      }
-      return findNodeBoundsAt(point, root);
+      const nodes = findNodesAt(point, root, filter);
+      return nodes;
     },
   };
 }

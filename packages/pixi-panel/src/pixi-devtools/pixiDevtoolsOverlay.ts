@@ -94,8 +94,6 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
     anchorEl.appendChild(dotEl);
     overlayEl.appendChild(anchorEl);
 
-    let prevSize = { width: -1, height: -1 };
-
     function calibrateOverlay() {
       if (!canvas || !("getBoundingClientRect" in canvas)) {
         return;
@@ -117,8 +115,10 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
         canvasBounds.width / overlayBounds.width
       }, ${canvasBounds.height / overlayBounds.height})`;
     }
+
     let throttle = 0;
     let raf: number | undefined;
+
     function updateHighlight() {
       raf = requestAnimationFrame(updateHighlight);
       const node = devtools.active();
@@ -162,11 +162,8 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
         highlightEl.style.transform = "scale(0)";
         return;
       }
-      if (prevSize.width !== size.width && prevSize.height !== size.width) {
-        prevSize = size;
-        highlightEl.style.width = `${size.width}px`;
-        highlightEl.style.height = `${size.height}px`;
-      }
+      highlightEl.style.width = `${size.width}px`;
+      highlightEl.style.height = `${size.height}px`;
       const offset = `translate(${size.x}px, ${size.y}px)`;
       highlightEl.style.transform = `matrix(${m.a}, ${m.b}, ${m.c}, ${m.d}, ${m.tx}, ${m.ty}) ${offset}`;
 
