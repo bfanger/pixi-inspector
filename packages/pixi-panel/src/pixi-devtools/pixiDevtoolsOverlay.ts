@@ -3,6 +3,20 @@ import type { DisplayObject, ICanvas, Matrix } from "pixi.js";
 import type { PixiDevtools } from "../types";
 
 export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
+  function position(
+    x: string,
+    y: string,
+    width: string,
+    height: string
+  ): Partial<CSSStyleDeclaration> {
+    return {
+      position: "absolute",
+      left: x,
+      top: y,
+      width,
+      height,
+    };
+  }
   function connect(el: HTMLCanvasElement | ICanvas | undefined) {
     if (!el) {
       return () => {};
@@ -12,53 +26,72 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
     const overlayEl = document.createElement("div");
     overlayEl.dataset.pixiDevtools = "overlay";
     Object.assign(overlayEl.style, {
-      position: "absolute",
-      top: "0",
-      left: "0",
+      ...position("0", "0", "0", "0"),
       pointerEvents: "none",
       transformOrigin: "top left",
     });
+
     const highlightEl = document.createElement("div");
     highlightEl.dataset.pixiDevtools = "highlight";
-
     Object.assign(highlightEl.style, {
-      position: "absolute",
-      top: "0",
-      left: "0",
-      width: "0",
-      height: "0",
-      outline: "3px solid #ff9f2c",
+      ...position("0", "0", "0", "0"),
       transformOrigin: "top left",
       transform: "scale(0)",
     });
-    overlayEl.appendChild(highlightEl);
+
+    const borderTop = document.createElement("div");
+    borderTop.dataset.pixiDevtools = "borderTop";
+    Object.assign(borderTop.style, {
+      ...position("0", "-3px", "100%", "3px"),
+      transformOrigin: "center bottom",
+      background: "#ff9f2c",
+    });
+    const borderRight = document.createElement("div");
+    borderRight.dataset.pixiDevtools = "borderRight";
+    Object.assign(borderRight.style, {
+      ...position("100%", "0", "3px", "100%"),
+      transformOrigin: "center left",
+      background: "#ff9f2c",
+    });
+    const borderBottom = document.createElement("div");
+    borderBottom.dataset.pixiDevtools = "borderBottom";
+    Object.assign(borderBottom.style, {
+      ...position("0", "100%", "100%", "3px"),
+      transformOrigin: "center top",
+      background: "#ff9f2c",
+    });
+    const borderLeft = document.createElement("div");
+    borderLeft.dataset.pixiDevtools = "borderLeft";
+    Object.assign(borderLeft.style, {
+      ...position("-3px", "0", "3px", "100%"),
+      transformOrigin: "center right",
+      background: "#ff9f2c",
+    });
 
     const anchorEl = document.createElement("div");
     anchorEl.dataset.pixiDevtools = "anchor";
     Object.assign(anchorEl.style, {
-      position: "absolute",
-      top: "0px",
-      left: "0px",
-      width: "0px",
-      height: "0px",
+      ...position("0", "0", "0", "0"),
       transformOrigin: "top left",
       transform: "scale(0)",
     });
-    overlayEl.appendChild(anchorEl);
 
     const dotEl = document.createElement("div");
     dotEl.dataset.pixiDevtools = "dot";
     Object.assign(dotEl.style, {
-      position: "absolute",
-      top: "-3px",
-      left: "-3px",
-      width: "6px",
-      height: "6px",
+      ...position("-3px", "-3px", "6px", "6px"),
       background: "#ff9f2c",
       border: "1px solid #2a2b2b",
       borderRadius: "50%",
     });
+
+    highlightEl.appendChild(borderTop);
+    highlightEl.appendChild(borderRight);
+    highlightEl.appendChild(borderBottom);
+    highlightEl.appendChild(borderLeft);
+    overlayEl.appendChild(highlightEl);
     anchorEl.appendChild(dotEl);
+    overlayEl.appendChild(anchorEl);
 
     let prevSize = { width: -1, height: -1 };
 
@@ -135,16 +168,21 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
       }
       const offset = `translate(${size.x}px, ${size.y}px)`;
       highlightEl.style.transform = `matrix(${m.a}, ${m.b}, ${m.c}, ${m.d}, ${m.tx}, ${m.ty}) ${offset}`;
+      let unscale = { x: 1, y: 1 };
+      if (
+        "scale" in node &&
+        typeof node.scale === "object" &&
+        "x" in node.scale
+      ) {
+        unscale = { x: 1 / node.scale.x, y: 1 / node.scale.y };
+      }
+      borderTop.style.transform = `scale(1, ${unscale.y})`;
+      borderRight.style.transform = `scale(${unscale.x}, 1)`;
+      borderBottom.style.transform = `scale(1, ${unscale.y})`;
+      borderLeft.style.transform = `scale(${unscale.x}, 1)`;
+
       if ("anchor" in node || "originX" in node) {
-        let unscale = "";
-        if (
-          "scale" in node &&
-          typeof node.scale === "object" &&
-          "x" in node.scale
-        ) {
-          unscale = `scale(${1 / node.scale.x}, ${1 / node.scale.y})`;
-        }
-        anchorEl.style.transform = `matrix(${m.a}, ${m.b}, ${m.c}, ${m.d}, ${m.tx}, ${m.ty}) ${unscale}`;
+        anchorEl.style.transform = `matrix(${m.a}, ${m.b}, ${m.c}, ${m.d}, ${m.tx}, ${m.ty}) scale(${unscale.x}, ${unscale.y})`;
       } else {
         anchorEl.style.transform = "scale(0)";
       }
