@@ -66,7 +66,7 @@ export default function pixiDevtoolsClickToSelect(devtools: PixiDevtools) {
       if (canvas) {
         canvas.addEventListener?.("contextmenu", onContextMenu);
         canvas.addEventListener?.("pointerdown", onPointerDown);
-        canvas.addEventListener?.("pointermove", onPointerDown);
+        canvas.addEventListener?.("pointermove", onPointerMove);
       }
       previous = canvas;
     }

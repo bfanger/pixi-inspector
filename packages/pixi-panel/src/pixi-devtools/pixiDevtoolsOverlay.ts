@@ -1,6 +1,6 @@
 import type { GameObjects } from "phaser";
 import type { DisplayObject, ICanvas, Matrix } from "pixi.js";
-import type { PixiDevtools } from "../types";
+import type { PixiDevtools, UniversalNode } from "../types";
 
 export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
   function position(
@@ -167,14 +167,28 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
       const offset = `translate(${size.x}px, ${size.y}px)`;
       highlightEl.style.transform = `matrix(${m.a}, ${m.b}, ${m.c}, ${m.d}, ${m.tx}, ${m.ty}) ${offset}`;
 
-      let unscale = { x: 1, y: 1 };
-      if (
-        "scale" in node &&
-        typeof node.scale === "object" &&
-        "x" in node.scale
-      ) {
-        unscale = { x: 1 / node.scale.x, y: 1 / node.scale.y };
-      }
+      const unscale = { x: 1, y: 1 };
+      let parentNode: UniversalNode = node;
+      do {
+        if (
+          "scaleX" in parentNode &&
+          typeof parentNode.scaleX === "number" &&
+          "scaleY" in parentNode &&
+          typeof parentNode.scaleY === "number"
+        ) {
+          unscale.x /= parentNode.scaleX;
+          unscale.y /= parentNode.scaleY;
+        } else if (
+          "scale" in parentNode &&
+          typeof parentNode.scale === "object" &&
+          "x" in parentNode.scale
+        ) {
+          unscale.x /= parentNode.scale.x;
+          unscale.y /= parentNode.scale.y;
+        }
+        parentNode = devtools.parentOf(parentNode) as UniversalNode;
+      } while (parentNode);
+
       borderTop.style.transform = `scale(1, ${Math.abs(unscale.y)})`;
       borderRight.style.transform = `scale(${Math.abs(unscale.x)}, 1)`;
       borderBottom.style.transform = `scale(1, ${Math.abs(unscale.y)})`;
