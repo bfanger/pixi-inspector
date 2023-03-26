@@ -23,6 +23,7 @@
   }
   function clear() {
     text = "";
+    value = "";
     dispatch("change", text);
   }
 </script>

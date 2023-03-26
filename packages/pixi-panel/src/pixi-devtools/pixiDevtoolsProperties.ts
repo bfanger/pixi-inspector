@@ -179,7 +179,7 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
 
   return {
     getAll(): NodeProperties | undefined {
-      const node = devtools.active();
+      const node = devtools.selection.active();
       if (!node) {
         return undefined;
       }
@@ -193,7 +193,7 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
     },
 
     set(property: string, value: number) {
-      const node = devtools.active();
+      const node = devtools.selection.active();
       if (!node) {
         return;
       }

@@ -5,10 +5,12 @@ import type pixiDevtoolsViewport from "./pixi-devtools/pixiDevtoolsViewport";
 import type pixiDevtoolsOverlay from "./pixi-devtools/pixiDevtoolsOverlay";
 import type pixiDevtoolsOutline from "./pixi-devtools/pixiDevtoolsOutline";
 import type pixiDevtoolsProperties from "./pixi-devtools/pixiDevtoolsProperties";
+import type pixiDevtoolsSelection from "./pixi-devtools/pixiDevtoolsSelection";
 
 export type BridgeFn = <T>(code: string) => Promise<T>;
 
 export type PixiDevtools = ReturnType<typeof pixiDevtools> & {
+  selection: ReturnType<typeof pixiDevtoolsSelection>;
   viewport: ReturnType<typeof pixiDevtoolsViewport>;
   overlay: ReturnType<typeof pixiDevtoolsOverlay>;
   outline: ReturnType<typeof pixiDevtoolsOutline>;
@@ -20,6 +22,7 @@ export type OutlinerNode = {
   name: string;
   leaf: boolean;
   active: boolean;
+  selectable: boolean;
   match?: boolean;
   visible?: boolean;
   children?: OutlinerNode[];

@@ -2,11 +2,13 @@
   import type { Icon } from "./icons";
 
   export let icon: Icon;
+  export let muted = false;
   export let hint: string | undefined = undefined;
 </script>
 
 <button
   class="toggle"
+  class:muted
   style="background-image: var(--icon-{icon})"
   title={hint}
   on:click|stopPropagation
@@ -27,6 +29,9 @@
     &:active,
     &:hover {
       opacity: 0.8;
+    }
+    &.muted {
+      opacity: 0.3;
     }
   }
 </style>

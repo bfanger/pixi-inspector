@@ -121,7 +121,7 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
 
     function updateHighlight() {
       raf = requestAnimationFrame(updateHighlight);
-      const node = devtools.active();
+      const node = devtools.selection.active();
 
       if (!node) {
         highlightEl.style.transform = "scale(0)";

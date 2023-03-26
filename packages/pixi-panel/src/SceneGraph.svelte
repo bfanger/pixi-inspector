@@ -8,6 +8,8 @@
 
   const dispatch = createEventDispatcher();
   const bridge = getBridgeContext();
+  const ctx = setContext("scene-graph", { focused: false });
+
   const tree = poll<OutlinerNode>(
     bridge,
     "__PIXI_DEVTOOLS__.outline.tree()",
@@ -17,6 +19,8 @@
   $: error = $tree.error;
 
   let query = "";
+  let el: HTMLDivElement;
+
   $: {
     bridge(`__PIXI_DEVTOOLS__.outline.query = ${JSON.stringify(query)}`).then(
       () => tree.sync()
@@ -42,6 +46,18 @@
     tree.sync();
     dispatch("activate");
   }
+  async function selectable(path: string[]) {
+    await bridge(
+      `__PIXI_DEVTOOLS__.outline.selectable(${JSON.stringify(path)})`
+    );
+    tree.sync();
+  }
+  async function unselectable(path: string[]) {
+    await bridge(
+      `__PIXI_DEVTOOLS__.outline.unselectable(${JSON.stringify(path)})`
+    );
+    tree.sync();
+  }
   async function show(path: string[]) {
     await bridge(`__PIXI_DEVTOOLS__.outline.show(${JSON.stringify(path)})`);
     tree.sync();
@@ -53,8 +69,6 @@
   async function log(path: string[]) {
     await bridge(`__PIXI_DEVTOOLS__.outline.log(${JSON.stringify(path)})`);
   }
-  let el: HTMLDivElement;
-  const ctx = setContext("scene-graph", { focused: false });
   function onFocusIn() {
     ctx.focused = true;
   }
@@ -83,11 +97,14 @@
         leaf={stage.leaf}
         active={stage.active}
         visible={stage.visible}
+        selectable={stage.selectable}
         match={stage.match}
         children={stage.children}
         on:expand={({ detail }) => expand(detail)}
         on:collapse={({ detail }) => collapse(detail)}
         on:activate={({ detail }) => activate(detail)}
+        on:selectable={({ detail }) => selectable(detail)}
+        on:unselectable={({ detail }) => unselectable(detail)}
         on:show={({ detail }) => show(detail)}
         on:hide={({ detail }) => hide(detail)}
         on:log={({ detail }) => log(detail)}

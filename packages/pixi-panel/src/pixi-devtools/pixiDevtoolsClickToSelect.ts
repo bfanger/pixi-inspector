@@ -5,12 +5,12 @@ export default function pixiDevtoolsClickToSelect(devtools: PixiDevtools) {
   let moved = true;
 
   function onSelectAt(point: IPointData) {
-    const $pixi = devtools.active();
+    const $pixi = devtools.selection.active();
     const nodes = devtools.viewport.ray(point, (node) => {
       if ("visible" in node && node.visible === false) {
         return false;
       }
-      return true;
+      return devtools.selection.selectable(node);
     });
     const root = devtools.root();
     if (nodes.length > 1 && nodes[nodes.length - 1] === root) {
@@ -19,7 +19,7 @@ export default function pixiDevtoolsClickToSelect(devtools: PixiDevtools) {
 
     if (moved || nodes.length === 1) {
       moved = false;
-      devtools.activate(nodes[0]);
+      devtools.selection.activate(nodes[0]);
     } else {
       // Cycle through the nodes at this position
 
@@ -29,7 +29,7 @@ export default function pixiDevtoolsClickToSelect(devtools: PixiDevtools) {
       } else if (nodes.length > 1) {
         index += 1;
       }
-      devtools.activate(nodes[index]);
+      devtools.selection.activate(nodes[index]);
     }
   }
   /**
