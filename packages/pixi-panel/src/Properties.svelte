@@ -1,5 +1,5 @@
 <script lang="ts">
-  import NumberInput from "blender-elements/NumberInput.svelte";
+  import NumberInput from "blender-elements/src/NumberInput/NumberInput.svelte";
   import { getBridgeContext, poll } from "./bridge-fns";
   import type { NodeProperties } from "./types";
 

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-  import OutlinerRow from "blender-elements/OutlinerRow.svelte";
+  import OutlinerRow from "blender-elements/src/OutlinerRow.svelte";
   import type { OutlinerNode } from "./types";
 
   export let id: string;

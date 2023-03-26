@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
-  import SearchInput from "blender-elements/SearchInput.svelte";
+  import { createEventDispatcher, setContext } from "svelte";
+  import SearchInput from "blender-elements/src/SearchInput/SearchInput.svelte";
   import { getBridgeContext, poll } from "./bridge-fns";
   import Tree from "./Tree.svelte";
   import type { OutlinerNode } from "./types";
@@ -14,7 +14,7 @@
     2000
   );
   $: stage = $tree.data;
-  $: error   = $tree.error;
+  $: error = $tree.error;
 
   let query = "";
   $: {
@@ -53,13 +53,26 @@
   async function log(path: string[]) {
     await bridge(`__PIXI_DEVTOOLS__.outline.log(${JSON.stringify(path)})`);
   }
+  let el: HTMLDivElement;
+  const ctx = setContext("scene-graph", { focused: false });
+  function onFocusIn() {
+    ctx.focused = true;
+  }
+  function onFocusOut() {
+    ctx.focused = false;
+  }
 </script>
 
 <div class="scene-graph">
   <div class="header">
     <SearchInput bind:value={query} />
   </div>
-  <div class="body">
+  <div
+    class="body"
+    bind:this={el}
+    on:focusin={onFocusIn}
+    on:focusout={onFocusOut}
+  >
     {#if error}
       <Warning>{error.message}</Warning>
     {/if}

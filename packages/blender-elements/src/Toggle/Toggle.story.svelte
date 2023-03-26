@@ -1,7 +1,7 @@
 <script lang="ts">
-  import Base from "./Base.svelte";
+  import Base from "../Base.svelte";
   import Toggle from "./Toggle.svelte";
-  import { type Icon, icons } from "./icons";
+  import { type Icon, icons } from "../icons";
 
   export let Hst: any;
 

@@ -2,9 +2,9 @@
 
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-  import blurOnEnter from "./blurOnEnter";
-  import numberDrag from "./numberDrag";
-  import revertOnEscape from "./revertOnEscape";
+  import blurOnEnter from "../actions/blurOnEnter";
+  import numberDrag from "../actions/numberDrag";
+  import revertOnEscape from "../actions/revertOnEscape";
 
   export let value: number | undefined;
   export let suffix = "";

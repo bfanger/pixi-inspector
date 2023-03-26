@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher, onMount } from "svelte";
+  import { createEventDispatcher, getContext, onMount } from "svelte";
   import Toggle from "./IconButton.svelte";
 
   export let indent: number;
@@ -11,11 +11,19 @@
   export let muted = false;
 
   let el: HTMLDivElement;
+
+  const ctx = getContext<{ focused: boolean }>("scene-graph");
+  $: if (el && active) {
+    if (ctx?.focused) {
+      el.focus();
+    } else {
+      el.scrollIntoView();
+    }
+  }
   const dispatch = createEventDispatcher();
   const external = {
     indent,
     activate() {
-      el.focus();
       dispatch("activate");
     },
   };

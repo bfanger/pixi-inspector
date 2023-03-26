@@ -1,8 +1,8 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-  import blurOnEnter from "./blurOnEnter";
-  import revertOnEscape from "./revertOnEscape";
-  import selectOnFocus from "./selectOnFocus";
+  import blurOnEnter from "../actions/blurOnEnter";
+  import revertOnEscape from "../actions/revertOnEscape";
+  import selectOnFocus from "../actions/selectOnFocus";
 
   export let value: string;
   export let id: string | undefined = undefined;
