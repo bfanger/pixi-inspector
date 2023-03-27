@@ -1,5 +1,5 @@
 <script lang="ts">
-  import NumberInput from "blender-elements/NumberInput.svelte";
+  import NumberInput from "blender-elements/src/NumberInput/NumberInput.svelte";
   import { getBridgeContext, poll } from "./bridge-fns";
   import type { NodeProperties } from "./types";
 
@@ -124,6 +124,54 @@
               max={1}
               location="BOTTOM"
               on:change={(e) => onChange("anchorY", e.detail)}
+            />
+          </div>
+        </div>
+      {/if}
+      {#if typeof $props.data.pivotX === "number"}
+        <div class="properties">
+          <label class="label" for="">Pivot X</label>
+          <div class="input">
+            <NumberInput
+              value={$props.data.pivotX}
+              step={0.1}
+              location="TOP"
+              on:change={(e) => onChange("pivotX", e.detail)}
+            />
+          </div>
+          <label class="label" for="">Y</label>
+          <div class="input">
+            <NumberInput
+              value={$props.data.pivotY}
+              step={0.1}
+              location="BOTTOM"
+              on:change={(e) => onChange("pivotY", e.detail)}
+            />
+          </div>
+        </div>
+      {/if}
+      {#if typeof $props.data.originX === "number"}
+        <div class="properties">
+          <label class="label" for="">Origin X</label>
+          <div class="input">
+            <NumberInput
+              value={$props.data.originX}
+              step={0.01}
+              min={0}
+              max={1}
+              location="TOP"
+              on:change={(e) => onChange("originX", e.detail)}
+            />
+          </div>
+          <label class="label" for="">Y</label>
+          <div class="input">
+            <NumberInput
+              value={$props.data.originY}
+              step={0.01}
+              min={0}
+              max={1}
+              location="BOTTOM"
+              on:change={(e) => onChange("originY", e.detail)}
             />
           </div>
         </div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Base from "./Base.svelte";
+  import Base from "../Base.svelte";
   import SearchInput from "./SearchInput.svelte";
 
   export let Hst: any;

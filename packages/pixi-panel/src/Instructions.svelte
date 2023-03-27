@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Toggle from "blender-elements/Toggle.svelte";
+  import Toggle from "blender-elements/src/Toggle/Toggle.svelte";
   import { getBridgeContext } from "./bridge-fns";
 
   const bridge = getBridgeContext();

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Icon } from "./icons";
+  import type { Icon } from "../icons";
 
   export let icon: Icon;
   export let value: boolean | undefined = undefined;

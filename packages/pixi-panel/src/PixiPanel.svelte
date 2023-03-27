@@ -3,12 +3,12 @@
   import connect from "./connect";
   import { setBridgeContext } from "./bridge-fns";
   import SceneGraph from "./SceneGraph.svelte";
-  import Base from "blender-elements/Base.svelte";
+  import Base from "blender-elements/src/Base.svelte";
   import Properties from "./Properties.svelte";
   import Instructions from "./Instructions.svelte";
   import Warning from "./Warning.svelte";
   import patchPixi from "./patchPixi";
-  import Button from "blender-elements/Button.svelte";
+  import Button from "blender-elements/src/Button.svelte";
 
   export let bridge: BridgeFn;
 

@@ -1,21 +1,31 @@
 <script lang="ts">
-  import { createEventDispatcher, onMount } from "svelte";
+  import { createEventDispatcher, getContext, onMount } from "svelte";
   import Toggle from "./IconButton.svelte";
 
   export let indent: number;
   export let title: string;
   export let expanded: boolean | undefined = undefined; // undefined means no arrow
   export let active = false;
+  export let selectable: boolean;
+  export let parentUnselectable: boolean | undefined = undefined;
   export let visible: boolean | undefined = undefined; // undefined means no arrow:;
   export let match: boolean | undefined = undefined;
   export let muted = false;
 
   let el: HTMLDivElement;
+
+  const ctx = getContext<{ focused: boolean }>("scene-graph");
+  $: if (el && active) {
+    if (ctx?.focused) {
+      el.focus();
+    } else {
+      el.scrollIntoView();
+    }
+  }
   const dispatch = createEventDispatcher();
   const external = {
     indent,
     activate() {
-      el.focus();
       dispatch("activate");
     },
   };
@@ -105,6 +115,21 @@
     <span class="toggle-spacer" />
   {/if}
   <span class="title">{title}</span>
+  {#if selectable}
+    <Toggle
+      icon="selectable"
+      hint="Disable right-click selection"
+      muted={parentUnselectable}
+      on:click={() => dispatch("unselectable")}
+    />
+  {:else}
+    <Toggle
+      icon="unselectable"
+      hint="Enable right-click selection"
+      muted={parentUnselectable}
+      on:click={() => dispatch("selectable")}
+    />
+  {/if}
   {#if visible === true}
     <Toggle
       icon="eye-opened"

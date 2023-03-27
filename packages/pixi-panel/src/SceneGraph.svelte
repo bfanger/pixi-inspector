@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
-  import SearchInput from "blender-elements/SearchInput.svelte";
+  import { createEventDispatcher, setContext } from "svelte";
+  import SearchInput from "blender-elements/src/SearchInput/SearchInput.svelte";
   import { getBridgeContext, poll } from "./bridge-fns";
   import Tree from "./Tree.svelte";
   import SpeedRange from "./SpeedRange.svelte";
@@ -10,6 +10,8 @@
   let speed: number;
   const dispatch = createEventDispatcher();
   const bridge = getBridgeContext();
+  const ctx = setContext("scene-graph", { focused: false });
+
   const tree = poll<OutlinerNode>(
     bridge,
     "__PIXI_DEVTOOLS__.outline.tree()",
@@ -19,6 +21,8 @@
   $: error = $tree.error;
 
   let query = "";
+  let el: HTMLDivElement;
+
   $: {
     bridge(`__PIXI_DEVTOOLS__.outline.query = ${JSON.stringify(query)}`).then(
       () => tree.sync()
@@ -44,6 +48,18 @@
     tree.sync();
     dispatch("activate");
   }
+  async function selectable(path: string[]) {
+    await bridge(
+      `__PIXI_DEVTOOLS__.outline.selectable(${JSON.stringify(path)})`
+    );
+    tree.sync();
+  }
+  async function unselectable(path: string[]) {
+    await bridge(
+      `__PIXI_DEVTOOLS__.outline.unselectable(${JSON.stringify(path)})`
+    );
+    tree.sync();
+  }
   async function show(path: string[]) {
     await bridge(`__PIXI_DEVTOOLS__.outline.show(${JSON.stringify(path)})`);
     tree.sync();
@@ -55,7 +71,12 @@
   async function log(path: string[]) {
     await bridge(`__PIXI_DEVTOOLS__.outline.log(${JSON.stringify(path)})`);
   }
-
+  function onFocusIn() {
+    ctx.focused = true;
+  }
+  function onFocusOut() {
+    ctx.focused = false;
+  }
   async function getSpeed() {
     try {
       speed= await bridge(`__PIXI_DEVTOOLS__.ticker().speed`);
@@ -80,7 +101,12 @@
     {/await}
     <SearchInput bind:value={query} />
   </div>
-  <div class="body">
+  <div
+    class="body"
+    bind:this={el}
+    on:focusin={onFocusIn}
+    on:focusout={onFocusOut}
+  >
     {#if error}
       <Warning>{error.message}</Warning>
     {/if}
@@ -91,11 +117,14 @@
         leaf={stage.leaf}
         active={stage.active}
         visible={stage.visible}
+        selectable={stage.selectable}
         match={stage.match}
         children={stage.children}
         on:expand={({ detail }) => expand(detail)}
         on:collapse={({ detail }) => collapse(detail)}
         on:activate={({ detail }) => activate(detail)}
+        on:selectable={({ detail }) => selectable(detail)}
+        on:unselectable={({ detail }) => unselectable(detail)}
         on:show={({ detail }) => show(detail)}
         on:hide={({ detail }) => hide(detail)}
         on:log={({ detail }) => log(detail)}

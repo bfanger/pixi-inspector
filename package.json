@@ -9,10 +9,9 @@
   "scripts": {
     "dev": "pnpm --parallel dev",
     "build": "pnpm --parallel build",
-    "lint": "concurrently --kill-others-on-fail \"npm:lint:*\"",
+    "lint": "concurrently -c \"#c596c7\",\"#4b32c3\",\"#676778\" --kill-others-on-fail \"npm:lint:*\"",
     "lint:prettier": "prettier --check --loglevel=warn .",
-    "lint:tsc": "tsc --noEmit",
-    "lint:eslint": "eslint --ext=js,jsx,ts,tsx --max-warnings=0 .",
+    "lint:eslint": "eslint --ext=js,jsx,ts,tsx,svelte --max-warnings=0 .",
     "lint:svelte-check": "svelte-check --fail-on-warnings --fail-on-hints",
     "format": "prettier --write . && eslint --ext=js,jsx,ts,tsx --fix .",
     "preinstall": "npx only-allow pnpm",
@@ -20,32 +19,28 @@
     "precommit": "lint-staged"
   },
   "lint-staged": {
-    "*.(ts|tsx)": [
+    "*.(ts|tsx|svelte)": [
       "eslint --max-warnings 0 --no-ignore",
-      "sh -c 'tsc -p tsconfig.json --noEmit'"
+      "svelte-check --fail-on-warnings --fail-on-hints"
     ],
     "*.(js|cjs|mjs|jsx)": [
       "eslint --max-warnings 0 --no-ignore"
     ],
     "*.(json|scss|md)": [
       "prettier --check --loglevel=warn"
-    ],
-    "*.svelte": [
-      "svelte-check --fail-on-warnings --fail-on-hints",
-      "prettier --check"
     ]
   },
   "devDependencies": {
-    "@types/chrome": "^0.0.224",
+    "@types/chrome": "^0.0.225",
     "@types/firefox-webext-browser": "^111.0.0",
-    "@types/node": "^18.15.3",
-    "@typescript-eslint/eslint-plugin": "^5.55.0",
-    "@typescript-eslint/parser": "^5.55.0",
+    "@types/node": "^18.15.7",
+    "@typescript-eslint/eslint-plugin": "^5.56.0",
+    "@typescript-eslint/parser": "^5.56.0",
     "concurrently": "^7.6.0",
     "eslint": "^8.36.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-airbnb-typescript": "^17.0.0",
-    "eslint-config-prettier": "^8.7.0",
+    "eslint-config-prettier": "^8.8.0",
     "eslint-config-triple": "^0.5.8",
     "eslint-import-resolver-typescript": "^3.5.3",
     "eslint-plugin-import": "^2.27.5",
@@ -55,9 +50,9 @@
     "husky": "^8.0.3",
     "lint-staged": "^13.2.0",
     "only-allow": "^1.1.1",
-    "prettier": "^2.8.4",
-    "prettier-plugin-svelte": "^2.9.0",
-    "sass": "^1.59.3",
+    "prettier": "^2.8.7",
+    "prettier-plugin-svelte": "^2.10.0",
+    "sass": "^1.60.0",
     "svelte": "^3.57.0",
     "svelte-check": "^3.1.4",
     "svelte-preprocess": "^5.0.3",

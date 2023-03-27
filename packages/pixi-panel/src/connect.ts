@@ -2,6 +2,7 @@
 import { derived, Readable, writable } from "svelte/store";
 import type { BridgeFn } from "./types";
 import pixiDevtools from "./pixi-devtools/pixiDevtools";
+import pixiDevtoolsSelection from "./pixi-devtools/pixiDevtoolsSelection";
 import pixiDevtoolsViewport from "./pixi-devtools/pixiDevtoolsViewport";
 import pixiDevtoolsOutline from "./pixi-devtools/pixiDevtoolsOutline";
 import pixiDevtoolsOverlay from "./pixi-devtools/pixiDevtoolsOverlay";
@@ -81,6 +82,7 @@ export default function connect(bridge: BridgeFn): Readable<
     if (data === "INJECT") {
       bridge(`(() => {
         window.__PIXI_DEVTOOLS__ = (${pixiDevtools.toString()}());
+        window.__PIXI_DEVTOOLS__.selection = (${pixiDevtoolsSelection.toString()}(window.__PIXI_DEVTOOLS__));
         window.__PIXI_DEVTOOLS__.viewport = (${pixiDevtoolsViewport.toString()}(window.__PIXI_DEVTOOLS__));
         window.__PIXI_DEVTOOLS__.outline = (${pixiDevtoolsOutline.toString()}(window.__PIXI_DEVTOOLS__));
         window.__PIXI_DEVTOOLS__.overlay = (${pixiDevtoolsOverlay.toString()}(window.__PIXI_DEVTOOLS__));

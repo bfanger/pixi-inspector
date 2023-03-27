@@ -136,13 +136,6 @@ export default function pixiDevtools() {
       }
       return undefined;
     },
-    active(): UniversalNode | undefined {
-      return win.$pixi;
-    },
-    activate(node?: UniversalNode) {
-      win.$pixi = node;
-      this.dispatchEvent("activate", node);
-    },
     on<T extends keyof EventDetail>(
       event: T,
       callback: (detail: EventDetail[T]) => void

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Base from "./Base.svelte";
+  import Base from "../Base.svelte";
   import NumberInput from "./NumberInput.svelte";
 
   export let Hst: any;

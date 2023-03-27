@@ -94,7 +94,8 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
       id: meta.id,
       name: buildName(node),
       leaf: true,
-      active: node === devtools.active(),
+      active: node === devtools.selection.active(),
+      selectable: devtools.selection.selectable(node),
       visible: "visible" in node ? node.visible : undefined,
     };
     const children = devtools.childrenOf(node) ?? [];
@@ -116,7 +117,8 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
     if (!children || children.length === 0) {
       return {
         id: meta.id,
-        active: node === devtools.active(),
+        active: node === devtools.selection.active(),
+        selectable: devtools.selection.selectable(node),
         leaf: true,
         name,
         visible: "visible" in node ? node.visible : undefined,
@@ -130,7 +132,8 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
 
     return {
       id: meta.id,
-      active: node === devtools.active(),
+      active: node === devtools.selection.active(),
+      selectable: devtools.selection.selectable(node),
       leaf: false,
       name,
       match: !match && results.length !== 0 ? undefined : match,
@@ -157,6 +160,7 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
         return {
           id: "disconnected",
           active: false,
+          selectable: false,
           leaf: true,
           name: "(disconnected))",
           visible: false,
@@ -183,6 +187,18 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
         augment(node).expanded = false;
       }
     },
+    selectable(path: string[]) {
+      const node = find(path);
+      if (node) {
+        devtools.selection.enable(node);
+      }
+    },
+    unselectable(path: string[]) {
+      const node = find(path);
+      if (node) {
+        devtools.selection.disable(node);
+      }
+    },
     hide(path: string[]) {
       const node = find(path);
       if (node && "visible" in node) {
@@ -196,7 +212,7 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
       }
     },
     activate(path: string[]) {
-      devtools.activate(find(path));
+      devtools.selection.activate(find(path));
     },
     log(path: string[]) {
       const node = find(path);
