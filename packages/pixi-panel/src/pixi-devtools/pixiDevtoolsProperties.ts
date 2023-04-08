@@ -1,6 +1,12 @@
 import type { GameObjects } from "phaser";
-import type { ObservablePoint } from "pixi.js";
-import type { NodeProperties, PixiDevtools, UniversalNode } from "../types";
+import type { Application, ObservablePoint } from "pixi.js";
+import type {
+  NodeProperties,
+  PixiDevtools,
+  UniversalNode,
+  PropertyTab,
+  PropertyTabState,
+} from "../types";
 
 type PropertyMapping<T = any> = {
   key: keyof NodeProperties;
@@ -11,7 +17,9 @@ type PropertyMapping<T = any> = {
 export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
   const metaProperty = Symbol("pixi-devtools-properties");
 
-  function getPropDefinition(node: UniversalNode): PropertyMapping[] {
+  function getPropDefinition(
+    node: UniversalNode | Application
+  ): PropertyMapping[] {
     if (!(node as any)[metaProperty]) {
       /* eslint-disable no-param-reassign */
       const definitions: PropertyMapping[] = [];
@@ -180,33 +188,96 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
           },
         });
       }
+      if ("ticker" in node && typeof node.ticker === "object") {
+        if ("speed" in node.ticker && typeof node.ticker.speed === "number") {
+          definitions.push({
+            key: "speed",
+            get: () => node.ticker.speed,
+            set: (value) => {
+              node.ticker.speed = value;
+            },
+          });
+        }
+        if (
+          "started" in node.ticker &&
+          typeof node.ticker.started === "boolean" &&
+          "start" in node &&
+          typeof node.start === "function"
+        ) {
+          definitions.push({
+            key: "paused",
+            get: () => !node.ticker.started,
+            set: (value) => {
+              if (value) {
+                node.ticker.stop();
+              } else {
+                node.ticker.start();
+              }
+            },
+          });
+        }
+      }
       (node as any)[metaProperty] = definitions;
       // eslint-enable no-param-reassign
     }
     return (node as any)[metaProperty];
   }
 
+  function getProperties(
+    node: UniversalNode | Application
+  ): NodeProperties | undefined {
+    const definition = getPropDefinition(node);
+    const props: NodeProperties = {};
+    for (let i = 0; i < definition.length; i += 1) {
+      const { key, get } = definition[i];
+      props[key] = get();
+    }
+    return props;
+  }
+  let preferred: PropertyTab = "object";
+
   return {
-    getAll(): NodeProperties | undefined {
+    activate(group: PropertyTab) {
+      preferred = group;
+    },
+    values(): PropertyTabState {
+      const app = devtools.app();
       const node = devtools.selection.active();
-      if (!node) {
-        return undefined;
+
+      const available: PropertyTab[] = [];
+      let selected = preferred;
+      let properties: NodeProperties | undefined;
+
+      if (app) {
+        available.push("scene");
       }
-      const definition = getPropDefinition(node);
-      const props: NodeProperties = {};
-      for (let i = 0; i < definition.length; i += 1) {
-        const { key, get } = definition[i];
-        props[key] = get();
+      if (node) {
+        available.push("object");
       }
-      return props;
+      if (selected === "object" && node) {
+        properties = getProperties(node);
+      }
+      if (selected === "object" && !node) {
+        selected = "scene";
+      }
+
+      if (selected === "scene" && app) {
+        properties = getProperties(app);
+      }
+      return { tabs: available, active: selected, properties };
     },
 
     set(property: string, value: number) {
       const node = devtools.selection.active();
-      if (!node) {
+      const app = devtools.app();
+      let target: UniversalNode | Application | undefined = node;
+      if (preferred === "scene" || !node) {
+        target = app;
+      }
+      if (!target) {
         return;
       }
-      const definition = getPropDefinition(node).find(
+      const definition = getPropDefinition(target).find(
         (entry) => entry.key === property
       );
       if (definition) {

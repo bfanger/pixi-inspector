@@ -1,4 +1,10 @@
-import type { Container, DisplayObject, ICanvas, IRenderer } from "pixi.js";
+import type {
+  Application,
+  Container,
+  DisplayObject,
+  ICanvas,
+  IRenderer,
+} from "pixi.js";
 import type { Game, GameObjects, Scene, Scenes } from "phaser";
 import type { UniversalNode } from "../types";
 
@@ -29,6 +35,9 @@ export default function pixiDevtools() {
   }
 
   return {
+    app(): Application | undefined {
+      return getGlobal("__PIXI_APP__");
+    },
     root(): Container | Scene | undefined {
       const stage = getGlobal("__PIXI_STAGE__");
       if (stage) {

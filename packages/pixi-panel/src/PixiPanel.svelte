@@ -95,7 +95,6 @@
     background: #303030;
   }
   .properties {
-    background: #303030;
     overflow: auto;
   }
   .patch {

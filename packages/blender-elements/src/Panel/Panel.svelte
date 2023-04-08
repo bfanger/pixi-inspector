@@ -20,7 +20,7 @@
 
 <style lang="scss">
   .panel {
-    background: #3e3e3e;
+    background: #353535;
     border-radius: 4px;
   }
   .title {

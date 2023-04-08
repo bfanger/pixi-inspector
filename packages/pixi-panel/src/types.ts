@@ -35,6 +35,13 @@ export type UniversalNode =
   | Scenes.SceneManager
   | GameObjects.Particles.ParticleEmitter;
 
+export type PropertyTab = "scene" | "object";
+export type PropertyTabState = {
+  tabs: PropertyTab[];
+  active: PropertyTab;
+  properties?: NodeProperties;
+};
+
 export type NodeProperties = {
   x?: number;
   y?: number;
@@ -53,4 +60,6 @@ export type NodeProperties = {
   height?: number;
   alpha?: number;
   visible?: boolean;
+  speed?: number;
+  paused?: boolean;
 };
