@@ -15,6 +15,14 @@
   );
   export const refresh = state.sync;
 
+  const expanded = {
+    transform: true,
+    transformOrigin: true,
+    skewDimensions: true,
+    visibility: true,
+    ticker: true,
+  };
+
   type Tab = {
     group: PropertyTab;
     icon: string;
@@ -36,15 +44,6 @@
     typeof props.angle === "number" ||
     typeof props.scaleX === "number";
 
-  let transformSkewDimensions = "";
-  $: if (typeof props.width === "number" && typeof props.skewX === "number") {
-    transformSkewDimensions = "Skew & Dimensions";
-  } else if (typeof props.width === "number") {
-    transformSkewDimensions = "Dimensions";
-  } else if (typeof props.skewX === "number") {
-    transformSkewDimensions = "Skew";
-  }
-
   $: transformOriginPanel =
     typeof props.originX === "number" ||
     typeof props.anchorX === "number" ||
@@ -54,6 +53,17 @@
     typeof props.alpha === "number" || typeof props.visible === "boolean";
 
   $: tickerPanel = typeof props.speed === "number";
+
+  let skewDimensionsPanel = "";
+  $: if (typeof props.width === "number" && typeof props.skewX === "number") {
+    skewDimensionsPanel = "Skew & Dimensions";
+  } else if (typeof props.width === "number") {
+    skewDimensionsPanel = "Dimensions";
+  } else if (typeof props.skewX === "number") {
+    skewDimensionsPanel = "Skew";
+  } else {
+    skewDimensionsPanel = "";
+  }
 
   async function onChange(prop: string, value: number | boolean) {
     await bridge(
@@ -80,7 +90,7 @@
   {#if props}
     <div class="panels">
       {#if transformPanel}
-        <Panel title="Transform">
+        <Panel title="Transform" bind:expanded={expanded.transform}>
           <div class="properties">
             <label class="label" for="">Location X</label>
             <NumberInput
@@ -129,7 +139,10 @@
         </Panel>
       {/if}
       {#if transformOriginPanel}
-        <Panel title="Transform Origin">
+        <Panel
+          title="Transform Origin"
+          bind:expanded={expanded.transformOrigin}
+        >
           {#if typeof props.anchorX === "number"}
             <div class="properties">
               <label class="label" for="">Anchor X</label>
@@ -195,7 +208,7 @@
         </Panel>
       {/if}
       {#if visibilityPanel}
-        <Panel title="Visibility">
+        <Panel title="Visibility" bind:expanded={expanded.visibility}>
           {#if typeof props.alpha === "number"}
             <div class="properties">
               <label class="label" for="">Alpha</label>
@@ -221,8 +234,11 @@
           {/if}
         </Panel>
       {/if}
-      {#if transformSkewDimensions}
-        <Panel title={transformSkewDimensions}>
+      {#if skewDimensionsPanel}
+        <Panel
+          title={skewDimensionsPanel}
+          bind:expanded={expanded.skewDimensions}
+        >
           {#if typeof props.skewX === "number"}
             <div class="properties">
               <label class="label" for="">Skew X</label>
@@ -265,7 +281,7 @@
       {/if}
 
       {#if tickerPanel}
-        <Panel title="Ticker">
+        <Panel title="Ticker" bind:expanded={expanded.ticker}>
           {#if typeof props.speed === "number"}
             <div class="properties">
               <label class="label" for="">Speed</label>
