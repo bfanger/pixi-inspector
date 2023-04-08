@@ -73,7 +73,7 @@ export default function connect(bridge: BridgeFn): Readable<
       const message = error?.message;
       if (typeof message === "string" && message.endsWith(": %s")) {
         errorStore.set(new Error(message.substring(0, message.length - 4)));
-      } else {
+      } else if (typeof error !== "undefined") {
         console.warn(error);
         errorStore.set(error);
       }

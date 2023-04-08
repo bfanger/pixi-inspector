@@ -171,6 +171,15 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
           },
         });
       }
+      if ("visible" in node && typeof node.visible === "boolean") {
+        definitions.push({
+          key: "visible",
+          get: () => node.visible,
+          set: (value) => {
+            node.visible = value;
+          },
+        });
+      }
       (node as any)[metaProperty] = definitions;
       // eslint-enable no-param-reassign
     }

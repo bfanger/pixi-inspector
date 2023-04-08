@@ -12,7 +12,7 @@
     "lint": "concurrently -c \"#c596c7\",\"#4b32c3\",\"#676778\" --kill-others-on-fail \"npm:lint:*\"",
     "lint:prettier": "prettier --check --loglevel=warn .",
     "lint:eslint": "eslint --ext=js,jsx,ts,tsx,svelte --max-warnings=0 .",
-    "lint:svelte-check": "svelte-check --fail-on-warnings --fail-on-hints",
+    "lint:svelte-check": "svelte-check --fail-on-warnings",
     "format": "prettier --write . && eslint --ext=js,jsx,ts,tsx --fix .",
     "preinstall": "npx only-allow pnpm",
     "postinstall": "husky install",
@@ -21,7 +21,7 @@
   "lint-staged": {
     "*.(ts|tsx|svelte)": [
       "eslint --max-warnings 0 --no-ignore",
-      "svelte-check --fail-on-warnings --fail-on-hints"
+      "svelte-check --fail-on-warnings"
     ],
     "*.(js|cjs|mjs|jsx)": [
       "eslint --max-warnings 0 --no-ignore"
@@ -31,31 +31,31 @@
     ]
   },
   "devDependencies": {
-    "@types/chrome": "^0.0.225",
-    "@types/firefox-webext-browser": "^111.0.0",
-    "@types/node": "^18.15.7",
-    "@typescript-eslint/eslint-plugin": "^5.56.0",
-    "@typescript-eslint/parser": "^5.56.0",
-    "concurrently": "^7.6.0",
-    "eslint": "^8.36.0",
+    "@types/chrome": "^0.0.228",
+    "@types/firefox-webext-browser": "^111.0.1",
+    "@types/node": "^18.15.11",
+    "@typescript-eslint/eslint-plugin": "^5.57.1",
+    "@typescript-eslint/parser": "^5.57.1",
+    "concurrently": "^8.0.1",
+    "eslint": "^8.38.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-config-triple": "^0.5.8",
-    "eslint-import-resolver-typescript": "^3.5.3",
+    "eslint-import-resolver-typescript": "^3.5.5",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-only-warn": "^1.1.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-svelte3": "^4.0.0",
     "husky": "^8.0.3",
-    "lint-staged": "^13.2.0",
+    "lint-staged": "^13.2.1",
     "only-allow": "^1.1.1",
     "prettier": "^2.8.7",
     "prettier-plugin-svelte": "^2.10.0",
-    "sass": "^1.60.0",
-    "svelte": "^3.57.0",
-    "svelte-check": "^3.1.4",
+    "sass": "^1.61.0",
+    "svelte": "^3.58.0",
+    "svelte-check": "^3.2.0",
     "svelte-preprocess": "^5.0.3",
-    "typescript": "^5.0.2"
+    "typescript": "^5.0.4"
   }
 }

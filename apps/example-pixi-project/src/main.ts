@@ -31,6 +31,7 @@ for (let i = 0; i < 25; i += 1) {
   container.addChild(bunny);
 }
 container.children[12].name = "bunny";
+
 container.x = app.screen.width / 2;
 container.y = app.screen.height / 2;
 
@@ -47,3 +48,4 @@ if (exposeApp) {
   (globalThis as any).__PIXI_STAGE__ = app.stage; // eslint-disable-line
   (globalThis as any).__PIXI_RENDERER__ = app.renderer; // eslint-disable-line
 }
+(globalThis as any).$pixi = container.children[12]; // eslint-disable-line

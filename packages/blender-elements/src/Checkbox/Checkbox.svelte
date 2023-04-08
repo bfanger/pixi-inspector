@@ -2,7 +2,9 @@
   import { createEventDispatcher } from "svelte";
 
   export let value: boolean | undefined = undefined;
+
   const dispatch = createEventDispatcher();
+
   function onChange(e: Event) {
     const el = e.target as HTMLInputElement;
     dispatch("toggle", el.checked);
@@ -40,6 +42,8 @@
     box-shadow: 0 1px 1px rgba(black, 0.2);
     width: 14px;
     height: 14px;
+    margin: 0;
+
     &:hover {
       background: #656565;
       border-color: #464646;

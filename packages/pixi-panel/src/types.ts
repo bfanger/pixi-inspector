@@ -52,4 +52,5 @@ export type NodeProperties = {
   width?: number;
   height?: number;
   alpha?: number;
+  visible?: boolean;
 };
