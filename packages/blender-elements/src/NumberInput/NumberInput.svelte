@@ -17,6 +17,7 @@
   const dispatch = createEventDispatcher();
 
   let el: HTMLInputElement;
+  /** Shadow value to detect prop changes */
   let wanted = value;
   let text = format(value);
   let focused = false;
@@ -51,7 +52,6 @@
     wanted = Number(el.value);
     if (value !== wanted) {
       value = wanted;
-      dispatch("change", value);
     }
   }
   function onFocus() {
@@ -66,6 +66,11 @@
   function onBlur() {
     focused = false;
     text = format(value);
+    if (wanted !== previous) {
+      value = wanted;
+      text = format(value);
+      dispatch("change", value);
+    }
   }
 
   function onStepDown() {

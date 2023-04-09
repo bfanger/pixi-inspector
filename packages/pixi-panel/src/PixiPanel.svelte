@@ -2,10 +2,10 @@
   import type { BridgeFn } from "./types";
   import connect from "./connect";
   import { setBridgeContext } from "./bridge-fns";
-  import SceneGraph from "./SceneGraph.svelte";
   import Base from "blender-elements/src/Base.svelte";
-  import Properties from "./Properties.svelte";
   import Instructions from "./Instructions.svelte";
+  import SceneGraphArea from "./SceneGraphArea.svelte";
+  import PropertiesArea from "./PropertiesArea.svelte";
   import Warning from "./Warning.svelte";
   import patchPixi from "./patchPixi";
   import Button from "blender-elements/src/Button.svelte";
@@ -33,10 +33,10 @@
   {#if $connection === "CONNECTED"}
     <div class="pixi-panel">
       <div class="outliner">
-        <SceneGraph on:activate={refresh} />
+        <SceneGraphArea on:activate={refresh} />
       </div>
       <div class="properties">
-        <Properties bind:refresh />
+        <PropertiesArea bind:refresh />
       </div>
     </div>
   {:else if $connection !== "INJECT"}

@@ -1,18 +1,32 @@
 <script lang="ts">
   import { slide } from "svelte/transition";
+  import Checkbox from "../Checkbox/Checkbox.svelte";
+  import { createEventDispatcher } from "svelte";
 
   export let title: string;
   export let expanded = true;
+  export let value: boolean | undefined = undefined;
 
-  function onToggle() {
+  const dispatch = createEventDispatcher();
+
+  function onToggleExpanded() {
     expanded = !expanded;
   }
 </script>
 
 <section class="panel">
-  <button class="title" class:expanded on:click={onToggle}>{title}</button>
+  <button class="title" class:expanded on:click={onToggleExpanded}>
+    {#if typeof value === "boolean"}
+      <Checkbox bind:value on:toggle={(e) => dispatch("change", e.detail)} />
+    {/if}
+    <span>{title}</span>
+  </button>
   {#if expanded}
-    <div class="content" transition:slide|local={{ duration: 150 }}>
+    <div
+      class="content"
+      class:disabled={value === false}
+      transition:slide|local={{ duration: 150 }}
+    >
       <slot />
     </div>
   {/if}
@@ -24,6 +38,8 @@
     border-radius: 4px;
   }
   .title {
+    display: flex;
+    gap: 4px;
     appearance: none;
     position: relative;
     background: transparent;
@@ -52,5 +68,8 @@
   }
   .content {
     padding: 8px;
+    &.disabled {
+      opacity: 0.5;
+    }
   }
 </style>

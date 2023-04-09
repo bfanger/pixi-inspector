@@ -80,5 +80,6 @@
   .content {
     background: #2a2a2a;
     flex-grow: 1;
+    overflow-y: auto;
   }
 </style>

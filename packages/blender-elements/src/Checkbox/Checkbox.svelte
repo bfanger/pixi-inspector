@@ -17,6 +17,7 @@
     type="checkbox"
     bind:checked={value}
     on:change={onChange}
+    on:click|stopPropagation={() => {}}
   />
   {#if $$slots.default}
     <span><slot /></span>

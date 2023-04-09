@@ -1,5 +1,14 @@
 import type { GameObjects, Scene, Scenes } from "phaser";
-import type { DisplayObject } from "pixi.js";
+import type {
+  DisplayObject,
+  TextStyleAlign,
+  TextStyleFontStyle,
+  TextStyleFontVariant,
+  TextStyleFontWeight,
+  TextStyleLineJoin,
+  TextStyleTextBaseline,
+  TextStyleWhiteSpace,
+} from "pixi.js";
 import type pixiDevtools from "./pixi-devtools/pixiDevtools";
 import type pixiDevtoolsViewport from "./pixi-devtools/pixiDevtoolsViewport";
 import type pixiDevtoolsOverlay from "./pixi-devtools/pixiDevtoolsOverlay";
@@ -35,7 +44,7 @@ export type UniversalNode =
   | Scenes.SceneManager
   | GameObjects.Particles.ParticleEmitter;
 
-export type PropertyTab = "scene" | "object";
+export type PropertyTab = "scene" | "object" | "text";
 export type PropertyTabState = {
   tabs: PropertyTab[];
   active: PropertyTab;
@@ -43,6 +52,7 @@ export type PropertyTabState = {
 };
 
 export type NodeProperties = {
+  // Object
   x?: number;
   y?: number;
   angle?: number;
@@ -60,6 +70,35 @@ export type NodeProperties = {
   height?: number;
   alpha?: number;
   visible?: boolean;
+  // Scene
   speed?: number;
-  paused?: boolean;
+  started?: boolean;
+  // Text
+  text?: string;
+  align?: TextStyleAlign;
+  breakWords?: boolean;
+  dropShadow?: boolean;
+  dropShadowAlpha?: number;
+  dropShadowAngle?: number;
+  dropShadowBlur?: number;
+  dropShadowColor?: string;
+  dropShadowDistance?: number;
+  fontFamily?: string;
+  fontSize?: number;
+  fontStyle?: TextStyleFontStyle;
+  fontVariant?: TextStyleFontVariant;
+  fontWeight?: TextStyleFontWeight;
+  leading?: number;
+  letterSpacing?: number;
+  lineHeight?: number;
+  lineJoin?: TextStyleLineJoin;
+  miterLimit?: number;
+  padding?: number;
+  stroke?: string;
+  strokeThickness?: number;
+  textBaseline?: TextStyleTextBaseline;
+  trim?: boolean;
+  whiteSpace?: TextStyleWhiteSpace;
+  wordWrap?: boolean;
+  wordWrapWidth?: number;
 };
