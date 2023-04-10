@@ -70,6 +70,7 @@ export type NodeProperties = {
   height?: number;
   alpha?: number;
   visible?: boolean;
+  cullable?: boolean;
   // Scene
   speed?: number;
   started?: boolean;

@@ -6,6 +6,7 @@
   import Checkbox from "blender-elements/src/Checkbox/Checkbox.svelte";
   import Property from "blender-elements/src/Property/Property.svelte";
   import TextInput from "blender-elements/src/TextInput/TextInput.svelte";
+  import Toggle from "blender-elements/src/Toggle/Toggle.svelte";
 
   export let props: NodeProperties;
   export let expanded: Record<string, boolean>;
@@ -32,7 +33,10 @@
 {#if fontPanel}
   <Panel title="Font" bind:expanded={expanded.font}>
     {#if typeof props.fontFamily === "string"}
-      <Property label="Family">
+      <Property
+        label="Family"
+        hint="The font family, can be a single font name, or a list of names where the first is the preferred font."
+      >
         <TextInput
           value={props.fontFamily}
           on:change={(e) =>
@@ -41,28 +45,87 @@
       </Property>
     {/if}
     {#if typeof props.fontSize === "number"}
-      <Property label="Size">
+      <Property label="Size" hint="The font size">
         <NumberInput
           value={props.fontSize}
+          min={0}
           step={1}
           on:change={(e) =>
             dispatch("change", { property: "fontSize", value: e.detail })}
         />
       </Property>
     {/if}
-    <!-- 
-      fontStyle", "string"));
-      fontVariant", "string"));
-      fontWeight", "string"));
-       -->
+    {#if typeof props.fontStyle === "string"}
+      <Property label="Style" hint="The font style">
+        <div class="three-columns">
+          <Toggle
+            label="Normal"
+            value={props.fontStyle === "normal"}
+            location="LEFT"
+            on:change={() =>
+              dispatch("change", { property: "fontStyle", value: "normal" })}
+          />
+          <Toggle
+            icon="italic"
+            label="Italic"
+            value={props.fontStyle === "italic"}
+            location="CENTER"
+            on:change={() =>
+              dispatch("change", { property: "fontStyle", value: "italic" })}
+          />
+          <Toggle
+            label="Oblique"
+            value={props.fontStyle === "oblique"}
+            location="RIGHT"
+            on:change={() =>
+              dispatch("change", { property: "fontStyle", value: "oblique" })}
+          />
+        </div>
+      </Property>
+    {/if}
+    {#if typeof props.fontVariant === "string"}
+      <Property label="Variant" hint="The font variant">
+        <div class="two-columns">
+          <Toggle
+            label="Normal"
+            value={props.fontVariant === "normal"}
+            location="LEFT"
+            on:change={() =>
+              dispatch("change", { property: "fontVariant", value: "normal" })}
+          />
+
+          <Toggle
+            icon="small-caps"
+            label="Small Caps"
+            value={props.fontVariant === "small-caps"}
+            location="RIGHT"
+            on:change={() =>
+              dispatch("change", {
+                property: "fontVariant",
+                value: "small-caps",
+              })}
+          />
+        </div>
+      </Property>
+    {/if}
+    {#if typeof props.fontWeight === "string"}
+      <Property label="Weight" hint="The font weight">
+        <TextInput
+          value={props.fontWeight}
+          on:change={(e) =>
+            dispatch("change", { property: "fontWeight", value: e.detail })}
+        />
+      </Property>
+    {/if}
   </Panel>
 {/if}
 {#if spacingPanel}
   <Panel title="Spacing" bind:expanded={expanded.spacing}>
     {#if typeof props.leading === "number"}
-      <Property label="Leading">
+      <Property label="Leading" hint="The space between lines">
         <NumberInput
           value={props.leading}
+          min={0}
           step={0.1}
           on:change={(e) =>
             dispatch("change", { property: "leading", value: e.detail })}
@@ -70,7 +133,10 @@
       </Property>
     {/if}
     {#if typeof props.letterSpacing === "number"}
-      <Property label="Letter spacing">
+      <Property
+        label="Letter spacing"
+        hint="The amount of spacing between letters"
+      >
         <NumberInput
           value={props.letterSpacing}
           step={0.1}
@@ -84,10 +150,13 @@
     {/if}
 
     {#if typeof props.lineHeight === "number"}
-      <Property label="Line height">
+      <Property
+        label="Line height"
+        hint="The line height, a number that represents the vertical space that a letter uses"
+      >
         <NumberInput
           value={props.lineHeight}
-          step={0.1}
+          step={1}
           on:change={(e) =>
             dispatch("change", { property: "lineHeight", value: e.detail })}
         />
@@ -97,18 +166,49 @@
       <Property label="Padding">
         <NumberInput
           value={props.padding}
-          step={0.1}
+          min={0}
+          step={1}
           on:change={(e) =>
             dispatch("change", { property: "padding", value: e.detail })}
         />
       </Property>
     {/if}
-
+    {#if typeof props.whiteSpace === "string"}
+      <Property
+        label="White Space"
+        hint="Determines whether newlines & spaces are collapsed or preserved"
+      >
+        <div class="three-columns">
+          <Toggle
+            label="Normal"
+            value={props.whiteSpace === "normal"}
+            location="LEFT"
+            on:change={() =>
+              dispatch("change", { property: "whiteSpace", value: "normal" })}
+          />
+          <Toggle
+            label="Pre"
+            value={props.whiteSpace === "pre"}
+            location="CENTER"
+            on:change={() =>
+              dispatch("change", { property: "whiteSpace", value: "pre" })}
+          />
+          <Toggle
+            label="Pre Line"
+            value={props.whiteSpace === "pre-line"}
+            location="RIGHT"
+            on:change={() =>
+              dispatch("change", { property: "whiteSpace", value: "pre-line" })}
+          />
+        </div>
+      </Property>
+    {/if}
     {#if typeof props.trim === "boolean"}
       <Property>
         <Checkbox
           value={props.trim}
-          on:toggle={(e) =>
+          hint="Trim transparent borders"
+          on:change={(e) =>
             dispatch("change", { property: "trim", value: e.detail })}
         >
           Trim
@@ -126,9 +226,13 @@
       dispatch("change", { property: "wordWrap", value: e.detail })}
   >
     {#if typeof props.wordWrapWidth === "number"}
-      <Property label="Width">
+      <Property
+        label="Width"
+        hint="The width at which text will wrap, it needs wordWrap to be set to true"
+      >
         <NumberInput
           value={props.wordWrapWidth}
+          min={0}
           step={1}
           on:change={(e) =>
             dispatch("change", {
@@ -142,7 +246,8 @@
       <Property>
         <Checkbox
           value={props.breakWords}
-          on:toggle={(e) =>
+          hint="Indicates if lines can be wrapped within words, it needs wordWrap to be set to true."
+          on:change={(e) =>
             dispatch("change", { property: "breakWords", value: e.detail })}
         >
           Break words
@@ -152,7 +257,7 @@
   </Panel>
 {/if}
 
-{#if typeof props.dropShadow === "boolean"}
+{#if dropShadowPanel}
   <Panel
     title="Drop shadow"
     value={props.dropShadow}
@@ -161,7 +266,7 @@
       dispatch("change", { property: "dropShadow", value: e.detail })}
   >
     {#if typeof props.dropShadowAlpha === "number"}
-      <Property label="Alpha">
+      <Property label="Alpha" hint="Set alpha for the drop shadow">
         <NumberInput
           value={props.dropShadowAlpha}
           step={0.01}
@@ -176,7 +281,7 @@
       </Property>
     {/if}
     {#if typeof props.dropShadowColor === "string"}
-      <Property label="Color">
+      <Property label="Color" hint="A fill style to be used on the dropshadow">
         <TextInput
           value={props.dropShadowColor}
           on:change={(e) =>
@@ -188,7 +293,7 @@
       </Property>
     {/if}
     {#if typeof props.dropShadowAngle === "number"}
-      <Property label="Angle">
+      <Property label="Angle" hint="Set a angle of the drop shadow">
         <NumberInput
           value={props.dropShadowAngle}
           step={0.01}
@@ -202,9 +307,10 @@
       </Property>
     {/if}
     {#if typeof props.dropShadowBlur === "number"}
-      <Property label="Blur">
+      <Property label="Blur" hint="Set a shadow blur radius">
         <NumberInput
           value={props.dropShadowBlur}
+          min={0}
           step={0.1}
           on:change={(e) =>
             dispatch("change", {
@@ -215,7 +321,7 @@
       </Property>
     {/if}
     {#if typeof props.dropShadowDistance === "number"}
-      <Property label="Distance">
+      <Property label="Distance" hint="Set a distance of the drop shadow">
         <NumberInput
           value={props.dropShadowDistance}
           step={0.1}
@@ -234,7 +340,10 @@
 {#if strokePanel}
   <Panel title="Stroke" bind:expanded={expanded.stroke}>
     {#if typeof props.stroke === "string"}
-      <Property label="Stroke">
+      <Property
+        label="Stroke"
+        hint="A canvas fillstyle that will be used on the text stroke"
+      >
         <TextInput
           value={props.stroke}
           on:change={(e) =>
@@ -246,9 +355,13 @@
       </Property>
     {/if}
     {#if typeof props.strokeThickness === "number"}
-      <Property label="Thickness">
+      <Property
+        label="Thickness"
+        hint="A number that represents the thickness of the stroke"
+      >
         <NumberInput
           value={props.strokeThickness}
+          min={0}
           step={0.1}
           on:change={(e) =>
             dispatch("change", {
@@ -263,10 +376,9 @@
 
 <!-- 
     align: string
+    textBaseline: string
     lineJoin: string
     miterLimit: number
-    textBaseline: string
-    whiteSpace: string
 -->
 
 <style lang="scss">
@@ -280,5 +392,13 @@
       flex-shrink: 0;
       margin-right: 8px;
     }
+  }
+  .two-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .three-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
   }
 </style>

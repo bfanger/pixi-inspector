@@ -118,6 +118,7 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
       objectDefs.push(...pointProperty(node, "skew", "skewX", "skewY"));
       objectDefs.push(...directProp(node, "alpha", "number"));
       objectDefs.push(...directProp(node, "visible", "boolean"));
+      objectDefs.push(...directProp(node, "cullable", "boolean"));
 
       if (
         "originX" in node &&

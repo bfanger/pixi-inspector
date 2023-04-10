@@ -58,7 +58,7 @@
     </Property>
 
     {#if typeof props.angle === "number"}
-      <Property label="Angle">
+      <Property label="Angle" hint="The angle of the object in degrees">
         <NumberInput
           value={props.angle}
           step={1}
@@ -69,7 +69,11 @@
       </Property>
     {/if}
     {#if typeof props.scaleX === "number"}
-      <Property label="Scale X" group>
+      <Property
+        label="Scale X"
+        group
+        hint="The scale factors of this object along the local coordinate axes"
+      >
         <NumberInput
           value={props.scaleX}
           step={0.05}
@@ -141,7 +145,11 @@
       </Property>
     {/if}
     {#if typeof props.pivotX === "number"}
-      <Property label="Pivot X" group>
+      <Property
+        label="Pivot X"
+        group
+        hint="The center of rotation, scaling, and skewing for this display object in its local space"
+      >
         <NumberInput
           value={props.pivotX}
           step={0.1}
@@ -165,7 +173,7 @@
 {#if visibilityPanel}
   <Panel title="Visibility" bind:expanded={expanded.visibility}>
     {#if typeof props.alpha === "number"}
-      <Property label="Alpha">
+      <Property label="Alpha" hint="The opacity of the object">
         <NumberInput
           value={props.alpha}
           step={0.01}
@@ -180,10 +188,23 @@
       <Property>
         <Checkbox
           value={props.visible}
-          on:toggle={(e) =>
+          hint="The visibility of the object"
+          on:change={(e) =>
             dispatch("change", { property: "visible", value: e.detail })}
         >
           Visible
+        </Checkbox>
+      </Property>
+    {/if}
+    {#if typeof props.cullable === "boolean"}
+      <Property>
+        <Checkbox
+          value={props.cullable}
+          hint="Should this object be rendered if the bounds of this object are out of frame?"
+          on:change={(e) =>
+            dispatch("change", { property: "cullable", value: e.detail })}
+        >
+          Cullable
         </Checkbox>
       </Property>
     {/if}
@@ -192,7 +213,11 @@
 {#if skewDimensionsPanel}
   <Panel title={skewDimensionsPanel} bind:expanded={expanded.skewDimensions}>
     {#if typeof props.skewX === "number"}
-      <Property label="Skew X" group>
+      <Property
+        label="Skew X"
+        group
+        hint="The skew factor for the object in radians"
+      >
         <NumberInput
           value={props.skewX}
           step={0.01}

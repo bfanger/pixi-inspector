@@ -52,8 +52,11 @@
     width: 26px;
     height: 26px;
     background: transparent;
+    box-sizing: border-box;
+    border: 1px solid transparent;
     border-top-left-radius: 4px;
     border-bottom-left-radius: 4px;
+    outline: none;
     cursor: pointer;
 
     &:hover {
@@ -61,6 +64,10 @@
     }
     &.active {
       background-color: #2a2a2a;
+    }
+    &:focus-visible {
+      border-color: #4772b3;
+      border-right-color: transparent;
     }
   }
   .icon {

@@ -15,7 +15,7 @@
     <Checkbox bind:value={viewports}>Viewports</Checkbox>
     <Checkbox
       value={renders}
-      on:toggle={({ detail }) => {
+      on:change={({ detail }) => {
         renders = detail;
       }}
     >

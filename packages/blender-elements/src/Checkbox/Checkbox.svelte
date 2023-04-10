@@ -2,16 +2,17 @@
   import { createEventDispatcher } from "svelte";
 
   export let value: boolean | undefined = undefined;
+  export let hint = "";
 
   const dispatch = createEventDispatcher();
 
   function onChange(e: Event) {
     const el = e.target as HTMLInputElement;
-    dispatch("toggle", el.checked);
+    dispatch("change", el.checked);
   }
 </script>
 
-<label class="checkbox">
+<label class="checkbox" title={hint}>
   <input
     class="input"
     type="checkbox"
@@ -54,6 +55,9 @@
     }
     &:focus-visible {
       border-color: #4772b3;
+      &:checked {
+        border-color: white;
+      }
     }
   }
 </style>

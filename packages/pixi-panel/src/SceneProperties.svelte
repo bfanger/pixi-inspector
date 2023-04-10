@@ -17,7 +17,7 @@
 {#if tickerPanel}
   <Panel title="Ticker" bind:expanded={expanded.ticker}>
     {#if typeof props.speed === "number"}
-      <Property label="Speed">
+      <Property label="Speed" hint="Factor of current deltaTime">
         <NumberInput
           value={props.speed}
           step={0.01}
@@ -30,7 +30,8 @@
       <Property>
         <Checkbox
           value={props.started}
-          on:toggle={(e) =>
+          hint="Whether or not this ticker has been started"
+          on:change={(e) =>
             dispatch("change", { property: "started", value: e.detail })}
         >
           Started

@@ -17,7 +17,7 @@
 <section class="panel">
   <button class="title" class:expanded on:click={onToggleExpanded}>
     {#if typeof value === "boolean"}
-      <Checkbox bind:value on:toggle={(e) => dispatch("change", e.detail)} />
+      <Checkbox bind:value on:change={(e) => dispatch("change", e.detail)} />
     {/if}
     <span>{title}</span>
   </button>

@@ -1,10 +1,11 @@
 <script lang="ts">
   export let label = "";
+  export let hint = "";
   export let group = false;
 </script>
 
 <div class="property" class:group>
-  <div class="label">{label}</div>
+  <div class="label" title={hint}>{label}</div>
   <div class="value">
     <slot />
   </div>
