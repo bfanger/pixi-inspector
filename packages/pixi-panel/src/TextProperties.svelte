@@ -4,8 +4,7 @@
   import Panel from "blender-elements/src/Panel/Panel.svelte";
   import NumberInput from "blender-elements/src/NumberInput/NumberInput.svelte";
   import Checkbox from "blender-elements/src/Checkbox/Checkbox.svelte";
-  import Properties from "blender-elements/src/Properties/Properties.svelte";
-  import Property from "blender-elements/src/Properties/Property.svelte";
+  import Property from "blender-elements/src/Property/Property.svelte";
   import TextInput from "blender-elements/src/TextInput/TextInput.svelte";
 
   export let props: NodeProperties;
@@ -32,101 +31,89 @@
 {/if}
 {#if fontPanel}
   <Panel title="Font" bind:expanded={expanded.font}>
-    <Properties>
-      {#if typeof props.fontFamily === "string"}
-        <Property label="Family">
-          <TextInput
-            value={props.fontFamily}
-            on:change={(e) =>
-              dispatch("change", { property: "fontFamily", value: e.detail })}
-          />
-        </Property>
-      {/if}
-      {#if typeof props.fontSize === "number"}
-        <Property label="Size">
-          <NumberInput
-            value={props.fontSize}
-            step={1}
-            on:change={(e) =>
-              dispatch("change", { property: "fontSize", value: e.detail })}
-          />
-        </Property>
-      {/if}
-      <!-- 
+    {#if typeof props.fontFamily === "string"}
+      <Property label="Family">
+        <TextInput
+          value={props.fontFamily}
+          on:change={(e) =>
+            dispatch("change", { property: "fontFamily", value: e.detail })}
+        />
+      </Property>
+    {/if}
+    {#if typeof props.fontSize === "number"}
+      <Property label="Size">
+        <NumberInput
+          value={props.fontSize}
+          step={1}
+          on:change={(e) =>
+            dispatch("change", { property: "fontSize", value: e.detail })}
+        />
+      </Property>
+    {/if}
+    <!-- 
       fontStyle", "string"));
       fontVariant", "string"));
       fontWeight", "string"));
        -->
-    </Properties>
   </Panel>
 {/if}
 {#if spacingPanel}
   <Panel title="Spacing" bind:expanded={expanded.spacing}>
     {#if typeof props.leading === "number"}
-      <Properties>
-        <Property label="Leading">
-          <NumberInput
-            value={props.leading}
-            step={0.1}
-            on:change={(e) =>
-              dispatch("change", { property: "leading", value: e.detail })}
-          />
-        </Property>
-      </Properties>
+      <Property label="Leading">
+        <NumberInput
+          value={props.leading}
+          step={0.1}
+          on:change={(e) =>
+            dispatch("change", { property: "leading", value: e.detail })}
+        />
+      </Property>
     {/if}
     {#if typeof props.letterSpacing === "number"}
-      <Properties>
-        <Property label="Letter spacing">
-          <NumberInput
-            value={props.letterSpacing}
-            step={0.1}
-            on:change={(e) =>
-              dispatch("change", {
-                property: "letterSpacing",
-                value: e.detail,
-              })}
-          />
-        </Property>
-      </Properties>
+      <Property label="Letter spacing">
+        <NumberInput
+          value={props.letterSpacing}
+          step={0.1}
+          on:change={(e) =>
+            dispatch("change", {
+              property: "letterSpacing",
+              value: e.detail,
+            })}
+        />
+      </Property>
     {/if}
 
     {#if typeof props.lineHeight === "number"}
-      <Properties>
-        <Property label="Line height">
-          <NumberInput
-            value={props.lineHeight}
-            step={0.1}
-            on:change={(e) =>
-              dispatch("change", { property: "lineHeight", value: e.detail })}
-          />
-        </Property>
-      </Properties>
+      <Property label="Line height">
+        <NumberInput
+          value={props.lineHeight}
+          step={0.1}
+          on:change={(e) =>
+            dispatch("change", { property: "lineHeight", value: e.detail })}
+        />
+      </Property>
     {/if}
     {#if typeof props.padding === "number"}
-      <Properties>
-        <Property label="Padding">
-          <NumberInput
-            value={props.padding}
-            step={0.1}
-            on:change={(e) =>
-              dispatch("change", { property: "padding", value: e.detail })}
-          />
-        </Property>
-      </Properties>
+      <Property label="Padding">
+        <NumberInput
+          value={props.padding}
+          step={0.1}
+          on:change={(e) =>
+            dispatch("change", { property: "padding", value: e.detail })}
+        />
+      </Property>
     {/if}
 
     {#if typeof props.trim === "boolean"}
-      <Properties>
-        <Property>
-          <Checkbox
-            value={props.trim}
-            on:toggle={(e) =>
-              dispatch("change", { property: "trim", value: e.detail })}
-          >
-            Trim
-          </Checkbox>
-        </Property>
-      </Properties>
+      <Property>
+        <Checkbox
+          value={props.trim}
+          on:toggle={(e) =>
+            dispatch("change", { property: "trim", value: e.detail })}
+        >
+          Trim
+        </Checkbox>
+      </Property>
     {/if}
   </Panel>
 {/if}
@@ -139,32 +126,28 @@
       dispatch("change", { property: "wordWrap", value: e.detail })}
   >
     {#if typeof props.wordWrapWidth === "number"}
-      <Properties>
-        <Property label="Width">
-          <NumberInput
-            value={props.wordWrapWidth}
-            step={1}
-            on:change={(e) =>
-              dispatch("change", {
-                property: "wordWrapWidth",
-                value: e.detail,
-              })}
-          />
-        </Property>
-      </Properties>
+      <Property label="Width">
+        <NumberInput
+          value={props.wordWrapWidth}
+          step={1}
+          on:change={(e) =>
+            dispatch("change", {
+              property: "wordWrapWidth",
+              value: e.detail,
+            })}
+        />
+      </Property>
     {/if}
     {#if typeof props.breakWords === "boolean"}
-      <Properties>
-        <Property>
-          <Checkbox
-            value={props.breakWords}
-            on:toggle={(e) =>
-              dispatch("change", { property: "breakWords", value: e.detail })}
-          >
-            Break words
-          </Checkbox>
-        </Property>
-      </Properties>
+      <Property>
+        <Checkbox
+          value={props.breakWords}
+          on:toggle={(e) =>
+            dispatch("change", { property: "breakWords", value: e.detail })}
+        >
+          Break words
+        </Checkbox>
+      </Property>
     {/if}
   </Panel>
 {/if}
@@ -178,82 +161,72 @@
       dispatch("change", { property: "dropShadow", value: e.detail })}
   >
     {#if typeof props.dropShadowAlpha === "number"}
-      <Properties>
-        <Property label="Alpha">
-          <NumberInput
-            value={props.dropShadowAlpha}
-            step={0.01}
-            min={0}
-            max={1}
-            on:change={(e) =>
-              dispatch("change", {
-                property: "dropShadowAlpha",
-                value: e.detail,
-              })}
-          />
-        </Property>
-      </Properties>
+      <Property label="Alpha">
+        <NumberInput
+          value={props.dropShadowAlpha}
+          step={0.01}
+          min={0}
+          max={1}
+          on:change={(e) =>
+            dispatch("change", {
+              property: "dropShadowAlpha",
+              value: e.detail,
+            })}
+        />
+      </Property>
     {/if}
     {#if typeof props.dropShadowColor === "string"}
-      <Properties>
-        <Property label="Color">
-          <TextInput
-            value={props.dropShadowColor}
-            on:change={(e) =>
-              dispatch("change", {
-                property: "dropShadowColor",
-                value: e.detail,
-              })}
-          />
-        </Property>
-      </Properties>
+      <Property label="Color">
+        <TextInput
+          value={props.dropShadowColor}
+          on:change={(e) =>
+            dispatch("change", {
+              property: "dropShadowColor",
+              value: e.detail,
+            })}
+        />
+      </Property>
     {/if}
     {#if typeof props.dropShadowAngle === "number"}
-      <Properties>
-        <Property label="Angle">
-          <NumberInput
-            value={props.dropShadowAngle}
-            step={0.01}
-            suffix="r"
-            on:change={(e) =>
-              dispatch("change", {
-                property: "dropShadowAngle",
-                value: e.detail,
-              })}
-          />
-        </Property>
-      </Properties>
+      <Property label="Angle">
+        <NumberInput
+          value={props.dropShadowAngle}
+          step={0.01}
+          suffix="r"
+          on:change={(e) =>
+            dispatch("change", {
+              property: "dropShadowAngle",
+              value: e.detail,
+            })}
+        />
+      </Property>
     {/if}
     {#if typeof props.dropShadowBlur === "number"}
-      <Properties>
-        <Property label="Blur">
-          <NumberInput
-            value={props.dropShadowBlur}
-            step={0.1}
-            on:change={(e) =>
-              dispatch("change", {
-                property: "dropShadowBlur",
-                value: e.detail,
-              })}
-          />
-        </Property>
-      </Properties>
+      <Property label="Blur">
+        <NumberInput
+          value={props.dropShadowBlur}
+          step={0.1}
+          on:change={(e) =>
+            dispatch("change", {
+              property: "dropShadowBlur",
+              value: e.detail,
+            })}
+        />
+      </Property>
     {/if}
     {#if typeof props.dropShadowDistance === "number"}
-      <Properties>
-        <Property label="Distance">
-          <NumberInput
-            value={props.dropShadowDistance}
-            step={0.1}
-            min={0}
-            on:change={(e) =>
-              dispatch("change", {
-                property: "dropShadowDistance",
-                value: e.detail,
-              })}
-          />
-        </Property>
-      </Properties>
+      <Property label="Distance">
+        <NumberInput
+          value={props.dropShadowDistance}
+          step={0.1}
+          min={0}
+          on:change={(e) =>
+            dispatch("change", {
+              property: "dropShadowDistance",
+              value: e.detail,
+            })}
+        />
+      </Property>
     {/if}
   </Panel>
 {/if}
@@ -261,33 +234,29 @@
 {#if strokePanel}
   <Panel title="Stroke" bind:expanded={expanded.stroke}>
     {#if typeof props.stroke === "string"}
-      <Properties>
-        <Property label="Stroke">
-          <TextInput
-            value={props.stroke}
-            on:change={(e) =>
-              dispatch("change", {
-                property: "stroke",
-                value: e.detail,
-              })}
-          />
-        </Property>
-      </Properties>
+      <Property label="Stroke">
+        <TextInput
+          value={props.stroke}
+          on:change={(e) =>
+            dispatch("change", {
+              property: "stroke",
+              value: e.detail,
+            })}
+        />
+      </Property>
     {/if}
     {#if typeof props.strokeThickness === "number"}
-      <Properties>
-        <Property label="Thickness">
-          <NumberInput
-            value={props.strokeThickness}
-            step={0.1}
-            on:change={(e) =>
-              dispatch("change", {
-                property: "strokeThickness",
-                value: e.detail,
-              })}
-          />
-        </Property>
-      </Properties>
+      <Property label="Thickness">
+        <NumberInput
+          value={props.strokeThickness}
+          step={0.1}
+          on:change={(e) =>
+            dispatch("change", {
+              property: "strokeThickness",
+              value: e.detail,
+            })}
+        />
+      </Property>
     {/if}
   </Panel>
 {/if}

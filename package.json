@@ -5,15 +5,14 @@
     "apps/*",
     "packages/*"
   ],
-  "prettier": "eslint-config-triple/.prettierrc",
   "scripts": {
     "dev": "pnpm --parallel dev",
     "build": "pnpm --parallel build",
     "lint": "concurrently -c \"#c596c7\",\"#4b32c3\",\"#676778\" --kill-others-on-fail \"npm:lint:*\"",
-    "lint:prettier": "prettier --check --loglevel=warn .",
+    "lint:prettier": "prettier --check --loglevel=warn . \"{app,packages}/**/*.svelte\"",
     "lint:eslint": "eslint --ext=js,jsx,ts,tsx,svelte --max-warnings=0 .",
     "lint:svelte-check": "svelte-check --fail-on-warnings",
-    "format": "prettier --write . && eslint --ext=js,jsx,ts,tsx --fix .",
+    "format": "prettier --write . \"{app,packages}/**/*.svelte\" && eslint --ext=js,jsx,ts,tsx --fix .",
     "preinstall": "npx only-allow pnpm",
     "postinstall": "husky install",
     "precommit": "lint-staged"
