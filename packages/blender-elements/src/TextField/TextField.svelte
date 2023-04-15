@@ -53,7 +53,7 @@
 </script>
 
 {#if multiline}
-  <div class="text-input">
+  <div class="text-field">
     <div class="spacer">&nbsp;{text}&nbsp;</div>
     <textarea
       {id}
@@ -85,7 +85,7 @@
 {/if}
 
 <style lang="scss">
-  .text-input {
+  .text-field {
     position: relative;
     width: 100%;
   }

@@ -2,7 +2,7 @@
   import { createEventDispatcher } from "svelte";
   import type { NodeProperties } from "./types";
   import Panel from "blender-elements/src/Panel/Panel.svelte";
-  import NumberInput from "blender-elements/src/NumberInput/NumberInput.svelte";
+  import NumberField from "blender-elements/src/NumberField/NumberField.svelte";
   import Checkbox from "blender-elements/src/Checkbox/Checkbox.svelte";
   import Property from "blender-elements/src/Property/Property.svelte";
 
@@ -39,7 +39,7 @@
 {#if transformPanel}
   <Panel title="Transform" bind:expanded={expanded.transform}>
     <Property label="Location X" group>
-      <NumberInput
+      <NumberField
         value={props.x}
         step={1}
         location="TOP"
@@ -48,7 +48,7 @@
       />
     </Property>
     <Property label="Y">
-      <NumberInput
+      <NumberField
         value={props.y}
         step={1}
         location="BOTTOM"
@@ -59,7 +59,7 @@
 
     {#if typeof props.angle === "number"}
       <Property label="Angle" hint="The angle of the object in degrees">
-        <NumberInput
+        <NumberField
           value={props.angle}
           step={1}
           suffix="°"
@@ -74,7 +74,7 @@
         group
         hint="The scale factors of this object along the local coordinate axes"
       >
-        <NumberInput
+        <NumberField
           value={props.scaleX}
           step={0.05}
           location="TOP"
@@ -83,7 +83,7 @@
         />
       </Property>
       <Property label="Y">
-        <NumberInput
+        <NumberField
           value={props.scaleY}
           step={0.1}
           location="BOTTOM"
@@ -98,7 +98,7 @@
   <Panel title="Transform Origin" bind:expanded={expanded.transformOrigin}>
     {#if typeof props.anchorX === "number"}
       <Property label="Anchor X" group>
-        <NumberInput
+        <NumberField
           value={props.anchorX}
           step={0.01}
           min={0}
@@ -109,7 +109,7 @@
         />
       </Property>
       <Property label="Y">
-        <NumberInput
+        <NumberField
           value={props.anchorY}
           step={0.01}
           min={0}
@@ -122,7 +122,7 @@
     {/if}
     {#if typeof props.originX === "number"}
       <Property label="Origin X" group>
-        <NumberInput
+        <NumberField
           value={props.originX}
           step={0.01}
           min={0}
@@ -133,7 +133,7 @@
         />
       </Property>
       <Property label="Y">
-        <NumberInput
+        <NumberField
           value={props.originY}
           step={0.01}
           min={0}
@@ -150,7 +150,7 @@
         group
         hint="The center of rotation, scaling, and skewing for this display object in its local space"
       >
-        <NumberInput
+        <NumberField
           value={props.pivotX}
           step={0.1}
           location="TOP"
@@ -159,7 +159,7 @@
         />
       </Property>
       <Property label="Y">
-        <NumberInput
+        <NumberField
           value={props.pivotY}
           step={0.1}
           location="BOTTOM"
@@ -174,7 +174,7 @@
   <Panel title="Visibility" bind:expanded={expanded.visibility}>
     {#if typeof props.alpha === "number"}
       <Property label="Alpha" hint="The opacity of the object">
-        <NumberInput
+        <NumberField
           value={props.alpha}
           step={0.01}
           min={0}
@@ -218,7 +218,7 @@
         group
         hint="The skew factor for the object in radians"
       >
-        <NumberInput
+        <NumberField
           value={props.skewX}
           step={0.01}
           suffix="r"
@@ -228,7 +228,7 @@
         />
       </Property>
       <Property label="Y">
-        <NumberInput
+        <NumberField
           value={props.skewY}
           step={0.01}
           suffix="r"
@@ -240,7 +240,7 @@
     {/if}
     {#if typeof props.width === "number"}
       <Property label="Width" group>
-        <NumberInput
+        <NumberField
           value={props.width}
           step={1}
           location="TOP"
@@ -249,7 +249,7 @@
         />
       </Property>
       <Property label="Height">
-        <NumberInput
+        <NumberField
           value={props.height}
           step={1}
           location="BOTTOM"

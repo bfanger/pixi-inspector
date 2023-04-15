@@ -1,6 +1,6 @@
 <script lang="ts">
   import Base from "../Base.svelte";
-  import NumberInput from "./NumberInput.svelte";
+  import NumberField from "./NumberField.svelte";
 
   export let Hst: any;
   export let value = 123;
@@ -9,15 +9,15 @@
 <Hst.Story>
   <Base>
     <div style="max-width: 200px;">
-      <NumberInput
+      <NumberField
         {value}
         on:change={(e) => {
           value = e.detail;
         }}
         location="TOP"
       />
-      <NumberInput bind:value step={1} location="MIDDLE" />
-      <NumberInput bind:value step={1} min={0} max={200} location="BOTTOM" />
+      <NumberField bind:value step={1} location="MIDDLE" />
+      <NumberField bind:value step={1} min={0} max={200} location="BOTTOM" />
     </div>
   </Base>
   <svelte:fragment slot="controls">

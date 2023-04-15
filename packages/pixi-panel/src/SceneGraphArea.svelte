@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher, setContext } from "svelte";
-  import SearchInput from "blender-elements/src/SearchInput/SearchInput.svelte";
+  import SearchField from "blender-elements/src/SearchField/SearchField.svelte";
   import { getBridgeContext, poll } from "./bridge-fns";
   import Tree from "./Tree.svelte";
   import type { OutlinerNode } from "./types";
@@ -79,7 +79,7 @@
 
 <div class="scene-graph">
   <div class="header">
-    <SearchInput bind:value={query} />
+    <SearchField bind:value={query} />
   </div>
   <div
     class="body"

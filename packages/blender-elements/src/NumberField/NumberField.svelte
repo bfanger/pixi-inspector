@@ -106,7 +106,7 @@
 </script>
 
 <div
-  class="number-input"
+  class="number-field"
   class:active
   class:focused
   data-location={location}
@@ -140,7 +140,7 @@
 </div>
 
 <style lang="scss">
-  .number-input {
+  .number-field {
     position: relative;
     background: #545454;
     overflow: hidden;
@@ -214,7 +214,7 @@
     display: none;
     cursor: pointer;
 
-    .number-input:hover & {
+    .number-field:hover & {
       display: block;
     }
 

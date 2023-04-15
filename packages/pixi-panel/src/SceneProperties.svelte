@@ -2,7 +2,7 @@
   import Panel from "blender-elements/src/Panel/Panel.svelte";
   import type { NodeProperties } from "./types";
   import { createEventDispatcher } from "svelte";
-  import NumberInput from "blender-elements/src/NumberInput/NumberInput.svelte";
+  import NumberField from "blender-elements/src/NumberField/NumberField.svelte";
   import Checkbox from "blender-elements/src/Checkbox/Checkbox.svelte";
   import Property from "blender-elements/src/Property/Property.svelte";
 
@@ -18,7 +18,7 @@
   <Panel title="Ticker" bind:expanded={expanded.ticker}>
     {#if typeof props.speed === "number"}
       <Property label="Speed" hint="Factor of current deltaTime">
-        <NumberInput
+        <NumberField
           value={props.speed}
           step={0.01}
           on:change={(e) =>

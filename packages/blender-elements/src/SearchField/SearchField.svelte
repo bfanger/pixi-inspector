@@ -28,7 +28,7 @@
   }
 </script>
 
-<div class="search-input">
+<div class="search-field">
   <input
     {id}
     type="text"
@@ -48,7 +48,7 @@
 </div>
 
 <style lang="scss">
-  .search-input {
+  .search-field {
     position: relative;
   }
   .input {
@@ -70,7 +70,7 @@
     &::selection {
       background-color: #4570b5;
     }
-    .search-input:hover &:not(:focus) {
+    .search-field:hover &:not(:focus) {
       background: #232323;
       border-color: #414141;
     }

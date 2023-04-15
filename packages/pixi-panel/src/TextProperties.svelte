@@ -2,10 +2,10 @@
   import { createEventDispatcher } from "svelte";
   import type { NodeProperties } from "./types";
   import Panel from "blender-elements/src/Panel/Panel.svelte";
-  import NumberInput from "blender-elements/src/NumberInput/NumberInput.svelte";
+  import NumberField from "blender-elements/src/NumberField/NumberField.svelte";
   import Checkbox from "blender-elements/src/Checkbox/Checkbox.svelte";
   import Property from "blender-elements/src/Property/Property.svelte";
-  import TextInput from "blender-elements/src/TextInput/TextInput.svelte";
+  import TextField from "blender-elements/src/TextField/TextField.svelte";
   import Toggle from "blender-elements/src/Toggle/Toggle.svelte";
 
   export let props: NodeProperties;
@@ -30,7 +30,7 @@
       for="text"
       title="Use shift-enter to create a multiline string">Text</label
     >
-    <TextInput
+    <TextField
       id="text"
       value={props.text}
       on:input={(e) =>
@@ -45,7 +45,7 @@
         label="Family"
         hint="The font family, can be a single font name, or a list of names where the first is the preferred font."
       >
-        <TextInput
+        <TextField
           value={props.fontFamily}
           on:change={(e) =>
             dispatch("change", { property: "fontFamily", value: e.detail })}
@@ -54,7 +54,7 @@
     {/if}
     {#if typeof props.fontSize === "number"}
       <Property label="Size" hint="The font size">
-        <NumberInput
+        <NumberField
           value={props.fontSize}
           min={0}
           step={1}
@@ -118,7 +118,7 @@
     {/if}
     {#if typeof props.fontWeight === "string"}
       <Property label="Weight" hint="The font weight">
-        <TextInput
+        <TextField
           value={props.fontWeight}
           on:change={(e) =>
             dispatch("change", { property: "fontWeight", value: e.detail })}
@@ -131,7 +131,7 @@
   <Panel title="Spacing" bind:expanded={expanded.spacing}>
     {#if typeof props.leading === "number"}
       <Property label="Leading" hint="The space between lines">
-        <NumberInput
+        <NumberField
           value={props.leading}
           min={0}
           step={0.1}
@@ -145,7 +145,7 @@
         label="Letter spacing"
         hint="The amount of spacing between letters"
       >
-        <NumberInput
+        <NumberField
           value={props.letterSpacing}
           step={0.1}
           on:change={(e) =>
@@ -162,7 +162,7 @@
         label="Line height"
         hint="The line height, a number that represents the vertical space that a letter uses"
       >
-        <NumberInput
+        <NumberField
           value={props.lineHeight}
           step={1}
           on:change={(e) =>
@@ -172,7 +172,7 @@
     {/if}
     {#if typeof props.padding === "number"}
       <Property label="Padding">
-        <NumberInput
+        <NumberField
           value={props.padding}
           min={0}
           step={1}
@@ -238,7 +238,7 @@
         label="Width"
         hint="The width at which text will wrap, it needs wordWrap to be set to true"
       >
-        <NumberInput
+        <NumberField
           value={props.wordWrapWidth}
           min={0}
           step={1}
@@ -275,7 +275,7 @@
   >
     {#if typeof props.dropShadowAlpha === "number"}
       <Property label="Alpha" hint="Set alpha for the drop shadow">
-        <NumberInput
+        <NumberField
           value={props.dropShadowAlpha}
           step={0.01}
           min={0}
@@ -290,7 +290,7 @@
     {/if}
     {#if typeof props.dropShadowColor === "string"}
       <Property label="Color" hint="A fill style to be used on the dropshadow">
-        <TextInput
+        <TextField
           value={props.dropShadowColor}
           on:change={(e) =>
             dispatch("change", {
@@ -302,7 +302,7 @@
     {/if}
     {#if typeof props.dropShadowAngle === "number"}
       <Property label="Angle" hint="Set a angle of the drop shadow">
-        <NumberInput
+        <NumberField
           value={props.dropShadowAngle}
           step={0.01}
           suffix="r"
@@ -316,7 +316,7 @@
     {/if}
     {#if typeof props.dropShadowBlur === "number"}
       <Property label="Blur" hint="Set a shadow blur radius">
-        <NumberInput
+        <NumberField
           value={props.dropShadowBlur}
           min={0}
           step={0.1}
@@ -330,7 +330,7 @@
     {/if}
     {#if typeof props.dropShadowDistance === "number"}
       <Property label="Distance" hint="Set a distance of the drop shadow">
-        <NumberInput
+        <NumberField
           value={props.dropShadowDistance}
           step={0.1}
           min={0}
@@ -352,7 +352,7 @@
         label="Stroke"
         hint="A canvas fillstyle that will be used on the text stroke"
       >
-        <TextInput
+        <TextField
           value={props.stroke}
           on:change={(e) =>
             dispatch("change", {
@@ -367,7 +367,7 @@
         label="Thickness"
         hint="A number that represents the thickness of the stroke"
       >
-        <NumberInput
+        <NumberField
           value={props.strokeThickness}
           min={0}
           step={0.1}

@@ -1,6 +1,6 @@
 <script lang="ts">
   import Base from "../Base.svelte";
-  import TextInput from "./TextInput.svelte";
+  import SearchField from "./SearchField.svelte";
 
   export let Hst: any;
 
@@ -10,7 +10,7 @@
 <Hst.Story>
   <Base>
     <div style="max-width: 200px">
-      <TextInput bind:value />
+      <SearchField bind:value />
     </div>
   </Base>
   <svelte:fragment slot="controls">
