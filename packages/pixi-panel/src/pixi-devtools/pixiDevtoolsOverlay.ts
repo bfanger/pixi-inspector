@@ -146,7 +146,7 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
         size = node.getLocalBounds();
         m = node.worldTransform;
       } else if ("getLocalTransformMatrix" in node && "width" in node) {
-        const image = node as GameObjects.Image;
+        const image = node as any as GameObjects.Image;
         size = {
           x: 0,
           y: 0,

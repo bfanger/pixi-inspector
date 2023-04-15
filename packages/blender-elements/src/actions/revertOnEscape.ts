@@ -3,7 +3,10 @@
  *
  *   <input bind:value use:revertOnEscape={previousValue} />
  */
-export default function revertOnEscape(el: HTMLInputElement, previous: string) {
+export default function revertOnEscape(
+  el: HTMLInputElement | HTMLTextAreaElement,
+  previous: string
+) {
   function onKeydown(e: KeyboardEvent) {
     if (e.key === "Escape") {
       // eslint-disable-next-line no-param-reassign
@@ -15,14 +18,14 @@ export default function revertOnEscape(el: HTMLInputElement, previous: string) {
       }, 0);
     }
   }
-  el.addEventListener("keydown", onKeydown);
+  (el as HTMLElement).addEventListener("keydown", onKeydown);
   return {
     update(value: string) {
       // eslint-disable-next-line no-param-reassign
       previous = value;
     },
     destroy() {
-      el.removeEventListener("keydown", onKeydown);
+      (el as HTMLElement).removeEventListener("keydown", onKeydown);
     },
   };
 }

@@ -12,6 +12,7 @@ type EventDetail = {
   activate: UniversalNode | undefined;
 };
 
+let mode: "PIXI" | "PHASER" | undefined;
 export default function pixiDevtools() {
   const eventTarget = new EventTarget();
   const win = window as any;
@@ -71,10 +72,12 @@ export default function pixiDevtools() {
       }
       const app = getGlobal("__PIXI_APP__");
       if (app) {
+        mode = "PIXI";
         return app.renderer;
       }
       const game = getGlobal("__PHASER_GAME__");
       if (game) {
+        mode = "PHASER";
         return game;
       }
       const patched = getGlobal("__PATCHED_RENDERER__");
@@ -111,8 +114,8 @@ export default function pixiDevtools() {
         return (node as Scenes.SceneManager).scenes;
       }
       if ("emitters" in node) {
-        return (node as GameObjects.Particles.ParticleEmitterManager).emitters
-          .list;
+        // node is GameObjects.Particles.ParticleEmitterManager (Removed in Phaser 3.60)
+        return (node as any).emitters.list;
       }
       if ("alive" in node) {
         // node is GameObjects.Particles.ParticleEmitter
@@ -132,6 +135,15 @@ export default function pixiDevtools() {
         return container;
       }
       return undefined;
+    },
+    isPixi(node: UniversalNode) {
+      if (mode === "PIXI") {
+        return true;
+      }
+      if ("parent" in node) {
+        return true;
+      }
+      return false;
     },
     on<T extends keyof EventDetail>(
       event: T,

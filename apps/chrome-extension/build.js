@@ -4,7 +4,7 @@ import { fileURLToPath } from "url";
 import path from "path";
 import esbuild from "esbuild";
 import sveltePlugin from "esbuild-svelte";
-import rimraf from "rimraf";
+import { rimrafSync } from "rimraf";
 // eslint-disable-next-line import/no-relative-packages
 import svelteConfig from "../../svelte.config.cjs";
 
@@ -12,7 +12,7 @@ const cwd = path.dirname(fileURLToPath(import.meta.url));
 const outdir = path.resolve(cwd, "build");
 const srcDir = path.resolve(cwd, "src");
 
-rimraf.sync(outdir);
+rimrafSync(outdir);
 
 fs.mkdirSync(outdir, { recursive: true });
 for (const file of [

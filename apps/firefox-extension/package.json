@@ -19,6 +19,6 @@
     "svelte": "^3.58.0"
   },
   "dependencies": {
-    "web-ext": "^7.6.0"
+    "web-ext": "^7.6.1"
   }
 }

@@ -13,7 +13,11 @@
 
   const dispatch = createEventDispatcher();
 
-  $: fontPanel = typeof props.fontSize === "number";
+  $: fontPanel =
+    typeof props.fontFamily === "string" ||
+    typeof props.fontSize === "number" ||
+    typeof props.fontStyle === "string" ||
+    typeof props.fontVariant === "string";
   $: spacingPanel = typeof props.letterSpacing === "number";
   $: dropShadowPanel = typeof props.dropShadow === "boolean";
   $: strokePanel = typeof props.stroke === "string";
@@ -21,7 +25,11 @@
 
 {#if typeof props.text === "string"}
   <div class="text">
-    <label class="label" for="text">Text</label>
+    <label
+      class="label"
+      for="text"
+      title="Use shift-enter to create a multiline string">Text</label
+    >
     <TextInput
       id="text"
       value={props.text}

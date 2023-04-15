@@ -28,10 +28,9 @@ function preload(this: Phaser.Scene) {
 
 function create(this: Phaser.Scene) {
   this.add.image(400, 300, "sky");
+  this.add.text(16, 16, `Phaser ${Phaser.VERSION}`);
 
-  const particles = this.add.particles("red");
-
-  const emitter = particles.createEmitter({
+  const emitter = this.add.particles(0, 0, "red", {
     speed: 100,
     scale: { start: 1, end: 0 },
     blendMode: "ADD",
@@ -42,6 +41,5 @@ function create(this: Phaser.Scene) {
   logo.setVelocity(100, 200);
   logo.setBounce(1, 1);
   logo.setCollideWorldBounds(true);
-
   emitter.startFollow(logo);
 }

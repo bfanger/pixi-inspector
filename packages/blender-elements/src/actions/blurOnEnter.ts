@@ -1,6 +1,6 @@
-export default function blurOnEnter(el: HTMLInputElement) {
+export default function blurOnEnter(el: HTMLElement) {
   function onKeydown(e: KeyboardEvent) {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
       el.blur();
     }
   }

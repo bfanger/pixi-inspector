@@ -149,37 +149,48 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
       const textDefs: PropertyMapping[] = [];
 
       textDefs.push(...directProp(node, "text", "string"));
-      textDefs.push(...nestedProp(node, "style", "align", "string"));
-      textDefs.push(...nestedProp(node, "style", "breakWords", "boolean"));
-      textDefs.push(...nestedProp(node, "style", "dropShadow", "boolean"));
-      textDefs.push(...nestedProp(node, "style", "dropShadowAlpha", "number"));
-      textDefs.push(...nestedProp(node, "style", "dropShadowAngle", "number"));
-      textDefs.push(...nestedProp(node, "style", "dropShadowBlur", "number"));
-      textDefs.push(...nestedProp(node, "style", "dropShadowColor", "string"));
-      textDefs.push(
-        ...nestedProp(node, "style", "dropShadowDistance", "number")
-      );
-      textDefs.push(...nestedProp(node, "style", "fontFamily", "string"));
-      textDefs.push(...nestedProp(node, "style", "fontSize", "number"));
-      textDefs.push(...nestedProp(node, "style", "fontStyle", "string"));
-      textDefs.push(...nestedProp(node, "style", "fontVariant", "string"));
-      textDefs.push(...nestedProp(node, "style", "fontWeight", "string"));
-      textDefs.push(...nestedProp(node, "style", "leading", "number"));
-      textDefs.push(...nestedProp(node, "style", "letterSpacing", "number"));
-      textDefs.push(...nestedProp(node, "style", "lineHeight", "number"));
-      textDefs.push(...nestedProp(node, "style", "lineJoin", "string"));
-      textDefs.push(...nestedProp(node, "style", "miterLimit", "number"));
-      textDefs.push(...nestedProp(node, "style", "padding", "number"));
-      textDefs.push(...nestedProp(node, "style", "stroke", "string"));
-      textDefs.push(...nestedProp(node, "style", "strokeThickness", "number"));
-      textDefs.push(...nestedProp(node, "style", "textBaseline", "string"));
-      textDefs.push(...nestedProp(node, "style", "trim", "boolean"));
-      textDefs.push(...nestedProp(node, "style", "whiteSpace", "string"));
-      textDefs.push(...nestedProp(node, "style", "wordWrap", "boolean"));
-      textDefs.push(...nestedProp(node, "style", "wordWrapWidth", "number"));
-      textDefs.push(...nestedProp(node, "style", "fontSize", "number"));
-      textDefs.push(...nestedProp(node, "style", "leading", "number"));
-      textDefs.push(...nestedProp(node, "style", "padding", "number"));
+      if (devtools.isPixi(node as UniversalNode)) {
+        // Only for Pixi, updating style in Phaser has no effect
+        textDefs.push(...nestedProp(node, "style", "align", "string"));
+        textDefs.push(...nestedProp(node, "style", "breakWords", "boolean"));
+        textDefs.push(...nestedProp(node, "style", "dropShadow", "boolean"));
+        textDefs.push(
+          ...nestedProp(node, "style", "dropShadowAlpha", "number")
+        );
+        textDefs.push(
+          ...nestedProp(node, "style", "dropShadowAngle", "number")
+        );
+        textDefs.push(...nestedProp(node, "style", "dropShadowBlur", "number"));
+        textDefs.push(
+          ...nestedProp(node, "style", "dropShadowColor", "string")
+        );
+        textDefs.push(
+          ...nestedProp(node, "style", "dropShadowDistance", "number")
+        );
+        textDefs.push(...nestedProp(node, "style", "fontFamily", "string"));
+        textDefs.push(...nestedProp(node, "style", "fontSize", "number"));
+        textDefs.push(...nestedProp(node, "style", "fontStyle", "string"));
+        textDefs.push(...nestedProp(node, "style", "fontVariant", "string"));
+        textDefs.push(...nestedProp(node, "style", "fontWeight", "string"));
+        textDefs.push(...nestedProp(node, "style", "leading", "number"));
+        textDefs.push(...nestedProp(node, "style", "letterSpacing", "number"));
+        textDefs.push(...nestedProp(node, "style", "lineHeight", "number"));
+        textDefs.push(...nestedProp(node, "style", "lineJoin", "string"));
+        textDefs.push(...nestedProp(node, "style", "miterLimit", "number"));
+        textDefs.push(...nestedProp(node, "style", "padding", "number"));
+        textDefs.push(...nestedProp(node, "style", "stroke", "string"));
+        textDefs.push(
+          ...nestedProp(node, "style", "strokeThickness", "number")
+        );
+        textDefs.push(...nestedProp(node, "style", "textBaseline", "string"));
+        textDefs.push(...nestedProp(node, "style", "trim", "boolean"));
+        textDefs.push(...nestedProp(node, "style", "whiteSpace", "string"));
+        textDefs.push(...nestedProp(node, "style", "wordWrap", "boolean"));
+        textDefs.push(...nestedProp(node, "style", "wordWrapWidth", "number"));
+        textDefs.push(...nestedProp(node, "style", "fontSize", "number"));
+        textDefs.push(...nestedProp(node, "style", "leading", "number"));
+        textDefs.push(...nestedProp(node, "style", "padding", "number"));
+      }
 
       // Scene
       const sceneDefs: PropertyMapping[] = [];

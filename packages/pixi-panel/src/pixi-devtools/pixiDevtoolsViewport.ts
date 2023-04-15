@@ -1,4 +1,4 @@
-import type { IPointData, Rectangle } from "pixi.js";
+import type { IPointData } from "pixi.js";
 import type { PixiDevtools, UniversalNode } from "../types";
 
 export default function pixiDevtoolsViewport(devtools: PixiDevtools) {
@@ -25,7 +25,7 @@ export default function pixiDevtoolsViewport(devtools: PixiDevtools) {
     ) {
       nodes.push(node);
     } else if ("getBounds" in node) {
-      const bounds: Rectangle = node.getBounds();
+      const bounds = node.getBounds();
       if (bounds.contains(point.x, point.y)) {
         nodes.push(node);
       }
