@@ -39,6 +39,7 @@
     skewDimensions: true,
     visibility: true,
     font: true,
+    alignment: true,
     spacer: true,
     wordWrap: true,
     dropShadow: true,

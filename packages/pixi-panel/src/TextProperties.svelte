@@ -7,6 +7,7 @@
   import Property from "blender-elements/src/Property/Property.svelte";
   import TextField from "blender-elements/src/TextField/TextField.svelte";
   import Toggle from "blender-elements/src/Toggle/Toggle.svelte";
+  import SelectMenu from "blender-elements/src/SelectMenu/SelectMenu.svelte";
 
   export let props: NodeProperties;
   export let expanded: Record<string, boolean>;
@@ -18,9 +19,18 @@
     typeof props.fontSize === "number" ||
     typeof props.fontStyle === "string" ||
     typeof props.fontVariant === "string";
+  $: alignmentPanel =
+    typeof props.align === "string" || typeof props.textBaseline === "string";
   $: spacingPanel = typeof props.letterSpacing === "number";
   $: dropShadowPanel = typeof props.dropShadow === "boolean";
   $: strokePanel = typeof props.stroke === "string";
+
+  const alignOptions = [
+    { value: "left", label: "Left", icon: "text-left" },
+    { value: "center", label: "Center", icon: "text-center" },
+    { value: "right", label: "Right", icon: "text-right" },
+    { value: "justify", label: "Justify", icon: "text-justify" },
+  ];
 </script>
 
 {#if typeof props.text === "string"}
@@ -118,10 +128,62 @@
     {/if}
     {#if typeof props.fontWeight === "string"}
       <Property label="Weight" hint="The font weight">
-        <TextField
+        <SelectMenu
           value={props.fontWeight}
+          options={[
+            "normal",
+            "bold",
+            "bolder",
+            "lighter",
+            "100",
+            "200",
+            "300",
+            "400",
+            "500",
+            "600",
+            "700",
+            "800",
+            "900",
+          ]}
           on:change={(e) =>
             dispatch("change", { property: "fontWeight", value: e.detail })}
+        />
+      </Property>
+    {/if}
+  </Panel>
+{/if}
+{#if alignmentPanel}
+  <Panel title="Alignment" bind:expanded={expanded.alignment}>
+    {#if typeof props.align === "string"}
+      <Property
+        label="Align"
+        hint="Alignment for multiline text, does not affect single line text"
+      >
+        <SelectMenu
+          value={props.align}
+          options={alignOptions}
+          on:change={(e) =>
+            dispatch("change", { property: "align", value: e.detail })}
+        />
+      </Property>
+    {/if}
+    {#if typeof props.textBaseline === "string"}
+      <Property
+        label="Baseline"
+        hint="The baseline of the text that is rendered."
+      >
+        <SelectMenu
+          value={props.textBaseline}
+          options={[
+            "alphabetic",
+            "top",
+            "hanging",
+            "middle",
+            "ideographic",
+            "bottom",
+          ]}
+          on:change={(e) =>
+            dispatch("change", { property: "textBaseline", value: e.detail })}
         />
       </Property>
     {/if}
@@ -383,8 +445,6 @@
 {/if}
 
 <!-- 
-    align: string
-    textBaseline: string
     lineJoin: string
     miterLimit: number
 -->
