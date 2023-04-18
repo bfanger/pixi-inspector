@@ -12,10 +12,11 @@ type EventDetail = {
   activate: UniversalNode | undefined;
 };
 
-let mode: "PIXI" | "PHASER" | undefined;
 export default function pixiDevtools() {
   const eventTarget = new EventTarget();
   const win = window as any;
+
+  let mode: "PIXI" | "PHASER" | undefined;
 
   function getGlobal(varname: string) {
     if (win[varname]) {
@@ -57,11 +58,13 @@ export default function pixiDevtools() {
       }
       const renderer = getGlobal("__PIXI_RENDERER__");
       if (renderer) {
-        return renderer.lastObjectRendered;
+        // eslint-disable-next-line no-underscore-dangle
+        return renderer.lastObjectRendered ?? renderer._lastObjectRendered;
       }
       const patched = getGlobal("__PATCHED_RENDERER__");
       if (patched) {
-        return patched.lastObjectRendered;
+        // eslint-disable-next-line no-underscore-dangle
+        return patched.lastObjectRendered ?? patched._lastObjectRendered;
       }
       return undefined;
     },
