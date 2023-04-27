@@ -31,7 +31,9 @@ export default function numberDrag(el: HTMLElement, config: Config) {
         ts: Date.now(),
       };
       document.addEventListener("mousemove", onMousemove);
-      requestPointerLock(el);
+      if (e.target === el) {
+        requestPointerLock(el);
+      }
     }
   }
 

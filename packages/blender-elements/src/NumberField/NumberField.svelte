@@ -105,22 +105,7 @@
   }
 </script>
 
-<div
-  class="number-field"
-  class:active
-  class:focused
-  data-location={location}
-  use:numberDrag={{
-    value,
-    step,
-    min,
-    max,
-    onChange,
-    onClick,
-    onDown,
-    onUp,
-  }}
->
+<div class="number-field" class:active class:focused data-location={location}>
   <input
     class="input"
     {id}
@@ -133,9 +118,22 @@
     on:blur={onBlur}
   />
   {#if !focused && step}
-    <div class="drag" />
-    <button class="arrow left" on:click={onStepDown} />
-    <button class="arrow right" on:click={onStepUp} />
+    <div
+      class="drag"
+      use:numberDrag={{
+        value,
+        step,
+        min,
+        max,
+        onChange,
+        onClick,
+        onDown,
+        onUp,
+      }}
+    >
+      <button class="arrow left" on:click={onStepDown} />
+      <button class="arrow right" on:click={onStepUp} />
+    </div>
   {/if}
 </div>
 
