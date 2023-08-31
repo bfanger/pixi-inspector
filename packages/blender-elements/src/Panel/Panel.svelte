@@ -1,7 +1,7 @@
 <script lang="ts">
+  import { createEventDispatcher } from "svelte";
   import { slide } from "svelte/transition";
   import Checkbox from "../Checkbox/Checkbox.svelte";
-  import { createEventDispatcher } from "svelte";
 
   export let title: string;
   export let expanded = true;
@@ -25,7 +25,7 @@
     <div
       class="content"
       class:disabled={value === false}
-      transition:slide|local={{ duration: 150 }}
+      transition:slide={{ duration: 150 }}
     >
       <slot />
     </div>

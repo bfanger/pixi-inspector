@@ -6,6 +6,6 @@
   },
   "dependencies": {
     "pixi.js": "^7.2.4",
-    "vite": "^4.3.3"
+    "vite": "^4.4.9"
   }
 }

@@ -32,7 +32,9 @@
     color: white;
     align-items: center;
     user-select: none;
-    font: 12px system-ui, sans-serif;
+    font:
+      12px system-ui,
+      sans-serif;
     cursor: pointer;
   }
   .input {

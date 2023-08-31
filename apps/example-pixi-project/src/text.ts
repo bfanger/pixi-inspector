@@ -31,7 +31,7 @@ const style = new PIXI.TextStyle({
 
 const richText = new PIXI.Text(
   "Rich text with a lot of options and across multiple lines",
-  style
+  style,
 );
 richText.x = 50;
 richText.y = 220;

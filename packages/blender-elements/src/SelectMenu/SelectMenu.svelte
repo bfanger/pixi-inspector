@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher, getContext, setContext, tick } from "svelte";
+  import { createEventDispatcher, tick } from "svelte";
   import Option from "./Option.svelte";
 
   type OptionType = string | { value: string; label?: string; icon?: string };
@@ -8,11 +8,11 @@
   export let options: OptionType[];
   export let legend = "";
 
-  $: option = options.find((entry) => {
-    if (typeof entry === "string") {
-      return entry === value;
+  $: current = options.find((option) => {
+    if (typeof option === "string") {
+      return option === value;
     }
-    return entry.value === value;
+    return option.value === value;
   });
 
   const dispatch = createEventDispatcher();
@@ -37,8 +37,8 @@
         return;
       }
       const bounds = el.getBoundingClientRect();
-      const { x, y, width, height } = bounds;
-      const { innerWidth, innerHeight } = window;
+      const { x, y, height } = bounds;
+      const { innerHeight } = window;
       if (x < 0) {
         expanded.x = "RIGHT";
       }
@@ -70,21 +70,22 @@
   class:left={expanded?.x === "LEFT"}
 >
   <button class="value" on:click={expand}>
-    {#if typeof option === "string"}
-      <span>{option}</span>
-    {:else if option}
-      {#if option.icon}
+    {#if typeof current === "string"}
+      <span>{current}</span>
+    {:else if current}
+      {#if current.icon}
         <span
           class="icon"
-          style="background-image: var(--icon-{option.icon})"
+          style="background-image: var(--icon-{current.icon})"
         />
       {/if}
-      <span>{option.label ?? option.value}</span>
+      <span>{current.label ?? current.value}</span>
     {/if}
   </button>
   {#if expanded}
     <div class="popout" bind:this={el}>
       <button class="detector" on:mouseleave={onLeave} on:click={collapse} />
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div class="options" on:mouseenter={onEnter}>
         {#each options as option}
           {#if typeof option === "string"}
@@ -100,6 +101,7 @@
         {/each}
       </div>
       {#if legend}
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
         <div class="legend" on:mouseenter={onEnter}>{legend}</div>
       {/if}
     </div>
@@ -111,7 +113,9 @@
     position: relative;
   }
   .value {
-    font: 12px system-ui, sans-serif;
+    font:
+      12px system-ui,
+      sans-serif;
     appearance: none;
     background-color: transparent;
     border: none;

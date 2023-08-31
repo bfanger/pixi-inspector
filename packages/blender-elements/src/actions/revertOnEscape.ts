@@ -5,7 +5,7 @@
  */
 export default function revertOnEscape(
   el: HTMLInputElement | HTMLTextAreaElement,
-  previous: string
+  previous: string,
 ) {
   function onKeydown(e: KeyboardEvent) {
     if (e.key === "Escape") {

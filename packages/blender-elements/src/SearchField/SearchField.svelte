@@ -52,7 +52,9 @@
     position: relative;
   }
   .input {
-    font: 12px system-ui, sans-serif;
+    font:
+      12px system-ui,
+      sans-serif;
     background-color: transparent;
     border: none;
     width: 100%;

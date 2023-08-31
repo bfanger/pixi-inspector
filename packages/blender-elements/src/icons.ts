@@ -97,7 +97,7 @@ export function css(): string {
   const cssVars = [];
   for (const [name, data] of Object.entries(svg)) {
     const url = URL.createObjectURL(
-      new Blob([data], { type: "image/svg+xml" })
+      new Blob([data], { type: "image/svg+xml" }),
     );
     cssVars.push(`--icon-${name}: url(${url})`);
   }

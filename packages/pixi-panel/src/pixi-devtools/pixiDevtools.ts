@@ -150,7 +150,7 @@ export default function pixiDevtools() {
     },
     on<T extends keyof EventDetail>(
       event: T,
-      callback: (detail: EventDetail[T]) => void
+      callback: (detail: EventDetail[T]) => void,
     ) {
       const listener = (e: any) => {
         callback(e.detail);
@@ -160,7 +160,7 @@ export default function pixiDevtools() {
     },
     once<T extends keyof EventDetail>(
       event: T,
-      callback: (detail: EventDetail[T]) => void
+      callback: (detail: EventDetail[T]) => void,
     ) {
       const off = this.on(event, (e) => {
         off();
@@ -170,7 +170,7 @@ export default function pixiDevtools() {
     },
     dispatchEvent<T extends keyof EventDetail>(
       event: T,
-      detail: EventDetail[T]
+      detail: EventDetail[T],
     ) {
       eventTarget.dispatchEvent(new CustomEvent(`pixi:${event}`, { detail }));
     },

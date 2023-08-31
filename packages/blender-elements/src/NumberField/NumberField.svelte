@@ -176,7 +176,9 @@
     display: block;
     width: 100%;
     box-sizing: border-box;
-    font: 12px system-ui, sans-serif;
+    font:
+      12px system-ui,
+      sans-serif;
     padding-top: 2px;
     padding-bottom: 2px;
     text-shadow: 0 1px 2px rgba(black, 0.8);

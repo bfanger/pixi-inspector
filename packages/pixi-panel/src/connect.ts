@@ -65,7 +65,7 @@ export default function connect(bridge: BridgeFn): Readable<
     bridge,
     `(${detect.toString()}())`,
 
-    2500
+    2500,
   );
   const errorStore = writable<Error | undefined>();
   const readable = derived(detected, ({ data, error }) => {

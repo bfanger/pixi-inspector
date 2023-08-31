@@ -1,14 +1,14 @@
 <script lang="ts">
+  import Base from "blender-elements/src/Base.svelte";
+  import Button from "blender-elements/src/Button.svelte";
   import type { BridgeFn } from "./types";
   import connect from "./connect";
   import { setBridgeContext } from "./bridge-fns";
-  import Base from "blender-elements/src/Base.svelte";
   import Instructions from "./Instructions.svelte";
   import SceneGraphArea from "./SceneGraphArea.svelte";
   import PropertiesArea from "./PropertiesArea.svelte";
   import Warning from "./Warning.svelte";
   import patchPixi from "./patchPixi";
-  import Button from "blender-elements/src/Button.svelte";
 
   export let bridge: BridgeFn;
 
@@ -17,11 +17,11 @@
   const connection = connect(bridge);
   const { error } = connection;
 
-  setBridgeContext(<T>(code: string) =>
+  setBridgeContext(<T,>(code: string) =>
     bridge<T>(code).catch((err) => {
       connection.retry();
       throw err;
-    })
+    }),
   );
   async function applyPatch() {
     await patchPixi(bridge);
@@ -68,16 +68,14 @@
 </Base>
 
 <style lang="scss">
-  :global {
-    body {
-      margin: 0;
-      background: #161616;
-      color: #e5e5e5;
-    }
-    code {
-      display: block;
-      padding: 8px;
-    }
+  :global(body) {
+    margin: 0;
+    background: #161616;
+    color: #e5e5e5;
+  }
+  :global(code) {
+    display: block;
+    padding: 8px;
   }
   .pixi-panel {
     display: grid;

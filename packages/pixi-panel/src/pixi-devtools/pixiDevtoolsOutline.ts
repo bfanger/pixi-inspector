@@ -46,7 +46,7 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
 
   function findIn(
     path: string[],
-    container: UniversalNode
+    container: UniversalNode,
   ): UniversalNode | undefined {
     if (path.length === 0) {
       return container;
@@ -57,7 +57,7 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
       return undefined;
     }
     const node = children.find(
-      (child) => (child as any)[metaProperty]?.id === id
+      (child) => (child as any)[metaProperty]?.id === id,
     );
     if (node) {
       return findIn(path.slice(1), node);

@@ -20,7 +20,7 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
   function directProp(
     object: any,
     property: keyof NodeProperties,
-    type: "string" | "number" | "boolean"
+    type: "string" | "number" | "boolean",
   ): PropertyMapping[] {
     if (property in object && typeof object[property] === type) {
       return [
@@ -41,7 +41,7 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
     object: any,
     nested: string,
     property: keyof NodeProperties,
-    type: "string" | "number" | "boolean"
+    type: "string" | "number" | "boolean",
   ): PropertyMapping[] {
     if (
       nested in object &&
@@ -67,7 +67,7 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
     node: any,
     property: string,
     keyX: keyof NodeProperties,
-    keyY: keyof NodeProperties
+    keyY: keyof NodeProperties,
   ): PropertyMapping[] {
     if (
       property in node &&
@@ -100,7 +100,7 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
   }
 
   function getPropDefinition(
-    node: UniversalNode | Application
+    node: UniversalNode | Application,
   ): Record<PropertyTab, PropertyMapping[]> {
     if (!(node as any)[metaProperty]) {
       const objectDefs: PropertyMapping[] = [];
@@ -132,7 +132,7 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
           set: (value) =>
             (node as GameObjects.Image).setOrigin(
               value,
-              (node as GameObjects.Image).originY
+              (node as GameObjects.Image).originY,
             ),
         });
         objectDefs.push({
@@ -141,7 +141,7 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
           set: (value) =>
             (node as GameObjects.Image).setOrigin(
               (node as GameObjects.Image).originX,
-              value
+              value,
             ),
         });
       }
@@ -155,17 +155,17 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
         textDefs.push(...nestedProp(node, "style", "breakWords", "boolean"));
         textDefs.push(...nestedProp(node, "style", "dropShadow", "boolean"));
         textDefs.push(
-          ...nestedProp(node, "style", "dropShadowAlpha", "number")
+          ...nestedProp(node, "style", "dropShadowAlpha", "number"),
         );
         textDefs.push(
-          ...nestedProp(node, "style", "dropShadowAngle", "number")
+          ...nestedProp(node, "style", "dropShadowAngle", "number"),
         );
         textDefs.push(...nestedProp(node, "style", "dropShadowBlur", "number"));
         textDefs.push(
-          ...nestedProp(node, "style", "dropShadowColor", "string")
+          ...nestedProp(node, "style", "dropShadowColor", "string"),
         );
         textDefs.push(
-          ...nestedProp(node, "style", "dropShadowDistance", "number")
+          ...nestedProp(node, "style", "dropShadowDistance", "number"),
         );
         textDefs.push(...nestedProp(node, "style", "fontFamily", "string"));
         textDefs.push(...nestedProp(node, "style", "fontSize", "number"));
@@ -180,7 +180,7 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
         textDefs.push(...nestedProp(node, "style", "padding", "number"));
         textDefs.push(...nestedProp(node, "style", "stroke", "string"));
         textDefs.push(
-          ...nestedProp(node, "style", "strokeThickness", "number")
+          ...nestedProp(node, "style", "strokeThickness", "number"),
         );
         textDefs.push(...nestedProp(node, "style", "textBaseline", "string"));
         textDefs.push(...nestedProp(node, "style", "trim", "boolean"));
@@ -281,7 +281,7 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
     set(property: string, value: number) {
       const { definitions, active } = getActiveDefinition();
       const definition = definitions[active].find(
-        (entry) => entry.key === property
+        (entry) => entry.key === property,
       );
       if (definition) {
         definition.set(value);

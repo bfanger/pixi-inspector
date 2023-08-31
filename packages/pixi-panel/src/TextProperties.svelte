@@ -1,6 +1,5 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-  import type { NodeProperties } from "./types";
   import Panel from "blender-elements/src/Panel/Panel.svelte";
   import NumberField from "blender-elements/src/NumberField/NumberField.svelte";
   import Checkbox from "blender-elements/src/Checkbox/Checkbox.svelte";
@@ -8,6 +7,7 @@
   import TextField from "blender-elements/src/TextField/TextField.svelte";
   import Toggle from "blender-elements/src/Toggle/Toggle.svelte";
   import SelectMenu from "blender-elements/src/SelectMenu/SelectMenu.svelte";
+  import type { NodeProperties } from "./types";
 
   export let props: NodeProperties;
   export let expanded: Record<string, boolean>;

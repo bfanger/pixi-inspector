@@ -4,10 +4,8 @@
     "browser": true,
     "node": true
   },
-  "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "project": "./tsconfig.json",
-    "extraFileExtensions": [".cjs", ".svelte"]
+    "project": "./tsconfig.json"
   },
   "rules": {
     "import/no-extraneous-dependencies": "off"

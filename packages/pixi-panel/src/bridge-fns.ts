@@ -23,7 +23,7 @@ type Pollable<T> = Readable<AsyncResult<T>> & {
 export function poll<T>(
   bridge: BridgeFn,
   code: string,
-  interval: number
+  interval: number,
 ): Pollable<T> {
   const state: AsyncResult<T> = { data: undefined, error: undefined };
   let updater: (state: AsyncResult<T>) => void;

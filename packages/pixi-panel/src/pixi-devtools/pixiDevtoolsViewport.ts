@@ -5,7 +5,7 @@ export default function pixiDevtoolsViewport(devtools: PixiDevtools) {
   function findNodesAt(
     point: IPointData,
     node: UniversalNode,
-    filter: (node: UniversalNode) => boolean
+    filter: (node: UniversalNode) => boolean,
   ): UniversalNode[] {
     if (!filter(node)) {
       return [];
@@ -77,7 +77,7 @@ export default function pixiDevtoolsViewport(devtools: PixiDevtools) {
     },
     ray(
       point: IPointData,
-      filter: (node: UniversalNode) => boolean = () => true
+      filter: (node: UniversalNode) => boolean = () => true,
     ): UniversalNode[] {
       const root = devtools.root();
       if (!root) {

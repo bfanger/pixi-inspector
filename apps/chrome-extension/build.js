@@ -6,7 +6,7 @@ import esbuild from "esbuild";
 import sveltePlugin from "esbuild-svelte";
 import { rimrafSync } from "rimraf";
 // eslint-disable-next-line import/no-relative-packages
-import svelteConfig from "../../svelte.config.cjs";
+import svelteConfig from "../../svelte.config.js";
 
 const cwd = path.dirname(fileURLToPath(import.meta.url));
 const outdir = path.resolve(cwd, "build");

@@ -94,7 +94,7 @@
   }
 </script>
 
-<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+<!-- svelte-ignore a11y-no-static-element-interactions a11y-no-noninteractive-tabindex -->
 <div
   bind:this={el}
   class="outliner-row"

@@ -7,7 +7,7 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
     x: string,
     y: string,
     width: string,
-    height: string
+    height: string,
   ): Partial<CSSStyleDeclaration> {
     return {
       position: "absolute",

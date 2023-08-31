@@ -1,7 +1,7 @@
 <script lang="ts">
+  import Tabs from "blender-elements/src/Tabs/Tabs.svelte";
   import { getBridgeContext, poll } from "./bridge-fns";
   import type { PropertyTab, PropertyTabState } from "./types";
-  import Tabs from "blender-elements/src/Tabs/Tabs.svelte";
   import SceneProperties from "./SceneProperties.svelte";
   import ObjectProperties from "./ObjectProperties.svelte";
   import TextProperties from "./TextProperties.svelte";
@@ -11,7 +11,7 @@
   const state = poll<PropertyTabState>(
     bridge,
     "__PIXI_DEVTOOLS__.properties.values()",
-    300
+    300,
   );
   export const refresh = state.sync;
 
@@ -28,7 +28,7 @@
 
   $: props = $state.data?.properties ?? {};
   $: tabs = availableTabs.filter((tab) =>
-    $state.data?.tabs?.includes(tab.group)
+    $state.data?.tabs?.includes(tab.group),
   );
   $: active = availableTabs.find((tab) => tab.group === $state.data?.active);
 
@@ -49,15 +49,15 @@
   async function onChange(prop: string, value: number | boolean) {
     await bridge(
       `__PIXI_DEVTOOLS__.properties.set(${JSON.stringify(
-        prop
-      )}, ${JSON.stringify(value)})`
+        prop,
+      )}, ${JSON.stringify(value)})`,
     );
     state.sync();
   }
 
   async function activateTab(group: PropertyTab) {
     await bridge(
-      `__PIXI_DEVTOOLS__.properties.activate(${JSON.stringify(group)})`
+      `__PIXI_DEVTOOLS__.properties.activate(${JSON.stringify(group)})`,
     );
     state.sync();
   }

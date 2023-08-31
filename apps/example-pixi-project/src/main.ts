@@ -20,7 +20,7 @@ const container = new Container();
 app.stage.addChild(container);
 
 const texture = Texture.from(
-  "https://pixijs.io/examples/examples/assets/bunny.png"
+  "https://pixijs.io/examples/examples/assets/bunny.png",
 );
 
 for (let i = 0; i < 25; i += 1) {

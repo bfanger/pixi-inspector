@@ -13,7 +13,7 @@
   const tree = poll<OutlinerNode>(
     bridge,
     "__PIXI_DEVTOOLS__.outline.tree()",
-    2000
+    2000,
   );
   $: stage = $tree.data;
   $: error = $tree.error;
@@ -23,7 +23,7 @@
 
   $: {
     bridge(`__PIXI_DEVTOOLS__.outline.query = ${JSON.stringify(query)}`).then(
-      () => tree.sync()
+      () => tree.sync(),
     );
   }
 
@@ -48,13 +48,13 @@
   }
   async function selectable(path: string[]) {
     await bridge(
-      `__PIXI_DEVTOOLS__.outline.selectable(${JSON.stringify(path)})`
+      `__PIXI_DEVTOOLS__.outline.selectable(${JSON.stringify(path)})`,
     );
     tree.sync();
   }
   async function unselectable(path: string[]) {
     await bridge(
-      `__PIXI_DEVTOOLS__.outline.unselectable(${JSON.stringify(path)})`
+      `__PIXI_DEVTOOLS__.outline.unselectable(${JSON.stringify(path)})`,
     );
     tree.sync();
   }

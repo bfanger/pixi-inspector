@@ -13,7 +13,9 @@
 
 <style lang="scss">
   .option {
-    font: 12px system-ui, sans-serif;
+    font:
+      12px system-ui,
+      sans-serif;
     color: #dddddd;
     padding: 0 6px 0 6px;
     user-select: none;
