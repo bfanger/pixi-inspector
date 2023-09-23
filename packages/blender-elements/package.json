@@ -10,9 +10,9 @@
   },
   "devDependencies": {
     "@histoire/plugin-svelte": "^0.17.0",
-    "@sveltejs/vite-plugin-svelte": "^2.4.5",
+    "@sveltejs/vite-plugin-svelte": "^2.4.6",
     "histoire": "^0.17.0",
-    "svelte": "^4.2.0",
+    "svelte": "^4.2.1",
     "vite": "^4.4.9"
   }
 }
