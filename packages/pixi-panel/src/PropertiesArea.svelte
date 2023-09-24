@@ -38,6 +38,8 @@
     transformOrigin: true,
     skewDimensions: true,
     visibility: true,
+    rendering: true,
+    interactive: true,
     font: true,
     alignment: true,
     spacer: true,

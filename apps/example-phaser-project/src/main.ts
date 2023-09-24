@@ -19,7 +19,7 @@ const game = new Phaser.Game({
 (globalThis as any).__PHASER_GAME__ = game; // eslint-disable-line
 
 function preload(this: Phaser.Scene) {
-  this.load.setBaseURL("http://labs.phaser.io");
+  this.load.setBaseURL("/");
 
   this.load.image("sky", "assets/skies/space3.png");
   this.load.image("logo", "assets/sprites/phaser3-logo.png");

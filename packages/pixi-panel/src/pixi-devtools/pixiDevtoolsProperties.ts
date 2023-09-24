@@ -1,5 +1,5 @@
 import type { GameObjects } from "phaser";
-import type { Application } from "pixi.js";
+import type { Application, DisplayObject } from "pixi.js";
 import type {
   NodeProperties,
   PixiDevtools,
@@ -119,7 +119,9 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
       objectDefs.push(...directProp(node, "alpha", "number"));
       objectDefs.push(...directProp(node, "visible", "boolean"));
       objectDefs.push(...directProp(node, "cullable", "boolean"));
-
+      objectDefs.push(...directProp(node, "sortableChildren", "boolean"));
+      objectDefs.push(...directProp(node, "zIndex", "number"));
+      objectDefs.push(...directProp(node, "interactiveChildren", "boolean"));
       if (
         "originX" in node &&
         typeof node.originX === "number" &&
@@ -145,6 +147,23 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
             ),
         });
       }
+      if (devtools.isPixi(node as UniversalNode)) {
+        const displayObject: DisplayObject = node as DisplayObject;
+        if (typeof displayObject.eventMode === "string") {
+          objectDefs.push(...directProp(node, "eventMode", "string"));
+          objectDefs.push({
+            key: "cursor",
+            get: () => displayObject.cursor,
+            set: (value) => {
+              displayObject.cursor = value;
+            },
+          });
+        } else {
+          objectDefs.push(...directProp(node, "interactive", "boolean"));
+          objectDefs.push(...directProp(node, "buttonMode", "boolean"));
+        }
+      }
+
       // Text
       const textDefs: PropertyMapping[] = [];
 

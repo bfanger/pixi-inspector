@@ -34,7 +34,7 @@
     "@sveltejs/vite-plugin-svelte": "^2.4.6",
     "@types/chrome": "^0.0.246",
     "@types/firefox-webext-browser": "^111.0.2",
-    "@types/node": "^20.6.3",
+    "@types/node": "^20.6.4",
     "@typescript-eslint/eslint-plugin": "^6.7.2",
     "@typescript-eslint/parser": "^6.7.2",
     "concurrently": "^8.2.1",

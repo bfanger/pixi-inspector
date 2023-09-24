@@ -4,6 +4,7 @@
   import NumberField from "blender-elements/src/NumberField/NumberField.svelte";
   import Checkbox from "blender-elements/src/Checkbox/Checkbox.svelte";
   import Property from "blender-elements/src/Property/Property.svelte";
+  import SelectMenu from "blender-elements/src/SelectMenu/SelectMenu.svelte";
   import type { NodeProperties } from "./types";
 
   export let props: NodeProperties;
@@ -23,6 +24,14 @@
 
   $: visibilityPanel =
     typeof props.alpha === "number" || typeof props.visible === "boolean";
+  $: renderPanel =
+    typeof props.sortableChildren === "boolean" ||
+    typeof props.zIndex === "number" ||
+    typeof props.cullable === "boolean";
+
+  $: interactivePanel =
+    typeof props.interactive === "boolean" ||
+    typeof props.interactiveChildren === "boolean";
 
   let skewDimensionsPanel = "";
   $: if (typeof props.width === "number" && typeof props.skewX === "number") {
@@ -196,6 +205,34 @@
         </Checkbox>
       </Property>
     {/if}
+  </Panel>
+{/if}
+{#if renderPanel}
+  <Panel title="Rendering" bind:expanded={expanded.rendering}>
+    {#if typeof props.sortableChildren === "boolean"}
+      <Property>
+        <Checkbox
+          value={props.sortableChildren}
+          hint="If set to true, the container will sort its children by zIndex value"
+          on:change={(e) =>
+            dispatch("change", {
+              property: "sortableChildren",
+              value: e.detail,
+            })}
+        >
+          Sortable children
+        </Checkbox>
+      </Property>
+    {/if}
+    {#if typeof props.zIndex === "number"}
+      <Property label="Z Index">
+        <NumberField
+          value={props.zIndex}
+          on:change={(e) =>
+            dispatch("change", { property: "zIndex", value: e.detail })}
+        />
+      </Property>
+    {/if}
     {#if typeof props.cullable === "boolean"}
       <Property>
         <Checkbox
@@ -210,6 +247,7 @@
     {/if}
   </Panel>
 {/if}
+
 {#if skewDimensionsPanel}
   <Panel title={skewDimensionsPanel} bind:expanded={expanded.skewDimensions}>
     {#if typeof props.skewX === "number"}
@@ -256,6 +294,120 @@
           on:change={(e) =>
             dispatch("change", { property: "height", value: e.detail })}
         />
+      </Property>
+    {/if}
+  </Panel>
+{/if}
+{#if interactivePanel}
+  <Panel title="Interactivity" bind:expanded={expanded.interactive}>
+    {#if typeof props.eventMode === "string"}
+      <Property
+        label="Event mode"
+        hint="Enable interaction events for the DisplayObject. Touch, pointer and mouse. This now replaces the interactive property."
+      >
+        <SelectMenu
+          legend="Event Mode"
+          value={props.eventMode}
+          options={[
+            { value: "none", label: "None" },
+            { value: "passive", label: "Passive" },
+            { value: "auto", label: "Auto" },
+            { value: "static", label: "Static" },
+            { value: "dynamic", label: "Dynamic" },
+          ]}
+          on:change={(e) =>
+            dispatch("change", { property: "eventMode", value: e.detail })}
+        />
+      </Property>
+      <Property label="Cursor">
+        <SelectMenu
+          legend="Cursor"
+          value={props.cursor ?? ""}
+          options={[
+            ...(props.cursor ? [] : [{ value: "", label: "" }]),
+            { value: "auto", label: "Auto" },
+            { value: "default", label: "Default" },
+            { value: "none", label: "None" },
+            { value: "context-menu", label: "Context menu" },
+            { value: "help", label: "Help" },
+            { value: "pointer", label: "Pointer" },
+            { value: "progress", label: "Progress" },
+            { value: "wait", label: "Wait" },
+            { value: "cell", label: "Cell" },
+            { value: "crosshair", label: "Crosshair" },
+            { value: "text", label: "Text" },
+            { value: "vertical-text", label: "Vertical text" },
+            { value: "alias", label: "Alias" },
+            { value: "copy", label: "Copy" },
+            { value: "move", label: "Move" },
+            { value: "no-drop", label: "No drop" },
+            { value: "not-allowed", label: "Not allowed" },
+            { value: "all-scroll", label: "All scroll" },
+            { value: "zoom-in", label: "Zoom in" },
+            { value: "zoom-out", label: "Zoom out" },
+            { value: "grab", label: "Grab" },
+            { value: "grabbing", label: "Grabbing" },
+            // { value: "e-resize", label: "Resize (East)" },
+            // { value: "n-resize", label: "Resize (North)" },
+            // { value: "ne-resize", label: "Resize (North East)" },
+            // { value: "nw-resize", label: "Resize (North West)" },
+            // { value: "s-resize", label: "Resize (South)" },
+            // { value: "se-resize", label: "Resize (South East)" },
+            // { value: "sw-resize", label: "Resize (South West)" },
+            // { value: "w-resize", label: "Resize (West)" },
+            // { value: "ns-resize", label: "Resize (North South)" },
+            // { value: "ew-resize", label: "Resize (East West)" },
+            // { value: "nesw-resize", label: "Resize (North East South West)" },
+            // { value: "col-resize", label: "Resize (Column)" },
+            // { value: "nwse-resize", label: "Resize (North West South East)" },
+            // { value: "row-resize", label: "Resize (Row)" },
+          ]}
+          on:change={(e) =>
+            dispatch("change", {
+              property: "cursor",
+              value: e.detail === "" ? undefined : e.detail,
+            })}
+        />
+      </Property>
+    {/if}
+    {#if typeof props.interactive === "boolean"}
+      <Property>
+        <Checkbox
+          value={props.interactive}
+          hint="Enable interaction events for the DisplayObject. Touch, pointer and mouse"
+          on:change={(e) =>
+            dispatch("change", { property: "interactive", value: e.detail })}
+        >
+          Interactive
+        </Checkbox>
+      </Property>
+    {/if}
+
+    {#if typeof props.buttonMode === "boolean"}
+      <Property>
+        <Checkbox
+          value={props.buttonMode}
+          hint="If enabled, the mouse cursor use the pointer behavior when hovered over the displayObject if it is interactive Setting this changes the 'cursor' property to 'pointer'."
+          on:change={(e) =>
+            dispatch("change", { property: "buttonMode", value: e.detail })}
+        >
+          Button mode
+        </Checkbox>
+      </Property>
+    {/if}
+    {#if typeof props.interactiveChildren === "boolean"}
+      <Property>
+        <Checkbox
+          value={props.interactiveChildren}
+          hint="Determines if the children to the displayObject can be clicked/touched Setting this to false allows PixiJS to bypass a recursive hitTest function"
+          on:change={(e) =>
+            dispatch("change", {
+              property: "interactiveChildren",
+              value: e.detail,
+            })}
+        >
+          Interactive children
+        </Checkbox>
       </Property>
     {/if}
   </Panel>

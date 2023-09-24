@@ -1,6 +1,8 @@
 import type { GameObjects, Scene, Scenes } from "phaser";
 import type {
+  Cursor,
   DisplayObject,
+  EventMode,
   TextStyleAlign,
   TextStyleFontStyle,
   TextStyleFontVariant,
@@ -71,6 +73,13 @@ export type NodeProperties = {
   alpha?: number;
   visible?: boolean;
   cullable?: boolean;
+  sortableChildren?: boolean;
+  zIndex?: number;
+  interactive?: boolean;
+  cursor?: Cursor;
+  buttonMode?: boolean;
+  interactiveChildren?: boolean;
+  eventMode?: EventMode;
   // Scene
   speed?: number;
   started?: boolean;
