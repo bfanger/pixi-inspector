@@ -24,7 +24,8 @@ for (const file of [
   "pixi-panel.html",
   "icon.png",
   "icon@2x.png",
-  "panel-icon.svg",
+  "panel-icon@light.svg",
+  "panel-icon@dark.svg",
 ]) {
   fs.copyFileSync(path.join(srcDir, file), path.join(outdir, file));
 }
