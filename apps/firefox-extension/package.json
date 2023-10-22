@@ -11,14 +11,14 @@
     "format": "prettier --write ."
   },
   "devDependencies": {
-    "concurrently": "^8.2.1",
-    "esbuild": "^0.19.3",
+    "concurrently": "^8.2.2",
+    "esbuild": "^0.19.5",
     "esbuild-svelte": "^0.8.0",
     "pixi-panel": "workspace:*",
-    "rimraf": "^5.0.1",
-    "svelte": "^4.2.1"
+    "rimraf": "^5.0.5",
+    "svelte": "^4.2.2"
   },
   "dependencies": {
-    "web-ext": "^7.7.0"
+    "web-ext": "^7.8.0"
   }
 }
