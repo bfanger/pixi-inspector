@@ -3,7 +3,7 @@
   "description": "Browser agnostic DevTools for PixiJS",
   "devDependencies": {
     "blender-elements": "workspace:*",
-    "phaser": "^3.60.0",
+    "phaser": "^3.70.0",
     "pixi.js": "^7.3.2"
   }
 }

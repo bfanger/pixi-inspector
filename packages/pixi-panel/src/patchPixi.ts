@@ -31,11 +31,8 @@ function patch() {
     console.error("Patching PIXI failed");
     return;
   }
-  for (const Renderer of [
-    PIXI.Renderer,
-    PIXI.WebGLRenderer,
-    PIXI.CanvasRenderer,
-  ]) {
+  for (const prop of ["Renderer", "WebGLRenderer"]) {
+    const Renderer = PIXI[prop];
     if (Renderer) {
       const { render } = Renderer.prototype;
       // eslint-disable-next-line @typescript-eslint/no-loop-func
@@ -45,6 +42,7 @@ function patch() {
         Renderer.prototype.render = render;
         return render.call(this as any, ...args);
       };
+      break;
     }
   }
 }
