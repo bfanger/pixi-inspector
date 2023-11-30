@@ -1,6 +1,6 @@
-# PixiJS Devtools
+# PixiJS + Pixi3D Devtools
 
-Browser extension to debug games and apps written with [PixiJS](http://pixijs.com/).
+Browser extension to debug games and apps written with [PixiJS + Pixi3D](http://pixijs.com/).
 
 ## Features
 
@@ -10,13 +10,11 @@ Browser extension to debug games and apps written with [PixiJS](http://pixijs.co
 - Outline the active node in the viewport.
 - The active node is available in the developer console as `$pixi`
 - Right-click (or alt click) in the viewport to activate a node
+- Exposes 3D properties for Pixi3D
 
-## Installation
+## Forked Repository
 
-Install PixiJS Devtools from:
-
-- [Chrome Web Store](https://chrome.google.com/webstore/detail/pixi-inspector/aamddddknhcagpehecnhphigffljadon)
-- [Add-ons for Firefox](https://addons.mozilla.org/en-US/firefox/addon/pixijs-devtools/)
+This repository is forked from [PixiJS Devtools](https://github.com/bfanger/pixi-inspector)
 
 ## Usage
 

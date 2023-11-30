@@ -1,10 +1,11 @@
 {
-  "name": "pixi-devtools-chrome",
+  "name": "pixi-devtools-plus-chrome",
   "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "node build.js --watch",
-    "build": "node build.js && rm -f ../../chrome-extension.zip && zip -r ../../chrome-extension.zip build/ -x \"*.DS_Store\"",
+    "build": "node build.js && rimraf ../../chrome-extension.zip && npm run package",
+    "package": "zip -r ../../chrome-extension.zip build/ -x \"*.DS_Store\"",
     "format": "prettier --write ."
   },
   "devDependencies": {

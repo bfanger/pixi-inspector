@@ -2,7 +2,21 @@
  *
  * https://pixijs.io/examples/#/demos-basic/container.js
  */
-import { Application, Container, Sprite, Texture } from "pixi.js";
+import {
+  Application,
+  Container,
+  DisplayObject,
+  Sprite,
+  Texture,
+} from "pixi.js";
+import {
+  Color,
+  Container3D,
+  Cubemap,
+  ImageBasedLighting,
+  LightingEnvironment,
+  Mesh3D,
+} from "pixi3d";
 
 const app = new Application({
   width: 640,
@@ -16,8 +30,18 @@ canvas.style.maxWidth = "100%";
 document.body.appendChild(canvas);
 
 const container = new Container();
+const container3D = new Container3D();
 
-app.stage.addChild(container);
+LightingEnvironment.main.imageBasedLighting = new ImageBasedLighting(
+  Cubemap.fromColors(new Color(0.5, 0.5, 0.5, 1)),
+  Cubemap.fromColors(new Color(1, 1, 1, 1)),
+);
+const box = Mesh3D.createCube();
+container3D.addChild(box);
+box.z = -5;
+box.rotationQuaternion.setEulerAngles(45, 0, 10);
+
+app.stage.addChild(container, <DisplayObject>(<unknown>container3D));
 
 const texture = Texture.from(
   "https://pixijs.io/examples/examples/assets/bunny.png",

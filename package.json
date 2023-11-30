@@ -1,5 +1,5 @@
 {
-  "name": "pixi-devtools-monorepo",
+  "name": "pixi-devtools-plus-monorepo",
   "private": true,
   "workspaces": [
     "apps/*",
@@ -26,8 +26,8 @@
     "*.(js|cjs|mjs|jsx)": [
       "eslint --max-warnings 0 --no-ignore"
     ],
-    "*.(json|scss|md)": [
-      "prettier --check --loglevel=warn"
+    "*.(scss)": [
+      "prettier --check --log-level=warn"
     ]
   },
   "devDependencies": {

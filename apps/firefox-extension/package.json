@@ -1,6 +1,6 @@
 {
-  "name": "pixi-devtools-firefox",
-  "version": "2.1.0",
+  "name": "pixi-devtools-plus-firefox",
+  "version": "1.0.0",
   "license": "MIT",
   "type": "module",
   "scripts": {

@@ -37,6 +37,22 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
     return [];
   }
 
+  function childProp(
+    node: any,
+    property: string,
+    key: keyof NodeProperties,
+    childProperty: string,
+  ): PropertyMapping {
+    return {
+      key,
+      get: () => node[property][childProperty],
+      set: (value) => {
+        // eslint-disable-next-line no-param-reassign
+        node[property][childProperty] = value;
+      },
+    };
+  }
+
   function nestedProp(
     object: any,
     nested: string,
@@ -63,37 +79,60 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
     return [];
   }
 
+  function validateNode(
+    node: any,
+    property: string,
+    type: "string" | "number" | "boolean",
+  ): boolean {
+    return property in node && typeof node[property] === type;
+  }
+
   function pointProperty(
     node: any,
     property: string,
     keyX: keyof NodeProperties,
     keyY: keyof NodeProperties,
+    keyZ?: keyof NodeProperties,
+  ): PropertyMapping[] {
+    let propertyMap: PropertyMapping[] = [];
+    if (
+      property in node &&
+      typeof node[property] === "object" &&
+      validateNode(node[property], "x", "number") &&
+      validateNode(node[property], "y", "number")
+    ) {
+      propertyMap = [
+        childProp(node, property, keyX, "x"),
+        childProp(node, property, keyY, "y"),
+      ];
+      if (validateNode(node[property], "z", "number") && keyZ) {
+        propertyMap.push(childProp(node, property, keyZ, "z"));
+      }
+    }
+    return propertyMap;
+  }
+
+  function quaternionProperty(
+    node: any,
+    property: string,
+    keyX: keyof NodeProperties,
+    keyY: keyof NodeProperties,
+    keyZ: keyof NodeProperties,
+    keyW: keyof NodeProperties,
   ): PropertyMapping[] {
     if (
       property in node &&
       typeof node[property] === "object" &&
-      "x" in node[property] &&
-      typeof node[property].x === "number" &&
-      "y" in node[property] &&
-      typeof node[property].y === "number"
+      validateNode(node[property], "x", "number") &&
+      validateNode(node[property], "y", "number") &&
+      validateNode(node[property], "z", "number") &&
+      validateNode(node[property], "w", "number")
     ) {
       return [
-        {
-          key: keyX,
-          get: () => node[property].x,
-          set: (value) => {
-            // eslint-disable-next-line no-param-reassign
-            node[property].x = value;
-          },
-        },
-        {
-          key: keyY,
-          get: () => node[property].y,
-          set: (value) => {
-            // eslint-disable-next-line no-param-reassign
-            node[property].y = value;
-          },
-        },
+        childProp(node, property, keyX, "x"),
+        childProp(node, property, keyY, "y"),
+        childProp(node, property, keyZ, "z"),
+        childProp(node, property, keyW, "w"),
       ];
     }
     return [];
@@ -107,10 +146,24 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
 
       objectDefs.push(...directProp(node, "x", "number"));
       objectDefs.push(...directProp(node, "y", "number"));
+      objectDefs.push(...directProp(node, "z", "number"));
       objectDefs.push(...directProp(node, "angle", "number"));
-      objectDefs.push(...pointProperty(node, "scale", "scaleX", "scaleY"));
+      objectDefs.push(
+        ...pointProperty(node, "scale", "scaleX", "scaleY", "scaleZ"),
+      );
       objectDefs.push(...directProp(node, "scaleX", "number"));
       objectDefs.push(...directProp(node, "scaleY", "number"));
+      objectDefs.push(...directProp(node, "scaleZ", "number"));
+      objectDefs.push(
+        ...quaternionProperty(
+          node,
+          "rotationQuaternion",
+          "quatX",
+          "quatY",
+          "quatZ",
+          "quatW",
+        ),
+      );
       objectDefs.push(...directProp(node, "width", "number"));
       objectDefs.push(...directProp(node, "height", "number"));
       objectDefs.push(...pointProperty(node, "anchor", "anchorX", "anchorY"));

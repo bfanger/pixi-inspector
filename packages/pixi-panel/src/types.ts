@@ -53,7 +53,22 @@ export type PropertyTabState = {
   properties?: NodeProperties;
 };
 
-export type NodeProperties = {
+export type PointLike3D = {
+  x: number;
+  y: number;
+  z: number;
+};
+
+export type QuaternionLike = {
+  x: number;
+  y: number;
+  z: number;
+  w: number;
+};
+
+export type NodeProperties = PixiProperties & Pixi3DProperties;
+
+export type PixiProperties = {
   // Object
   x?: number;
   y?: number;
@@ -111,4 +126,13 @@ export type NodeProperties = {
   whiteSpace?: TextStyleWhiteSpace;
   wordWrap?: boolean;
   wordWrapWidth?: number;
+};
+
+export type Pixi3DProperties = {
+  z?: number;
+  scaleZ?: number;
+  quatX?: number;
+  quatY?: number;
+  quatZ?: number;
+  quatW?: number;
 };

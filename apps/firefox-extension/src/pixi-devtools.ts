@@ -9,5 +9,5 @@ browser.devtools.inspectedWindow
     }
   })
   .finally(() => {
-    browser.devtools.panels.create("PixiJS", iconPath, "pixi-panel.html");
+    browser.devtools.panels.create("PixiJS+", iconPath, "pixi-panel.html");
   });

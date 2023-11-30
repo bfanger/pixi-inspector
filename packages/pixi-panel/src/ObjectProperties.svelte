@@ -1,11 +1,15 @@
 <script lang="ts">
+  import { Quaternion } from "pixi3d";
   import { createEventDispatcher } from "svelte";
   import Panel from "blender-elements/src/Panel/Panel.svelte";
   import NumberField from "blender-elements/src/NumberField/NumberField.svelte";
   import Checkbox from "blender-elements/src/Checkbox/Checkbox.svelte";
   import Property from "blender-elements/src/Property/Property.svelte";
   import SelectMenu from "blender-elements/src/SelectMenu/SelectMenu.svelte";
-  import type { NodeProperties } from "./types";
+  import type { NodeProperties, PointLike3D } from "./types";
+  import {
+    getEulerAngles,
+  } from "./pixi-devtools/pixiDevToolsUtil";
 
   export let props: NodeProperties;
   export let expanded: Record<string, boolean>;
@@ -16,6 +20,8 @@
     typeof props.x === "number" ||
     typeof props.angle === "number" ||
     typeof props.scaleX === "number";
+
+  $: container3D = typeof props.z === "number";
 
   $: transformOriginPanel =
     typeof props.originX === "number" ||
@@ -43,6 +49,35 @@
   } else {
     skewDimensionsPanel = "";
   }
+
+  let euler = { x: 0, y: 0, z: 0 };
+  $: if (
+    container3D &&
+    typeof props.quatW === "number" &&
+    typeof props.quatX === "number" &&
+    typeof props.quatY === "number" &&
+    typeof props.quatZ === "number"
+  ) {
+    euler = getEulerAngles({
+      x: props.quatX,
+      y: props.quatY,
+      z: props.quatZ,
+      w: props.quatW,
+    });
+  }
+
+  $: onEulerChange = ({
+    x = euler.x,
+    y = euler.y,
+    z = euler.z,
+  }: Partial<PointLike3D>) => {
+    euler = { x, y, z };
+    const quat = Quaternion.fromEuler(x, y, z);
+    dispatch("change", { property: "quatX", value: quat.x });
+    dispatch("change", { property: "quatY", value: quat.y });
+    dispatch("change", { property: "quatZ", value: quat.z });
+    dispatch("change", { property: "quatW", value: quat.w });
+  };
 </script>
 
 {#if transformPanel}
@@ -56,17 +91,91 @@
           dispatch("change", { property: "x", value: e.detail })}
       />
     </Property>
-    <Property label="Y">
+    <Property label="Y" group={container3D}>
       <NumberField
         value={props.y}
         step={1}
-        location="BOTTOM"
+        location={container3D ? "MIDDLE" : "BOTTOM"}
         on:change={(e) =>
           dispatch("change", { property: "y", value: e.detail })}
       />
     </Property>
+    {#if container3D}
+      <Property label="Z">
+        <NumberField
+          value={props.z}
+          step={1}
+          location="BOTTOM"
+          on:change={(e) =>
+            dispatch("change", { property: "z", value: e.detail })}
+        />
+      </Property>
+    {/if}
 
-    {#if typeof props.angle === "number"}
+    {#if container3D}
+      <Property label="Rotation X" group>
+        <NumberField
+          value={euler.x}
+          step={1}
+          location="TOP"
+          on:change={(e) => onEulerChange({ x: e.detail })}
+        />
+      </Property>
+      <Property label="Y" group>
+        <NumberField
+          value={euler.y}
+          step={1}
+          location="MIDDLE"
+          on:change={(e) => onEulerChange({ y: e.detail })}
+        />
+      </Property>
+      <Property label="Z">
+        <NumberField
+          value={euler.z}
+          step={1}
+          location="BOTTOM"
+          on:change={(e) => onEulerChange({ z: e.detail })}
+        />
+      </Property>
+
+      <Property label="Quaternion X" group>
+        <NumberField
+          value={props.quatX}
+          step={0.1}
+          location="TOP"
+          on:change={(e) =>
+            dispatch("change", { property: "quatX", value: e.detail })}
+        />
+      </Property>
+      <Property label="Y" group>
+        <NumberField
+          value={props.quatY}
+          step={0.1}
+          location="MIDDLE"
+          on:change={(e) =>
+            dispatch("change", { property: "quatY", value: e.detail })}
+        />
+      </Property>
+      <Property label="Z" group>
+        <NumberField
+          value={props.quatZ}
+          step={0.1}
+          location="MIDDLE"
+          on:change={(e) =>
+            dispatch("change", { property: "quatZ", value: e.detail })}
+        />
+      </Property>
+      <Property label="W">
+        <NumberField
+          value={props.quatW}
+          step={0.1}
+          location="BOTTOM"
+          on:change={(e) =>
+            dispatch("change", { property: "quatW", value: e.detail })}
+        />
+      </Property>
+    {/if}
+    {#if typeof props.angle === "number" && !container3D}
       <Property label="Angle" hint="The angle of the object in degrees">
         <NumberField
           value={props.angle}
@@ -91,15 +200,26 @@
             dispatch("change", { property: "scaleX", value: e.detail })}
         />
       </Property>
-      <Property label="Y">
+      <Property label="Y" group={container3D}>
         <NumberField
           value={props.scaleY}
           step={0.1}
-          location="BOTTOM"
+          location={container3D ? "MIDDLE" : "BOTTOM"}
           on:change={(e) =>
             dispatch("change", { property: "scaleY", value: e.detail })}
         />
       </Property>
+      {#if container3D}
+        <Property label="Z">
+          <NumberField
+            value={props.scaleZ}
+            step={0.1}
+            location="BOTTOM"
+            on:change={(e) =>
+              dispatch("change", { property: "scaleZ", value: e.detail })}
+          />
+        </Property>
+      {/if}
     {/if}
   </Panel>
 {/if}
