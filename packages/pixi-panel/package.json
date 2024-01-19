@@ -4,6 +4,6 @@
   "devDependencies": {
     "blender-elements": "workspace:*",
     "phaser": "^3.70.0",
-    "pixi.js": "^7.3.2"
+    "pixi.js": "^7.3.3"
   }
 }
