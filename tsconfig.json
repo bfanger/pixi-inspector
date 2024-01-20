@@ -8,8 +8,8 @@
     "skipLibCheck": true,
     "strict": true,
     "paths": {
-      "pixi-panel/*": ["./node_modules/pixi-panel/*"]
-    }
+      "pixi-panel/*": ["./node_modules/pixi-panel/*"],
+    },
   },
   "include": [
     "**/*.d.ts",
@@ -22,6 +22,6 @@
     "**/*.js",
     "**/*.jsx",
     ".*.cjs",
-    "**/*.cjs"
-  ]
+    "**/*.cjs",
+  ],
 }
