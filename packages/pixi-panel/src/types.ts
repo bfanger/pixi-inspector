@@ -1,7 +1,7 @@
 import type { GameObjects, Scene, Scenes } from "phaser";
 import type {
   Cursor,
-  DisplayObject,
+  Container,
   EventMode,
   TextStyleAlign,
   TextStyleFontStyle,
@@ -40,7 +40,7 @@ export type OutlinerNode = {
 };
 /** A node in an PixiJS stage or Phaser scene */
 export type UniversalNode =
-  | DisplayObject
+  | Container
   | Scene
   | GameObjects.GameObject
   | Scenes.SceneManager

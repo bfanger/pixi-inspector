@@ -32,6 +32,7 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
    */
   function augment(node: UniversalNode) {
     let meta: Meta = (node as any)[metaProperty];
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (meta) {
       return meta;
     }
@@ -75,14 +76,24 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
 
   function buildName(node: UniversalNode) {
     let name = "";
-    if ("name" in node && node.name !== null && node.name !== "") {
-      if (node.constructor?.name) {
+    if ("label" in node) {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      if (node.label !== null && node.label !== "" && node.label !== "Sprite") {
+        if (node.constructor.name) {
+          name += `${node.constructor.name} `;
+        }
+        name += `"${node.label}"`;
+      }
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    } else if ("name" in node && node.name !== null && node.name !== "") {
+      if (node.constructor.name) {
         name += `${node.constructor.name} `;
       }
       name += `"${node.name}"`;
     }
     if (!name) {
-      name = node.constructor?.name ?? "anonymous";
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      name = node.constructor.name ?? "anonymous";
     }
     return name;
   }

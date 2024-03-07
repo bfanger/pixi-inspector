@@ -44,7 +44,6 @@ if (WATCH) {
   await ctx.watch();
   await ctx.serve({ port: 10808 });
 } else {
-  await ctx.rebuild().then(() => {
-    ctx.dispose();
-  });
+  await ctx.rebuild();
+  await ctx.dispose();
 }

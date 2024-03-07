@@ -4,6 +4,7 @@ import type { BridgeFn } from "pixi-panel/src/types";
 const bridge: BridgeFn = (code: string) =>
   new Promise((resolve, reject) => {
     chrome.devtools.inspectedWindow.eval(code, (result, err) => {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (err) {
         if (err instanceof Error) {
           reject(err);
@@ -25,6 +26,7 @@ if (WATCH) {
   new EventSource("http://localhost:10808/esbuild").addEventListener(
     "change",
     () => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       bridge("window.location.reload()");
       window.location.reload();
     },

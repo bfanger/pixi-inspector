@@ -47,7 +47,6 @@ const ctx = await esbuild.context({
 if (WATCH) {
   await ctx.watch();
 } else {
-  await ctx.rebuild().then(() => {
-    ctx.dispose();
-  });
+  await ctx.rebuild();
+  await ctx.dispose();
 }

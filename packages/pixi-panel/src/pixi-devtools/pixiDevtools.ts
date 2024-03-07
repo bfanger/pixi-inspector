@@ -1,10 +1,4 @@
-import type {
-  Application,
-  Container,
-  DisplayObject,
-  ICanvas,
-  IRenderer,
-} from "pixi.js";
+import type { Application, Container, ICanvas, Renderer } from "pixi.js";
 import type { Game, GameObjects, Scene, Scenes } from "phaser";
 import type { UniversalNode } from "../types";
 
@@ -18,7 +12,7 @@ export default function pixiDevtools() {
 
   let mode: "PIXI" | "PHASER" | undefined;
 
-  function getGlobal(varname: string) {
+  function getGlobal(varname: string): any {
     if (win[varname]) {
       return win[varname];
     }
@@ -38,71 +32,73 @@ export default function pixiDevtools() {
 
   return {
     app(): Application | undefined {
-      return getGlobal("__PIXI_APP__");
+      return getGlobal("__PIXI_APP__") as Application | undefined;
     },
     root(): Container | Scene | undefined {
       const stage = getGlobal("__PIXI_STAGE__");
       if (stage) {
-        return stage;
+        return stage as Container;
       }
-      const app = getGlobal("__PIXI_APP__");
+      const app = getGlobal("__PIXI_APP__") as Application | undefined;
       if (app) {
-        return app.stage;
+        return app.stage as Container;
       }
-      const game = getGlobal("__PHASER_GAME__");
+      const game = getGlobal("__PHASER_GAME__") as Game | undefined;
       if (game) {
         if (game.scene.scenes.length === 1) {
-          return game.scene.scenes[0];
+          return game.scene.scenes[0] as Scene;
         }
-        return game.scene;
+        return game.scene as any as Scene;
       }
       const renderer = getGlobal("__PIXI_RENDERER__");
       if (renderer) {
-        // eslint-disable-next-line no-underscore-dangle
-        return renderer.lastObjectRendered ?? renderer._lastObjectRendered;
+        return (renderer.lastObjectRendered ??
+          // eslint-disable-next-line no-underscore-dangle
+          renderer._lastObjectRendered) as Container;
       }
       const patched = getGlobal("__PATCHED_RENDERER__");
       if (patched) {
-        // eslint-disable-next-line no-underscore-dangle
-        return patched.lastObjectRendered ?? patched._lastObjectRendered;
+        return (patched.lastObjectRendered ??
+          // eslint-disable-next-line no-underscore-dangle
+          patched._lastObjectRendered) as Container;
       }
       return undefined;
     },
-    renderer(): IRenderer<ICanvas> | Game | undefined {
+    renderer(): Renderer<ICanvas> | Game | undefined {
       const renderer = getGlobal("__PIXI_RENDERER__");
       if (renderer) {
-        return renderer;
+        return renderer as Renderer<ICanvas>;
       }
       const app = getGlobal("__PIXI_APP__");
       if (app) {
         mode = "PIXI";
-        return app.renderer;
+        return app.renderer as Renderer<ICanvas>;
       }
       const game = getGlobal("__PHASER_GAME__");
       if (game) {
         mode = "PHASER";
-        return game;
+        return game as Game;
       }
       const patched = getGlobal("__PATCHED_RENDERER__");
       if (patched) {
-        return patched;
+        return patched as Renderer<ICanvas>;
       }
       return undefined;
     },
     canvas(): ICanvas | HTMLCanvasElement | undefined {
       const renderer = this.renderer();
       if (renderer) {
-        if ("view" in renderer) {
-          return renderer.view;
-        }
         if ("canvas" in renderer) {
           return renderer.canvas;
+        }
+        if ("view" in renderer) {
+          return (renderer as any).view as HTMLCanvasElement;
         }
       }
       return undefined;
     },
 
-    childrenOf(node: UniversalNode | Scene): Array<UniversalNode> | undefined {
+    childrenOf(node: UniversalNode | Scene): UniversalNode[] | undefined {
       if ("children" in node) {
         const { children } = node;
         if (Array.isArray(children)) {
@@ -118,20 +114,21 @@ export default function pixiDevtools() {
       }
       if ("emitters" in node) {
         // node is GameObjects.Particles.ParticleEmitterManager (Removed in Phaser 3.60)
-        return (node as any).emitters.list;
+        return (node as any).emitters.list as UniversalNode[];
       }
       if ("alive" in node) {
         // node is GameObjects.Particles.ParticleEmitter
-        return (node as any).alive;
+        return (node as any).alive as UniversalNode[];
       }
       return undefined;
     },
     parentOf(node: UniversalNode) {
       if ("parent" in node) {
-        return (node as DisplayObject).parent;
+        return (node as Container).parent;
       }
       if ("parentContainer" in node) {
         const container = (node as GameObjects.GameObject).parentContainer;
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (container === null) {
           return (node as GameObjects.GameObject).scene;
         }

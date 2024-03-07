@@ -4,8 +4,8 @@
 
   const bridge = getBridgeContext();
 
-  function onCopy(text: string) {
-    bridge(`window.copy(${JSON.stringify(text)})`);
+  async function onCopy(text: string) {
+    await bridge(`window.copy(${JSON.stringify(text)})`);
   }
 </script>
 

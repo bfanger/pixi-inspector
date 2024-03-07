@@ -1,5 +1,5 @@
 import type { GameObjects } from "phaser";
-import type { Application, DisplayObject } from "pixi.js";
+import type { Application, Container } from "pixi.js";
 import type {
   NodeProperties,
   PixiDevtools,
@@ -26,8 +26,8 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
       return [
         {
           key: property,
-          get: () => object[property],
-          set: (value) => {
+          get: () => object[property] as string | number | boolean,
+          set: (value: string | number | boolean) => {
             // eslint-disable-next-line no-param-reassign
             object[property] = value;
           },
@@ -52,8 +52,8 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
       return [
         {
           key: property,
-          get: () => object[nested][property],
-          set: (value) => {
+          get: () => object[nested][property] as string | number | boolean,
+          set: (value: string | number | boolean) => {
             // eslint-disable-next-line no-param-reassign
             object[nested][property] = value;
           },
@@ -80,16 +80,16 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
       return [
         {
           key: keyX,
-          get: () => node[property].x,
-          set: (value) => {
+          get: () => node[property].x as number,
+          set: (value: number) => {
             // eslint-disable-next-line no-param-reassign
             node[property].x = value;
           },
         },
         {
           key: keyY,
-          get: () => node[property].y,
-          set: (value) => {
+          get: () => node[property].y as number,
+          set: (value: number) => {
             // eslint-disable-next-line no-param-reassign
             node[property].y = value;
           },
@@ -148,14 +148,14 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
         });
       }
       if (devtools.isPixi(node as UniversalNode)) {
-        const displayObject: DisplayObject = node as DisplayObject;
-        if (typeof displayObject.eventMode === "string") {
+        const container = node as Container;
+        if (typeof container.eventMode === "string") {
           objectDefs.push(...directProp(node, "eventMode", "string"));
           objectDefs.push({
             key: "cursor",
-            get: () => displayObject.cursor,
+            get: () => container.cursor,
             set: (value) => {
-              displayObject.cursor = value;
+              container.cursor = value;
             },
           });
         } else {
@@ -240,7 +240,10 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
         scene: sceneDefs,
       };
     }
-    return (node as any)[metaProperty];
+    return (node as any)[metaProperty] as Record<
+      PropertyTab,
+      PropertyMapping[]
+    >;
   }
 
   let preferred: PropertyTab | undefined;

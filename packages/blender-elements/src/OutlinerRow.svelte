@@ -15,8 +15,9 @@
   let el: HTMLDivElement;
 
   const ctx = getContext<{ focused: boolean }>("scene-graph");
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   $: if (el && active) {
-    if (ctx?.focused) {
+    if (ctx.focused) {
       el.focus();
     } else {
       el.scrollIntoView();
@@ -56,7 +57,7 @@
         e.preventDefault();
       } else {
         let cursor: Element | null | undefined = el;
-        // eslint-disable-next-line no-constant-condition
+        // eslint-disable-next-line no-constant-condition, @typescript-eslint/no-unnecessary-condition
         while (true) {
           cursor = cursor?.previousElementSibling;
           const controller = (cursor as any)?.outlineRow;

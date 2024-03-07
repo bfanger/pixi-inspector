@@ -40,7 +40,7 @@ function patch() {
         // eslint-disable-next-line no-underscore-dangle
         win.__PATCHED_RENDERER__ = this as any;
         Renderer.prototype.render = render;
-        return render.call(this as any, ...args);
+        return render.call(this as any, ...args) as unknown;
       };
       break;
     }

@@ -1,5 +1,5 @@
 import type { GameObjects } from "phaser";
-import type { DisplayObject, ICanvas, Matrix } from "pixi.js";
+import type { Container, ICanvas, Matrix } from "pixi.js";
 import type { PixiDevtools, UniversalNode } from "../types";
 
 export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
@@ -95,6 +95,7 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
     overlayEl.appendChild(anchorEl);
 
     function calibrateOverlay() {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (!canvas || !("getBoundingClientRect" in canvas)) {
         return;
       }
@@ -129,7 +130,7 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
         return;
       }
       const parent = devtools.parentOf(node);
-      if (!parent || (node as DisplayObject).visible === false) {
+      if (!parent || (node as Container).visible === false) {
         highlightEl.style.transform = "scale(0)";
         anchorEl.style.transform = "scale(0)";
         return;
@@ -187,6 +188,7 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
           unscale.y /= parentNode.scale.y;
         }
         parentNode = devtools.parentOf(parentNode) as UniversalNode;
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       } while (parentNode);
 
       borderTop.style.transform = `scale(1, ${Math.abs(unscale.y)})`;
@@ -206,7 +208,7 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
     }
     let parent: HTMLElement | null = canvas;
     while (parent) {
-      parent = parent?.parentElement;
+      parent = parent.parentElement;
       if (parent?.tagName === "BODY") {
         parent.appendChild(overlayEl);
         updateHighlight();

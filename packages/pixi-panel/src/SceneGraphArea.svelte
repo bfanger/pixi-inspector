@@ -22,6 +22,7 @@
   let el: HTMLDivElement;
 
   $: {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     bridge(`__PIXI_DEVTOOLS__.outline.query = ${JSON.stringify(query)}`).then(
       () => tree.sync(),
     );

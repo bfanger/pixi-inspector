@@ -303,7 +303,7 @@
     {#if typeof props.eventMode === "string"}
       <Property
         label="Event mode"
-        hint="Enable interaction events for the DisplayObject. Touch, pointer and mouse. This now replaces the interactive property."
+        hint="Enable interaction events for the Container. Touch, pointer and mouse. This now replaces the interactive property."
       >
         <SelectMenu
           legend="Event Mode"
@@ -374,7 +374,7 @@
       <Property>
         <Checkbox
           value={props.interactive}
-          hint="Enable interaction events for the DisplayObject. Touch, pointer and mouse"
+          hint="Enable interaction events for the Container. Touch, pointer and mouse"
           on:change={(e) =>
             dispatch("change", { property: "interactive", value: e.detail })}
         >
@@ -387,7 +387,7 @@
       <Property>
         <Checkbox
           value={props.buttonMode}
-          hint="If enabled, the mouse cursor use the pointer behavior when hovered over the displayObject if it is interactive Setting this changes the 'cursor' property to 'pointer'."
+          hint="If enabled, the mouse cursor use the pointer behavior when hovered over the Container if it is interactive Setting this changes the 'cursor' property to 'pointer'."
           on:change={(e) =>
             dispatch("change", { property: "buttonMode", value: e.detail })}
         >
@@ -399,7 +399,7 @@
       <Property>
         <Checkbox
           value={props.interactiveChildren}
-          hint="Determines if the children to the displayObject can be clicked/touched Setting this to false allows PixiJS to bypass a recursive hitTest function"
+          hint="Determines if the children to the Container can be clicked/touched Setting this to false allows PixiJS to bypass a recursive hitTest function"
           on:change={(e) =>
             dispatch("change", {
               property: "interactiveChildren",

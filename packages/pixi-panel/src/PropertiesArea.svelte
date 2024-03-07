@@ -28,7 +28,7 @@
 
   $: props = $state.data?.properties ?? {};
   $: tabs = availableTabs.filter((tab) =>
-    $state.data?.tabs?.includes(tab.group),
+    $state.data?.tabs.includes(tab.group),
   );
   $: active = availableTabs.find((tab) => tab.group === $state.data?.active);
 
@@ -65,6 +65,7 @@
   }
 
   function onActivate(tab: Tab) {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     activateTab(tab.group);
   }
 </script>

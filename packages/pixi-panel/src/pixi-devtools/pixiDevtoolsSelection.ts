@@ -5,8 +5,8 @@ export default function pixiDevtoolsSelection(devtools: PixiDevtools) {
   const metaProperty = Symbol("pixi-devtools-selectable");
 
   return {
-    active(): UniversalNode | undefined {
-      return win.$pixi;
+    active() {
+      return win.$pixi as UniversalNode | undefined;
     },
     activate(node?: UniversalNode) {
       win.$pixi = node;

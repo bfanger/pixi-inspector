@@ -80,6 +80,7 @@ export default function connect(bridge: BridgeFn): Readable<
       return "ERROR";
     }
     if (data === "INJECT") {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       bridge(`(() => {
         window.__PIXI_DEVTOOLS__ = (${pixiDevtools.toString()}());
         window.__PIXI_DEVTOOLS__.selection = (${pixiDevtoolsSelection.toString()}(window.__PIXI_DEVTOOLS__));

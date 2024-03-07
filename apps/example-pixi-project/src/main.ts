@@ -2,15 +2,17 @@
  *
  * https://pixijs.io/examples/#/demos-basic/container.js
  */
-import { Application, Container, Sprite, Texture } from "pixi.js";
+import { Application, Container, Sprite, Assets } from "pixi.js";
 
-const app = new Application({
+const app = new Application();
+await app.init({
+  preference: "webgl",
   width: 640,
   height: 480,
   backgroundColor: 0x1099bb,
   resolution: window.devicePixelRatio || 1,
 });
-const canvas = app.view as HTMLCanvasElement;
+const { canvas } = app;
 canvas.style.width = "640px";
 canvas.style.maxWidth = "100%";
 document.body.appendChild(canvas);
@@ -18,8 +20,7 @@ document.body.appendChild(canvas);
 const container = new Container();
 
 app.stage.addChild(container);
-
-const texture = Texture.from(
+const texture = await Assets.load(
   "https://pixijs.io/examples/examples/assets/bunny.png",
 );
 
@@ -30,7 +31,7 @@ for (let i = 0; i < 25; i += 1) {
   bunny.y = Math.floor(i / 5) * 40;
   container.addChild(bunny);
 }
-container.children[12].name = "bunny";
+container.children[12].label = "bunny";
 
 container.x = app.screen.width / 2;
 container.y = app.screen.height / 2;
@@ -38,10 +39,10 @@ container.y = app.screen.height / 2;
 container.pivot.x = container.width / 2;
 container.pivot.y = container.height / 2;
 
-app.ticker.add((delta) => {
-  container.rotation -= 0.01 * delta;
+app.ticker.add((ticker) => {
+  container.rotation -= 0.01 * ticker.deltaTime;
 });
-const exposeApp = true;
+const exposeApp = true as boolean;
 if (exposeApp) {
   (globalThis as any).__PIXI_APP__ = app; // eslint-disable-line
 } else {

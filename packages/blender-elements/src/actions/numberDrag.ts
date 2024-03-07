@@ -19,7 +19,7 @@ export default function numberDrag(el: HTMLElement, config: Config) {
       }
     | undefined;
 
-  function onMousedown(e: MouseEvent) {
+  async function onMousedown(e: MouseEvent) {
     if (!config.step) {
       return;
     }
@@ -32,7 +32,7 @@ export default function numberDrag(el: HTMLElement, config: Config) {
       };
       document.addEventListener("mousemove", onMousemove);
       if (e.target === el) {
-        requestPointerLock(el);
+        await requestPointerLock(el);
       }
     }
   }
@@ -47,7 +47,7 @@ export default function numberDrag(el: HTMLElement, config: Config) {
       document.exitPointerLock();
     }
     if (started.moved === 0) {
-      config?.onClick?.(e);
+      config.onClick?.(e);
     }
     started = undefined;
   }

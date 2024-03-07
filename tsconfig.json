@@ -1,15 +1,18 @@
 {
   "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "noEmit": true,
     "importsNotUsedAsValues": "error",
     "ignoreDeprecations": "5.0",
     "esModuleInterop": true,
     "lib": ["ESNext", "DOM"],
+    "target": "ESNext",
     "skipLibCheck": true,
     "strict": true,
     "paths": {
-      "pixi-panel/*": ["./node_modules/pixi-panel/*"],
-    },
+      "pixi-panel/*": ["./node_modules/pixi-panel/*"]
+    }
   },
   "include": [
     "**/*.d.ts",
@@ -22,6 +25,6 @@
     "**/*.js",
     "**/*.jsx",
     ".*.cjs",
-    "**/*.cjs",
-  ],
+    "**/*.cjs"
+  ]
 }

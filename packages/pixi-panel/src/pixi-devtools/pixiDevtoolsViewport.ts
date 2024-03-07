@@ -1,9 +1,9 @@
-import type { IPointData } from "pixi.js";
+import type { PointData } from "pixi.js";
 import type { PixiDevtools, UniversalNode } from "../types";
 
 export default function pixiDevtoolsViewport(devtools: PixiDevtools) {
   function findNodesAt(
-    point: IPointData,
+    point: PointData,
     node: UniversalNode,
     filter: (node: UniversalNode) => boolean,
   ): UniversalNode[] {
@@ -25,8 +25,19 @@ export default function pixiDevtoolsViewport(devtools: PixiDevtools) {
     ) {
       nodes.push(node);
     } else if ("getBounds" in node) {
-      const bounds = node.getBounds();
-      if (bounds.contains(point.x, point.y)) {
+      const bounds = node.getBounds() as object;
+      if (
+        "containsPoint" in bounds &&
+        typeof bounds.containsPoint === "function"
+      ) {
+        if (bounds.containsPoint(point.x, point.y)) {
+          nodes.push(node);
+        }
+      } else if (
+        "contains" in bounds &&
+        typeof bounds.contains === "function" &&
+        bounds.contains(point.x, point.y)
+      ) {
         nodes.push(node);
       }
     }
@@ -50,7 +61,7 @@ export default function pixiDevtoolsViewport(devtools: PixiDevtools) {
       }
       return undefined;
     },
-    scale(): IPointData | undefined {
+    scale(): PointData | undefined {
       const renderer = devtools.renderer();
       if (renderer) {
         if ("resolution" in renderer) {
@@ -63,7 +74,7 @@ export default function pixiDevtoolsViewport(devtools: PixiDevtools) {
       }
       return undefined;
     },
-    fromClient(clientX: number, clientY: number): IPointData {
+    fromClient(clientX: number, clientY: number): PointData {
       const el = devtools.canvas();
       const scale = this.scale();
       if (el && scale && "getBoundingClientRect" in el) {
@@ -76,7 +87,7 @@ export default function pixiDevtoolsViewport(devtools: PixiDevtools) {
       throw new Error("offscreen canvas?");
     },
     ray(
-      point: IPointData,
+      point: PointData,
       filter: (node: UniversalNode) => boolean = () => true,
     ): UniversalNode[] {
       const root = devtools.root();

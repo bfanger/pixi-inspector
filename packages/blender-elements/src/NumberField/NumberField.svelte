@@ -92,7 +92,7 @@
   }
 
   function onClick(e: MouseEvent) {
-    const type = (e.target as HTMLElement)?.nodeName;
+    const type = (e.target as HTMLElement).nodeName;
     if (type !== "BUTTON") {
       el.focus();
     }

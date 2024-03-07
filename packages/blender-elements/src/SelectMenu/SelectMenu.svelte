@@ -27,25 +27,25 @@
     collapse();
   }
 
-  function expand() {
+  async function expand() {
     expanded = {
       x: "LEFT",
       y: "DOWN",
     };
-    tick().then(() => {
-      if (!expanded) {
-        return;
-      }
-      const bounds = el.getBoundingClientRect();
-      const { x, y, height } = bounds;
-      const { innerHeight } = window;
-      if (x < 0) {
-        expanded.x = "RIGHT";
-      }
-      if (y + height > innerHeight) {
-        expanded.y = "UP";
-      }
-    });
+    await tick();
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (!expanded) {
+      return;
+    }
+    const bounds = el.getBoundingClientRect();
+    const { x, y, height } = bounds;
+    const { innerHeight } = window;
+    if (x < 0) {
+      expanded.x = "RIGHT";
+    }
+    if (y + height > innerHeight) {
+      expanded.y = "UP";
+    }
   }
 
   function collapse() {
