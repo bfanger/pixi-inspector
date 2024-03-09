@@ -1,85 +1,100 @@
-import * as PIXI from "pixi.js";
+/**
+ * https://pixijs.com/examples/events/interactivity
+ */
+import { Application, Assets, Sprite, Texture } from "pixi.js";
 
-const app = new PIXI.Application({ resizeTo: window });
-// eslint-disable-next-line no-underscore-dangle
-(globalThis as any).__PIXI_APP__ = app;
-document.body.appendChild(app.view as HTMLCanvasElement);
+(async () => {
+  const app = new Application();
 
-const background = PIXI.Sprite.from("https://pixijs.com/assets/bg_button.jpg");
+  await app.init({ preference: "webgl", resizeTo: window });
 
-background.width = app.screen.width;
-background.height = app.screen.height;
+  document.body.appendChild(app.canvas);
 
-app.stage.addChild(background);
+  await Assets.load([
+    "https://pixijs.com/assets/bg_button.jpg",
+    "https://pixijs.com/assets/button.png",
+    "https://pixijs.com/assets/button_down.png",
+    "https://pixijs.com/assets/button_over.png",
+  ]);
 
-const textureButton = PIXI.Texture.from("https://pixijs.com/assets/button.png");
-const textureButtonDown = PIXI.Texture.from(
-  "https://pixijs.com/assets/button_down.png",
-);
-const textureButtonOver = PIXI.Texture.from(
-  "https://pixijs.com/assets/button_over.png",
-);
+  const background = Sprite.from("https://pixijs.com/assets/bg_button.jpg");
 
-type Button = PIXI.Sprite & { isdown: boolean; isOver: boolean };
-const buttons = [];
+  background.width = app.screen.width;
+  background.height = app.screen.height;
 
-const buttonPositions = [175, 75, 655, 75, 410, 325, 150, 465, 685, 445];
+  app.stage.addChild(background);
 
-for (let i = 0; i < 5; i += 1) {
-  const button = new PIXI.Sprite(textureButton);
+  const textureButton = Texture.from("https://pixijs.com/assets/button.png");
+  const textureButtonDown = Texture.from(
+    "https://pixijs.com/assets/button_down.png",
+  );
+  const textureButtonOver = Texture.from(
+    "https://pixijs.com/assets/button_over.png",
+  );
 
-  button.anchor.set(0.5);
-  button.x = buttonPositions[i * 2];
-  button.y = buttonPositions[i * 2 + 1];
+  type Button = Sprite & { isdown: boolean; isOver: boolean };
+  const buttons = [];
 
-  button.eventMode = "static";
-  button.cursor = "pointer";
+  const buttonPositions = [175, 75, 655, 75, 410, 325, 150, 465, 685, 445];
 
-  button
-    .on("pointerdown", onButtonDown)
-    .on("pointerup", onButtonUp)
-    .on("pointerupoutside", onButtonUp)
-    .on("pointerover", onButtonOver)
-    .on("pointerout", onButtonOut);
+  for (let i = 0; i < 5; i += 1) {
+    const button = new Sprite(textureButton);
 
-  app.stage.addChild(button);
+    button.anchor.set(0.5);
+    button.x = buttonPositions[i * 2];
+    button.y = buttonPositions[i * 2 + 1];
 
-  buttons.push(button);
-}
+    button.eventMode = "static";
+    button.cursor = "pointer";
 
-buttons[0].scale.set(1.2);
-buttons[2].rotation = Math.PI / 10;
-buttons[3].scale.set(0.8);
-buttons[4].scale.set(0.8, 1.2);
-buttons[4].rotation = Math.PI;
+    button
+      .on("pointerdown", onButtonDown)
+      .on("pointerup", onButtonUp)
+      .on("pointerupoutside", onButtonUp)
+      .on("pointerover", onButtonOver)
+      .on("pointerout", onButtonOut);
 
-function onButtonDown(this: Button) {
-  this.isdown = true;
-  this.texture = textureButtonDown;
-  this.alpha = 1;
-}
+    app.stage.addChild(button);
 
-function onButtonUp(this: Button) {
-  this.isdown = false;
-  if (this.isOver) {
+    buttons.push(button);
+  }
+
+  buttons[0].scale.set(1.2);
+  buttons[2].rotation = Math.PI / 10;
+  buttons[3].scale.set(0.8);
+  buttons[4].scale.set(0.8, 1.2);
+  buttons[4].rotation = Math.PI;
+
+  function onButtonDown(this: Button) {
+    this.isdown = true;
+    this.texture = textureButtonDown;
+    this.alpha = 1;
+  }
+
+  function onButtonUp(this: Button) {
+    this.isdown = false;
+    if (this.isOver) {
+      this.texture = textureButtonOver;
+    } else {
+      this.texture = textureButton;
+    }
+  }
+
+  function onButtonOver(this: Button) {
+    this.isOver = true;
+    if (this.isdown) {
+      return;
+    }
     this.texture = textureButtonOver;
-  } else {
+  }
+
+  function onButtonOut(this: Button) {
+    this.isOver = false;
+    if (this.isdown) {
+      return;
+    }
     this.texture = textureButton;
   }
-}
 
-function onButtonOver(this: Button) {
-  this.isOver = true;
-  if (this.isdown) {
-    return;
-  }
-  this.texture = textureButtonOver;
-}
-
-function onButtonOut(this: Button) {
-  this.isOver = false;
-  if (this.isdown) {
-    return;
-  }
-  this.texture = textureButton;
-}
+  (globalThis as any).__PIXI_APP__ = app; // eslint-disable-line
+})();

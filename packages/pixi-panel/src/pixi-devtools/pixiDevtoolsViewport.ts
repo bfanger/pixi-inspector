@@ -64,6 +64,9 @@ export default function pixiDevtoolsViewport(devtools: PixiDevtools) {
     scale(): PointData | undefined {
       const renderer = devtools.renderer();
       if (renderer) {
+        if (devtools.inVersionRange(8)) {
+          return { x: 1, y: 1 };
+        }
         if ("resolution" in renderer) {
           return {
             x: renderer.resolution,

@@ -114,8 +114,8 @@ importers:
   apps/example-pixi-project:
     dependencies:
       pixi.js:
-        specifier: ^8.0.0
-        version: 8.0.0
+        specifier: ^8.0.1
+        version: 8.0.1
       vite:
         specifier: ^5.1.5
         version: 5.1.5(@types/node@20.11.25)(sass@1.71.1)
@@ -172,8 +172,8 @@ importers:
         specifier: ^3.80.1
         version: 3.80.1
       pixi.js:
-        specifier: ^8.0.0
-        version: 8.0.0
+        specifier: ^8.0.1
+        version: 8.0.1
 
 packages:
 
@@ -963,8 +963,8 @@ packages:
       config-chain: 1.1.13
     dev: false
 
-  /@polka/url@1.0.0-next.24:
-    resolution: {integrity: sha512-2LuNTFBIO0m7kKIQvvPHN6UE63VjpmL9rnEEaOOaiSPbZK+zUOYIzBAWcED+3XYzhYsd/0mD57VdxAEqqV52CQ==}
+  /@polka/url@1.0.0-next.25:
+    resolution: {integrity: sha512-j7P6Rgr3mmtdkeDGTe0E/aYyWEWVtc5yFXtHCRHs28/jptDEWfaVOc5T7cblqy1XKPPfCxJc/8DwQ5YgLOZOVQ==}
     dev: true
 
   /@rollup/rollup-android-arm-eabi@4.12.1:
@@ -5093,8 +5093,8 @@ packages:
       thread-stream: 2.4.1
     dev: false
 
-  /pixi.js@8.0.0:
-    resolution: {integrity: sha512-MX8cNEomyluT6EwVinMY+AKW37AKIDFi0DPWvQ59vU1P8jZpKy/tj+uyns8iyjK+F5wtc04AF/p9CH03iAO2lw==}
+  /pixi.js@8.0.1:
+    resolution: {integrity: sha512-SGtkod644kb/k+hTvSSk9ywpmvgdjiX+gK6NF8He1xyQ0XCRn5ZqN37EPEBsg0ffadjZ40mqtO+2oXyEOLrWzw==}
     dependencies:
       '@pixi/colord': 2.9.6
       '@types/css-font-loading-module': 0.0.12
@@ -5728,7 +5728,7 @@ packages:
     resolution: {integrity: sha512-94Bdh3cC2PKrbgSOUqTiGPWVZeSiXfKOVZNJniWoqrWrRkB1CJzBU3NEbiTsPcYy1lDsANA/THzS+9WBiy5nfQ==}
     engines: {node: '>= 10'}
     dependencies:
-      '@polka/url': 1.0.0-next.24
+      '@polka/url': 1.0.0-next.25
       mrmime: 2.0.0
       totalist: 3.0.1
     dev: true

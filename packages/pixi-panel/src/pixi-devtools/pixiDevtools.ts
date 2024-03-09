@@ -9,6 +9,7 @@ type EventDetail = {
 export default function pixiDevtools() {
   const eventTarget = new EventTarget();
   const win = window as any;
+  let detectedVersion: number | undefined;
 
   let mode: "PIXI" | "PHASER" | undefined;
 
@@ -141,6 +142,35 @@ export default function pixiDevtools() {
         return true;
       }
       if ("parent" in node) {
+        return true;
+      }
+      return false;
+    },
+    version() {
+      if (detectedVersion !== undefined) {
+        return detectedVersion;
+      }
+      const root = this.root();
+      if (root && "getLocalBounds" in root) {
+        const bounds = root.getLocalBounds();
+        if ("containsPoint" in bounds) {
+          detectedVersion = 8;
+        }
+      }
+      return detectedVersion;
+    },
+    /**
+     * inVersionRange(7, 8) // true if version is 7 or higher but lower than 8
+     */
+    inVersionRange(start: number, stop?: number) {
+      const version = this.version();
+      if (version === undefined) {
+        return false;
+      }
+      if (version < start) {
+        return false;
+      }
+      if (stop === undefined || version < stop) {
         return true;
       }
       return false;

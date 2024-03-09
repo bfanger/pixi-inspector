@@ -76,9 +76,12 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
 
   function buildName(node: UniversalNode) {
     let name = "";
-    if ("label" in node) {
+    if (devtools.inVersionRange(8)) {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-      if (node.label !== null && node.label !== "" && node.label !== "Sprite") {
+      if ("label" in node && node.label !== null && node.label !== "") {
+        if (node.label === "Sprite") {
+          return node.label;
+        }
         if (node.constructor.name) {
           name += `${node.constructor.name} `;
         }
