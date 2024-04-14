@@ -2,12 +2,20 @@
   "extends": ["triple/svelte"],
   "env": {
     "browser": true,
-    "node": true
+    "node": true,
   },
   "parserOptions": {
-    "project": "./tsconfig.json"
+    "project": "./tsconfig.json",
   },
   "rules": {
-    "import/no-extraneous-dependencies": "off"
-  }
+    "import/no-extraneous-dependencies": "off",
+  },
+  "overrides": [
+    {
+      "files": ["*.svelte"],
+      "rules": {
+        "@typescript-eslint/no-unnecessary-condition": 0,
+      },
+    },
+  ],
 }

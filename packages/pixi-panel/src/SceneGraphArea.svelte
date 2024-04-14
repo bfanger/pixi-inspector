@@ -70,6 +70,11 @@
   async function log(path: string[]) {
     await bridge(`__PIXI_DEVTOOLS__.outline.log(${JSON.stringify(path)})`);
   }
+  async function highlight(path: string[]) {
+    await bridge(
+      `__PIXI_DEVTOOLS__.outline.highlight(${JSON.stringify(path)})`,
+    );
+  }
   function onFocusIn() {
     ctx.focused = true;
   }
@@ -109,6 +114,8 @@
         on:show={({ detail }) => show(detail)}
         on:hide={({ detail }) => hide(detail)}
         on:log={({ detail }) => log(detail)}
+        on:mouseenter={({ detail }) => highlight(detail)}
+        on:mouseleave={() => highlight([])}
       />
     {/if}
   </div>

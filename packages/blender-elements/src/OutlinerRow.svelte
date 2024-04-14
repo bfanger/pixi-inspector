@@ -106,6 +106,8 @@
   on:click={() => dispatch("activate")}
   on:dblclick={() => dispatch("log")}
   on:keydown={onKeyDown}
+  on:mouseenter
+  on:mouseleave
   tabindex="0"
 >
   {#if expanded === true}
@@ -159,8 +161,14 @@
     &:nth-child(even) {
       background-color: #2b2b2b;
     }
+    &:hover {
+      background-color: #444444;
+    }
     &:focus {
       background-color: #334d80;
+      &:hover {
+        background-color: #4772b3;
+      }
     }
     &.match {
       background-color: #2f552f;

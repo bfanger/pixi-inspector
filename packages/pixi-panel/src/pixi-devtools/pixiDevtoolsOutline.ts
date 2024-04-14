@@ -228,6 +228,9 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
     activate(path: string[]) {
       devtools.selection.activate(find(path));
     },
+    highlight(path: string[]) {
+      devtools.selection.highlight(find(path));
+    },
     log(path: string[]) {
       const node = find(path);
       if (node) {

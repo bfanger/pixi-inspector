@@ -36,6 +36,8 @@
   on:show={() => dispatch("show", [id])}
   on:hide={() => dispatch("hide", [id])}
   on:log={() => dispatch("log", [id])}
+  on:mouseenter={() => dispatch("mouseenter", [id])}
+  on:mouseleave={() => dispatch("mouseleave", [id])}
 />
 
 {#if children}
@@ -61,6 +63,8 @@
       on:show={({ detail }) => dispatch("show", [id, ...detail])}
       on:hide={({ detail }) => dispatch("hide", [id, ...detail])}
       on:log={({ detail }) => dispatch("log", [id, ...detail])}
+      on:mouseenter={({ detail }) => dispatch("mouseenter", [id, ...detail])}
+      on:mouseleave={({ detail }) => dispatch("mouseleave", [id, ...detail])}
     />
   {/each}
 {/if}

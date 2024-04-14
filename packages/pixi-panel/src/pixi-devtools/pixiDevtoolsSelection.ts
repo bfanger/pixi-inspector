@@ -3,6 +3,7 @@ import type { PixiDevtools, UniversalNode } from "../types";
 export default function pixiDevtoolsSelection(devtools: PixiDevtools) {
   const win = window as any;
   const metaProperty = Symbol("pixi-devtools-selectable");
+  let highlight: UniversalNode | undefined;
 
   return {
     active() {
@@ -22,6 +23,12 @@ export default function pixiDevtoolsSelection(devtools: PixiDevtools) {
     enable(node: UniversalNode) {
       // eslint-disable-next-line no-param-reassign
       (node as any)[metaProperty] = true;
+    },
+    highlighted(): UniversalNode | undefined {
+      return highlight;
+    },
+    highlight(node: UniversalNode | undefined) {
+      highlight = node;
     },
   };
 }
