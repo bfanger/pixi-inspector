@@ -1,5 +1,5 @@
 import type { GameObjects } from "phaser";
-import type { Container, ICanvas, Matrix } from "pixi.js";
+import type { ICanvas, Matrix } from "pixi.js";
 import type { PixiDevtools, UniversalNode } from "../types";
 
 export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
@@ -17,75 +17,55 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
       height,
     };
   }
-  function buildNodeOverlay(color: string) {
-    const border = document.createElement("div");
-    border.dataset.pixiDevtools = "border";
-    Object.assign(border.style, {
+  function buildBorders(color: string) {
+    const container = document.createElement("div");
+    container.dataset.pixiDevtools = "border";
+    Object.assign(container.style, {
       ...position("0", "0", "0", "0"),
       transformOrigin: "top left",
       transform: "scale(0)",
     });
 
-    const anchor = document.createElement("div");
-    anchor.dataset.pixiDevtools = "anchor";
-    Object.assign(anchor.style, {
-      ...position("0", "0", "0", "0"),
-      transformOrigin: "top left",
-      transform: "scale(0)",
-    });
+    const top = document.createElement("div");
+    const right = document.createElement("div");
+    const bottom = document.createElement("div");
+    const left = document.createElement("div");
 
-    const dotEl = document.createElement("div");
-    dotEl.dataset.pixiDevtools = "dot";
-    Object.assign(dotEl.style, {
-      ...position("-4px", "-4px", "6px", "6px"),
-      transformOrigin: "top left",
-      background: color,
-      border: "1px solid #2a2b2b",
-      borderRadius: "50%",
-    });
-    anchor.appendChild(dotEl);
-
-    const borderTop = document.createElement("div");
-    const borderRight = document.createElement("div");
-    const borderBottom = document.createElement("div");
-    const borderLeft = document.createElement("div");
-
-    borderTop.dataset.pixiDevtools = "borderTop";
-    Object.assign(borderTop.style, {
+    top.dataset.pixiDevtools = "borderTop";
+    Object.assign(top.style, {
       ...position("0", "-3px", "100%", "3px"),
       transformOrigin: "center bottom",
       background: color,
     });
-    borderRight.dataset.pixiDevtools = "borderRight";
-    Object.assign(borderRight.style, {
+    right.dataset.pixiDevtools = "borderRight";
+    Object.assign(right.style, {
       ...position("100%", "0", "3px", "100%"),
       transformOrigin: "center left",
       background: color,
     });
-    borderBottom.dataset.pixiDevtools = "borderBottom";
-    Object.assign(borderBottom.style, {
+    bottom.dataset.pixiDevtools = "borderBottom";
+    Object.assign(bottom.style, {
       ...position("0", "100%", "100%", "3px"),
       transformOrigin: "center top",
       background: color,
     });
-    borderLeft.dataset.pixiDevtools = "borderLeft";
-    Object.assign(borderLeft.style, {
+    left.dataset.pixiDevtools = "borderLeft";
+    Object.assign(left.style, {
       ...position("-3px", "0", "3px", "100%"),
       transformOrigin: "center right",
       background: color,
     });
-    border.appendChild(borderTop);
-    border.appendChild(borderRight);
-    border.appendChild(borderBottom);
-    border.appendChild(borderLeft);
+    container.appendChild(top);
+    container.appendChild(right);
+    container.appendChild(bottom);
+    container.appendChild(left);
 
     return {
-      anchor,
-      border,
-      borderTop,
-      borderRight,
-      borderBottom,
-      borderLeft,
+      container,
+      top,
+      right,
+      bottom,
+      left,
     };
   }
 
@@ -129,13 +109,37 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
       transformOrigin: "top left",
     });
 
-    const highlightNodeOverlay = buildNodeOverlay("#4772b3");
-    overlayEl.appendChild(highlightNodeOverlay.border);
-    overlayEl.appendChild(highlightNodeOverlay.anchor);
+    const highlight = document.createElement("div");
+    highlight.dataset.pixiDevtools = "highlight";
+    Object.assign(highlight.style, {
+      ...position("0", "0", "0", "0"),
+      transformOrigin: "top left",
+      transform: "scale(0)",
+      background: "rgba(102, 163, 218, 0.7)",
+    });
+    overlayEl.appendChild(highlight);
 
-    const activeNodeOverlay = buildNodeOverlay("#ff9f2c");
-    overlayEl.appendChild(activeNodeOverlay.border);
-    overlayEl.appendChild(activeNodeOverlay.anchor);
+    const borders = buildBorders("#ff9f2c");
+    overlayEl.appendChild(borders.container);
+
+    const anchor = document.createElement("div");
+    anchor.dataset.pixiDevtools = "anchor";
+    Object.assign(anchor.style, {
+      ...position("0", "0", "0", "0"),
+      transformOrigin: "top left",
+      transform: "scale(0)",
+    });
+    const dotEl = document.createElement("div");
+    dotEl.dataset.pixiDevtools = "dot";
+    Object.assign(dotEl.style, {
+      ...position("-4px", "-4px", "6px", "6px"),
+      transformOrigin: "top left",
+      background: "#ff9f2c",
+      border: "1px solid #2a2b2b",
+      borderRadius: "50%",
+    });
+    anchor.appendChild(dotEl);
+    overlayEl.appendChild(anchor);
 
     function calibrateOverlay() {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -163,28 +167,14 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
     let throttle = 0;
     let raf: number | undefined;
 
-    function updateBox(
-      node: UniversalNode | undefined,
-      {
-        anchor,
-        border,
-        borderTop,
-        borderRight,
-        borderBottom,
-        borderLeft,
-      }: ReturnType<typeof buildNodeOverlay>,
-    ) {
+    function calculateCss(node: UniversalNode | undefined) {
       /* eslint-disable no-param-reassign */
       if (!node) {
-        anchor.style.transform = "scale(0)";
-        border.style.transform = "scale(0)";
-        return;
+        return undefined;
       }
       const parent = devtools.parentOf(node);
-      if (!parent || (node as Container).visible === false) {
-        anchor.style.transform = "scale(0)";
-        border.style.transform = "scale(0)";
-        return;
+      if (!parent) {
+        return undefined;
       }
 
       let size: { x: number; y: number; width: number; height: number };
@@ -206,30 +196,32 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
         }
         m = image.getLocalTransformMatrix();
       } else {
-        border.style.transform = "scale(0)";
-        return;
+        return undefined;
       }
-      border.style.width = `${size.width}px`;
-      border.style.height = `${size.height}px`;
       const offset = `translate(${size.x}px, ${size.y}px)`;
-      border.style.transform = `matrix(${m.a}, ${m.b}, ${m.c}, ${m.d}, ${m.tx}, ${m.ty}) ${offset}`;
-
       const unscale = resolveScale(node);
 
-      borderTop.style.transform = `scale(1, ${Math.abs(unscale.y)})`;
-      borderRight.style.transform = `scale(${Math.abs(unscale.x)}, 1)`;
-      borderBottom.style.transform = `scale(1, ${Math.abs(unscale.y)})`;
-      borderLeft.style.transform = `scale(${Math.abs(unscale.x)}, 1)`;
+      let anchorTransform = "scale(0)";
 
       if ("anchor" in node || "originX" in node || "pivot" in node) {
         let pivot = "";
         if ("pivot" in node) {
           pivot = `translate(${node.pivot.x}px, ${node.pivot.y}px)`;
         }
-        anchor.style.transform = `matrix(${m.a}, ${m.b}, ${m.c}, ${m.d}, ${m.tx}, ${m.ty}) ${pivot} scale(${unscale.x}, ${unscale.y})`;
-      } else {
-        anchor.style.transform = "scale(0)";
+        anchorTransform = `matrix(${m.a}, ${m.b}, ${m.c}, ${m.d}, ${m.tx}, ${m.ty}) ${pivot} scale(${unscale.x}, ${unscale.y})`;
       }
+      return {
+        box: {
+          width: `${size.width}px`,
+          height: `${size.height}px`,
+          transform: `matrix(${m.a}, ${m.b}, ${m.c}, ${m.d}, ${m.tx}, ${m.ty}) ${offset}`,
+        },
+        borderTop: `scale(1, ${Math.abs(unscale.y)})`,
+        borderRight: `scale(${Math.abs(unscale.x)}, 1)`,
+        borderBottom: `scale(1, ${Math.abs(unscale.y)})`,
+        borderLeft: `scale(${Math.abs(unscale.x)}, 1)`,
+        anchor: anchorTransform,
+      };
     }
 
     function updateOverlay() {
@@ -245,12 +237,29 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
       } else {
         throttle -= 1;
       }
-      updateBox(activeNode, activeNodeOverlay);
-      if (activeNode !== highlightNode) {
-        updateBox(highlightNode, highlightNodeOverlay);
+      const activeCss = calculateCss(activeNode);
+      if (activeCss) {
+        borders.container.style.transform = activeCss.box.transform;
+        borders.container.style.width = activeCss.box.width;
+        borders.container.style.height = activeCss.box.height;
+        borders.top.style.transform = activeCss.borderTop;
+        borders.right.style.transform = activeCss.borderRight;
+        borders.bottom.style.transform = activeCss.borderBottom;
+        borders.left.style.transform = activeCss.borderLeft;
+        anchor.style.transform = activeCss.anchor;
       } else {
-        highlightNodeOverlay.anchor.style.transform = "scale(0)";
-        highlightNodeOverlay.border.style.transform = "scale(0)";
+        borders.container.style.transform = "scale(0)";
+        anchor.style.transform = "scale(0)";
+      }
+      const highlightCss =
+        activeNode === highlightNode ? activeCss : calculateCss(highlightNode);
+
+      if (highlightCss) {
+        highlight.style.transform = highlightCss.box.transform;
+        highlight.style.width = highlightCss.box.width;
+        highlight.style.height = highlightCss.box.height;
+      } else {
+        highlight.style.transform = "scale(0)";
       }
     }
     let parent: HTMLElement | null = canvas;
