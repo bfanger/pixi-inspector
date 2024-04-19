@@ -12,7 +12,7 @@
     "@histoire/plugin-svelte": "^0.17.17",
     "@sveltejs/vite-plugin-svelte": "^3.1.0",
     "histoire": "^0.17.17",
-    "svelte": "^4.2.13",
-    "vite": "^5.2.8"
+    "svelte": "^4.2.15",
+    "vite": "^5.2.9"
   }
 }
