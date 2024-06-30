@@ -61,12 +61,15 @@ export default function pixiDevtoolsViewport(devtools: PixiDevtools) {
       }
       return undefined;
     },
-    scale(): PointData | undefined {
+    renderScale(): PointData | undefined {
+      if (devtools.inVersionRange(8)) {
+        return { x: 1, y: 1 };
+      }
+      return this.inputScale();
+    },
+    inputScale(): PointData | undefined {
       const renderer = devtools.renderer();
       if (renderer) {
-        if (devtools.inVersionRange(8)) {
-          return { x: 1, y: 1 };
-        }
         if ("resolution" in renderer) {
           return {
             x: renderer.resolution,
@@ -79,7 +82,7 @@ export default function pixiDevtoolsViewport(devtools: PixiDevtools) {
     },
     fromClient(clientX: number, clientY: number): PointData {
       const el = devtools.canvas();
-      const scale = this.scale();
+      const scale = this.inputScale();
       if (el && scale && "getBoundingClientRect" in el) {
         const bounds = (el as HTMLCanvasElement).getBoundingClientRect();
         return {

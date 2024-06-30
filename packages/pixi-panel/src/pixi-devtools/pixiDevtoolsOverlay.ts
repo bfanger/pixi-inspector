@@ -147,7 +147,7 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
         return;
       }
       const size = devtools.viewport.size();
-      const scale = devtools.viewport.scale();
+      const scale = devtools.viewport.renderScale();
       if (!size || !scale) {
         return;
       }
