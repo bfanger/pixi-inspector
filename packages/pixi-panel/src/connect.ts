@@ -1,15 +1,15 @@
 /* eslint-disable no-underscore-dangle */
-import { derived, Readable, writable } from "svelte/store";
+import type { Readable } from "svelte/store";
+import { derived, writable } from "svelte/store";
 import type { BridgeFn } from "./types";
+import { poll } from "./bridge-fns";
 import pixiDevtools from "./pixi-devtools/pixiDevtools";
-import pixiDevtoolsSelection from "./pixi-devtools/pixiDevtoolsSelection";
-import pixiDevtoolsViewport from "./pixi-devtools/pixiDevtoolsViewport";
+import pixiDevtoolsClickToSelect from "./pixi-devtools/pixiDevtoolsClickToSelect";
 import pixiDevtoolsOutline from "./pixi-devtools/pixiDevtoolsOutline";
 import pixiDevtoolsOverlay from "./pixi-devtools/pixiDevtoolsOverlay";
 import pixiDevtoolsProperties from "./pixi-devtools/pixiDevtoolsProperties";
-import pixiDevtoolsClickToSelect from "./pixi-devtools/pixiDevtoolsClickToSelect";
-
-import { poll } from "./bridge-fns";
+import pixiDevtoolsSelection from "./pixi-devtools/pixiDevtoolsSelection";
+import pixiDevtoolsViewport from "./pixi-devtools/pixiDevtoolsViewport";
 
 function detect() {
   const win = window as any;

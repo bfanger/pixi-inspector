@@ -1,5 +1,6 @@
+import type { Readable } from "svelte/store";
 import { getContext, setContext } from "svelte";
-import { readable, Readable, writable } from "svelte/store";
+import { readable, writable } from "svelte/store";
 import type { BridgeFn } from "./types";
 
 export function setBridgeContext(bridge: BridgeFn) {

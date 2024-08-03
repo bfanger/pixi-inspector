@@ -1,7 +1,7 @@
 /**
  * https://pixijs.com/examples/text/pixi-text
  */
-import { Application, Text, TextStyle, Color, FillGradient } from "pixi.js";
+import { Application, Color, FillGradient, Text, TextStyle } from "pixi.js";
 
 (async () => {
   const app = new Application();

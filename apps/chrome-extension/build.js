@@ -1,10 +1,10 @@
 // @ts-check
-import fs from "fs";
-import { fileURLToPath } from "url";
-import path from "path";
 import esbuild from "esbuild";
 import sveltePlugin from "esbuild-svelte";
+import fs from "fs";
+import path from "path";
 import { rimrafSync } from "rimraf";
+import { fileURLToPath } from "url";
 // eslint-disable-next-line import/no-relative-packages
 import svelteConfig from "../../svelte.config.js";
 

@@ -1,5 +1,5 @@
-import type { Application, Container, ICanvas, Renderer } from "pixi.js";
 import type { Game, GameObjects, Scene, Scenes } from "phaser";
+import type { Application, Container, ICanvas, Renderer } from "pixi.js";
 import type { UniversalNode } from "../types";
 
 type EventDetail = {

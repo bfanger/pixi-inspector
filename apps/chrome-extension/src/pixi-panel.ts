@@ -1,5 +1,5 @@
-import PixiPanel from "pixi-panel/src/PixiPanel.svelte";
 import type { BridgeFn } from "pixi-panel/src/types";
+import PixiPanel from "pixi-panel/src/PixiPanel.svelte";
 
 const bridge: BridgeFn = (code: string) =>
   new Promise((resolve, reject) => {

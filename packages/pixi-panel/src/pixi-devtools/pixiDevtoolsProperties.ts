@@ -3,9 +3,9 @@ import type { Application, Container } from "pixi.js";
 import type {
   NodeProperties,
   PixiDevtools,
-  UniversalNode,
   PropertyTab,
   PropertyTabState,
+  UniversalNode,
 } from "../types";
 
 type PropertyMapping<T = any> = {

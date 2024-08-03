@@ -1,7 +1,7 @@
 import type { GameObjects, Scene, Scenes } from "phaser";
 import type {
-  Cursor,
   Container,
+  Cursor,
   EventMode,
   TextStyleAlign,
   TextStyleFontStyle,
@@ -12,11 +12,11 @@ import type {
   TextStyleWhiteSpace,
 } from "pixi.js";
 import type pixiDevtools from "./pixi-devtools/pixiDevtools";
-import type pixiDevtoolsViewport from "./pixi-devtools/pixiDevtoolsViewport";
-import type pixiDevtoolsOverlay from "./pixi-devtools/pixiDevtoolsOverlay";
 import type pixiDevtoolsOutline from "./pixi-devtools/pixiDevtoolsOutline";
+import type pixiDevtoolsOverlay from "./pixi-devtools/pixiDevtoolsOverlay";
 import type pixiDevtoolsProperties from "./pixi-devtools/pixiDevtoolsProperties";
 import type pixiDevtoolsSelection from "./pixi-devtools/pixiDevtoolsSelection";
+import type pixiDevtoolsViewport from "./pixi-devtools/pixiDevtoolsViewport";
 
 export type BridgeFn = <T>(code: string) => Promise<T>;
 
