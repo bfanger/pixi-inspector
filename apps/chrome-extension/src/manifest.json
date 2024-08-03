@@ -2,8 +2,9 @@
   "manifest_version": 3,
   "name": "PixiJS Devtools",
   "description": "Debug games and apps written with PixiJS",
-  "version": "2.9.0",
+  "version": "2.9.1",
   "devtools_page": "pixi-devtools.html",
+  "action": { "default_popup": "pixi-popup.html" },
   "icons": {
     "16": "icon.png",
     "48": "icon.png"

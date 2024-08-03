@@ -19,6 +19,8 @@ for (const file of [
   "manifest.json",
   "pixi-devtools.html",
   "pixi-panel.html",
+  "pixi-popup.html",
+  "pixi-panel-hint.png",
   "icon.png",
   "panel-icon.png",
 ]) {
