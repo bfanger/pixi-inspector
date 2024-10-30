@@ -40,7 +40,7 @@
   {/if}
 </button>
 
-<style lang="scss">
+<style>
   .toggle {
     appearance: none;
     background: transparent no-repeat center center;

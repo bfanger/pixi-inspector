@@ -30,7 +30,7 @@
   <div class="content"><slot /></div>
 </div>
 
-<style lang="scss">
+<style>
   .tab-layout {
     display: flex;
     height: 100%;
@@ -78,11 +78,10 @@
     height: 16px;
     background: center center no-repeat;
     opacity: 0.8;
-
-    .tab:hover &,
-    .active & {
-      opacity: 1;
-    }
+  }
+  .tab:hover .icon,
+  .active .icon {
+    opacity: 1;
   }
   .content {
     background: #2a2a2a;

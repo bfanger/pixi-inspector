@@ -32,7 +32,7 @@
   {/if}
 </section>
 
-<style lang="scss">
+<style>
   .panel {
     background: #353535;
     border-radius: 4px;

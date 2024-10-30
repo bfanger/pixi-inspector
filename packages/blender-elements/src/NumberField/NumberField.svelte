@@ -137,7 +137,7 @@
   {/if}
 </div>
 
-<style lang="scss">
+<style>
   .number-field {
     position: relative;
     background: #545454;
@@ -183,16 +183,16 @@
     padding-bottom: 2px;
     text-shadow: 0 1px 2px rgba(black, 0.8);
 
-    :not(.focused, .active) &:hover {
-      background-color: #797979;
-      color: #fcfcfc;
-    }
     &:focus {
       color: #e5e5e5;
     }
     &::selection {
       background-color: #4570b5;
     }
+  }
+  :not(.focused, .active) .input:hover {
+    background-color: #797979;
+    color: #fcfcfc;
   }
   .drag {
     position: absolute;
@@ -213,17 +213,6 @@
     background: #656565 no-repeat center center;
     display: none;
     cursor: pointer;
-
-    .number-field:hover & {
-      display: block;
-    }
-
-    .active & {
-      background-color: #222222;
-    }
-    :not(.focused, .active) &:hover {
-      background-color: #797979;
-    }
     &.left {
       left: 0;
       background-image: var(--icon-chevron-left);
@@ -232,5 +221,16 @@
       right: 0;
       background-image: var(--icon-chevron-right);
     }
+  }
+
+  .number-field:hover .arrow {
+    display: block;
+  }
+
+  .active .arrow {
+    background-color: #222222;
+  }
+  :not(.focused, .active) &:hover {
+    background-color: #797979;
   }
 </style>

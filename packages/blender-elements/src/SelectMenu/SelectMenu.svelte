@@ -108,7 +108,7 @@
   {/if}
 </div>
 
-<style lang="scss">
+<style>
   .search-field {
     position: relative;
   }
@@ -150,20 +150,20 @@
       background: var(--icon-chevron-down) center center no-repeat;
       opacity: 0.5;
     }
-    .expanded & {
-      background: #446290;
-      color: #ffffff;
-    }
-    .expanded.up & {
-      border-top-left-radius: 0;
-      border-top-right-radius: 0;
-      border-top-color: #446290;
-    }
-    .expanded.down & {
-      border-bottom-left-radius: 0;
-      border-bottom-right-radius: 0;
-      border-bottom-color: #446290;
-    }
+  }
+  .expanded .value {
+    background: #446290;
+    color: #ffffff;
+  }
+  .expanded.up .value {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-top-color: #446290;
+  }
+  .expanded.down .value {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-color: #446290;
   }
   .icon {
     display: inline-block;
@@ -180,23 +180,22 @@
     background: #181818;
     border: 1px solid #242424;
     border-radius: 4px;
-
-    .up & {
-      border-top-left-radius: 0;
-      border-top-right-radius: 0;
-      bottom: 100%;
-    }
-    .right & {
-      left: 0;
-    }
-    .down & {
-      top: 100%;
-      border-bottom-left-radius: 4px;
-      border-bottom-right-radius: 4px;
-    }
-    .left & {
-      right: 0;
-    }
+  }
+  .up .popout {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    bottom: 100%;
+  }
+  .right .popout {
+    left: 0;
+  }
+  .down .popout {
+    top: 100%;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+  }
+  .left .popout {
+    right: 0;
   }
   .detector {
     position: absolute;
@@ -218,8 +217,8 @@
     position: relative;
     color: #989898;
     padding: 5px 8px 4px 8px;
-    .down & {
-      border-top: 1px solid #2f2f2f;
-    }
+  }
+  .down .legend {
+    border-top: 1px solid #2f2f2f;
   }
 </style>

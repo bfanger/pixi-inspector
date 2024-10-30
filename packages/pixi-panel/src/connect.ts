@@ -23,7 +23,7 @@ function detect() {
           if (win.frames[i][varname]) {
             return true;
           }
-        } catch (_) {
+        } catch {
           // access to iframe was denied
         }
       }

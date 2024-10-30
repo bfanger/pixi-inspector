@@ -84,7 +84,7 @@
   />
 {/if}
 
-<style lang="scss">
+<style>
   .text-field {
     position: relative;
     width: 100%;

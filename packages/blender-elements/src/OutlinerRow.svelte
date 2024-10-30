@@ -148,7 +148,7 @@
   {/if}
 </div>
 
-<style lang="scss">
+<style>
   .outliner-row {
     display: flex;
     align-items: center;
@@ -189,8 +189,8 @@
     text-overflow: ellipsis;
     user-select: none;
     position: default;
-    .muted & {
-      opacity: 0.5;
-    }
+  }
+  .muted .title {
+    opacity: 0.5;
   }
 </style>

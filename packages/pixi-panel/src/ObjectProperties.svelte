@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
-  import Panel from "blender-elements/src/Panel/Panel.svelte";
-  import NumberField from "blender-elements/src/NumberField/NumberField.svelte";
   import Checkbox from "blender-elements/src/Checkbox/Checkbox.svelte";
+  import NumberField from "blender-elements/src/NumberField/NumberField.svelte";
+  import Panel from "blender-elements/src/Panel/Panel.svelte";
   import Property from "blender-elements/src/Property/Property.svelte";
   import SelectMenu from "blender-elements/src/SelectMenu/SelectMenu.svelte";
+  import { createEventDispatcher } from "svelte";
   import type { NodeProperties } from "./types";
 
   export let props: NodeProperties;

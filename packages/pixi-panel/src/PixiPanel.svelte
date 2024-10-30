@@ -2,13 +2,13 @@
   import Base from "blender-elements/src/Base.svelte";
   import Button from "blender-elements/src/Button.svelte";
   import type { BridgeFn } from "./types";
-  import connect from "./connect";
   import { setBridgeContext } from "./bridge-fns";
+  import connect from "./connect";
   import Instructions from "./Instructions.svelte";
-  import SceneGraphArea from "./SceneGraphArea.svelte";
-  import PropertiesArea from "./PropertiesArea.svelte";
-  import Warning from "./Warning.svelte";
   import patchPixi from "./patchPixi";
+  import PropertiesArea from "./PropertiesArea.svelte";
+  import SceneGraphArea from "./SceneGraphArea.svelte";
+  import Warning from "./Warning.svelte";
 
   export let bridge: BridgeFn;
 
@@ -67,7 +67,7 @@
   {/if}
 </Base>
 
-<style lang="scss">
+<style>
   :global(body) {
     margin: 0;
     background: #161616;

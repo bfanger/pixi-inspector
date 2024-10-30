@@ -25,7 +25,7 @@
   {/if}
 </label>
 
-<style lang="scss">
+<style>
   .checkbox {
     display: flex;
     gap: 2px;

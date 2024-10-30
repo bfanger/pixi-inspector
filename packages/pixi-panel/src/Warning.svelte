@@ -7,7 +7,7 @@
   {message}<slot />
 </div>
 
-<style lang="scss">
+<style>
   .warning {
     background: #472722;
     color: #e1e1e1;

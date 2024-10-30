@@ -11,7 +11,7 @@
   <span>{label ?? value}</span>
 </button>
 
-<style lang="scss">
+<style>
   .option {
     font:
       12px system-ui,

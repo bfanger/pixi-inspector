@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { createEventDispatcher, setContext } from "svelte";
   import SearchField from "blender-elements/src/SearchField/SearchField.svelte";
+  import { createEventDispatcher, setContext } from "svelte";
+  import type { OutlinerNode } from "./types";
   import { getBridgeContext, poll } from "./bridge-fns";
   import Tree from "./Tree.svelte";
-  import type { OutlinerNode } from "./types";
   import Warning from "./Warning.svelte";
 
   const dispatch = createEventDispatcher();

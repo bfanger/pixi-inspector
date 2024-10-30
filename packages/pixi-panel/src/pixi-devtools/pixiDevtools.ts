@@ -23,7 +23,7 @@ export default function pixiDevtools() {
           if (win.frames[i][varname]) {
             return win.frames[i][varname];
           }
-        } catch (_) {
+        } catch {
           // access to iframe was denied
         }
       }

@@ -4,7 +4,7 @@
 
 <div class="base" style={css()}><slot /></div>
 
-<style lang="scss">
+<style>
   .base {
     font:
       13px/1.3 system-ui,

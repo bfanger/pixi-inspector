@@ -47,7 +47,7 @@
   {/if}
 </div>
 
-<style lang="scss">
+<style>
   .search-field {
     position: relative;
   }
@@ -72,13 +72,13 @@
     &::selection {
       background-color: #4570b5;
     }
-    .search-field:hover &:not(:focus) {
-      background: #232323;
-      border-color: #414141;
-    }
     &:focus {
       cursor: text;
     }
+  }
+  .search-field:hover .input:not(:focus) {
+    background: #232323;
+    border-color: #414141;
   }
   .search-icon {
     position: absolute;

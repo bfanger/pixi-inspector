@@ -54,7 +54,7 @@
   </div>
 </div>
 
-<style lang="scss">
+<style>
   .instructions {
     padding: 12px;
   }

@@ -19,7 +19,7 @@ function patch() {
             win = win.frames[i];
             return;
           }
-        } catch (_) {
+        } catch {
           // access to iframe was denied
         }
       }

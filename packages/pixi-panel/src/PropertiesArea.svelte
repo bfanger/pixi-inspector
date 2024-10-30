@@ -1,9 +1,9 @@
 <script lang="ts">
   import Tabs from "blender-elements/src/Tabs/Tabs.svelte";
-  import { getBridgeContext, poll } from "./bridge-fns";
   import type { PropertyTab, PropertyTabState } from "./types";
-  import SceneProperties from "./SceneProperties.svelte";
+  import { getBridgeContext, poll } from "./bridge-fns";
   import ObjectProperties from "./ObjectProperties.svelte";
+  import SceneProperties from "./SceneProperties.svelte";
   import TextProperties from "./TextProperties.svelte";
 
   const bridge = getBridgeContext();

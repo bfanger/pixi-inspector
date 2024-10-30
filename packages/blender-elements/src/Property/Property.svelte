@@ -11,7 +11,7 @@
   </div>
 </div>
 
-<style lang="scss">
+<style>
   .property {
     display: flex;
     gap: 8px;

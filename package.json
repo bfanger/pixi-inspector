@@ -25,35 +25,34 @@
     "*.(js|cjs|mjs|jsx)": [
       "eslint --max-warnings 0 --no-ignore"
     ],
-    "*.(json|scss|md)": [
+    "*.(json|css|md)": [
       "prettier --check --loglevel=warn"
     ]
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^3.1.1",
-    "@types/chrome": "^0.0.269",
+    "@sveltejs/vite-plugin-svelte": "^3.1.2",
+    "@types/chrome": "^0.0.272",
     "@types/firefox-webext-browser": "^120.0.4",
-    "@types/node": "^22.1.0",
-    "@typescript-eslint/eslint-plugin": "7",
-    "@typescript-eslint/parser": "7",
-    "concurrently": "^8.2.2",
-    "eslint": "^8.57.0",
+    "@types/node": "^22.8.4",
+    "@typescript-eslint/eslint-plugin": "^8.12.2",
+    "@typescript-eslint/parser": "^8.12.2",
+    "concurrently": "^9.0.1",
+    "eslint": "^8.57.1",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-airbnb-typescript": "^18.0.0",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-config-triple": "^1.2.4",
-    "eslint-import-resolver-typescript": "^3.6.1",
-    "eslint-plugin-import": "^2.29.1",
+    "eslint-config-triple": "^1.2.5",
+    "eslint-import-resolver-typescript": "^3.6.3",
+    "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-only-warn": "^1.1.0",
     "eslint-plugin-prettier": "^5.2.1",
-    "eslint-plugin-svelte": "^2.43.0",
-    "husky": "^9.1.4",
-    "lint-staged": "^15.2.8",
+    "eslint-plugin-svelte": "^2.46.0",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
     "prettier": "^3.3.3",
-    "prettier-plugin-svelte": "^3.2.6",
-    "sass": "^1.77.8",
-    "svelte": "^4.2.18",
-    "svelte-check": "^3.8.5",
-    "typescript": "^5.5.4"
+    "prettier-plugin-svelte": "^3.2.7",
+    "svelte": "^4.2.19",
+    "svelte-check": "^4.0.5",
+    "typescript": "^5.6.3"
   }
 }

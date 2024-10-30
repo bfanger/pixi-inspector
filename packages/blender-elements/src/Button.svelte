@@ -18,7 +18,7 @@
   on:dblclick|stopPropagation={() => {}}><slot /></button
 >
 
-<style lang="scss">
+<style>
   .button {
     appearance: none;
     background: #545454 no-repeat center center;
