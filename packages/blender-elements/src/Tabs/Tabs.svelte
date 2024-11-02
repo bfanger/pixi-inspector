@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
   export type Tab = {
     icon: string;
     label: string;
@@ -6,12 +6,14 @@
 </script>
 
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
+  type Props = {
+    tabs: Tab[];
+    active: Tab | undefined;
+    children?: import("svelte").Snippet;
+    onactivate?: (tab: Tab) => void;
+  };
 
-  export let tabs: Tab[];
-  export let active: Tab | undefined;
-
-  const dispatch = createEventDispatcher();
+  let { tabs, active, children, onactivate }: Props = $props();
 </script>
 
 <div class="tab-layout">
@@ -21,13 +23,14 @@
         class="tab"
         class:active={tab === active}
         title={tab.label}
-        on:click={() => dispatch("activate", tab)}
+        aria-label={tab.label}
+        onclick={() => onactivate?.(tab)}
       >
-        <div class="icon" style:background-image="var(--icon-{tab.icon})" />
+        <div class="icon" style:background-image="var(--icon-{tab.icon})"></div>
       </button>
     {/each}
   </div>
-  <div class="content"><slot /></div>
+  <div class="content">{@render children?.()}</div>
 </div>
 
 <style>

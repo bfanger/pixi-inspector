@@ -1,4 +1,3 @@
-// eslint-disable-next-line filenames/match-exported
 import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 
 /**

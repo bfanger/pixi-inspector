@@ -6,24 +6,28 @@
   import SelectMenu from "blender-elements/src/SelectMenu/SelectMenu.svelte";
   import TextField from "blender-elements/src/TextField/TextField.svelte";
   import Toggle from "blender-elements/src/Toggle/Toggle.svelte";
-  import { createEventDispatcher } from "svelte";
   import type { NodeProperties } from "./types";
 
-  export let props: NodeProperties;
-  export let expanded: Record<string, boolean>;
+  type Props = {
+    props: NodeProperties;
+    expanded: Record<string, boolean>;
+    onchange: (e: { property: string; value: any }) => void;
+  };
 
-  const dispatch = createEventDispatcher();
+  let { props, expanded = $bindable(), onchange }: Props = $props();
 
-  $: fontPanel =
+  let fontPanel = $derived(
     typeof props.fontFamily === "string" ||
-    typeof props.fontSize === "number" ||
-    typeof props.fontStyle === "string" ||
-    typeof props.fontVariant === "string";
-  $: alignmentPanel =
-    typeof props.align === "string" || typeof props.textBaseline === "string";
-  $: spacingPanel = typeof props.letterSpacing === "number";
-  $: dropShadowPanel = typeof props.dropShadow === "boolean";
-  $: strokePanel = typeof props.stroke === "string";
+      typeof props.fontSize === "number" ||
+      typeof props.fontStyle === "string" ||
+      typeof props.fontVariant === "string",
+  );
+  let alignmentPanel = $derived(
+    typeof props.align === "string" || typeof props.textBaseline === "string",
+  );
+  let spacingPanel = $derived(typeof props.letterSpacing === "number");
+  let dropShadowPanel = $derived(typeof props.dropShadow === "boolean");
+  let strokePanel = $derived(typeof props.stroke === "string");
 
   const alignOptions = [
     { value: "left", label: "Left", icon: "text-left" },
@@ -43,8 +47,7 @@
     <TextField
       id="text"
       value={props.text}
-      on:input={(e) =>
-        dispatch("change", { property: "text", value: e.detail })}
+      oninput={(value) => onchange({ property: "text", value })}
     />
   </div>
 {/if}
@@ -57,8 +60,7 @@
       >
         <TextField
           value={props.fontFamily}
-          on:change={(e) =>
-            dispatch("change", { property: "fontFamily", value: e.detail })}
+          onchange={(value) => onchange({ property: "fontFamily", value })}
         />
       </Property>
     {/if}
@@ -68,8 +70,7 @@
           value={props.fontSize}
           min={0}
           step={1}
-          on:change={(e) =>
-            dispatch("change", { property: "fontSize", value: e.detail })}
+          onchange={(value) => onchange({ property: "fontSize", value })}
         />
       </Property>
     {/if}
@@ -80,23 +81,23 @@
             label="Normal"
             value={props.fontStyle === "normal"}
             location="LEFT"
-            on:change={() =>
-              dispatch("change", { property: "fontStyle", value: "normal" })}
+            onchange={() =>
+              onchange({ property: "fontStyle", value: "normal" })}
           />
           <Toggle
             icon="italic"
             label="Italic"
             value={props.fontStyle === "italic"}
             location="CENTER"
-            on:change={() =>
-              dispatch("change", { property: "fontStyle", value: "italic" })}
+            onchange={() =>
+              onchange({ property: "fontStyle", value: "italic" })}
           />
           <Toggle
             label="Oblique"
             value={props.fontStyle === "oblique"}
             location="RIGHT"
-            on:change={() =>
-              dispatch("change", { property: "fontStyle", value: "oblique" })}
+            onchange={() =>
+              onchange({ property: "fontStyle", value: "oblique" })}
           />
         </div>
       </Property>
@@ -108,8 +109,8 @@
             label="Normal"
             value={props.fontVariant === "normal"}
             location="LEFT"
-            on:change={() =>
-              dispatch("change", { property: "fontVariant", value: "normal" })}
+            onchange={() =>
+              onchange({ property: "fontVariant", value: "normal" })}
           />
 
           <Toggle
@@ -117,8 +118,8 @@
             label="Small Caps"
             value={props.fontVariant === "small-caps"}
             location="RIGHT"
-            on:change={() =>
-              dispatch("change", {
+            onchange={() =>
+              onchange({
                 property: "fontVariant",
                 value: "small-caps",
               })}
@@ -145,8 +146,7 @@
             "800",
             "900",
           ]}
-          on:change={(e) =>
-            dispatch("change", { property: "fontWeight", value: e.detail })}
+          onchange={(value) => onchange({ property: "fontWeight", value })}
         />
       </Property>
     {/if}
@@ -162,8 +162,7 @@
         <SelectMenu
           value={props.align}
           options={alignOptions}
-          on:change={(e) =>
-            dispatch("change", { property: "align", value: e.detail })}
+          onchange={(value) => onchange({ property: "align", value })}
         />
       </Property>
     {/if}
@@ -182,8 +181,7 @@
             "ideographic",
             "bottom",
           ]}
-          on:change={(e) =>
-            dispatch("change", { property: "textBaseline", value: e.detail })}
+          onchange={(value) => onchange({ property: "textBaseline", value })}
         />
       </Property>
     {/if}
@@ -197,8 +195,7 @@
           value={props.leading}
           min={0}
           step={0.1}
-          on:change={(e) =>
-            dispatch("change", { property: "leading", value: e.detail })}
+          onchange={(value) => onchange({ property: "leading", value })}
         />
       </Property>
     {/if}
@@ -210,10 +207,10 @@
         <NumberField
           value={props.letterSpacing}
           step={0.1}
-          on:change={(e) =>
-            dispatch("change", {
+          onchange={(value) =>
+            onchange({
               property: "letterSpacing",
-              value: e.detail,
+              value,
             })}
         />
       </Property>
@@ -227,8 +224,7 @@
         <NumberField
           value={props.lineHeight}
           step={1}
-          on:change={(e) =>
-            dispatch("change", { property: "lineHeight", value: e.detail })}
+          onchange={(value) => onchange({ property: "lineHeight", value })}
         />
       </Property>
     {/if}
@@ -238,8 +234,7 @@
           value={props.padding}
           min={0}
           step={1}
-          on:change={(e) =>
-            dispatch("change", { property: "padding", value: e.detail })}
+          onchange={(value) => onchange({ property: "padding", value })}
         />
       </Property>
     {/if}
@@ -253,22 +248,21 @@
             label="Normal"
             value={props.whiteSpace === "normal"}
             location="LEFT"
-            on:change={() =>
-              dispatch("change", { property: "whiteSpace", value: "normal" })}
+            onchange={() =>
+              onchange({ property: "whiteSpace", value: "normal" })}
           />
           <Toggle
             label="Pre"
             value={props.whiteSpace === "pre"}
             location="CENTER"
-            on:change={() =>
-              dispatch("change", { property: "whiteSpace", value: "pre" })}
+            onchange={() => onchange({ property: "whiteSpace", value: "pre" })}
           />
           <Toggle
             label="Pre Line"
             value={props.whiteSpace === "pre-line"}
             location="RIGHT"
-            on:change={() =>
-              dispatch("change", { property: "whiteSpace", value: "pre-line" })}
+            onchange={() =>
+              onchange({ property: "whiteSpace", value: "pre-line" })}
           />
         </div>
       </Property>
@@ -278,8 +272,7 @@
         <Checkbox
           value={props.trim}
           hint="Trim transparent borders"
-          on:change={(e) =>
-            dispatch("change", { property: "trim", value: e.detail })}
+          onchange={(value) => onchange({ property: "trim", value })}
         >
           Trim
         </Checkbox>
@@ -292,8 +285,7 @@
     title="Word wrap"
     value={props.wordWrap}
     bind:expanded={expanded.wordWrap}
-    on:change={(e) =>
-      dispatch("change", { property: "wordWrap", value: e.detail })}
+    onchange={(value) => onchange({ property: "wordWrap", value })}
   >
     {#if typeof props.wordWrapWidth === "number"}
       <Property
@@ -304,10 +296,10 @@
           value={props.wordWrapWidth}
           min={0}
           step={1}
-          on:change={(e) =>
-            dispatch("change", {
+          onchange={(value) =>
+            onchange({
               property: "wordWrapWidth",
-              value: e.detail,
+              value,
             })}
         />
       </Property>
@@ -317,8 +309,7 @@
         <Checkbox
           value={props.breakWords}
           hint="Indicates if lines can be wrapped within words, it needs wordWrap to be set to true."
-          on:change={(e) =>
-            dispatch("change", { property: "breakWords", value: e.detail })}
+          onchange={(value) => onchange({ property: "breakWords", value })}
         >
           Break words
         </Checkbox>
@@ -332,8 +323,7 @@
     title="Drop shadow"
     value={props.dropShadow}
     bind:expanded={expanded.dropShadow}
-    on:change={(e) =>
-      dispatch("change", { property: "dropShadow", value: e.detail })}
+    onchange={(value) => onchange({ property: "dropShadow", value })}
   >
     {#if typeof props.dropShadowAlpha === "number"}
       <Property label="Alpha" hint="Set alpha for the drop shadow">
@@ -342,10 +332,10 @@
           step={0.01}
           min={0}
           max={1}
-          on:change={(e) =>
-            dispatch("change", {
+          onchange={(value) =>
+            onchange({
               property: "dropShadowAlpha",
-              value: e.detail,
+              value,
             })}
         />
       </Property>
@@ -354,10 +344,10 @@
       <Property label="Color" hint="A fill style to be used on the dropshadow">
         <TextField
           value={props.dropShadowColor}
-          on:change={(e) =>
-            dispatch("change", {
+          onchange={(value) =>
+            onchange({
               property: "dropShadowColor",
-              value: e.detail,
+              value,
             })}
         />
       </Property>
@@ -368,10 +358,10 @@
           value={props.dropShadowAngle}
           step={0.01}
           suffix="r"
-          on:change={(e) =>
-            dispatch("change", {
+          onchange={(value) =>
+            onchange({
               property: "dropShadowAngle",
-              value: e.detail,
+              value,
             })}
         />
       </Property>
@@ -382,10 +372,10 @@
           value={props.dropShadowBlur}
           min={0}
           step={0.1}
-          on:change={(e) =>
-            dispatch("change", {
+          onchange={(value) =>
+            onchange({
               property: "dropShadowBlur",
-              value: e.detail,
+              value,
             })}
         />
       </Property>
@@ -396,10 +386,10 @@
           value={props.dropShadowDistance}
           step={0.1}
           min={0}
-          on:change={(e) =>
-            dispatch("change", {
+          onchange={(value) =>
+            onchange({
               property: "dropShadowDistance",
-              value: e.detail,
+              value,
             })}
         />
       </Property>
@@ -416,10 +406,10 @@
       >
         <TextField
           value={props.stroke}
-          on:change={(e) =>
-            dispatch("change", {
+          onchange={(value) =>
+            onchange({
               property: "stroke",
-              value: e.detail,
+              value,
             })}
         />
       </Property>
@@ -433,10 +423,10 @@
           value={props.strokeThickness}
           min={0}
           step={0.1}
-          on:change={(e) =>
-            dispatch("change", {
+          onchange={(value) =>
+            onchange({
               property: "strokeThickness",
-              value: e.detail,
+              value,
             })}
         />
       </Property>

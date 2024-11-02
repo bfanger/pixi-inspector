@@ -1,19 +1,36 @@
 <script lang="ts">
+  import Tree from "./Tree.svelte";
   import OutlinerRow from "blender-elements/src/OutlinerRow.svelte";
   import { createEventDispatcher } from "svelte";
   import type { OutlinerNode } from "./types";
 
-  export let id: string;
-  export let name: string;
-  export let leaf: boolean;
-  export let active: boolean;
-  export let selectable: boolean;
-  export let visible: boolean | undefined;
-  export let match: boolean | undefined;
-  export let muted = false;
-  export let parentUnselectable: boolean | undefined = undefined;
-  export let children: OutlinerNode[] | undefined = undefined;
-  export let depth = 0;
+  type Props = {
+    id: string;
+    name: string;
+    leaf: boolean;
+    active: boolean;
+    selectable: boolean;
+    visible: boolean | undefined;
+    match: boolean | undefined;
+    muted?: boolean;
+    parentUnselectable?: boolean | undefined;
+    children?: OutlinerNode[] | undefined;
+    depth?: number;
+  };
+
+  let {
+    id,
+    name,
+    leaf,
+    active,
+    selectable,
+    visible,
+    match,
+    muted = false,
+    parentUnselectable = undefined,
+    children = undefined,
+    depth = 0,
+  }: Props = $props();
 
   const dispatch = createEventDispatcher();
 </script>
@@ -42,7 +59,7 @@
 
 {#if children}
   {#each children as child}
-    <svelte:self
+    <Tree
       id={child.id}
       name={child.name}
       leaf={child.leaf}

@@ -1,8 +1,19 @@
 <script lang="ts">
-  export let value: boolean | undefined = undefined;
-  export let location: "ALONE" | "LEFT" | "CENTER" | "RIGHT" = "ALONE";
+  type Props = {
+    value?: boolean | undefined;
+    location?: "ALONE" | "LEFT" | "CENTER" | "RIGHT";
+    children?: import("svelte").Snippet;
+    onclick?: () => void;
+  };
 
-  function onToggle() {
+  let {
+    value = $bindable(undefined),
+    location = "ALONE",
+    children,
+    onclick,
+  }: Props = $props();
+
+  function toggle() {
     if (typeof value === "boolean") {
       value = !value;
     }
@@ -13,9 +24,12 @@
   class="button"
   class:pressed={value}
   data-location={location}
-  on:click={onToggle}
-  on:click|stopPropagation
-  on:dblclick|stopPropagation={() => {}}><slot /></button
+  onclick={(e) => {
+    e.stopPropagation();
+    toggle();
+    onclick?.();
+  }}
+  ondblclick={(e) => e.stopPropagation()}>{@render children?.()}</button
 >
 
 <style>

@@ -87,5 +87,5 @@ import { Application, Color, FillGradient, Text, TextStyle } from "pixi.js";
 
   app.stage.addChild(skewText);
 
-  (globalThis as any).__PIXI_APP__ = app; // eslint-disable-line
+  (globalThis as any).__PIXI_APP__ = app;
 })();

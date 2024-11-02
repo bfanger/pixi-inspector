@@ -1,13 +1,22 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
   import { slide } from "svelte/transition";
   import Checkbox from "../Checkbox/Checkbox.svelte";
 
-  export let title: string;
-  export let expanded = true;
-  export let value: boolean | undefined = undefined;
+  type Props = {
+    title: string;
+    expanded?: boolean;
+    value?: boolean | undefined;
+    children?: import("svelte").Snippet;
+    onchange?: (value: boolean) => void;
+  };
 
-  const dispatch = createEventDispatcher();
+  let {
+    title,
+    expanded = $bindable(true),
+    value = $bindable(undefined),
+    children,
+    onchange,
+  }: Props = $props();
 
   function onToggleExpanded() {
     expanded = !expanded;
@@ -15,9 +24,9 @@
 </script>
 
 <section class="panel">
-  <button class="title" class:expanded on:click={onToggleExpanded}>
+  <button class="title" class:expanded onclick={onToggleExpanded}>
     {#if typeof value === "boolean"}
-      <Checkbox bind:value on:change={(e) => dispatch("change", e.detail)} />
+      <Checkbox bind:value {onchange} />
     {/if}
     <span>{title}</span>
   </button>
@@ -27,7 +36,7 @@
       class:disabled={value === false}
       transition:slide={{ duration: 150 }}
     >
-      <slot />
+      {@render children?.()}
     </div>
   {/if}
 </section>

@@ -90,7 +90,6 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
         unscale.y /= parentNode.scale.y;
       }
       parentNode = devtools.parentOf(parentNode) as UniversalNode;
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     } while (parentNode);
     return unscale;
   }
@@ -142,7 +141,6 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
     overlayEl.appendChild(anchor);
 
     function calibrateOverlay() {
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (!canvas || !("getBoundingClientRect" in canvas)) {
         return;
       }
@@ -168,7 +166,6 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
     let raf: number | undefined;
 
     function calculateCss(node: UniversalNode | undefined) {
-      /* eslint-disable no-param-reassign */
       if (!node) {
         return undefined;
       }

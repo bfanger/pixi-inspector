@@ -1,3 +1,3 @@
 <div>
-  <button on:click={() => window.location.reload()}>Reload Panel</button>
+  <button onclick={() => window.location.reload()}>Reload Panel</button>
 </div>

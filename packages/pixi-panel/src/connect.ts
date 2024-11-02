@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 import type { Readable } from "svelte/store";
 import { derived, writable } from "svelte/store";
 import type { BridgeFn } from "./types";
@@ -80,7 +79,6 @@ export default function connect(bridge: BridgeFn): Readable<
       return "ERROR";
     }
     if (data === "INJECT") {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       bridge(`(() => {
         window.__PIXI_DEVTOOLS__ = (${pixiDevtools.toString()}());
         window.__PIXI_DEVTOOLS__.selection = (${pixiDevtoolsSelection.toString()}(window.__PIXI_DEVTOOLS__));

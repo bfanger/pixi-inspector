@@ -4,13 +4,17 @@
   import revertOnEscape from "../actions/revertOnEscape";
   import selectOnFocus from "../actions/selectOnFocus";
 
-  export let value: string;
-  export let id: string | undefined = undefined;
+  type Props = {
+    value: string;
+    id?: string | undefined;
+  };
+
+  let { value = $bindable(), id = undefined }: Props = $props();
 
   const dispatch = createEventDispatcher();
 
-  let text = value;
-  let previous = value;
+  let text = $state(value);
+  let previous = $state(value);
 
   function onInput() {
     if (text !== value) {
@@ -38,12 +42,12 @@
     use:blurOnEnter
     use:revertOnEscape={previous}
     use:selectOnFocus
-    on:input={onInput}
-    on:focus={onFocus}
+    oninput={onInput}
+    onfocus={onFocus}
   />
-  <div class="search-icon" />
+  <div class="search-icon"></div>
   {#if value !== ""}
-    <button class="clear" on:click={clear} />
+    <button class="clear" onclick={clear} aria-label="clear"></button>
   {/if}
 </div>
 
@@ -76,7 +80,7 @@
       cursor: text;
     }
   }
-  .search-field:hover .input:not(:focus) {
+  .search-field:hover .input:not(:global(:focus)) {
     background: #232323;
     border-color: #414141;
   }

@@ -2,9 +2,13 @@
   import Base from "../Base.svelte";
   import SelectMenu from "./SelectMenu.svelte";
 
-  export let Hst: any;
+  type Props = {
+    Hst: any;
+  };
 
-  let value = "Both";
+  let { Hst }: Props = $props();
+
+  let value = $state("Both");
   const options = ["None", "Back", "Front", "Both"];
 </script>
 
@@ -14,11 +18,11 @@
       <SelectMenu legend="Fill Mode" bind:value {options} />
     </div>
   </Base>
-  <svelte:fragment slot="controls">
+  {#snippet controls()}
     <Hst.Select
       bind:value
       title="value"
       options={["None", "Back", "Front", "Both"]}
     />
-  </svelte:fragment>
+  {/snippet}
 </Hst.Story>

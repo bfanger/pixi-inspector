@@ -17,11 +17,9 @@ export default function pixiDevtoolsSelection(devtools: PixiDevtools) {
       return (node as any)[metaProperty] !== false;
     },
     disable(node: UniversalNode) {
-      // eslint-disable-next-line no-param-reassign
       (node as any)[metaProperty] = false;
     },
     enable(node: UniversalNode) {
-      // eslint-disable-next-line no-param-reassign
       (node as any)[metaProperty] = true;
     },
     highlighted(): UniversalNode | undefined {

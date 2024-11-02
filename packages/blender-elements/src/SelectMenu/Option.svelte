@@ -1,12 +1,17 @@
 <script lang="ts">
-  export let value: string;
-  export let icon: string | undefined = undefined;
-  export let label: string | undefined = undefined;
+  type Props = {
+    value: string;
+    icon?: string | undefined;
+    label?: string | undefined;
+    onclick: () => void;
+  };
+
+  let { value, icon = undefined, label = undefined, onclick }: Props = $props();
 </script>
 
-<button class="option" on:click>
+<button class="option" {onclick}>
   {#if icon}
-    <span class="icon" style="background-image: var(--icon-{icon})" />
+    <span class="icon" style="background-image: var(--icon-{icon})"></span>
   {/if}
   <span>{label ?? value}</span>
 </button>

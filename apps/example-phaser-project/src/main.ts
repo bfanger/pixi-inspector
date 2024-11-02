@@ -16,7 +16,7 @@ const game = new Phaser.Game({
   },
 });
 
-(globalThis as any).__PHASER_GAME__ = game; // eslint-disable-line
+(globalThis as any).__PHASER_GAME__ = game;
 
 function preload(this: Phaser.Scene) {
   this.load.setBaseURL("/");

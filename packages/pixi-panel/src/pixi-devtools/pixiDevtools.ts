@@ -1,4 +1,4 @@
-import type { Game, GameObjects, Scene, Scenes } from "phaser";
+import type { Game, GameObjects, Scene } from "phaser";
 import type { Application, Container, ICanvas, Renderer } from "pixi.js";
 import type { UniversalNode } from "../types";
 
@@ -42,25 +42,23 @@ export default function pixiDevtools() {
       }
       const app = getGlobal("__PIXI_APP__") as Application | undefined;
       if (app) {
-        return app.stage as Container;
+        return app.stage;
       }
       const game = getGlobal("__PHASER_GAME__") as Game | undefined;
       if (game) {
         if (game.scene.scenes.length === 1) {
-          return game.scene.scenes[0] as Scene;
+          return game.scene.scenes[0];
         }
         return game.scene as any as Scene;
       }
       const renderer = getGlobal("__PIXI_RENDERER__");
       if (renderer) {
         return (renderer.lastObjectRendered ??
-          // eslint-disable-next-line no-underscore-dangle
           renderer._lastObjectRendered) as Container;
       }
       const patched = getGlobal("__PATCHED_RENDERER__");
       if (patched) {
         return (patched.lastObjectRendered ??
-          // eslint-disable-next-line no-underscore-dangle
           patched._lastObjectRendered) as Container;
       }
       return undefined;
@@ -111,7 +109,7 @@ export default function pixiDevtools() {
         return (node as GameObjects.Container).list;
       }
       if ("scenes" in node) {
-        return (node as Scenes.SceneManager).scenes;
+        return node.scenes;
       }
       if ("emitters" in node) {
         // node is GameObjects.Particles.ParticleEmitterManager (Removed in Phaser 3.60)
@@ -129,7 +127,7 @@ export default function pixiDevtools() {
       }
       if ("parentContainer" in node) {
         const container = (node as GameObjects.GameObject).parentContainer;
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+
         if (container === null) {
           return (node as GameObjects.GameObject).scene;
         }

@@ -32,7 +32,7 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
    */
   function augment(node: UniversalNode) {
     let meta: Meta = (node as any)[metaProperty];
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+
     if (meta) {
       return meta;
     }
@@ -40,7 +40,7 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
       id: autoId(),
       expanded: false,
     };
-    // eslint-disable-next-line no-param-reassign
+
     (node as any)[metaProperty] = meta;
     return meta;
   }
@@ -77,7 +77,6 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
   function buildName(node: UniversalNode) {
     let name = "";
     if (devtools.inVersionRange(8)) {
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if ("label" in node && node.label !== null && node.label !== "") {
         if (node.label === "Sprite") {
           return node.label;
@@ -87,7 +86,6 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
         }
         name += `"${node.label}"`;
       }
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     } else if ("name" in node && node.name !== null && node.name !== "") {
       if (node.constructor.name) {
         name += `${node.constructor.name} `;
@@ -95,7 +93,6 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
       name += `"${node.name}"`;
     }
     if (!name) {
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       name = node.constructor.name ?? "anonymous";
     }
     return name;

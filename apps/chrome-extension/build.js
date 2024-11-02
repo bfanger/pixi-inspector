@@ -5,7 +5,6 @@ import fs from "fs";
 import path from "path";
 import { rimrafSync } from "rimraf";
 import { fileURLToPath } from "url";
-// eslint-disable-next-line import/no-relative-packages
 import svelteConfig from "../../svelte.config.js";
 
 const cwd = path.dirname(fileURLToPath(import.meta.url));

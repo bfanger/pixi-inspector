@@ -1,46 +1,63 @@
 <script lang="ts">
-  import { createEventDispatcher, tick } from "svelte";
+  import { tick } from "svelte";
   import blurOnEnter from "../actions/blurOnEnter";
   import revertOnEscape from "../actions/revertOnEscape";
   import selectOnFocus from "../actions/selectOnFocus";
 
-  export let value: string;
-  export let id: string | undefined = undefined;
+  type Props = {
+    value: string;
+    id?: string | undefined;
+    onchange?: (value: string) => void;
+    oninput?: (value: string) => void;
+  };
 
-  const dispatch = createEventDispatcher();
+  let {
+    value = $bindable(),
+    id = undefined,
+    onchange,
+    oninput,
+  }: Props = $props();
 
-  let el: HTMLInputElement | HTMLTextAreaElement;
-  let text = value;
-  let previous = value;
-  let multiline = false;
+  let el: HTMLInputElement | HTMLTextAreaElement | undefined = $state();
+  let text = $state(value);
+  let previous = $state(value);
+  let multiline = $state(false);
 
-  $: if (text !== value && document.activeElement !== el) {
-    text = value;
-    multiline = text.includes("\n");
-  }
-  $: if (text.includes("\n")) {
-    multiline = true;
-  }
+  $effect(() => {
+    if (text !== value && document.activeElement !== el) {
+      text = value;
+      multiline = text.includes("\n");
+    }
+    if (text.includes("\n")) {
+      multiline = true;
+    }
+  });
 
   function onInput() {
     if (text !== value) {
       value = text;
-      dispatch("input", value);
+      oninput?.(value);
     }
   }
   function onFocus() {
     previous = text;
   }
   function onBlur() {
+    if (!el) {
+      return;
+    }
     if (previous !== text) {
       value = text;
-      dispatch("change", text);
+      onchange?.(text);
     }
     if (el.tagName === "TEXTAREA" && !text.includes("\n")) {
       multiline = false;
     }
   }
   async function onKeydown(e: KeyboardEvent) {
+    if (!el) {
+      return;
+    }
     if (e.key === "Enter" && e.shiftKey) {
       const { selectionStart } = el;
       multiline = true;
@@ -62,9 +79,9 @@
       bind:value={text}
       use:blurOnEnter
       use:revertOnEscape={previous}
-      on:input={onInput}
-      on:blur={onBlur}
-    />
+      oninput={onInput}
+      onblur={onBlur}
+    ></textarea>
   </div>
 {:else}
   <input
@@ -77,10 +94,10 @@
     use:blurOnEnter
     use:revertOnEscape={previous}
     use:selectOnFocus
-    on:keydown={onKeydown}
-    on:input={onInput}
-    on:focus={onFocus}
-    on:blur={onBlur}
+    onkeydown={onKeydown}
+    oninput={onInput}
+    onfocus={onFocus}
+    onblur={onBlur}
   />
 {/if}
 
@@ -115,7 +132,7 @@
     &::selection {
       background-color: #4570b5;
     }
-    &:hover:not(:focus) {
+    &:hover:not(:global(:focus)) {
       background: #232323;
       border-color: #414141;
     }

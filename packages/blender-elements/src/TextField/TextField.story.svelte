@@ -2,9 +2,13 @@
   import Base from "../Base.svelte";
   import TextField from "./TextField.svelte";
 
-  export let Hst: any;
+  type Props = {
+    Hst: any;
+  };
 
-  let value = "";
+  let { Hst }: Props = $props();
+
+  let value = $state("");
 </script>
 
 <Hst.Story>
@@ -13,7 +17,7 @@
       <TextField bind:value />
     </div>
   </Base>
-  <svelte:fragment slot="controls">
+  {#snippet controls()}
     <Hst.Text bind:value title="value" />
-  </svelte:fragment>
+  {/snippet}
 </Hst.Story>

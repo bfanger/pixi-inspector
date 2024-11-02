@@ -1,29 +1,35 @@
 <script lang="ts">
-  import { createEventDispatcher, tick } from "svelte";
+  import { tick } from "svelte";
   import Option from "./Option.svelte";
 
   type OptionType = string | { value: string; label?: string; icon?: string };
 
-  export let value: string;
-  export let options: OptionType[];
-  export let legend = "";
+  type Props = {
+    value: string;
+    options: OptionType[];
+    legend?: string;
+    onchange?: (value: string) => void;
+  };
 
-  $: current = options.find((option) => {
-    if (typeof option === "string") {
-      return option === value;
-    }
-    return option.value === value;
-  });
+  let { value = $bindable(), options, legend = "", onchange }: Props = $props();
 
-  const dispatch = createEventDispatcher();
+  let current = $derived(
+    options.find((option) => {
+      if (typeof option === "string") {
+        return option === value;
+      }
+      return option.value === value;
+    }),
+  );
 
-  let el: HTMLDivElement;
-  let expanded: undefined | { x: "LEFT" | "RIGHT"; y: "UP" | "DOWN" };
+  let el: HTMLDivElement | undefined = $state();
+  let expanded: undefined | { x: "LEFT" | "RIGHT"; y: "UP" | "DOWN" } =
+    $state();
   let timer: number | undefined;
 
   function select(next: OptionType) {
     value = typeof next === "string" ? next : next.value;
-    dispatch("change", value);
+    onchange?.(value);
     collapse();
   }
 
@@ -33,8 +39,11 @@
       y: "DOWN",
     };
     await tick();
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+
     if (!expanded) {
+      return;
+    }
+    if (!el) {
       return;
     }
     const bounds = el.getBoundingClientRect();
@@ -69,40 +78,43 @@
   class:down={expanded?.y === "DOWN"}
   class:left={expanded?.x === "LEFT"}
 >
-  <button class="value" on:click={expand}>
+  <button class="value" onclick={expand}>
     {#if typeof current === "string"}
       <span>{current}</span>
     {:else if current}
       {#if current.icon}
-        <span
-          class="icon"
-          style="background-image: var(--icon-{current.icon})"
-        />
+        <span class="icon" style="background-image: var(--icon-{current.icon})"
+        ></span>
       {/if}
       <span>{current.label ?? current.value}</span>
     {/if}
   </button>
   {#if expanded}
     <div class="popout" bind:this={el}>
-      <button class="detector" on:mouseleave={onLeave} on:click={collapse} />
-      <!-- svelte-ignore a11y-no-static-element-interactions -->
-      <div class="options" on:mouseenter={onEnter}>
+      <button
+        class="detector"
+        onmouseleave={onLeave}
+        onclick={collapse}
+        aria-label="close"
+      ></button>
+      <!-- svelte-ignore a11y_no_static_element_interactions -->
+      <div class="options" onmouseenter={onEnter}>
         {#each options as option}
           {#if typeof option === "string"}
-            <Option value={option} on:click={() => select(option)} />
+            <Option value={option} onclick={() => select(option)} />
           {:else}
             <Option
               value={option.value}
               icon={option.icon}
               label={option.label}
-              on:click={() => select(option)}
+              onclick={() => select(option)}
             />
           {/if}
         {/each}
       </div>
       {#if legend}
-        <!-- svelte-ignore a11y-no-static-element-interactions -->
-        <div class="legend" on:mouseenter={onEnter}>{legend}</div>
+        <!-- svelte-ignore a11y_no_static_element_interactions -->
+        <div class="legend" onmouseenter={onEnter}>{legend}</div>
       {/if}
     </div>
   {/if}

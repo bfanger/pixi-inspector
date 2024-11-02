@@ -3,11 +3,15 @@
   import { type Icon, icons } from "../icons";
   import Toggle from "./Toggle.svelte";
 
-  export let Hst: any;
+  type Props = {
+    Hst: any;
+  };
 
-  let value = false;
-  let icon: Icon = "copy";
-  let font: "bold" | "italic" | "small-caps" = "bold";
+  let { Hst }: Props = $props();
+
+  let value = $state(false);
+  let icon: Icon = $state("copy");
+  let font: "bold" | "italic" | "small-caps" = $state("bold");
 </script>
 
 <Hst.Story>
@@ -30,7 +34,7 @@
         location="LEFT"
         label="Bold"
         value={font === "bold"}
-        on:click={() => {
+        onclick={() => {
           font = "bold";
         }}
       />
@@ -39,7 +43,7 @@
         location="CENTER"
         label="Italic"
         value={font === "italic"}
-        on:click={() => {
+        onclick={() => {
           font = "italic";
         }}
       />
@@ -48,14 +52,14 @@
         location="RIGHT"
         label="Small Caps"
         value={font === "small-caps"}
-        on:click={() => {
+        onclick={() => {
           font = "small-caps";
         }}
       />
     </div>
   </Base>
-  <svelte:fragment slot="controls">
+  {#snippet controls()}
     <Hst.Checkbox bind:value title="value" />
     <Hst.Radio bind:value={icon} title="icon" options={icons} />
-  </svelte:fragment>
+  {/snippet}
 </Hst.Story>

@@ -1,13 +1,18 @@
 <script lang="ts">
-  export let label = "";
-  export let hint = "";
-  export let group = false;
+  type Props = {
+    label?: string;
+    hint?: string;
+    group?: boolean;
+    children?: import("svelte").Snippet;
+  };
+
+  let { label = "", hint = "", group = false, children }: Props = $props();
 </script>
 
 <div class="property" class:group>
   <div class="label" title={hint}>{label}</div>
   <div class="value">
-    <slot />
+    {@render children?.()}
   </div>
 </div>
 
@@ -16,7 +21,7 @@
     display: flex;
     gap: 8px;
 
-    &:not(.group) {
+    &:not(:global(.group)) {
       margin-bottom: 4px;
     }
   }

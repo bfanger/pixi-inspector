@@ -22,7 +22,7 @@
             icon="copy"
             hint="Copy to clipboard"
             transparent
-            on:click={() => onCopy("globalThis.__PIXI_APP__ = app;")}
+            onclick={() => onCopy("globalThis.__PIXI_APP__ = app;")}
           />
         </div>
         globalThis.__PIXI_APP__ = app;</code
@@ -45,7 +45,7 @@
             icon="copy"
             hint="Copy to clipboard"
             transparent
-            on:click={() => onCopy("globalThis.__PHASER_GAME__ = game;")}
+            onclick={() => onCopy("globalThis.__PHASER_GAME__ = game;")}
           />
         </div>
         globalThis.__PHASER_GAME__ = game;</code

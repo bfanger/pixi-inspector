@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from "svelte/legacy";
+
   import SearchField from "blender-elements/src/SearchField/SearchField.svelte";
   import { createEventDispatcher, setContext } from "svelte";
   import type { OutlinerNode } from "./types";
@@ -15,18 +17,17 @@
     "__PIXI_DEVTOOLS__.outline.tree()",
     2000,
   );
-  $: stage = $tree.data;
-  $: error = $tree.error;
+  let stage = $derived($tree.data);
+  let error = $derived($tree.error);
 
-  let query = "";
-  let el: HTMLDivElement;
+  let query = $state("");
+  let el: HTMLDivElement | undefined = $state();
 
-  $: {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  run(() => {
     bridge(`__PIXI_DEVTOOLS__.outline.query = ${JSON.stringify(query)}`).then(
       () => tree.sync(),
     );
-  }
+  });
 
   async function expand(path: string[]) {
     if (query) {
@@ -90,8 +91,8 @@
   <div
     class="body"
     bind:this={el}
-    on:focusin={onFocusIn}
-    on:focusout={onFocusOut}
+    onfocusin={onFocusIn}
+    onfocusout={onFocusOut}
   >
     {#if error}
       <Warning>{error.message}</Warning>

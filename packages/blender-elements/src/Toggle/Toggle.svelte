@@ -1,20 +1,32 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
   import type { Icon } from "../icons";
 
-  export let icon: Icon | undefined = undefined;
-  export let label = "";
-  export let value: boolean | undefined = undefined;
-  export let transparent = false;
-  export let hint: string | undefined = undefined;
-  export let location: "ALONE" | "LEFT" | "CENTER" | "RIGHT" = "ALONE";
+  type Props = {
+    icon?: Icon | undefined;
+    label?: string;
+    value?: boolean | undefined;
+    transparent?: boolean;
+    hint?: string | undefined;
+    location?: "ALONE" | "LEFT" | "CENTER" | "RIGHT";
+    onchange?: (value: boolean) => void;
+    onclick?: () => void;
+  };
 
-  const dispatch = createEventDispatcher();
+  let {
+    icon = undefined,
+    label = "",
+    value = $bindable(undefined),
+    transparent = false,
+    hint = undefined,
+    location = "ALONE",
+    onchange,
+    onclick,
+  }: Props = $props();
 
-  function onToggle() {
+  function toggle() {
     if (typeof value === "boolean") {
       value = !value;
-      dispatch("change", value);
+      onchange?.(value);
     }
   }
 </script>
@@ -26,12 +38,15 @@
   class:with-label={label}
   data-location={location}
   title={hint}
-  on:click={onToggle}
-  on:click|stopPropagation
-  on:dblclick|stopPropagation={() => {}}
+  onclick={(e) => {
+    e.stopPropagation();
+    toggle();
+    onclick?.();
+  }}
+  ondblclick={(e) => e.stopPropagation()}
 >
   {#if icon}
-    <span class="icon" style="background-image: var(--icon-{icon})" />
+    <span class="icon" style="background-image: var(--icon-{icon})"></span>
   {/if}
   {#if label}
     <span class="label">
@@ -77,7 +92,7 @@
       border-bottom-right-radius: 2px 3px;
     }
 
-    &:not(.transparent) {
+    &:not(:global(.transparent)) {
       background-color: #656565;
       box-shadow: 0 1px 1px rgba(black, 0.6);
     }

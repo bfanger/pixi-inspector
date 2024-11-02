@@ -84,7 +84,6 @@ export default function numberDrag(el: HTMLElement, config: Config) {
   document.addEventListener("mouseup", onMouseup);
   return {
     update(next: Config) {
-      // eslint-disable-next-line no-param-reassign
       config = next;
     },
     destroy() {

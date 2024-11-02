@@ -3,15 +3,17 @@
   import NumberField from "blender-elements/src/NumberField/NumberField.svelte";
   import Panel from "blender-elements/src/Panel/Panel.svelte";
   import Property from "blender-elements/src/Property/Property.svelte";
-  import { createEventDispatcher } from "svelte";
   import type { NodeProperties } from "./types";
 
-  export let props: NodeProperties;
-  export let expanded: Record<string, boolean>;
+  type Props = {
+    props: NodeProperties;
+    expanded: Record<string, boolean>;
+    onchange: (change: { property: string; value: number | boolean }) => void;
+  };
 
-  const dispatch = createEventDispatcher();
+  let { props, expanded = $bindable(), onchange }: Props = $props();
 
-  $: tickerPanel = typeof props.speed === "number";
+  let tickerPanel = $derived(typeof props.speed === "number");
 </script>
 
 {#if tickerPanel}
@@ -21,8 +23,7 @@
         <NumberField
           value={props.speed}
           step={0.01}
-          on:change={(e) =>
-            dispatch("change", { property: "speed", value: e.detail })}
+          onchange={(value) => onchange({ property: "speed", value })}
         />
       </Property>
     {/if}
@@ -31,8 +32,7 @@
         <Checkbox
           value={props.started}
           hint="Whether or not this ticker has been started"
-          on:change={(e) =>
-            dispatch("change", { property: "started", value: e.detail })}
+          onchange={(value) => onchange({ property: "started", value })}
         >
           Started
         </Checkbox>

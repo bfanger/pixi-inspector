@@ -9,7 +9,7 @@ export function setBridgeContext(bridge: BridgeFn) {
 
 export function getBridgeContext(): BridgeFn {
   const ctx = getContext<BridgeFn>("bridge");
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+
   if (!ctx) {
     throw new Error("Bridge context not found");
   }
@@ -45,7 +45,7 @@ export function poll<T>(
   }
   const store = readable<AsyncResult<T>>(state, (set) => {
     updater = set;
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+
     sync();
     const timer = window.setInterval(sync, interval);
     return () => clearInterval(timer);
