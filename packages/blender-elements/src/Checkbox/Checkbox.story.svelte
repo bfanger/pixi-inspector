@@ -2,11 +2,15 @@
   import Base from "../Base.svelte";
   import Checkbox from "./Checkbox.svelte";
 
-  export let Hst: any;
+  type Props = {
+    Hst: any;
+  };
 
-  let value = false;
-  let viewports = true;
-  let renders = true;
+  let { Hst }: Props = $props();
+
+  let value = $state(false);
+  let viewports = $state(true);
+  let renders = $state(true);
 </script>
 
 <Hst.Story>
@@ -15,14 +19,14 @@
     <Checkbox bind:value={viewports}>Viewports</Checkbox>
     <Checkbox
       value={renders}
-      on:change={({ detail }) => {
-        renders = detail;
+      onchange={(checked) => {
+        renders = checked;
       }}
     >
       Renders
     </Checkbox>
   </Base>
-  <svelte:fragment slot="controls">
+  {#snippet controls()}
     <Hst.Checkbox bind:value title="value" />
-  </svelte:fragment>
+  {/snippet}
 </Hst.Story>

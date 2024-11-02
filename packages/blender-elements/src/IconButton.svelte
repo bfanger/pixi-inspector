@@ -1,9 +1,14 @@
 <script lang="ts">
   import type { Icon } from "./icons";
 
-  export let icon: Icon;
-  export let muted = false;
-  export let hint: string | undefined = undefined;
+  type Props = {
+    icon: Icon;
+    muted?: boolean;
+    hint?: string | undefined;
+    onclick: () => void;
+  };
+
+  let { icon, muted = false, hint = undefined, onclick }: Props = $props();
 </script>
 
 <button
@@ -11,9 +16,13 @@
   class:muted
   style="background-image: var(--icon-{icon})"
   title={hint}
-  on:click|stopPropagation
-  on:dblclick|stopPropagation={() => {}}
-/>
+  onclick={(e) => {
+    e.stopPropagation();
+    onclick?.();
+  }}
+  ondblclick={(e) => e.stopPropagation()}
+  aria-label="toggle"
+></button>
 
 <style>
   .toggle {

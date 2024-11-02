@@ -1,33 +1,43 @@
-<svelte:options immutable />
-
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
   import blurOnEnter from "../actions/blurOnEnter";
   import numberDrag from "../actions/numberDrag";
   import revertOnEscape from "../actions/revertOnEscape";
 
-  export let value: number | undefined;
-  export let suffix = "";
-  export let location: "ALONE" | "TOP" | "MIDDLE" | "BOTTOM" = "ALONE";
-  export let id: string | undefined = undefined;
-  export let step: number | undefined = undefined;
-  export let min: number | undefined = undefined;
-  export let max: number | undefined = undefined;
-
-  const dispatch = createEventDispatcher();
+  type Props = {
+    value: number | undefined;
+    suffix?: string;
+    location?: "ALONE" | "TOP" | "MIDDLE" | "BOTTOM";
+    id?: string;
+    step?: number;
+    min?: number;
+    max?: number;
+    onchange?: (value: number) => void;
+  };
+  let {
+    value = $bindable(),
+    suffix = "",
+    location = "ALONE",
+    id,
+    step,
+    min,
+    max,
+    onchange,
+  }: Props = $props();
 
   let el: HTMLInputElement;
   /** Shadow value to detect prop changes */
-  let wanted = value;
-  let text = format(value);
-  let focused = false;
-  let active = false;
-  let previous = value;
+  let wanted = $state(value);
+  let text = $state(format(value));
+  let focused = $state(false);
+  let active = $state(false);
+  let previous = $state(value);
 
-  $: if (wanted !== value && document.activeElement !== el) {
-    text = format(value);
-    wanted = value;
-  }
+  $effect(() => {
+    if (wanted !== value && document.activeElement !== el) {
+      text = format(value);
+      wanted = value;
+    }
+  });
 
   function format(val: number | undefined) {
     if (val === undefined || Number.isNaN(val)) {
@@ -69,26 +79,28 @@
     if (wanted !== previous) {
       value = wanted;
       text = format(value);
-      dispatch("change", value);
+      if (typeof value === "number") {
+        onchange?.(value);
+      }
     }
   }
 
   function onStepDown() {
     if (step && typeof value === "number") {
       value -= step;
-      dispatch("change", value);
+      onchange?.(value);
     }
   }
   function onStepUp() {
     if (step && typeof value === "number") {
       value += step;
-      dispatch("change", value);
+      onchange?.(value);
     }
   }
 
   function onChange(next: number) {
     value = next;
-    dispatch("change", value);
+    onchange?.(value);
   }
 
   function onClick(e: MouseEvent) {
@@ -113,9 +125,9 @@
     use:revertOnEscape={previous?.toString() ?? ""}
     bind:this={el}
     bind:value={text}
-    on:input={onInput}
-    on:focus={onFocus}
-    on:blur={onBlur}
+    oninput={onInput}
+    onfocus={onFocus}
+    onblur={onBlur}
   />
   {#if !focused && step}
     <div
@@ -131,8 +143,9 @@
         onUp,
       }}
     >
-      <button class="arrow left" on:click={onStepDown} />
-      <button class="arrow right" on:click={onStepUp} />
+      <button class="arrow left" onclick={onStepDown} aria-label="down"
+      ></button>
+      <button class="arrow right" onclick={onStepUp} aria-label="up"></button>
     </div>
   {/if}
 </div>
@@ -144,13 +157,12 @@
     overflow: hidden;
 
     &:not(.focused, .active):hover {
-      background: #656565;
+      background-color: #656565;
     }
     &.active,
     &.focused {
       background-color: #222222;
     }
-
     &[data-location="ALONE"] {
       border-radius: 2px / 3px;
     }
@@ -190,6 +202,7 @@
       background-color: #4570b5;
     }
   }
+
   :not(.focused, .active) .input:hover {
     background-color: #797979;
     color: #fcfcfc;
@@ -222,7 +235,6 @@
       background-image: var(--icon-chevron-right);
     }
   }
-
   .number-field:hover .arrow {
     display: block;
   }
@@ -230,7 +242,7 @@
   .active .arrow {
     background-color: #222222;
   }
-  :not(.focused, .active) &:hover {
+  :not(.focused, .active) .arrow:hover {
     background-color: #797979;
   }
 </style>

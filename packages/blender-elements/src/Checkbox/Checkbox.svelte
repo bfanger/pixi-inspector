@@ -1,14 +1,21 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
+  type Props = {
+    value?: boolean | undefined;
+    hint?: string;
+    children?: import("svelte").Snippet;
+    onchange?: (value: boolean) => void;
+  };
 
-  export let value: boolean | undefined = undefined;
-  export let hint = "";
-
-  const dispatch = createEventDispatcher();
+  let {
+    value = $bindable(undefined),
+    hint = "",
+    children,
+    onchange,
+  }: Props = $props();
 
   function onChange(e: Event) {
     const el = e.target as HTMLInputElement;
-    dispatch("change", el.checked);
+    onchange?.(el.checked);
   }
 </script>
 
@@ -17,11 +24,11 @@
     class="input"
     type="checkbox"
     bind:checked={value}
-    on:change={onChange}
-    on:click|stopPropagation={() => {}}
+    onchange={onChange}
+    onclick={(e) => e.stopPropagation()}
   />
-  {#if $$slots.default}
-    <span><slot /></span>
+  {#if children}
+    <span>{@render children?.()}</span>
   {/if}
 </label>
 

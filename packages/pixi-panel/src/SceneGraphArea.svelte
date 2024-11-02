@@ -1,12 +1,15 @@
 <script lang="ts">
   import SearchField from "blender-elements/src/SearchField/SearchField.svelte";
-  import { createEventDispatcher, setContext } from "svelte";
+  import { setContext } from "svelte";
   import type { OutlinerNode } from "./types";
   import { getBridgeContext, poll } from "./bridge-fns";
   import Tree from "./Tree.svelte";
   import Warning from "./Warning.svelte";
 
-  const dispatch = createEventDispatcher();
+  type Props = {
+    onactivate: () => void;
+  };
+  const { onactivate }: Props = $props();
   const bridge = getBridgeContext();
   const ctx = setContext("scene-graph", { focused: false });
 
@@ -15,18 +18,17 @@
     "__PIXI_DEVTOOLS__.outline.tree()",
     2000,
   );
-  $: stage = $tree.data;
-  $: error = $tree.error;
+  let stage = $derived($tree.data);
+  let error = $derived($tree.error);
 
-  let query = "";
-  let el: HTMLDivElement;
+  let query = $state("");
+  let el: HTMLDivElement | undefined = $state();
 
-  $: {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  $effect.pre(() => {
     bridge(`__PIXI_DEVTOOLS__.outline.query = ${JSON.stringify(query)}`).then(
       () => tree.sync(),
     );
-  }
+  });
 
   async function expand(path: string[]) {
     if (query) {
@@ -45,7 +47,7 @@
   async function activate(path: string[]) {
     await bridge(`__PIXI_DEVTOOLS__.outline.activate(${JSON.stringify(path)})`);
     tree.sync();
-    dispatch("activate");
+    onactivate();
   }
   async function selectable(path: string[]) {
     await bridge(
@@ -90,8 +92,8 @@
   <div
     class="body"
     bind:this={el}
-    on:focusin={onFocusIn}
-    on:focusout={onFocusOut}
+    onfocusin={onFocusIn}
+    onfocusout={onFocusOut}
   >
     {#if error}
       <Warning>{error.message}</Warning>
@@ -106,16 +108,16 @@
         selectable={stage.selectable}
         match={stage.match}
         children={stage.children}
-        on:expand={({ detail }) => expand(detail)}
-        on:collapse={({ detail }) => collapse(detail)}
-        on:activate={({ detail }) => activate(detail)}
-        on:selectable={({ detail }) => selectable(detail)}
-        on:unselectable={({ detail }) => unselectable(detail)}
-        on:show={({ detail }) => show(detail)}
-        on:hide={({ detail }) => hide(detail)}
-        on:log={({ detail }) => log(detail)}
-        on:mouseenter={({ detail }) => highlight(detail)}
-        on:mouseleave={() => highlight([])}
+        onexpand={expand}
+        oncollapse={collapse}
+        onactivate={activate}
+        onselectable={selectable}
+        onunselectable={unselectable}
+        onshow={show}
+        onhide={hide}
+        onlog={log}
+        onmouseenter={highlight}
+        onmouseleave={() => highlight([])}
       />
     {/if}
   </div>

@@ -1,10 +1,10 @@
 import type { BridgeFn } from "pixi-panel/src/types";
 import PixiPanel from "pixi-panel/src/PixiPanel.svelte";
+import { mount } from "svelte";
 
 const bridge: BridgeFn = (code: string) =>
   new Promise((resolve, reject) => {
     chrome.devtools.inspectedWindow.eval(code, (result, err) => {
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (err) {
         if (err instanceof Error) {
           reject(err);
@@ -15,8 +15,7 @@ const bridge: BridgeFn = (code: string) =>
     });
   });
 
-// eslint-disable-next-line no-new
-new PixiPanel({
+mount(PixiPanel, {
   target: document.body,
   props: { bridge },
 });

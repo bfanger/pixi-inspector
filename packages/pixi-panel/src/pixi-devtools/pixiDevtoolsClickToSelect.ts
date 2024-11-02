@@ -58,13 +58,12 @@ export default function pixiDevtoolsClickToSelect(devtools: PixiDevtools) {
   function bindEvents() {
     const canvas = devtools.canvas() as HTMLCanvasElement;
     if (canvas !== previous) {
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (previous) {
         previous.removeEventListener("contextmenu", onContextMenu);
         previous.removeEventListener("pointerdown", onPointerDown);
         previous.removeEventListener("pointermove", onPointerMove);
       }
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+
       if (canvas) {
         canvas.addEventListener("contextmenu", onContextMenu);
         canvas.addEventListener("pointerdown", onPointerDown);

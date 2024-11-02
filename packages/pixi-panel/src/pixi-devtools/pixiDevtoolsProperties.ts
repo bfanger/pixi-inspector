@@ -10,8 +10,8 @@ import type {
 
 type PropertyMapping<T = any> = {
   key: keyof NodeProperties;
-  get(): T;
-  set(value: T): void;
+  get: () => T;
+  set: (value: T) => void;
 };
 
 export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
@@ -28,7 +28,6 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
           key: property,
           get: () => object[property] as string | number | boolean,
           set: (value: string | number | boolean) => {
-            // eslint-disable-next-line no-param-reassign
             object[property] = value;
           },
         },
@@ -54,7 +53,6 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
           key: property,
           get: () => object[nested][property] as string | number | boolean,
           set: (value: string | number | boolean) => {
-            // eslint-disable-next-line no-param-reassign
             object[nested][property] = value;
           },
         },
@@ -82,7 +80,6 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
           key: keyX,
           get: () => node[property].x as number,
           set: (value: number) => {
-            // eslint-disable-next-line no-param-reassign
             node[property].x = value;
           },
         },
@@ -90,7 +87,6 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
           key: keyY,
           get: () => node[property].y as number,
           set: (value: number) => {
-            // eslint-disable-next-line no-param-reassign
             node[property].y = value;
           },
         },
@@ -233,7 +229,7 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
           },
         });
       }
-      // eslint-disable-next-line no-param-reassign
+
       (node as any)[metaProperty] = {
         object: objectDefs,
         text: textDefs,

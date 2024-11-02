@@ -1,51 +1,89 @@
 <script lang="ts">
-  import { createEventDispatcher, getContext, onMount } from "svelte";
+  import { getContext, onMount } from "svelte";
   import Toggle from "./IconButton.svelte";
 
-  export let indent: number;
-  export let title: string;
-  export let expanded: boolean | undefined = undefined; // undefined means no arrow
-  export let active = false;
-  export let selectable: boolean;
-  export let parentUnselectable: boolean | undefined = undefined;
-  export let visible: boolean | undefined = undefined; // undefined means no arrow:;
-  export let match: boolean | undefined = undefined;
-  export let muted = false;
-
-  let el: HTMLDivElement;
-
-  const ctx = getContext<{ focused: boolean }>("scene-graph");
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  $: if (el && active) {
-    if (ctx.focused) {
-      el.focus();
-    } else {
-      el.scrollIntoView();
-    }
-  }
-  const dispatch = createEventDispatcher();
-  const external = {
-    indent,
-    activate() {
-      dispatch("activate");
-    },
+  type Props = {
+    indent: number;
+    title: string;
+    expanded?: boolean | undefined;
+    active?: boolean;
+    selectable: boolean;
+    parentUnselectable?: boolean | undefined;
+    visible?: boolean | undefined;
+    match?: boolean | undefined;
+    muted?: boolean;
+    onexpand: () => void;
+    oncollapse: () => void;
+    onactivate: () => void;
+    onselectable: () => void;
+    onunselectable: () => void;
+    onshow: () => void;
+    onhide: () => void;
+    onlog: () => void;
+    onmouseenter: () => void;
+    onmouseleave: () => void;
   };
 
-  $: external.indent = indent;
+  let {
+    indent,
+    title,
+    expanded = undefined,
+    active = false,
+    selectable,
+    parentUnselectable = undefined,
+    visible = undefined,
+    match = undefined,
+    muted = false,
+    onexpand,
+    oncollapse,
+    onactivate,
+    onselectable,
+    onunselectable,
+    onshow,
+    onhide,
+    onlog,
+    onmouseenter,
+    onmouseleave,
+  }: Props = $props();
+
+  let el: HTMLDivElement | undefined = $state();
+
+  const ctx = getContext<{ focused: boolean }>("scene-graph");
+
+  $effect.pre(() => {
+    if (el && active) {
+      if (ctx.focused) {
+        el.focus();
+      } else {
+        el.scrollIntoView();
+      }
+    }
+  });
+  const external = $state({
+    indent,
+    activate() {
+      onactivate();
+    },
+  });
+
+  $effect.pre(() => {
+    external.indent = indent;
+  });
 
   onMount(() => {
     (el as any).outlineRow = external;
   });
+
   function onKeyDown(e: KeyboardEvent) {
     if (e.key === "ArrowUp") {
-      const controller = (el.previousElementSibling as any)?.outlineRow;
+      const controller = (el?.previousElementSibling as any)?.outlineRow;
       if (controller) {
         controller.activate();
         e.preventDefault();
       }
     }
     if (e.key === "ArrowDown") {
-      const controller = (el.nextElementSibling as any)?.outlineRow;
+      const controller = (el?.nextElementSibling as any)?.outlineRow;
       if (controller) {
         controller.activate();
         e.preventDefault();
@@ -53,11 +91,11 @@
     }
     if (e.key === "ArrowLeft") {
       if (expanded === true) {
-        dispatch("collapse");
+        oncollapse();
         e.preventDefault();
       } else {
         let cursor: Element | null | undefined = el;
-        // eslint-disable-next-line no-constant-condition, @typescript-eslint/no-unnecessary-condition
+
         while (true) {
           cursor = cursor?.previousElementSibling;
           const controller = (cursor as any)?.outlineRow;
@@ -74,10 +112,10 @@
     }
     if (e.key === "ArrowRight") {
       if (expanded === false) {
-        dispatch("expand");
+        onexpand();
         e.preventDefault();
       } else if (expanded === true) {
-        const controller = (el.nextElementSibling as any)?.outlineRow;
+        const controller = (el?.nextElementSibling as any)?.outlineRow;
         if (controller.indent === indent + 1) {
           controller.activate();
           e.preventDefault();
@@ -87,15 +125,16 @@
 
     if (e.key === "h" && visible !== undefined) {
       if (visible) {
-        dispatch("hide");
+        onhide();
       } else {
-        dispatch("show");
+        onshow();
       }
     }
   }
 </script>
 
-<!-- svelte-ignore a11y-no-static-element-interactions a11y-no-noninteractive-tabindex -->
+<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
   bind:this={el}
   class="outliner-row"
@@ -103,19 +142,19 @@
   class:muted
   class:match
   style:--indent={indent}
-  on:click={() => dispatch("activate")}
-  on:dblclick={() => dispatch("log")}
-  on:keydown={onKeyDown}
-  on:mouseenter
-  on:mouseleave
+  onclick={() => onactivate()}
+  ondblclick={() => onlog()}
+  onkeydown={onKeyDown}
+  {onmouseenter}
+  {onmouseleave}
   tabindex="0"
 >
   {#if expanded === true}
-    <Toggle icon="expanded" on:click={() => dispatch("collapse")} />
+    <Toggle icon="expanded" onclick={() => oncollapse()} />
   {:else if expanded === false}
-    <Toggle icon="collapsed" on:click={() => dispatch("expand")} />
+    <Toggle icon="collapsed" onclick={() => onexpand()} />
   {:else}
-    <span class="toggle-spacer" />
+    <span class="toggle-spacer"></span>
   {/if}
   <span class="title">{title}</span>
   {#if selectable}
@@ -123,28 +162,20 @@
       icon="selectable"
       hint="Disable right-click selection"
       muted={parentUnselectable}
-      on:click={() => dispatch("unselectable")}
+      onclick={() => onunselectable()}
     />
   {:else}
     <Toggle
       icon="unselectable"
       hint="Enable right-click selection"
       muted={parentUnselectable}
-      on:click={() => dispatch("selectable")}
+      onclick={() => onselectable()}
     />
   {/if}
   {#if visible === true}
-    <Toggle
-      icon="eye-opened"
-      hint="Hide (h)"
-      on:click={() => dispatch("hide")}
-    />
+    <Toggle icon="eye-opened" hint="Hide (h)" onclick={() => onhide()} />
   {:else if visible === false}
-    <Toggle
-      icon="eye-closed"
-      hint="Show (h)"
-      on:click={() => dispatch("show")}
-    />
+    <Toggle icon="eye-closed" hint="Show (h)" onclick={() => onshow()} />
   {/if}
 </div>
 

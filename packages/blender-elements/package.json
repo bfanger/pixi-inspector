@@ -4,15 +4,18 @@
   "license": "GPL-3.0",
   "type": "module",
   "scripts": {
-    "dev": "histoire dev",
-    "build": "histoire build",
-    "preview": "histoire preview"
+    "dev": "storybook dev -p 6006",
+    "build": "storybook build"
   },
   "devDependencies": {
-    "@histoire/plugin-svelte": "^0.17.17",
-    "@sveltejs/vite-plugin-svelte": "^3.1.2",
-    "histoire": "^0.17.17",
-    "svelte": "^4.2.19",
+    "@faker-js/faker": "^9.1.0",
+    "@storybook/addon-essentials": "^8.4.1",
+    "@storybook/addon-interactions": "^8.4.1",
+    "@storybook/svelte": "^8.4.1",
+    "@storybook/svelte-vite": "^8.4.1",
+    "@sveltejs/vite-plugin-svelte": "^4.0.0",
+    "storybook": "^8.4.1",
+    "svelte": "^5.1.9",
     "vite": "^5.4.10"
   }
 }

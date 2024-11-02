@@ -1,8 +1,13 @@
 <script lang="ts">
   import { css } from "./icons";
+  type Props = {
+    children?: import("svelte").Snippet;
+  };
+
+  let { children }: Props = $props();
 </script>
 
-<div class="base" style={css()}><slot /></div>
+<div class="base" style={css()}>{@render children?.()}</div>
 
 <style>
   .base {

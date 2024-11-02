@@ -35,12 +35,11 @@ function patch() {
     const Renderer = PIXI[prop];
     if (Renderer) {
       const { render } = Renderer.prototype;
-      // eslint-disable-next-line @typescript-eslint/no-loop-func
+
       Renderer.prototype.render = function pixiDevtoolsRender(...args: any[]) {
-        // eslint-disable-next-line no-underscore-dangle
-        win.__PATCHED_RENDERER__ = this as any;
+        win.__PATCHED_RENDERER__ = this;
         Renderer.prototype.render = render;
-        return render.call(this as any, ...args) as unknown;
+        return render.call(this, ...args) as unknown;
       };
       break;
     }

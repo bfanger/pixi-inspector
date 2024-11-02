@@ -1,10 +1,15 @@
 <script lang="ts">
-  export let icon: "warning" | "error" = "warning";
-  export let message = "";
+  type Props = {
+    icon?: "warning" | "error";
+    message?: string;
+    children?: import("svelte").Snippet;
+  };
+
+  let { icon = "warning", message = "", children }: Props = $props();
 </script>
 
 <div class="warning" data-icon={icon}>
-  {message}<slot />
+  {message}{@render children?.()}
 </div>
 
 <style>

@@ -1,6 +1,5 @@
 let iconPath = "";
 
-// eslint-disable-next-line @typescript-eslint/no-floating-promises
 browser.devtools.inspectedWindow
   .eval("window.matchMedia('(prefers-color-scheme: dark)').matches")
   .then((result) => {

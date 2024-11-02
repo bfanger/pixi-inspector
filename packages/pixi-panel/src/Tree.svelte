@@ -1,21 +1,55 @@
 <script lang="ts">
+  import Tree from "./Tree.svelte";
   import OutlinerRow from "blender-elements/src/OutlinerRow.svelte";
-  import { createEventDispatcher } from "svelte";
   import type { OutlinerNode } from "./types";
 
-  export let id: string;
-  export let name: string;
-  export let leaf: boolean;
-  export let active: boolean;
-  export let selectable: boolean;
-  export let visible: boolean | undefined;
-  export let match: boolean | undefined;
-  export let muted = false;
-  export let parentUnselectable: boolean | undefined = undefined;
-  export let children: OutlinerNode[] | undefined = undefined;
-  export let depth = 0;
+  type Props = {
+    id: string;
+    name: string;
+    leaf: boolean;
+    active: boolean;
+    selectable: boolean;
+    visible: boolean | undefined;
+    match: boolean | undefined;
+    muted?: boolean;
+    parentUnselectable?: boolean | undefined;
+    children?: OutlinerNode[] | undefined;
+    depth?: number;
+    onexpand: (path: string[]) => void;
+    oncollapse: (path: string[]) => void;
+    onactivate: (path: string[]) => void;
+    onselectable: (path: string[]) => void;
+    onunselectable: (path: string[]) => void;
+    onshow: (path: string[]) => void;
+    onhide: (path: string[]) => void;
+    onlog: (path: string[]) => void;
+    onmouseenter: (path: string[]) => void;
+    onmouseleave: (path: string[]) => void;
+  };
 
-  const dispatch = createEventDispatcher();
+  let {
+    id,
+    name,
+    leaf,
+    active,
+    selectable,
+    visible,
+    match,
+    muted = false,
+    parentUnselectable = undefined,
+    children = undefined,
+    depth = 0,
+    onexpand,
+    oncollapse,
+    onactivate,
+    onselectable,
+    onunselectable,
+    onshow,
+    onhide,
+    onlog,
+    onmouseenter,
+    onmouseleave,
+  }: Props = $props();
 </script>
 
 <OutlinerRow
@@ -28,21 +62,21 @@
   muted={visible === false || muted}
   parentUnselectable={parentUnselectable || !selectable}
   expanded={leaf ? undefined : !!children}
-  on:expand={() => dispatch("expand", [id])}
-  on:collapse={() => dispatch("collapse", [id])}
-  on:activate={() => dispatch("activate", [id])}
-  on:selectable={() => dispatch("selectable", [id])}
-  on:unselectable={() => dispatch("unselectable", [id])}
-  on:show={() => dispatch("show", [id])}
-  on:hide={() => dispatch("hide", [id])}
-  on:log={() => dispatch("log", [id])}
-  on:mouseenter={() => dispatch("mouseenter", [id])}
-  on:mouseleave={() => dispatch("mouseleave", [id])}
+  onexpand={() => onexpand?.([id])}
+  oncollapse={() => oncollapse?.([id])}
+  onactivate={() => onactivate?.([id])}
+  onselectable={() => onselectable?.([id])}
+  onunselectable={() => onunselectable?.([id])}
+  onshow={() => onshow?.([id])}
+  onhide={() => onhide?.([id])}
+  onlog={() => onlog?.([id])}
+  onmouseenter={() => onmouseenter?.([id])}
+  onmouseleave={() => onmouseleave?.([id])}
 />
 
 {#if children}
   {#each children as child}
-    <svelte:self
+    <Tree
       id={child.id}
       name={child.name}
       leaf={child.leaf}
@@ -54,17 +88,16 @@
       muted={visible === false || muted}
       children={child.children}
       depth={depth + 1}
-      on:expand={({ detail }) => dispatch("expand", [id, ...detail])}
-      on:collapse={({ detail }) => dispatch("collapse", [id, ...detail])}
-      on:activate={({ detail }) => dispatch("activate", [id, ...detail])}
-      on:selectable={({ detail }) => dispatch("selectable", [id, ...detail])}
-      on:unselectable={({ detail }) =>
-        dispatch("unselectable", [id, ...detail])}
-      on:show={({ detail }) => dispatch("show", [id, ...detail])}
-      on:hide={({ detail }) => dispatch("hide", [id, ...detail])}
-      on:log={({ detail }) => dispatch("log", [id, ...detail])}
-      on:mouseenter={({ detail }) => dispatch("mouseenter", [id, ...detail])}
-      on:mouseleave={({ detail }) => dispatch("mouseleave", [id, ...detail])}
+      onexpand={(path) => onexpand([id, ...path])}
+      oncollapse={(path) => oncollapse([id, ...path])}
+      onactivate={(path) => onactivate([id, ...path])}
+      onselectable={(path) => onselectable([id, ...path])}
+      onunselectable={(path) => onunselectable([id, ...path])}
+      onshow={(path) => onshow([id, ...path])}
+      onhide={(path) => onhide([id, ...path])}
+      onlog={(path) => onlog([id, ...path])}
+      onmouseenter={(path) => onmouseenter([id, ...path])}
+      onmouseleave={(path) => onmouseleave([id, ...path])}
     />
   {/each}
 {/if}

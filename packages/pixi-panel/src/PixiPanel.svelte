@@ -10,9 +10,13 @@
   import SceneGraphArea from "./SceneGraphArea.svelte";
   import Warning from "./Warning.svelte";
 
-  export let bridge: BridgeFn;
+  type Props = {
+    bridge: BridgeFn;
+  };
 
-  let refresh: () => void;
+  let { bridge }: Props = $props();
+
+  let refresh: () => void = $state(undefined as any);
 
   const connection = connect(bridge);
   const { error } = connection;
@@ -25,7 +29,7 @@
   );
   async function applyPatch() {
     await patchPixi(bridge);
-    await connection.retry();
+    connection.retry();
   }
 </script>
 
@@ -33,7 +37,7 @@
   {#if $connection === "CONNECTED"}
     <div class="pixi-panel">
       <div class="outliner">
-        <SceneGraphArea on:activate={refresh} />
+        <SceneGraphArea onactivate={refresh} />
       </div>
       <div class="properties">
         <PropertiesArea bind:refresh />
@@ -51,7 +55,7 @@
           <Warning>Connection lost</Warning>
         {:else if $connection === "PATCHABLE"}
           <div class="patch">
-            <Button on:click={applyPatch}>Patch render engine</Button>
+            <Button onclick={applyPatch}>Patch render engine</Button>
           </div>
           <Warning
             >"Patch render engine" is available. This type of Devtools

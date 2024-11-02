@@ -4,3 +4,5 @@ node_modules
 /apps/firefox-extension/build
 /apps/firefox-extension/web-ext-artifacts
 /packages/blender-elements/.histoire/
+
+*storybook.log

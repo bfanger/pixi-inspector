@@ -1,21 +1,23 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
   import blurOnEnter from "../actions/blurOnEnter";
   import revertOnEscape from "../actions/revertOnEscape";
   import selectOnFocus from "../actions/selectOnFocus";
 
-  export let value: string;
-  export let id: string | undefined = undefined;
+  type Props = {
+    value: string;
+    id?: string | undefined;
+    onchange?: (value: string) => void;
+  };
 
-  const dispatch = createEventDispatcher();
+  let { value = $bindable(), id = undefined, onchange }: Props = $props();
 
-  let text = value;
-  let previous = value;
+  let text = $state(value);
+  let previous = $state(value);
 
   function onInput() {
     if (text !== value) {
       value = text;
-      dispatch("change", value);
+      onchange?.(value);
     }
   }
   function onFocus() {
@@ -24,7 +26,7 @@
   function clear() {
     text = "";
     value = "";
-    dispatch("change", text);
+    onchange?.(text);
   }
 </script>
 
@@ -38,12 +40,12 @@
     use:blurOnEnter
     use:revertOnEscape={previous}
     use:selectOnFocus
-    on:input={onInput}
-    on:focus={onFocus}
+    oninput={onInput}
+    onfocus={onFocus}
   />
-  <div class="search-icon" />
+  <div class="search-icon"></div>
   {#if value !== ""}
-    <button class="clear" on:click={clear} />
+    <button class="clear" onclick={clear} aria-label="clear"></button>
   {/if}
 </div>
 
@@ -76,7 +78,7 @@
       cursor: text;
     }
   }
-  .search-field:hover .input:not(:focus) {
+  .search-field:hover .input:not(:global(:focus)) {
     background: #232323;
     border-color: #414141;
   }

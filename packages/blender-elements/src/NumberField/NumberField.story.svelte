@@ -2,8 +2,12 @@
   import Base from "../Base.svelte";
   import NumberField from "./NumberField.svelte";
 
-  export let Hst: any;
-  export let value = 123;
+  type Props = {
+    Hst: any;
+    value?: number;
+  };
+
+  let { Hst, value = $bindable(123) as number | undefined }: Props = $props();
 </script>
 
 <Hst.Story>
@@ -11,8 +15,8 @@
     <div style="max-width: 200px;">
       <NumberField
         {value}
-        on:change={(e) => {
-          value = e.detail;
+        onchange={(val) => {
+          value = val;
         }}
         location="TOP"
       />
@@ -20,7 +24,7 @@
       <NumberField bind:value step={1} min={0} max={200} location="BOTTOM" />
     </div>
   </Base>
-  <svelte:fragment slot="controls">
+  {#snippet controls()}
     <Hst.Text bind:value title="value" />
-  </svelte:fragment>
+  {/snippet}
 </Hst.Story>

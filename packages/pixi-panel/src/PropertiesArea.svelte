@@ -8,12 +8,16 @@
 
   const bridge = getBridgeContext();
 
-  const state = poll<PropertyTabState>(
+  const tabState = poll<PropertyTabState>(
     bridge,
     "__PIXI_DEVTOOLS__.properties.values()",
     300,
   );
-  export const refresh = state.sync;
+  type Props = {
+    refresh: () => void;
+  };
+  let { refresh = $bindable() }: Props = $props();
+  refresh = tabState.sync;
 
   type Tab = {
     group: PropertyTab;
@@ -26,13 +30,15 @@
     { group: "text", icon: "text", label: "Text Properties" },
   ];
 
-  $: props = $state.data?.properties ?? {};
-  $: tabs = availableTabs.filter((tab) =>
-    $state.data?.tabs.includes(tab.group),
+  let values = $derived($tabState.data?.properties ?? {});
+  let tabs = $derived(
+    availableTabs.filter((tab) => $tabState.data?.tabs.includes(tab.group)),
   );
-  $: active = availableTabs.find((tab) => tab.group === $state.data?.active);
+  let active = $derived(
+    availableTabs.find((tab) => tab.group === $tabState.data?.active),
+  );
 
-  let expanded = {
+  let expanded = $state({
     ticker: true,
     transform: true,
     transformOrigin: true,
@@ -46,50 +52,52 @@
     wordWrap: true,
     dropShadow: true,
     stroke: true,
-  };
+  });
 
-  async function onChange(prop: string, value: number | boolean) {
+  async function onChange(
+    prop: string,
+    value: number | string | boolean | undefined,
+  ) {
     await bridge(
       `__PIXI_DEVTOOLS__.properties.set(${JSON.stringify(
         prop,
       )}, ${JSON.stringify(value)})`,
     );
-    state.sync();
+    tabState.sync();
   }
 
   async function activateTab(group: PropertyTab) {
     await bridge(
       `__PIXI_DEVTOOLS__.properties.activate(${JSON.stringify(group)})`,
     );
-    state.sync();
+    tabState.sync();
   }
 
   function onActivate(tab: Tab) {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     activateTab(tab.group);
   }
 </script>
 
-<Tabs {tabs} {active} on:activate={(e) => onActivate(e.detail)}>
-  {#if props}
+<Tabs {tabs} {active} onactivate={(tab: any) => onActivate(tab)}>
+  {#if values}
     <div class="panels">
       {#if active?.group === "scene"}
         <SceneProperties
-          {props}
+          props={values}
           bind:expanded
-          on:change={(e) => onChange(e.detail.property, e.detail.value)}
+          onchange={(e) => onChange(e.property, e.value)}
         />
       {:else if active?.group === "object"}
         <ObjectProperties
-          {props}
+          props={values}
           bind:expanded
-          on:change={(e) => onChange(e.detail.property, e.detail.value)}
+          onchange={(e) => onChange(e.property, e.value)}
         />
       {:else if active?.group === "text"}
         <TextProperties
-          {props}
+          props={values}
           bind:expanded
-          on:change={(e) => onChange(e.detail.property, e.detail.value)}
+          onchange={(e) => onChange(e.property, e.value)}
         />
       {/if}
     </div>

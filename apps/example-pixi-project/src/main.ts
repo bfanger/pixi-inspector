@@ -46,10 +46,10 @@ import { Application, Assets, Container, Sprite } from "pixi.js";
 
   const exposeApp = true as boolean;
   if (exposeApp) {
-    (globalThis as any).__PIXI_APP__ = app; // eslint-disable-line
+    (globalThis as any).__PIXI_APP__ = app;
   } else {
-    (globalThis as any).__PIXI_STAGE__ = app.stage; // eslint-disable-line
-    (globalThis as any).__PIXI_RENDERER__ = app.renderer; // eslint-disable-line
+    (globalThis as any).__PIXI_STAGE__ = app.stage;
+    (globalThis as any).__PIXI_RENDERER__ = app.renderer;
   }
-  (globalThis as any).$pixi = container.children[12]; // eslint-disable-line
+  (globalThis as any).$pixi = container.children[12];
 })();

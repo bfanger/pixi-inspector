@@ -96,5 +96,5 @@ import { Application, Assets, Sprite, Texture } from "pixi.js";
     this.texture = textureButton;
   }
 
-  (globalThis as any).__PIXI_APP__ = app; // eslint-disable-line
+  (globalThis as any).__PIXI_APP__ = app;
 })();

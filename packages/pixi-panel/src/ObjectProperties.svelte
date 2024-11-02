@@ -4,45 +4,57 @@
   import Panel from "blender-elements/src/Panel/Panel.svelte";
   import Property from "blender-elements/src/Property/Property.svelte";
   import SelectMenu from "blender-elements/src/SelectMenu/SelectMenu.svelte";
-  import { createEventDispatcher } from "svelte";
   import type { NodeProperties } from "./types";
 
-  export let props: NodeProperties;
-  export let expanded: Record<string, boolean>;
+  type Props = {
+    props: NodeProperties;
+    expanded: Record<string, boolean>;
+    onchange: (change: {
+      property: string;
+      value: number | boolean | string | undefined;
+    }) => void;
+  };
 
-  const dispatch = createEventDispatcher();
+  let { props, expanded = $bindable(), onchange }: Props = $props();
 
-  $: transformPanel =
+  let transformPanel = $derived(
     typeof props.x === "number" ||
-    typeof props.angle === "number" ||
-    typeof props.scaleX === "number";
+      typeof props.angle === "number" ||
+      typeof props.scaleX === "number",
+  );
 
-  $: transformOriginPanel =
+  let transformOriginPanel = $derived(
     typeof props.originX === "number" ||
-    typeof props.anchorX === "number" ||
-    typeof props.pivotX === "number";
+      typeof props.anchorX === "number" ||
+      typeof props.pivotX === "number",
+  );
 
-  $: visibilityPanel =
-    typeof props.alpha === "number" || typeof props.visible === "boolean";
-  $: renderPanel =
+  let visibilityPanel = $derived(
+    typeof props.alpha === "number" || typeof props.visible === "boolean",
+  );
+  let renderPanel = $derived(
     typeof props.sortableChildren === "boolean" ||
-    typeof props.zIndex === "number" ||
-    typeof props.cullable === "boolean";
+      typeof props.zIndex === "number" ||
+      typeof props.cullable === "boolean",
+  );
 
-  $: interactivePanel =
+  let interactivePanel = $derived(
     typeof props.interactive === "boolean" ||
-    typeof props.interactiveChildren === "boolean";
+      typeof props.interactiveChildren === "boolean",
+  );
 
-  let skewDimensionsPanel = "";
-  $: if (typeof props.width === "number" && typeof props.skewX === "number") {
-    skewDimensionsPanel = "Skew & Dimensions";
-  } else if (typeof props.width === "number") {
-    skewDimensionsPanel = "Dimensions";
-  } else if (typeof props.skewX === "number") {
-    skewDimensionsPanel = "Skew";
-  } else {
-    skewDimensionsPanel = "";
-  }
+  let skewDimensionsPanel = $state("");
+  $effect.pre(() => {
+    if (typeof props.width === "number" && typeof props.skewX === "number") {
+      skewDimensionsPanel = "Skew & Dimensions";
+    } else if (typeof props.width === "number") {
+      skewDimensionsPanel = "Dimensions";
+    } else if (typeof props.skewX === "number") {
+      skewDimensionsPanel = "Skew";
+    } else {
+      skewDimensionsPanel = "";
+    }
+  });
 </script>
 
 {#if transformPanel}
@@ -52,8 +64,7 @@
         value={props.x}
         step={1}
         location="TOP"
-        on:change={(e) =>
-          dispatch("change", { property: "x", value: e.detail })}
+        onchange={(value) => onchange({ property: "x", value })}
       />
     </Property>
     <Property label="Y">
@@ -61,8 +72,7 @@
         value={props.y}
         step={1}
         location="BOTTOM"
-        on:change={(e) =>
-          dispatch("change", { property: "y", value: e.detail })}
+        onchange={(value) => onchange({ property: "y", value })}
       />
     </Property>
 
@@ -72,8 +82,7 @@
           value={props.angle}
           step={1}
           suffix="°"
-          on:change={(e) =>
-            dispatch("change", { property: "angle", value: e.detail })}
+          onchange={(value) => onchange({ property: "angle", value })}
         />
       </Property>
     {/if}
@@ -87,8 +96,7 @@
           value={props.scaleX}
           step={0.05}
           location="TOP"
-          on:change={(e) =>
-            dispatch("change", { property: "scaleX", value: e.detail })}
+          onchange={(value) => onchange({ property: "scaleX", value })}
         />
       </Property>
       <Property label="Y">
@@ -96,8 +104,7 @@
           value={props.scaleY}
           step={0.1}
           location="BOTTOM"
-          on:change={(e) =>
-            dispatch("change", { property: "scaleY", value: e.detail })}
+          onchange={(value) => onchange({ property: "scaleY", value })}
         />
       </Property>
     {/if}
@@ -113,8 +120,7 @@
           min={0}
           max={1}
           location="TOP"
-          on:change={(e) =>
-            dispatch("change", { property: "anchorX", value: e.detail })}
+          onchange={(value) => onchange({ property: "anchorX", value })}
         />
       </Property>
       <Property label="Y">
@@ -124,8 +130,7 @@
           min={0}
           max={1}
           location="BOTTOM"
-          on:change={(e) =>
-            dispatch("change", { property: "anchorY", value: e.detail })}
+          onchange={(value) => onchange({ property: "anchorY", value })}
         />
       </Property>
     {/if}
@@ -137,8 +142,7 @@
           min={0}
           max={1}
           location="TOP"
-          on:change={(e) =>
-            dispatch("change", { property: "originX", value: e.detail })}
+          onchange={(value) => onchange({ property: "originX", value })}
         />
       </Property>
       <Property label="Y">
@@ -148,8 +152,7 @@
           min={0}
           max={1}
           location="BOTTOM"
-          on:change={(e) =>
-            dispatch("change", { property: "originY", value: e.detail })}
+          onchange={(value) => onchange({ property: "originY", value })}
         />
       </Property>
     {/if}
@@ -163,8 +166,7 @@
           value={props.pivotX}
           step={0.1}
           location="TOP"
-          on:change={(e) =>
-            dispatch("change", { property: "pivotX", value: e.detail })}
+          onchange={(value) => onchange({ property: "pivotX", value })}
         />
       </Property>
       <Property label="Y">
@@ -172,8 +174,7 @@
           value={props.pivotY}
           step={0.1}
           location="BOTTOM"
-          on:change={(e) =>
-            dispatch("change", { property: "pivotY", value: e.detail })}
+          onchange={(value) => onchange({ property: "pivotY", value })}
         /></Property
       >
     {/if}
@@ -188,8 +189,7 @@
           step={0.01}
           min={0}
           max={1}
-          on:change={(e) =>
-            dispatch("change", { property: "alpha", value: e.detail })}
+          onchange={(value) => onchange({ property: "alpha", value })}
         />
       </Property>
     {/if}
@@ -198,8 +198,7 @@
         <Checkbox
           value={props.visible}
           hint="The visibility of the object"
-          on:change={(e) =>
-            dispatch("change", { property: "visible", value: e.detail })}
+          onchange={(value) => onchange({ property: "visible", value })}
         >
           Visible
         </Checkbox>
@@ -214,10 +213,10 @@
         <Checkbox
           value={props.sortableChildren}
           hint="If set to true, the container will sort its children by zIndex value"
-          on:change={(e) =>
-            dispatch("change", {
+          onchange={(value) =>
+            onchange({
               property: "sortableChildren",
-              value: e.detail,
+              value,
             })}
         >
           Sortable children
@@ -228,8 +227,7 @@
       <Property label="Z Index">
         <NumberField
           value={props.zIndex}
-          on:change={(e) =>
-            dispatch("change", { property: "zIndex", value: e.detail })}
+          onchange={(value) => onchange({ property: "zIndex", value })}
         />
       </Property>
     {/if}
@@ -238,8 +236,7 @@
         <Checkbox
           value={props.cullable}
           hint="Should this object be rendered if the bounds of this object are out of frame?"
-          on:change={(e) =>
-            dispatch("change", { property: "cullable", value: e.detail })}
+          onchange={(value) => onchange({ property: "cullable", value })}
         >
           Cullable
         </Checkbox>
@@ -261,8 +258,7 @@
           step={0.01}
           suffix="r"
           location="TOP"
-          on:change={(e) =>
-            dispatch("change", { property: "skewX", value: e.detail })}
+          onchange={(value) => onchange({ property: "skewX", value })}
         />
       </Property>
       <Property label="Y">
@@ -271,8 +267,7 @@
           step={0.01}
           suffix="r"
           location="BOTTOM"
-          on:change={(e) =>
-            dispatch("change", { property: "skewY", value: e.detail })}
+          onchange={(value) => onchange({ property: "skewY", value })}
         />
       </Property>
     {/if}
@@ -282,8 +277,7 @@
           value={props.width}
           step={1}
           location="TOP"
-          on:change={(e) =>
-            dispatch("change", { property: "width", value: e.detail })}
+          onchange={(value) => onchange({ property: "width", value })}
         />
       </Property>
       <Property label="Height">
@@ -291,8 +285,7 @@
           value={props.height}
           step={1}
           location="BOTTOM"
-          on:change={(e) =>
-            dispatch("change", { property: "height", value: e.detail })}
+          onchange={(value) => onchange({ property: "height", value })}
         />
       </Property>
     {/if}
@@ -315,8 +308,7 @@
             { value: "static", label: "Static" },
             { value: "dynamic", label: "Dynamic" },
           ]}
-          on:change={(e) =>
-            dispatch("change", { property: "eventMode", value: e.detail })}
+          onchange={(value) => onchange({ property: "eventMode", value })}
         />
       </Property>
       <Property label="Cursor">
@@ -362,10 +354,10 @@
             // { value: "nwse-resize", label: "Resize (North West South East)" },
             // { value: "row-resize", label: "Resize (Row)" },
           ]}
-          on:change={(e) =>
-            dispatch("change", {
+          onchange={(value) =>
+            onchange({
               property: "cursor",
-              value: e.detail === "" ? undefined : e.detail,
+              value: value === "" ? undefined : value,
             })}
         />
       </Property>
@@ -375,8 +367,7 @@
         <Checkbox
           value={props.interactive}
           hint="Enable interaction events for the Container. Touch, pointer and mouse"
-          on:change={(e) =>
-            dispatch("change", { property: "interactive", value: e.detail })}
+          onchange={(value) => onchange({ property: "interactive", value })}
         >
           Interactive
         </Checkbox>
@@ -388,8 +379,7 @@
         <Checkbox
           value={props.buttonMode}
           hint="If enabled, the mouse cursor use the pointer behavior when hovered over the Container if it is interactive Setting this changes the 'cursor' property to 'pointer'."
-          on:change={(e) =>
-            dispatch("change", { property: "buttonMode", value: e.detail })}
+          onchange={(value) => onchange({ property: "buttonMode", value })}
         >
           Button mode
         </Checkbox>
@@ -400,10 +390,10 @@
         <Checkbox
           value={props.interactiveChildren}
           hint="Determines if the children to the Container can be clicked/touched Setting this to false allows PixiJS to bypass a recursive hitTest function"
-          on:change={(e) =>
-            dispatch("change", {
+          onchange={(value) =>
+            onchange({
               property: "interactiveChildren",
-              value: e.detail,
+              value,
             })}
         >
           Interactive children
