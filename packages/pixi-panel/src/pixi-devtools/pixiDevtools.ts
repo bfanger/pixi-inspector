@@ -9,7 +9,7 @@ type EventDetail = {
 export default function pixiDevtools() {
   const eventTarget = new EventTarget();
   const win = window as any;
-  let detectedVersion: number | undefined;
+  let detectedVersion: number | undefined | null = null;
 
   let mode: "PIXI" | "PHASER" | undefined;
 
@@ -145,24 +145,27 @@ export default function pixiDevtools() {
       return false;
     },
     version() {
-      if (detectedVersion !== undefined) {
+      if (detectedVersion !== null) {
         return detectedVersion;
       }
       const root = this.root();
-      if (root && "getLocalBounds" in root) {
-        const bounds = root.getLocalBounds();
-        if ("containsPoint" in bounds) {
-          detectedVersion = 8;
+      if (root) {
+        detectedVersion = undefined;
+        if ("getLocalBounds" in root) {
+          const bounds = root.getLocalBounds();
+          if ("containsPoint" in bounds) {
+            detectedVersion = 8;
+          }
         }
       }
-      return detectedVersion;
+      return detectedVersion ?? undefined;
     },
     /**
-     * inVersionRange(7, 8) // true if version is 7 or higher but lower than 8
+     * inVersionRange(8, 9) // true if the Pixi.js version is 8 or higher but lower than 9
      */
     inVersionRange(start: number, stop?: number) {
       const version = this.version();
-      if (version === undefined) {
+      if (version === undefined || version === -1) {
         return false;
       }
       if (version < start) {
