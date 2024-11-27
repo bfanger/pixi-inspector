@@ -8,14 +8,15 @@
     "build": "storybook build"
   },
   "devDependencies": {
-    "@faker-js/faker": "^9.1.0",
-    "@storybook/addon-essentials": "^8.4.1",
-    "@storybook/addon-interactions": "^8.4.1",
-    "@storybook/svelte": "^8.4.1",
-    "@storybook/svelte-vite": "^8.4.1",
-    "@sveltejs/vite-plugin-svelte": "^4.0.0",
-    "storybook": "^8.4.1",
-    "svelte": "^5.1.9",
-    "vite": "^5.4.10"
+    "@faker-js/faker": "^9.2.0",
+    "@storybook/addon-essentials": "^8.4.5",
+    "@storybook/addon-interactions": "^8.4.5",
+    "@storybook/addon-svelte-csf": "^4.1.7",
+    "@storybook/svelte": "^8.4.5",
+    "@storybook/svelte-vite": "^8.4.5",
+    "@sveltejs/vite-plugin-svelte": "^5.0.1",
+    "storybook": "^8.4.5",
+    "svelte": "^5.2.9",
+    "vite": "^6.0.1"
   }
 }
