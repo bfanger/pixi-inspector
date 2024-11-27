@@ -16,6 +16,6 @@
       sans-serif;
     height: 100vh;
     -webkit-font-smoothing: antialiased;
-    text-shadow: 0 1px 1px rgba(black, 0.4);
+    text-shadow: 0 1px 1px #00000066;
   }
 </style>

@@ -15,7 +15,7 @@
 
   const tree = poll<OutlinerNode>(
     bridge,
-    "__PIXI_DEVTOOLS__.outline.tree()",
+    "__PIXI_INSPECTOR__.outline.tree()",
     2000,
   );
   let stage = $derived($tree.data);
@@ -25,7 +25,7 @@
   let el: HTMLDivElement | undefined = $state();
 
   $effect.pre(() => {
-    bridge(`__PIXI_DEVTOOLS__.outline.query = ${JSON.stringify(query)}`).then(
+    bridge(`__PIXI_INSPECTOR__.outline.query = ${JSON.stringify(query)}`).then(
       () => tree.sync(),
     );
   });
@@ -34,47 +34,51 @@
     if (query) {
       return;
     }
-    await bridge(`__PIXI_DEVTOOLS__.outline.expand(${JSON.stringify(path)})`);
+    await bridge(`__PIXI_INSPECTOR__.outline.expand(${JSON.stringify(path)})`);
     tree.sync();
   }
   async function collapse(path: string[]) {
     if (query) {
       return;
     }
-    await bridge(`__PIXI_DEVTOOLS__.outline.collapse(${JSON.stringify(path)})`);
+    await bridge(
+      `__PIXI_INSPECTOR__.outline.collapse(${JSON.stringify(path)})`,
+    );
     tree.sync();
   }
   async function activate(path: string[]) {
-    await bridge(`__PIXI_DEVTOOLS__.outline.activate(${JSON.stringify(path)})`);
+    await bridge(
+      `__PIXI_INSPECTOR__.outline.activate(${JSON.stringify(path)})`,
+    );
     tree.sync();
     onactivate();
   }
   async function selectable(path: string[]) {
     await bridge(
-      `__PIXI_DEVTOOLS__.outline.selectable(${JSON.stringify(path)})`,
+      `__PIXI_INSPECTOR__.outline.selectable(${JSON.stringify(path)})`,
     );
     tree.sync();
   }
   async function unselectable(path: string[]) {
     await bridge(
-      `__PIXI_DEVTOOLS__.outline.unselectable(${JSON.stringify(path)})`,
+      `__PIXI_INSPECTOR__.outline.unselectable(${JSON.stringify(path)})`,
     );
     tree.sync();
   }
   async function show(path: string[]) {
-    await bridge(`__PIXI_DEVTOOLS__.outline.show(${JSON.stringify(path)})`);
+    await bridge(`__PIXI_INSPECTOR__.outline.show(${JSON.stringify(path)})`);
     tree.sync();
   }
   async function hide(path: string[]) {
-    await bridge(`__PIXI_DEVTOOLS__.outline.hide(${JSON.stringify(path)})`);
+    await bridge(`__PIXI_INSPECTOR__.outline.hide(${JSON.stringify(path)})`);
     tree.sync();
   }
   async function log(path: string[]) {
-    await bridge(`__PIXI_DEVTOOLS__.outline.log(${JSON.stringify(path)})`);
+    await bridge(`__PIXI_INSPECTOR__.outline.log(${JSON.stringify(path)})`);
   }
   async function highlight(path: string[]) {
     await bridge(
-      `__PIXI_DEVTOOLS__.outline.highlight(${JSON.stringify(path)})`,
+      `__PIXI_INSPECTOR__.outline.highlight(${JSON.stringify(path)})`,
     );
   }
   function onFocusIn() {

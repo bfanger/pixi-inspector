@@ -193,7 +193,7 @@
       sans-serif;
     padding-top: 2px;
     padding-bottom: 2px;
-    text-shadow: 0 1px 2px rgba(black, 0.8);
+    text-shadow: 0 1px 2px #000000cc;
 
     &:focus {
       color: #e5e5e5;

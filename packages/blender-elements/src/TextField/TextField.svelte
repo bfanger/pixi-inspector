@@ -126,7 +126,7 @@
     margin: 0;
     background: #1d1d1d;
     border: 1px solid #3d3d3d;
-    box-shadow: 0 1px 3px rgba(black, 0.3);
+    box-shadow: 0 1px 3px #0000004d;
     border-radius: 4px;
 
     &::selection {

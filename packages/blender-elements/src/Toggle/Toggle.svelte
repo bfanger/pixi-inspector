@@ -94,7 +94,7 @@
 
     &:not(:global(.transparent)) {
       background-color: #656565;
-      box-shadow: 0 1px 1px rgba(black, 0.6);
+      box-shadow: 0 1px 1px #00000099;
     }
 
     &:hover {
@@ -121,6 +121,6 @@
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    text-shadow: 0 1px 1px rgba(black, 0.4);
+    text-shadow: 0 1px 1px #00000066;
   }
 </style>

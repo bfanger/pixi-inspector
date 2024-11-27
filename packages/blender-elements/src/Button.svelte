@@ -41,7 +41,7 @@
     padding-inline: 8px;
     height: 18px;
     flex-shrink: 0;
-    box-shadow: 0 1px 1px rgba(black, 0.6);
+    box-shadow: 0 1px 1px #00000099;
     cursor: pointer;
 
     &[data-location="ALONE"] {

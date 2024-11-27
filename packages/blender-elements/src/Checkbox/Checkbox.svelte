@@ -50,7 +50,7 @@
     background: #545454;
     border: 1px solid #3d3d3d;
     border-radius: 3px;
-    box-shadow: 0 1px 1px rgba(black, 0.2);
+    box-shadow: 0 1px 1px #00000033;
     width: 14px;
     height: 14px;
     margin: 0;

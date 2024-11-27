@@ -51,6 +51,7 @@
     />
   </div>
 {/if}
+
 {#if fontPanel}
   <Panel title="Font" bind:expanded={expanded.font}>
     {#if typeof props.fontFamily === "string"}
@@ -152,6 +153,7 @@
     {/if}
   </Panel>
 {/if}
+
 {#if alignmentPanel}
   <Panel title="Alignment" bind:expanded={expanded.alignment}>
     {#if typeof props.align === "string"}
@@ -187,6 +189,7 @@
     {/if}
   </Panel>
 {/if}
+
 {#if spacingPanel}
   <Panel title="Spacing" bind:expanded={expanded.spacing}>
     {#if typeof props.leading === "number"}
@@ -280,6 +283,7 @@
     {/if}
   </Panel>
 {/if}
+
 {#if typeof props.wordWrap === "boolean"}
   <Panel
     title="Word wrap"

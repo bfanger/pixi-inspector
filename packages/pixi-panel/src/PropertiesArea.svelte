@@ -10,7 +10,7 @@
 
   const tabState = poll<PropertyTabState>(
     bridge,
-    "__PIXI_DEVTOOLS__.properties.values()",
+    "__PIXI_INSPECTOR__.properties.values()",
     300,
   );
   type Props = {
@@ -48,7 +48,7 @@
     interactive: true,
     font: true,
     alignment: true,
-    spacer: true,
+    spacing: true,
     wordWrap: true,
     dropShadow: true,
     stroke: true,
@@ -59,7 +59,7 @@
     value: number | string | boolean | undefined,
   ) {
     await bridge(
-      `__PIXI_DEVTOOLS__.properties.set(${JSON.stringify(
+      `__PIXI_INSPECTOR__.properties.set(${JSON.stringify(
         prop,
       )}, ${JSON.stringify(value)})`,
     );
@@ -68,7 +68,7 @@
 
   async function activateTab(group: PropertyTab) {
     await bridge(
-      `__PIXI_DEVTOOLS__.properties.activate(${JSON.stringify(group)})`,
+      `__PIXI_INSPECTOR__.properties.activate(${JSON.stringify(group)})`,
     );
     tabState.sync();
   }

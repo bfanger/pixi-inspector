@@ -36,7 +36,7 @@ function detect() {
     hasGlobal("__PIXI_RENDERER__") ||
     hasGlobal("__PATCHED_RENDERER__");
 
-  if (win.__PIXI_DEVTOOLS__ !== undefined) {
+  if (win.__PIXI_INSPECTOR__ !== undefined) {
     if (detected) {
       return "CONNECTED";
     }
@@ -80,13 +80,13 @@ export default function connect(bridge: BridgeFn): Readable<
     }
     if (data === "INJECT") {
       bridge(`(() => {
-        window.__PIXI_DEVTOOLS__ = (${pixiDevtools.toString()}());
-        window.__PIXI_DEVTOOLS__.selection = (${pixiDevtoolsSelection.toString()}(window.__PIXI_DEVTOOLS__));
-        window.__PIXI_DEVTOOLS__.viewport = (${pixiDevtoolsViewport.toString()}(window.__PIXI_DEVTOOLS__));
-        window.__PIXI_DEVTOOLS__.outline = (${pixiDevtoolsOutline.toString()}(window.__PIXI_DEVTOOLS__));
-        window.__PIXI_DEVTOOLS__.overlay = (${pixiDevtoolsOverlay.toString()}(window.__PIXI_DEVTOOLS__));
-        window.__PIXI_DEVTOOLS__.properties = (${pixiDevtoolsProperties.toString()}(window.__PIXI_DEVTOOLS__));
-        window.__PIXI_DEVTOOLS__.clickToSelect = (${pixiDevtoolsClickToSelect.toString()}(window.__PIXI_DEVTOOLS__));
+        window.__PIXI_INSPECTOR__ = (${pixiDevtools.toString()}());
+        window.__PIXI_INSPECTOR__.selection = (${pixiDevtoolsSelection.toString()}(window.__PIXI_INSPECTOR__));
+        window.__PIXI_INSPECTOR__.viewport = (${pixiDevtoolsViewport.toString()}(window.__PIXI_INSPECTOR__));
+        window.__PIXI_INSPECTOR__.outline = (${pixiDevtoolsOutline.toString()}(window.__PIXI_INSPECTOR__));
+        window.__PIXI_INSPECTOR__.overlay = (${pixiDevtoolsOverlay.toString()}(window.__PIXI_INSPECTOR__));
+        window.__PIXI_INSPECTOR__.properties = (${pixiDevtoolsProperties.toString()}(window.__PIXI_INSPECTOR__));
+        window.__PIXI_INSPECTOR__.clickToSelect = (${pixiDevtoolsClickToSelect.toString()}(window.__PIXI_INSPECTOR__));
       })();`).then(() => detected.sync());
     }
 

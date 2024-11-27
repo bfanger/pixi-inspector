@@ -18,6 +18,6 @@ document.body.style = `font:
     height: 100vh;
     -webkit-font-smoothing: antialiased;
     background: #353535;
-    text-shadow: 0 1px 1px rgba(black, 0.4);\n${css()}`;
+    text-shadow: 0 1px 1px #00000066;\n${css()}`;
 
 export default preview;
