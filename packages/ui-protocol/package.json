@@ -1,0 +1,6 @@
+{
+  "name": "ui-protocol",
+  "devDependencies": {
+    "vitest": "^2.1.8"
+  }
+}
