@@ -2,14 +2,16 @@
 
 Because the UI (in the DevTools panel) has no direct access to the actual objects we need to serialize the UI & events.
 
-One of the most popular remote UI formats is HTML.
-HTML serializes to a string, but in javascript JSON is the most performant serialization format.
+UI Protocol is a messaging definitions that allows creating and updating UI in an serialized format.
+The code running with direct access to the game has controls the ui but doesn't render it, the render
+UI Protocol takes inspiration from HTML.
+HTML serializes to a string, but in UI Protocol uses JSON as serialization format.
 
 By using JSON can also use primitive values like numbers, booleans and simple objects and arrays.
 
-## Look & feel
+## Considerations
 
-Writing the UI in a xml-like format like JSX would feel familiar.
+Writing the UI in a xml-like format like JSX would be nice and feel familiar, but this would create a lot of overhead.
 
 ```jsx
 const ui = (
@@ -25,29 +27,30 @@ const ui = (
 );
 ```
 
-But a considerations is that games run at 60FPS and we don't want to generate the full ui tree on every frame.
+Games update at 60FPS and we don't want to create the full ui tree on every frame.
 
-Therefore the UI protocols only sends diffs.
+Therefore the UI Protocol mutates the tree in-place and creates small diffs based on those mutations.
 
-## Remote UI diff
+## A Remote UI diff
 
 ```json
 {
-  "update": [
+  "updates": [
     {
       "p": [0, 1],
       "d": { "X": 10, "Y": 20, "Z": 30 }
     }
   ],
-  "remove": [[0, 2]],
-  "insert": [
+  "replacements": [],
+  "appends": [
     {
-      "p": [0, 0],
+      "p": [0, 2],
       "c": "InputVector3",
       "a": { "label": "Position" },
       "d": { "X": 0, "Y": 0, "Z": 0 }
     }
-  ]
+  ],
+  "truncates": [{ "p": [1], "l": 1 }]
 }
 ```
 
@@ -55,7 +58,7 @@ Therefore the UI protocols only sends diffs.
 - **c** : Component name
 - **a** : Attributes/props
 - **d** : Data (The volatile state that is expected to change)
+- **n** : Nested (Array of nested nodes)
+- **d** : Length (the new length of the nested array)
 
-Update operations are applied first, paths are based on their previous positions, then the removals and finally the inserts.
-
-An insert should not replace an existing element.
+Update operations are applied first, then replacements, after that the appends and finally the truncations.

@@ -1,15 +1,21 @@
 import type {
   TreeDiff,
   TreeLocation,
-  TreeNode,
-  TreePatcher,
+  TreePatchOptions,
   TreePath,
-  TreeParentNode,
-  TreePatchAdd,
+  TreeNode,
+  TreeDiffMutations,
+  TreePatchCreateDto,
+  TreePatchCreate,
 } from "./types";
 
-export function lookup<T>(root: TreeParentNode<T>, path: TreePath) {
-  let node = root as TreeNode<T>;
+/**
+ * Lookup a node in the tree by its path
+ *
+ * @throws {Error} when the node is not found
+ */
+export function lookup<T>(root: TreeNode<T>, path: TreePath) {
+  let node = root;
   for (const index of path) {
     node = node.nested[index];
     if (!node) {
@@ -19,8 +25,11 @@ export function lookup<T>(root: TreeParentNode<T>, path: TreePath) {
   return node;
 }
 
+/**
+ * Based on the child path, lookup the parent and return both the parent and the index of the child.
+ */
 export function lookupParent<T>(
-  root: TreeParentNode<T>,
+  root: TreeNode<T>,
   path: TreePath,
 ): TreeLocation<T> {
   if (path.length === 0) {
@@ -33,8 +42,12 @@ export function lookupParent<T>(
   return { parent: lookup(root, path.slice(0, -1)), index };
 }
 
+/**
+ * Apply a diff to the tree, updating the tree in place.
+ * Use the events to listen of specific changes
+ */
 export function patchTree<T>(
-  tree: TreeParentNode<T>,
+  tree: TreeNode<T>,
   diff: TreeDiff,
   {
     createRef,
@@ -43,9 +56,9 @@ export function patchTree<T>(
     onReplace,
     onAppend,
     onTruncate,
-  }: TreePatcher<T>,
+  }: TreePatchOptions<T> = {},
 ) {
-  if (diff.updates) {
+  if (diff.updates.length !== 0) {
     for (const update of diff.updates) {
       const node = lookup(tree, update.p);
       if (update.a) {
@@ -58,14 +71,18 @@ export function patchTree<T>(
       }
     }
   }
-  if (diff.replacements) {
+  if (diff.replacements.length !== 0) {
+    if (!createRef) {
+      throw new Error("replacement failed: createRef is required");
+    }
     for (const data of diff.replacements) {
       const location = lookupParent(tree, data.p);
       const node: TreeNode<T> = {
-        ref: createRef(data, location),
         component: data.c,
         attributes: data.a,
         data: data.d,
+        path: data.p,
+        ref: createRef(data, location),
         nested: [],
       };
       if (data.n) {
@@ -75,13 +92,18 @@ export function patchTree<T>(
       onReplace?.(node, location);
     }
   }
-  if (diff.appends) {
+
+  if (diff.appends.length !== 0) {
+    if (!createRef) {
+      throw new Error("append failed: createRef is required");
+    }
     for (const data of diff.appends) {
       const location = lookupParent(tree, data.p);
       const node: TreeNode<T> = {
         component: data.c,
         attributes: data.a,
         data: data.d,
+        path: data.p,
         ref: createRef(data, location),
         nested: [],
       };
@@ -95,7 +117,7 @@ export function patchTree<T>(
       onAppend?.(node, location);
     }
   }
-  if (diff.truncates) {
+  if (diff.truncates.length !== 0) {
     for (const truncate of diff.truncates) {
       const parent = lookup(tree, truncate.p);
       if (truncate.l >= parent.nested.length) {
@@ -109,16 +131,17 @@ export function patchTree<T>(
 
 function patchNested<T>(
   parent: TreeNode<T>,
-  nested: TreePatchAdd[],
-  createRef: TreePatcher<T>["createRef"],
+  nested: TreePatchCreateDto[],
+  createRef: NonNullable<TreePatchOptions<T>["createRef"]>,
 ) {
   for (const data of nested) {
     const location = { parent, index: parent.nested.length };
     const node: TreeNode<T> = {
-      ref: createRef(data, location),
       component: data.c,
       attributes: data.a,
       data: data.d,
+      path: data.p,
+      ref: createRef(data, location),
       nested: [],
     };
     if (data.n) {
@@ -126,4 +149,66 @@ function patchNested<T>(
     }
     parent.nested.push(node);
   }
+}
+
+/**
+ * Helper for creating a diff, walks the current tree and calls the compare function for each node.
+ */
+export function createDiff<T>(
+  node: TreeNode<T>,
+  compare: (node: TreeNode<T>, mutations: TreeDiffMutations) => void,
+): TreeDiff {
+  const diff: TreeDiff = {
+    updates: [],
+    replacements: [],
+    appends: [],
+    truncates: [],
+  };
+
+  compareNested(node, compare, diff);
+  return diff;
+}
+
+function compareNested<T>(
+  node: TreeNode<T>,
+  compare: (node: TreeNode<T>, mutations: TreeDiffMutations) => void,
+  diff: TreeDiff,
+) {
+  let nestedLength = node.nested.length;
+  const mutations: TreeDiffMutations = {
+    update(patch) {
+      diff.updates.push({ p: node.path, a: patch.attributes, d: patch.data });
+    },
+    replace(patch) {
+      diff.replacements.push(createDto(patch, node.path));
+      nestedLength = 0; // Skip nested nodes
+    },
+    append(patch) {
+      diff.appends.push(createDto(patch, node.path));
+    },
+    truncate(length) {
+      diff.truncates.push({ p: node.path, l: length });
+      nestedLength = length;
+    },
+  };
+  compare(node, mutations);
+  for (let i = 0; i < nestedLength; i++) {
+    compareNested(node.nested[i], compare, diff);
+  }
+}
+
+function createDto(patch: TreePatchCreate, path: TreePath) {
+  const dto: TreePatchCreateDto = {
+    p: path,
+    c: patch.component,
+    a: patch.attributes,
+    d: patch.data,
+  };
+  if (patch.nested) {
+    dto.n = [];
+    for (let i = 0; i < patch.nested.length; i++) {
+      dto.n.push(createDto(patch.nested[i], [...path, i]));
+    }
+  }
+  return dto;
 }

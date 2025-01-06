@@ -1,5 +1,8 @@
 {
   "name": "ui-protocol",
+  "scripts": {
+    "test": "vitest run"
+  },
   "devDependencies": {
     "vitest": "^2.1.8"
   }
