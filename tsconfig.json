@@ -9,6 +9,7 @@
     "target": "ESNext",
     "skipLibCheck": true,
     "strict": true,
+    "verbatimModuleSyntax": true,
     "paths": {
       "pixi-panel/*": ["./node_modules/pixi-panel/*"]
     }

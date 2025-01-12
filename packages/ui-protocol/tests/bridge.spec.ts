@@ -1,8 +1,7 @@
 import { describe, it, expect } from "vitest";
 import createTestDisplayTree from "./createTestDisplayTree";
-import createReceiver from "../src/createReceiver";
+import { createReceiver, createSender } from "../src/";
 import { createTestControllerTree } from "./createTestControllerTree";
-import createSender from "../src/createSender";
 
 describe("bridge", () => {
   const displayTree = createTestDisplayTree();
@@ -24,6 +23,7 @@ describe("bridge", () => {
           {
             "player": {
               "x": 10,
+              "y": 0,
             },
             "setData": [Function],
             "sync": [Function],

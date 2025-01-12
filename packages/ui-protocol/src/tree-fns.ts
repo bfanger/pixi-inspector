@@ -54,9 +54,9 @@ export function applyPatch(tree: TreeDisplayNode, patch: TreePatchDto) {
     const node = lookupNode(tree, path);
     node.setProps(props);
   }
-  for (const { path, value: data } of patch.data) {
+  for (const { path, value } of patch.data) {
     const node = lookupNode(tree, path);
-    node.setData(data);
+    node.setData(value);
   }
   for (const replacement of patch.replacements) {
     const { parent, index } = lookupParent(tree, replacement.path);

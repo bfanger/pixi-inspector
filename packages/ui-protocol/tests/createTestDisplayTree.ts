@@ -1,4 +1,4 @@
-import { TreeDisplayNode, TreePatchInitDto } from "../src/types";
+import type { TreeDisplayNode, TreePatchInitDto } from "../src/types";
 
 /**
  * Instead of updating a visual component, update the values inside the test property

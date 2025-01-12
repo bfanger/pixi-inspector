@@ -1,5 +1,5 @@
 import { applyUpdate, lookupNode, syncNode } from "./tree-fns";
-import {
+import type {
   TreeControllerNode,
   TreeEvent,
   TreePatchDataDto,

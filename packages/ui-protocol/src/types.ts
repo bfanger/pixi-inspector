@@ -1,15 +1,12 @@
-import ui from "./ui";
-
 export type TreeNode = TreeControllerNode | TreeDisplayNode;
 
 /**
  * TreeNode inside the inspected page, connected to an game entity or a property of an entity
  */
 export type TreeControllerNode = {
-  // path: TreePath;
   children?: TreeControllerNode[];
   sync(out: TreePatch): void;
-  setData?(data: TreeValue): void;
+  setData?(value: TreeValue): void;
   dispatchEvent?(event: TreeEvent, out: TreePatch): void;
 };
 /**
@@ -17,12 +14,12 @@ export type TreeControllerNode = {
  */
 export type TreeDisplayNode = TreeDisplayContainerNode | TreeDisplayLeafNode;
 export type TreeDisplayLeafNode = {
-  path: TreePath;
+  readonly path: TreePath;
   setProps(props: TreeObjectValue): void;
-  setData(data: TreeValue): void;
+  setData(value: TreeValue): void;
 };
 export type TreeDisplayContainerNode = {
-  path: TreePath;
+  readonly path: TreePath;
   setProps(props: TreeObjectValue): void;
   setData(value: TreeValue): void;
   children: TreeDisplayNode[];
@@ -62,11 +59,9 @@ type TreeArrayValue = TreeValue[];
  */
 export type TreePath = number[];
 
-export type TreeComponent = keyof typeof ui;
-
 export type TreeInit = {
   node: TreeControllerNode;
-  component: TreeComponent;
+  component: string;
   props: TreeObjectValue;
   data: TreeValue;
   children?: TreeInit[];
@@ -76,7 +71,7 @@ export type TreeInit = {
  */
 export type TreePatchInitDto = {
   path: TreePath;
-  component: TreeComponent;
+  component: string;
   props: TreeObjectValue;
   data: TreeValue;
   children?: TreePatchInitDto[];

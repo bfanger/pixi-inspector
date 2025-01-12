@@ -1,11 +1,11 @@
-import { TreeControllerNode } from "../src/types";
+import type { TreeControllerNode } from "../src/types";
 
-type Player = { x: number };
+type Player = { x: number; y: number };
 type Game = { player: Player | undefined };
 type TestPlayerController = TreeControllerNode & { player: Player };
 
 export function createTestControllerTree() {
-  const game: Game = { player: { x: 10 } };
+  const game: Game = { player: { x: 10, y: 0 } };
 
   const tree: TreeControllerNode = {
     children: [],
