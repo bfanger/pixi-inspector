@@ -1,19 +1,34 @@
 import ui from "./ui";
 
-export type TreeComponent = keyof typeof ui;
+export type TreeNode = TreeControllerNode | TreeDisplayNode;
+
 /**
- * The tree object that exists on both sides and will be kept in sync.
- * - On the DevTools side the ref is connected to the input element
- * - On the Game side the ref is connected to an property of an entity
+ * TreeNode inside the inspected page, connected to an game entity or a property of an entity
  */
-export type TreeNode<T> = {
-  component: TreeComponent;
-  attributes: TreeDataObject;
-  data: TreeData;
-  path: TreePath;
-  ref: T;
-  nested: TreeNode<T>[];
+export type TreeControllerNode = {
+  // path: TreePath;
+  children?: TreeControllerNode[];
+  sync(out: TreePatch): void;
+  setData?(data: TreeData): void;
+  dispatchEvent?(event: TreeEvent): TreePatchDto;
 };
+/**
+ * TreeNode inside DevTools, connected to a (Svelte) Component
+ */
+export type TreeDisplayNode = TreeDisplayContainerNode | TreeDisplayLeafNode;
+export type TreeDisplayLeafNode = {
+  setProps(props: TreeDataObject): void;
+  setData(data: TreeData): void;
+};
+export type TreeDisplayContainerNode = {
+  setProps(props: TreeDataObject): void;
+  setData(data: TreeData): void;
+  children: TreeDisplayNode[];
+  setChild(index: number, init: TreePatchInitDto): TreeDisplayNode;
+  truncate(length: number): void;
+};
+
+export type TreeEvent = { event: string; data?: TreeData };
 
 // JSON-compatible data type
 export type TreeData =
@@ -24,7 +39,7 @@ export type TreeData =
   | undefined
   | TreeDataObject
   | TreeDataArray;
-type TreeDataObject = {
+export type TreeDataObject = {
   [key: string]: TreeData;
 };
 type TreeDataArray = Array<TreeData>;
@@ -45,65 +60,64 @@ type TreeDataArray = Array<TreeData>;
  */
 export type TreePath = number[];
 
+export type TreeComponent = keyof typeof ui;
+
+export type TreeInit = {
+  node: TreeControllerNode;
+  component: TreeComponent;
+  props: TreeDataObject;
+  data: TreeData;
+  children?: TreeInit[];
+};
 /**
  * Patch data for a new tree node
  */
-export type TreePatchCreate = {
+export type TreePatchInitDto = {
+  path: TreePath;
   component: TreeComponent;
-  attributes: TreeDataObject;
+  props: TreeDataObject;
   data: TreeData;
-  nested?: TreePatchCreate[];
-};
-
-export type TreePatchCreateDto = {
-  p: TreePath;
-  c: TreeComponent;
-  a: TreeDataObject;
-  d: TreeData;
-  n?: TreePatchCreateDto[];
+  children?: TreePatchInitDto[];
 };
 
 /**
- * Patch data for updating an existing tree node
- * Either attributes and/or data contain the new values.
+ * Patch data for an existing tree node
  */
-export type TreePatchUpdate = {
-  attributes?: TreeDataObject;
+export type TreePatchDataDto = {
+  path: TreePath;
   data?: TreeData;
 };
-export type TreePatchUpdateDto = {
-  p: TreePath;
-  a?: TreeDataObject;
-  d?: TreeData;
+/**
+ * Patch props for updating an existing tree node
+ */
+export type TreePatchPropsDto = {
+  path: TreePath;
+  props: TreeDataObject;
 };
 /**
  * Patch data for truncating the nested tree nodes.
  */
-export type TreePatchTruncateDto = {
-  p: TreePath;
-  l: number;
+export type TreePatchTruncate = {
+  length: number;
 };
-export type TreeDiff = {
-  updates: TreePatchUpdateDto[];
-  replacements: TreePatchCreateDto[];
-  appends: TreePatchCreateDto[];
+export type TreePatchTruncateDto = {
+  path: TreePath;
+  length: number;
+};
+
+export type TreePatch = {
+  props?: TreeDataObject;
+  data?: TreeData;
+  replacements: Array<TreeInit & { index: number }>;
+  appends: Array<TreeInit>;
+  truncate?: number;
+};
+export type TreePatchDto = {
+  props: TreePatchPropsDto[];
+  data: TreePatchDataDto[];
+  replacements: TreePatchInitDto[];
+  appends: TreePatchInitDto[];
   truncates: TreePatchTruncateDto[];
 };
 
-export type TreeLocation<T> = { parent: TreeNode<T>; index: number };
-
-export type TreePatchOptions<T> = {
-  createRef?: (data: TreePatchCreateDto, location: TreeLocation<T>) => T;
-  onUpdateAttributes?: (node: TreeNode<T>, attributes: TreeDataObject) => void;
-  onUpdateData?: (node: TreeNode<T>, data: TreeData) => void;
-  onReplace?: (node: TreeNode<T>, location: TreeLocation<T>) => void;
-  onAppend?: (node: TreeNode<T>, location: TreeLocation<T>) => void;
-  onTruncate?: (parent: TreeNode<T>, length: number) => void;
-};
-
-export type TreeDiffMutations = {
-  update: (patch: TreePatchUpdate) => void;
-  append: (patch: TreePatchCreate) => void;
-  replace: (patch: TreePatchCreate) => void;
-  truncate: (length: number) => void;
-};
+export type TreeLocation<T extends TreeNode> = { parent: T; index: number };

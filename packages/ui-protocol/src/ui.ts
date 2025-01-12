@@ -1,10 +1,7 @@
 const ui = {
-  App: null,
-  InputVector2: null,
-  InputVector3: null,
+  Container: null,
   TextInput: null,
   NumberInput: null,
-  SplitPanel: null,
 };
 
 export default ui;

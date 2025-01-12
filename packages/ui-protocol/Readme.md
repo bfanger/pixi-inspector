@@ -1,13 +1,17 @@
 # UI Protocol
 
-Because the UI (in the DevTools panel) has no direct access to the actual objects we need to serialize the UI & events.
+A Chrome DevTools panel has no direct access to the actual javascript objects on the inspected page and it's also very difficult to send information from the page to the DevTools panel, but the DevTools panel can ask for information.
 
-UI Protocol is a messaging definitions that allows creating and updating UI in an serialized format.
-The code running with direct access to the game has controls the ui but doesn't render it, the render
-UI Protocol takes inspiration from HTML.
-HTML serializes to a string, but in UI Protocol uses JSON as serialization format.
+UI Protocol takes inspiration from HTML, but HTML serializes UI to a string and UI Protocol uses JSON as format and only received a UI patch.
 
-By using JSON can also use primitive values like numbers, booleans and simple objects and arrays.
+## Departure from MVC
+
+To show information from the inspected page we need to serialize that information, in the past we standardized format of data "model" so a Sprite from Phaser and Pixi looked the same. It's become increasingly difficult to normalize the data as the extension tries supports all Pixi.js & Phaser versions.
+
+UI Protocol flips the concept, the UI is described in standardized format and is constructed and managed on the inspected page.
+So which inputs are shown where and with which label are defined and controlled on the inspected page.
+
+This ensures only data that is visible in the UI is sent to the DevTools panel.
 
 ## Considerations
 
@@ -16,49 +20,60 @@ Writing the UI in a xml-like format like JSX would be nice and feel familiar, bu
 ```jsx
 const ui = (
   <panel>
-    <input-vec3
-      label="Position"
-      x={sprite.position.x}
-      y={sprite.position.y}
-      z={sprite.position.z}
+    <vector-input
+      labels={["Position X", "Y", "Z"]}
+      values={[sprite.position.x, sprite.position.y, sprite.position.z]}
       onchange="setPosition(event)"
     />
   </panel>
 );
 ```
 
-Games update at 60FPS and we don't want to create the full ui tree on every frame.
+Games update at 60FPS and we don't want to create a new ui tree very often.
 
-Therefore the UI Protocol mutates the tree in-place and creates small diffs based on those mutations.
+Therefore the UI Protocol mutates the tree in-place based on small patches.
 
-## A Remote UI diff
+UI Protocol uses a messaging definitions that allows creating and updating UI in an serialized format.
+The code running with direct access to the game has controls the ui but doesn't render it.
+
+## Synchronization
+
+The inspected page maintains a virtual component tree of Controller nodes, that tree is a snapshot of the tree, it is the state of the component tree in the DevTools panel.
+Nodes of that tree are connected to actual game objects, but updates to the tree are not initiated by the game objects.
+The tree is not the actual UI and also doesn't contain that actual data.
+
+The DevTools also maintains a virtual component tree, but with Display nodes, that tree is also a snapshot the tree, but node are not connected to Game object they are connected to UI components.
+
+The DevTools panel initiates the synchronization, but the first step of the synchronization takes place in the inspected page.
+DevTools can send events and updated data (onchange)
+
+The inspected page walks the tree and for each node determines if the tree need to change, or value in the node are updated.
+This `syncTree()` is creates a patch in the UI protocol format and updates the virtual tree in the inspected page.
+
+The patch that was created is received by the DevTools panel and is applied to the virtual tree in the DevTools panel `applyPatch()`.
+During this process the actual UI is also created and updated.
+
+## A Remote UI patch
 
 ```json
 {
-  "updates": [
+  "data": [
     {
-      "p": [0, 1],
-      "d": { "X": 10, "Y": 20, "Z": 30 }
+      "path": [0, 1],
+      "data": 123
     }
   ],
   "replacements": [],
   "appends": [
     {
-      "p": [0, 2],
-      "c": "InputVector3",
-      "a": { "label": "Position" },
-      "d": { "X": 0, "Y": 0, "Z": 0 }
+      "path": [0, 2],
+      "component": "NumberInput",
+      "props": { "label": "Speed" },
+      "data": 1
     }
   ],
-  "truncates": [{ "p": [1], "l": 1 }]
+  "truncates": [{ "path": [1], "length": 1 }]
 }
 ```
 
-- **p** : Path of the element in the tree
-- **c** : Component name
-- **a** : Attributes/props
-- **d** : Data (The volatile state that is expected to change)
-- **n** : Nested (Array of nested nodes)
-- **d** : Length (the new length of the nested array)
-
-Update operations are applied first, then replacements, after that the appends and finally the truncations.
+props are applied first, then data, then replacements, after that the appends and finally the truncations.

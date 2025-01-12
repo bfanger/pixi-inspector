@@ -1,5 +1,6 @@
 {
   "name": "ui-protocol",
+  "license": "MIT",
   "scripts": {
     "test": "vitest run"
   },
