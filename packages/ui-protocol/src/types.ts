@@ -9,40 +9,42 @@ export type TreeControllerNode = {
   // path: TreePath;
   children?: TreeControllerNode[];
   sync(out: TreePatch): void;
-  setData?(data: TreeData): void;
-  dispatchEvent?(event: TreeEvent): TreePatchDto;
+  setData?(data: TreeValue): void;
+  dispatchEvent?(event: TreeEvent, out: TreePatch): void;
 };
 /**
  * TreeNode inside DevTools, connected to a (Svelte) Component
  */
 export type TreeDisplayNode = TreeDisplayContainerNode | TreeDisplayLeafNode;
 export type TreeDisplayLeafNode = {
-  setProps(props: TreeDataObject): void;
-  setData(data: TreeData): void;
+  path: TreePath;
+  setProps(props: TreeObjectValue): void;
+  setData(data: TreeValue): void;
 };
 export type TreeDisplayContainerNode = {
-  setProps(props: TreeDataObject): void;
-  setData(data: TreeData): void;
+  path: TreePath;
+  setProps(props: TreeObjectValue): void;
+  setData(value: TreeValue): void;
   children: TreeDisplayNode[];
   setChild(index: number, init: TreePatchInitDto): TreeDisplayNode;
   truncate(length: number): void;
 };
 
-export type TreeEvent = { event: string; data?: TreeData };
+export type TreeEvent = { path: TreePath; type: string; data?: TreeValue };
 
-// JSON-compatible data type
-export type TreeData =
-  | string
-  | number
-  | boolean
-  | null
+// JSON-compatible type & undefined
+export type TreeValue =
   | undefined
-  | TreeDataObject
-  | TreeDataArray;
-export type TreeDataObject = {
-  [key: string]: TreeData;
+  | null
+  | boolean
+  | number
+  | string
+  | TreeArrayValue
+  | TreeObjectValue;
+export type TreeObjectValue = {
+  [key: string]: TreeValue;
 };
-type TreeDataArray = Array<TreeData>;
+type TreeArrayValue = TreeValue[];
 
 /**
  * A path into the tree structure bases on depth & index.
@@ -65,8 +67,8 @@ export type TreeComponent = keyof typeof ui;
 export type TreeInit = {
   node: TreeControllerNode;
   component: TreeComponent;
-  props: TreeDataObject;
-  data: TreeData;
+  props: TreeObjectValue;
+  data: TreeValue;
   children?: TreeInit[];
 };
 /**
@@ -75,8 +77,8 @@ export type TreeInit = {
 export type TreePatchInitDto = {
   path: TreePath;
   component: TreeComponent;
-  props: TreeDataObject;
-  data: TreeData;
+  props: TreeObjectValue;
+  data: TreeValue;
   children?: TreePatchInitDto[];
 };
 
@@ -85,14 +87,14 @@ export type TreePatchInitDto = {
  */
 export type TreePatchDataDto = {
   path: TreePath;
-  data?: TreeData;
+  value: TreeValue;
 };
 /**
  * Patch props for updating an existing tree node
  */
 export type TreePatchPropsDto = {
   path: TreePath;
-  props: TreeDataObject;
+  values: TreeObjectValue;
 };
 /**
  * Patch data for truncating the nested tree nodes.
@@ -106,8 +108,8 @@ export type TreePatchTruncateDto = {
 };
 
 export type TreePatch = {
-  props?: TreeDataObject;
-  data?: TreeData;
+  props?: TreeObjectValue;
+  data?: TreeValue;
   replacements: Array<TreeInit & { index: number }>;
   appends: Array<TreeInit>;
   truncate?: number;

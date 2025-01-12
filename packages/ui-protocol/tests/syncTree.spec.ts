@@ -1,37 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { TreeControllerNode } from "./types";
-import { syncTree } from "./tree-fns";
+import { syncTree } from "../src/tree-fns";
+import { createTestControllerTree } from "./createTestControllerTree";
 
 describe.sequential("syncTree()", () => {
-  type Player = { x: number };
-  type TestPlayerController = TreeControllerNode & { player: Player };
-
-  const player: Player | undefined = { x: 10 };
-  const app: TreeControllerNode = {
-    children: [],
-    sync(patch) {
-      if (player && this.children!.length === 0) {
-        const node: TestPlayerController = {
-          player,
-          sync(patch) {
-            patch.data = this.player.x;
-          },
-        };
-        patch.appends.push({
-          component: "NumberInput",
-          props: { label: "X" },
-          data: player.x,
-          node,
-        });
-      }
-      if (!player && this.children?.length === 1) {
-        patch.truncate = 0;
-      }
-      return patch;
-    },
-  };
+  const [controllerTree, game] = createTestControllerTree();
   it("should append NumberInput connected to a PlayerLocationController", () => {
-    const patch = syncTree(app);
+    const patch = syncTree(controllerTree);
     expect(patch).toMatchInlineSnapshot(`
       {
         "appends": [
@@ -54,16 +28,15 @@ describe.sequential("syncTree()", () => {
     `);
   });
   it("should report the current x value", () => {
-    const patch = syncTree(app);
-    expect(patch).toMatchInlineSnapshot(`
+    expect(syncTree(controllerTree)).toMatchInlineSnapshot(`
       {
         "appends": [],
         "data": [
           {
-            "data": 10,
             "path": [
               0,
             ],
+            "value": 10,
           },
         ],
         "props": [],
@@ -71,16 +44,16 @@ describe.sequential("syncTree()", () => {
         "truncates": [],
       }
     `);
-    player.x += 5;
-    expect(patch).toMatchInlineSnapshot(`
+    game.player!.x += 5;
+    expect(syncTree(controllerTree)).toMatchInlineSnapshot(`
       {
         "appends": [],
         "data": [
           {
-            "data": 10,
             "path": [
               0,
             ],
+            "value": 15,
           },
         ],
         "props": [],
@@ -89,5 +62,21 @@ describe.sequential("syncTree()", () => {
       }
     `);
   });
-  it("should truncate the tree", () => {});
+  it("should truncate the tree", () => {
+    game.player = undefined;
+    expect(syncTree(controllerTree)).toMatchInlineSnapshot(`
+      {
+        "appends": [],
+        "data": [],
+        "props": [],
+        "replacements": [],
+        "truncates": [
+          {
+            "length": 0,
+            "path": [],
+          },
+        ],
+      }
+    `);
+  });
 });

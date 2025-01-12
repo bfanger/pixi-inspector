@@ -8,6 +8,8 @@ import type {
   TreePatch,
   TreeInit,
   TreePatchInitDto,
+  TreePatchDataDto,
+  TreeEvent,
 } from "./types";
 
 /**
@@ -15,7 +17,7 @@ import type {
  *
  * @throws {Error} when the node is not found
  */
-export function lookup<T extends TreeNode>(root: T, path: TreePath): T {
+export function lookupNode<T extends TreeNode>(root: T, path: TreePath): T {
   let node = root as { children?: T[] };
   for (const index of path) {
     const child = node.children?.[index];
@@ -41,19 +43,19 @@ export function lookupParent<T extends TreeNode>(
   if (path.length === 1) {
     return { parent: root, index };
   }
-  return { parent: lookup<T>(root, path.slice(0, -1)), index };
+  return { parent: lookupNode<T>(root, path.slice(0, -1)), index };
 }
 
 /**
  * Apply the patch to the tree, updating the tree in place.
  */
 export function applyPatch(tree: TreeDisplayNode, patch: TreePatchDto) {
-  for (const { path, props } of patch.props) {
-    const node = lookup(tree, path);
+  for (const { path, values: props } of patch.props) {
+    const node = lookupNode(tree, path);
     node.setProps(props);
   }
-  for (const { path, data } of patch.data) {
-    const node = lookup(tree, path);
+  for (const { path, value: data } of patch.data) {
+    const node = lookupNode(tree, path);
     node.setData(data);
   }
   for (const replacement of patch.replacements) {
@@ -80,7 +82,7 @@ export function applyPatch(tree: TreeDisplayNode, patch: TreePatchDto) {
   }
 
   for (const truncate of patch.truncates) {
-    const parent = lookup(tree, truncate.path);
+    const parent = lookupNode(tree, truncate.path);
     if ("truncate" in parent) {
       parent.truncate(truncate.length);
       if (truncate.length >= parent.children.length) {
@@ -109,62 +111,120 @@ export function syncTree(tree: TreeControllerNode) {
   syncNode(tree, [], patch);
   return patch;
 }
+
+/**
+ * Send data to a specific nodes in the tree.
+ * And/or dispatch an event and return the patch of the changes.
+ */
+export function applyUpdate(
+  tree: TreeControllerNode,
+  data: TreePatchDataDto[],
+  event?: TreeEvent,
+) {
+  for (const { path, value } of data) {
+    const node = lookupNode(tree, path);
+    if (!node.setData) {
+      throw new Error("data failed: ControllerNode didn't implement setData");
+    }
+    node.setData(value);
+  }
+  const patch: TreePatchDto = {
+    props: [],
+    data: [],
+    replacements: [],
+    appends: [],
+    truncates: [],
+  };
+  if (event) {
+    const node = lookupNode(tree, event.path);
+    if (!node.dispatchEvent) {
+      throw new Error(
+        "event failed: ControllerNode didn't implement dispatchEvent",
+      );
+    }
+    const partial: TreePatch = { appends: [], replacements: [] };
+    node.dispatchEvent(event, partial);
+    applyPartial(patch, node, event.path, partial);
+  }
+  return patch;
+}
+
+/**
+ * Synchronize the node and its children adding changes to the patch.
+ */
 export function syncNode(
   node: TreeControllerNode,
   path: TreePath,
   out: TreePatchDto,
 ) {
-  let length = node.children?.length ?? 0;
-  const skip = [];
-  const patch: TreePatch = {
+  const partial: TreePatch = {
     replacements: [],
     appends: [],
   };
-  node.sync(patch);
-
-  if ("data" in patch) {
-    out.data.push({ path, data: patch.data });
-  }
-
-  if (patch.props) {
-    out.props.push({ path, props: patch.props });
-  }
-  for (const { index, ...replacement } of patch.replacements) {
-    if (!node.children) {
-      throw new Error("Can't replace children of a leaf node");
-    }
-    out.replacements.push(create(replacement, [...path, node.children.length]));
-    node.children[index] = replacement.node;
-    skip.push(index);
-  }
-
-  for (const append of patch.appends) {
-    if (!node.children) {
-      throw new Error("Can't append children to a leaf node");
-    }
-    out.appends.push(create(append, [...path, node.children.length]));
-    node.children.push(append.node);
-  }
-
-  if (patch.truncate !== undefined) {
-    out.truncates.push({ path, length: patch.truncate });
-    if (!node.children) {
-      throw new Error("Can't truncate children of a leaf node");
-    }
-    node.children.length = patch.truncate;
-    length = patch.truncate;
-  }
+  node.sync(partial);
+  const { length, skip } = applyPartial(out, node, path, partial);
   for (let i = 0; i < length; i++) {
     if (skip.includes(i)) {
       continue;
     }
     syncNode(node.children![i], [...path, i], out);
   }
-
-  return out;
 }
 
-function create(init: TreeInit, path: TreePath) {
+/**
+ * Based on the partial patch information add changes to the target TreePatchDto.
+ */
+function applyPartial(
+  target: TreePatchDto,
+  node: TreeControllerNode,
+  path: TreePath,
+  partial: TreePatch,
+): { length: number; skip: number[] } {
+  let length = node.children?.length ?? 0;
+  const skip: number[] = [];
+
+  if ("data" in partial) {
+    target.data.push({ path, value: partial.data });
+  }
+
+  if (partial.props) {
+    target.props.push({ path, values: partial.props });
+  }
+  for (const { index, ...replacement } of partial.replacements) {
+    if (!node.children) {
+      throw new Error("Can't replace children of a leaf node");
+    }
+    target.replacements.push(
+      create(replacement, [...path, node.children.length]),
+    );
+    node.children[index] = replacement.node;
+    skip.push(index);
+  }
+
+  for (const append of partial.appends) {
+    if (!node.children) {
+      throw new Error("Can't append children to a leaf node");
+    }
+    target.appends.push(create(append, [...path, node.children.length]));
+    node.children.push(append.node);
+  }
+
+  if (partial.truncate !== undefined) {
+    target.truncates.push({ path, length: partial.truncate });
+    if (!node.children) {
+      throw new Error("Can't truncate children of a leaf node");
+    }
+    node.children.length = partial.truncate;
+    length = partial.truncate;
+  }
+
+  return { length, skip };
+}
+
+/**
+ * From partial init information create a full patch dto.
+ */
+function create(init: TreeInit, path: TreePath): TreePatchInitDto {
   const dto: TreePatchInitDto = {
     path,
     component: init.component,

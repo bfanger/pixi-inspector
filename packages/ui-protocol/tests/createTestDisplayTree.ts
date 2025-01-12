@@ -1,10 +1,13 @@
-import { TreeDisplayNode, TreePatchInitDto } from "./types";
+import { TreeDisplayNode, TreePatchInitDto } from "../src/types";
 
+/**
+ * Instead of updating a visual component, update the values inside the test property
+ */
 type TestNode = TreeDisplayNode & {
-  test: Omit<TreePatchInitDto, "children">;
+  test: Omit<TreePatchInitDto, "children" | "path">;
   children?: TestNode[];
 };
-export default function createTestTree() {
+export default function createTestDisplayTree() {
   return createTestDisplayNode({
     path: [],
     component: "Container",
@@ -13,14 +16,17 @@ export default function createTestTree() {
     children: [],
   });
 }
+
 function createTestDisplayNode({
   children,
+  path,
   ...init
 }: TreePatchInitDto): TestNode {
   return {
     test: {
       ...init,
     },
+    path,
     children: children?.map(createTestDisplayNode) as TestNode[],
     setChild(_, init) {
       return createTestDisplayNode(init);

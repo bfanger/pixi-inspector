@@ -1,12 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { applyPatch } from "./tree-fns";
-import createTestTree from "./createTestTree";
+import { applyPatch } from "../src/tree-fns";
+import createTestDisplayTree from "./createTestDisplayTree";
 
 describe.sequential("applyPatch()", () => {
-  const tree = createTestTree();
+  const displayTree = createTestDisplayTree();
 
   it("should append", () => {
-    applyPatch(tree, {
+    applyPatch(displayTree, {
       data: [],
       props: [],
       replacements: [],
@@ -20,32 +20,32 @@ describe.sequential("applyPatch()", () => {
         },
       ],
     });
-    expect(tree).toMatchInlineSnapshot(`
+    expect(displayTree).toMatchInlineSnapshot(`
       {
         "children": [
           {
             "children": undefined,
+            "path": [
+              0,
+            ],
             "setChild": [Function],
             "setData": [Function],
             "setProps": [Function],
             "test": {
               "component": "TextInput",
               "data": "Hello world",
-              "path": [
-                0,
-              ],
               "props": {},
             },
             "truncate": [Function],
           },
         ],
+        "path": [],
         "setChild": [Function],
         "setData": [Function],
         "setProps": [Function],
         "test": {
           "component": "Container",
           "data": null,
-          "path": [],
           "props": {},
         },
         "truncate": [Function],
@@ -53,7 +53,7 @@ describe.sequential("applyPatch()", () => {
     `);
   });
   it("should replace and nested append", () => {
-    applyPatch(tree, {
+    applyPatch(displayTree, {
       data: [],
       props: [],
       replacements: [
@@ -83,20 +83,20 @@ describe.sequential("applyPatch()", () => {
       ],
       truncates: [],
     });
-    expect(tree).toMatchInlineSnapshot(`
+    expect(displayTree).toMatchInlineSnapshot(`
       {
         "children": [
           {
             "children": undefined,
+            "path": [
+              0,
+            ],
             "setChild": [Function],
             "setData": [Function],
             "setProps": [Function],
             "test": {
               "component": "NumberInput",
               "data": 0,
-              "path": [
-                0,
-              ],
               "props": {},
             },
             "truncate": [Function],
@@ -105,36 +105,39 @@ describe.sequential("applyPatch()", () => {
             "children": [
               {
                 "children": undefined,
+                "path": [
+                  1,
+                  0,
+                ],
                 "setChild": [Function],
                 "setData": [Function],
                 "setProps": [Function],
                 "test": {
                   "component": "TextInput",
                   "data": "input 1",
-                  "path": [
-                    1,
-                    0,
-                  ],
                   "props": {},
                 },
                 "truncate": [Function],
               },
               {
                 "children": undefined,
+                "path": [
+                  1,
+                  1,
+                ],
                 "setChild": [Function],
                 "setData": [Function],
                 "setProps": [Function],
                 "test": {
                   "component": "TextInput",
                   "data": "input 2",
-                  "path": [
-                    1,
-                    1,
-                  ],
                   "props": {},
                 },
                 "truncate": [Function],
               },
+            ],
+            "path": [
+              1,
             ],
             "setChild": [Function],
             "setData": [Function],
@@ -142,21 +145,18 @@ describe.sequential("applyPatch()", () => {
             "test": {
               "component": "Container",
               "data": null,
-              "path": [
-                1,
-              ],
               "props": {},
             },
             "truncate": [Function],
           },
         ],
+        "path": [],
         "setChild": [Function],
         "setData": [Function],
         "setProps": [Function],
         "test": {
           "component": "Container",
           "data": null,
-          "path": [],
           "props": {},
         },
         "truncate": [Function],
@@ -164,27 +164,27 @@ describe.sequential("applyPatch()", () => {
     `);
   });
   it("should update props & data and truncate", () => {
-    applyPatch(tree, {
-      props: [{ path: [0], props: { step: 10 } }],
-      data: [{ path: [0], data: 50 }],
+    applyPatch(displayTree, {
+      props: [{ path: [0], values: { step: 10 } }],
+      data: [{ path: [0], value: 50 }],
       replacements: [],
       appends: [],
       truncates: [{ path: [], length: 1 }],
     });
-    expect(tree).toMatchInlineSnapshot(`
+    expect(displayTree).toMatchInlineSnapshot(`
       {
         "children": [
           {
             "children": undefined,
+            "path": [
+              0,
+            ],
             "setChild": [Function],
             "setData": [Function],
             "setProps": [Function],
             "test": {
               "component": "NumberInput",
               "data": 50,
-              "path": [
-                0,
-              ],
               "props": {
                 "step": 10,
               },
@@ -192,13 +192,13 @@ describe.sequential("applyPatch()", () => {
             "truncate": [Function],
           },
         ],
+        "path": [],
         "setChild": [Function],
         "setData": [Function],
         "setProps": [Function],
         "test": {
           "component": "Container",
           "data": null,
-          "path": [],
           "props": {},
         },
         "truncate": [Function],
