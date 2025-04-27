@@ -75,7 +75,7 @@
 />
 
 {#if children}
-  {#each children as child}
+  {#each children as child (child.id)}
     <Tree
       id={child.id}
       name={child.name}

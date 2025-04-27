@@ -12,7 +12,7 @@
   <vdom.Component {...vdom.props} />
 {:else}
   <vdom.Component>
-    {#each vdom.children as node}
+    {#each vdom.children as node (node)}
       <VDOMNode vdom={node} {...vdom.props} />
     {/each}
   </vdom.Component>

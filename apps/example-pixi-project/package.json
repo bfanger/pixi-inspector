@@ -5,7 +5,7 @@
     "dev": "vite dev"
   },
   "dependencies": {
-    "pixi.js": "^8.6.6",
-    "vite": "^6.0.7"
+    "pixi.js": "^8.9.1",
+    "vite": "^6.3.3"
   }
 }

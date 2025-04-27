@@ -99,7 +99,7 @@
       ></button>
       <!-- svelte-ignore a11y_no_static_element_interactions -->
       <div class="options" onmouseenter={onEnter}>
-        {#each options as option}
+        {#each options as option (option)}
           {#if typeof option === "string"}
             <Option value={option} onclick={() => select(option)} />
           {:else}

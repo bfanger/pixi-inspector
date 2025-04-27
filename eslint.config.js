@@ -6,7 +6,6 @@ import ts from "typescript-eslint";
 import prettier from "eslint-config-prettier";
 import svelte from "eslint-plugin-svelte";
 import globals from "globals";
-import svelteParser from "svelte-eslint-parser";
 
 export default ts.config(
   js.configs.recommended,
@@ -17,10 +16,9 @@ export default ts.config(
   ...svelte.configs["flat/prettier"],
   {
     languageOptions: {
-      ecmaVersion: 2022,
+      ecmaVersion: "latest",
       sourceType: "module",
       globals: { ...globals.node, ...globals.browser },
-      parser: svelteParser,
       parserOptions: {
         parser: ts.parser,
         extraFileExtensions: [".svelte"],

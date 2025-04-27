@@ -100,6 +100,18 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
     }
     const canvas = el as HTMLCanvasElement;
 
+    const clipEl = document.createElement("div");
+    clipEl.dataset.pixiDevtools = "clip";
+    Object.assign(clipEl.style, {
+      position: "fixed",
+      left: "0",
+      top: "0",
+      width: "100%",
+      height: "100%",
+      pointerEvents: "none",
+      overflow: "clip",
+    });
+
     const overlayEl = document.createElement("div");
     overlayEl.dataset.pixiDevtools = "overlay";
     Object.assign(overlayEl.style, {
@@ -107,6 +119,7 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
       pointerEvents: "none",
       transformOrigin: "top left",
     });
+    clipEl.appendChild(overlayEl);
 
     const highlight = document.createElement("div");
     highlight.dataset.pixiDevtools = "highlight";
@@ -263,13 +276,13 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
     while (parent) {
       parent = parent.parentElement;
       if (parent?.tagName === "BODY") {
-        parent.appendChild(overlayEl);
+        parent.appendChild(clipEl);
         updateOverlay();
         break;
       }
     }
     return () => {
-      overlayEl.remove();
+      clipEl.remove();
       if (raf) {
         cancelAnimationFrame(raf);
       }

@@ -18,7 +18,7 @@
 
 <div class="tab-layout">
   <div class="tabs">
-    {#each tabs as tab}
+    {#each tabs as tab (tab)}
       <button
         class="tab"
         class:active={tab === active}

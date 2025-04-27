@@ -2,7 +2,7 @@ import { mount } from "svelte";
 import Display from "../svelte/Display.svelte";
 import createReceiver from "../createReceiver";
 import { createTestControllerTree } from "../../tests/createTestControllerTree";
-import { GUI } from "dat.gui";
+import { GUI, GUIController } from "dat.gui";
 
 const el = document.body.querySelector("svelte-devtool");
 if (!el) {
@@ -21,7 +21,21 @@ mount(Display, {
 
 const gui = new GUI();
 const folder = gui.addFolder("Player");
+let controller: GUIController;
 if (game.player) {
-  folder.add(game.player, "x", -100, 100);
+  controller = folder.add(game.player, "x", -100, 100);
   folder.open();
 }
+const methods = {
+  remove() {
+    game.player = undefined;
+    controller.remove();
+  },
+  add() {
+    game.player = { x: 0, y: 0 };
+    controller = folder.add(game.player, "x", -100, 100);
+  },
+};
+// add button to dat.gui
+gui.add(methods, "remove");
+gui.add(methods, "add");
