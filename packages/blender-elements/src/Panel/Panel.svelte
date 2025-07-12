@@ -6,16 +6,16 @@
     title: string;
     expanded?: boolean;
     value?: boolean | undefined;
+    setValue?: (value: boolean) => void;
     children?: import("svelte").Snippet;
-    onchange?: (value: boolean) => void;
   };
 
   let {
     title,
     expanded = $bindable(true),
     value = $bindable(undefined),
+    setValue,
     children,
-    onchange,
   }: Props = $props();
 
   function onToggleExpanded() {
@@ -26,7 +26,7 @@
 <section class="panel">
   <button class="title" class:expanded onclick={onToggleExpanded}>
     {#if typeof value === "boolean"}
-      <Checkbox bind:value {onchange} />
+      <Checkbox bind:value {setValue} />
     {/if}
     <span>{title}</span>
   </button>

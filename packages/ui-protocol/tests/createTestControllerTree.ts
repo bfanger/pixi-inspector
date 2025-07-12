@@ -27,8 +27,8 @@ export function createTestControllerTree() {
           },
         };
         patch.appends.push({
-          component: "NumberInput",
-          props: { label: "X" },
+          component: "NumberField",
+          props: { label: "X", step: 1 },
           data: player.x,
 
           node,

@@ -8,11 +8,10 @@ describe("bridge", () => {
   const [controllerTree, game] = createTestControllerTree();
 
   const receiver = createReceiver(controllerTree);
-  const sender = createSender(
-    displayTree,
-    (data, event) => Promise.resolve(receiver.update(data, event)),
-    (data, path) => Promise.resolve(receiver.sync(data, path)),
-  );
+  const sender = createSender(displayTree, {
+    update: (data, event) => Promise.resolve(receiver.update(data, event)),
+    sync: (data, path) => Promise.resolve(receiver.sync(data, path)),
+  });
   const dispatchRootEvent = sender.createDispatcher(displayTree);
 
   it("should sync", async () => {
@@ -45,10 +44,11 @@ describe("bridge", () => {
             "setData": [Function],
             "setProps": [Function],
             "test": {
-              "component": "NumberInput",
+              "component": "NumberField",
               "data": 10,
               "props": {
                 "label": "X",
+                "step": 1,
               },
             },
             "truncate": [Function],

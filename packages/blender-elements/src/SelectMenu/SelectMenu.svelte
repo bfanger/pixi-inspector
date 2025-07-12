@@ -6,12 +6,12 @@
 
   type Props = {
     value: string;
+    setValue?: (value: string) => void;
     options: OptionType[];
     legend?: string;
-    onchange?: (value: string) => void;
   };
 
-  let { value = $bindable(), options, legend = "", onchange }: Props = $props();
+  let { value = $bindable(), options, legend = "", setValue }: Props = $props();
 
   let current = $derived(
     options.find((option) => {
@@ -29,7 +29,7 @@
 
   function select(next: OptionType) {
     value = typeof next === "string" ? next : next.value;
-    onchange?.(value);
+    setValue?.(value);
     collapse();
   }
 

@@ -1,45 +1,47 @@
 <script lang="ts">
-  import type {
-    TreeEvent,
-    TreePatchDataDto,
-    TreePatchDto,
-    TreePath,
-  } from "../types";
+  import type { AsyncReceiver } from "../types";
   import createSender from "../createSender";
   import VDOMNode from "./VDOMNode.svelte";
   import { onMount, type Component } from "svelte";
   import { createChild } from "./vdom.svelte";
 
   type Props = {
-    updateFn: (
-      data: TreePatchDataDto[],
-      event?: TreeEvent,
-    ) => Promise<TreePatchDto>;
-    syncFn: (data: TreePatchDataDto[], path: TreePath) => Promise<TreePatchDto>;
+    receiver: AsyncReceiver;
     Fallback?: Component;
   };
 
-  let { updateFn, syncFn, Fallback }: Props = $props();
+  let { receiver, Fallback }: Props = $props();
 
-  const tree = createChild({
-    path: [],
-    data: null,
-    component: "Container",
-    props: {},
-    children: [],
-  });
-
-  const sender = createSender(tree, updateFn, syncFn);
+  const tree = createChild(
+    {
+      path: [],
+      data: null,
+      component: "Container",
+      props: {},
+      children: [],
+    },
+    {
+      createDispatcher: senderError,
+      setData: senderError,
+      sync: senderError,
+    },
+  );
+  const sender = createSender(tree, receiver);
+  tree.sender = sender;
 
   onMount(() => {
     let timer: ReturnType<typeof setTimeout>;
     async function poll() {
       await sender.sync();
-      timer = setTimeout(poll, 1000);
+      timer = setTimeout(poll, 1_000);
     }
     poll();
     return () => clearTimeout(timer);
   });
+
+  function senderError(): never {
+    throw new Error("sender not yet injected");
+  }
 </script>
 
 {#if Fallback && !tree.vdom.children?.length}

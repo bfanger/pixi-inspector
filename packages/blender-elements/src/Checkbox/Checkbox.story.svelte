@@ -19,7 +19,7 @@
     <Checkbox bind:value={viewports}>Viewports</Checkbox>
     <Checkbox
       value={renders}
-      onchange={(checked) => {
+      setValue={(checked) => {
         renders = checked;
       }}
     >

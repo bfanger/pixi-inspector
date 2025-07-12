@@ -1,5 +1,6 @@
 import type { Component } from "svelte";
 import type {
+  Sender,
   TreeDisplayContainerNode,
   TreeDisplayLeafNode,
   TreeDisplayNode,
@@ -18,26 +19,35 @@ export class VDOM {
 
 const configs = {
   Container: { component: Container },
-  NumberInput: { component: NumberField, dataProp: "value" },
+  NumberField: {
+    component: NumberField,
+    dataProp: "value",
+    setDataProp: "setValue",
+  },
 } as const;
 
-type SvelteNode = TreeDisplayNode & {
+export type SvelteNode = TreeDisplayNode & {
   vdom: VDOM;
+  sender: Sender;
 };
-export function createChild(init: TreePatchInitDto): SvelteNode {
+export function createChild(
+  init: TreePatchInitDto,
+  sender: Sender,
+): SvelteNode {
   const config = configs[init.component as keyof typeof configs];
   if (!config) {
     throw new Error(
       `No configuration available for Component: ${init.component}.`,
     );
   }
-  const events = {};
+  const events: Record<string, any> = {};
 
   const vdom = new VDOM();
   vdom.Component = config.component;
 
-  const leaf: TreeDisplayLeafNode & { vdom: VDOM } = {
+  const leaf: TreeDisplayLeafNode & { vdom: VDOM; sender: Sender } = {
     vdom,
+    sender,
     path: init.path,
     setProps(props: TreeObjectValue) {
       if ("dataProp" in config) {
@@ -61,6 +71,11 @@ export function createChild(init: TreePatchInitDto): SvelteNode {
   if ("dataProp" in config) {
     leaf.setData(init.data);
   }
+  if ("setDataProp" in config) {
+    events[config.setDataProp] = (value: TreeValue) => {
+      leaf.sender.setData(leaf, value);
+    };
+  }
   leaf.setProps(init.props);
 
   if (init.children === undefined) {
@@ -69,18 +84,20 @@ export function createChild(init: TreePatchInitDto): SvelteNode {
   vdom.children = [];
   const container: TreeDisplayContainerNode & {
     vdom: VDOM & { children: VDOM[] };
+    sender: Sender;
   } = {
     ...leaf,
     vdom: vdom as VDOM & { children: VDOM[] },
     children: [],
     setChild(index, child) {
-      const node = createChild(child);
+      const node = createChild(child, container.sender);
       container.vdom.children[index] = node.vdom;
       return node;
     },
     truncate(length: number) {
       container.vdom.children.length = length;
     },
+    sender,
   };
 
   return container;

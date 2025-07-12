@@ -8,7 +8,7 @@
     transparent?: boolean;
     hint?: string | undefined;
     location?: "ALONE" | "LEFT" | "CENTER" | "RIGHT";
-    onchange?: (value: boolean) => void;
+    setValue?: (value: boolean) => void;
     onclick?: () => void;
   };
 
@@ -19,14 +19,14 @@
     transparent = false,
     hint = undefined,
     location = "ALONE",
-    onchange,
+    setValue,
     onclick,
   }: Props = $props();
 
   function toggle() {
     if (typeof value === "boolean") {
       value = !value;
-      onchange?.(value);
+      setValue?.(value);
     }
   }
 </script>

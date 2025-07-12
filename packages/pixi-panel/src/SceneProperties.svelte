@@ -23,7 +23,7 @@
         <NumberField
           value={props.speed}
           step={0.01}
-          onchange={(value) => onchange({ property: "speed", value })}
+          setValue={(value) => onchange({ property: "speed", value })}
         />
       </Property>
     {/if}
@@ -32,7 +32,7 @@
         <Checkbox
           value={props.started}
           hint="Whether or not this ticker has been started"
-          onchange={(value) => onchange({ property: "started", value })}
+          setValue={(value) => onchange({ property: "started", value })}
         >
           Started
         </Checkbox>

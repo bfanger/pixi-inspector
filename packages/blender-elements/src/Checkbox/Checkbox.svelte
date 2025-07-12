@@ -1,22 +1,17 @@
 <script lang="ts">
   type Props = {
     value?: boolean | undefined;
+    setValue?: (value: boolean) => void;
     hint?: string;
     children?: import("svelte").Snippet;
-    onchange?: (value: boolean) => void;
   };
 
   let {
     value = $bindable(undefined),
     hint = "",
     children,
-    onchange,
+    setValue,
   }: Props = $props();
-
-  function onChange(e: Event) {
-    const el = e.target as HTMLInputElement;
-    onchange?.(el.checked);
-  }
 </script>
 
 <label class="checkbox" title={hint}>
@@ -24,8 +19,11 @@
     class="input"
     type="checkbox"
     bind:checked={value}
-    onchange={onChange}
     onclick={(e) => e.stopPropagation()}
+    onchange={(e) => {
+      const el = e.target as HTMLInputElement;
+      setValue?.(el.checked);
+    }}
   />
   {#if children}
     <span>{@render children?.()}</span>

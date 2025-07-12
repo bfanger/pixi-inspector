@@ -118,3 +118,38 @@ export type TreePatchDto = {
 };
 
 export type TreeLocation<T extends TreeNode> = { parent: T; index: number };
+
+/**
+ * A receiver cannot start a conversation, but has access to the actual objects.
+ * The receiver in in control of "what" is displayed, but is not responsible for displaying it, that is the job of the sender.
+ *
+ * The receiver responsibility is to respond to messages from the sender with updates to how the tree should look.
+ */
+export type Receiver = {
+  /**
+   * The sender wants to set values.
+   * The sender has dispatched an event.
+   */
+  update(data: TreePatchDataDto[], event?: TreeEvent): TreePatchDto;
+  /**
+   * The sender wants to know the state of a part of the tree.
+   */
+  sync(data: TreePatchDataDto[], path: TreePath): TreePatchDto;
+};
+
+export type AsyncReceiver = {
+  update(data: TreePatchDataDto[], event?: TreeEvent): Promise<TreePatchDto>;
+  sync(data: TreePatchDataDto[], path: TreePath): Promise<TreePatchDto>;
+};
+
+/**
+ * A sender must display the UI that is requested by the receiver.
+ * A start a conversation send events and data or request ui sync.
+ */
+export type Sender = {
+  createDispatcher: (
+    node: TreeDisplayNode,
+  ) => (event: string, data?: TreeValue) => Promise<void>;
+  setData: (node: TreeDisplayNode, value: TreeValue) => Promise<void>;
+  sync(node?: TreeDisplayNode): Promise<void>;
+};

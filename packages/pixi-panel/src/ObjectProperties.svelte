@@ -64,7 +64,7 @@
         value={props.x}
         step={1}
         location="TOP"
-        onchange={(value) => onchange({ property: "x", value })}
+        setValue={(value) => onchange({ property: "x", value })}
       />
     </Property>
     <Property label="Y">
@@ -72,7 +72,7 @@
         value={props.y}
         step={1}
         location="BOTTOM"
-        onchange={(value) => onchange({ property: "y", value })}
+        setValue={(value) => onchange({ property: "y", value })}
       />
     </Property>
 
@@ -82,7 +82,7 @@
           value={props.angle}
           step={1}
           suffix="°"
-          onchange={(value) => onchange({ property: "angle", value })}
+          setValue={(value) => onchange({ property: "angle", value })}
         />
       </Property>
     {/if}
@@ -96,7 +96,7 @@
           value={props.scaleX}
           step={0.05}
           location="TOP"
-          onchange={(value) => onchange({ property: "scaleX", value })}
+          setValue={(value) => onchange({ property: "scaleX", value })}
         />
       </Property>
       <Property label="Y">
@@ -104,7 +104,7 @@
           value={props.scaleY}
           step={0.1}
           location="BOTTOM"
-          onchange={(value) => onchange({ property: "scaleY", value })}
+          setValue={(value) => onchange({ property: "scaleY", value })}
         />
       </Property>
     {/if}
@@ -120,7 +120,7 @@
           min={0}
           max={1}
           location="TOP"
-          onchange={(value) => onchange({ property: "anchorX", value })}
+          setValue={(value) => onchange({ property: "anchorX", value })}
         />
       </Property>
       <Property label="Y">
@@ -130,7 +130,7 @@
           min={0}
           max={1}
           location="BOTTOM"
-          onchange={(value) => onchange({ property: "anchorY", value })}
+          setValue={(value) => onchange({ property: "anchorY", value })}
         />
       </Property>
     {/if}
@@ -142,7 +142,7 @@
           min={0}
           max={1}
           location="TOP"
-          onchange={(value) => onchange({ property: "originX", value })}
+          setValue={(value) => onchange({ property: "originX", value })}
         />
       </Property>
       <Property label="Y">
@@ -152,7 +152,7 @@
           min={0}
           max={1}
           location="BOTTOM"
-          onchange={(value) => onchange({ property: "originY", value })}
+          setValue={(value) => onchange({ property: "originY", value })}
         />
       </Property>
     {/if}
@@ -166,7 +166,7 @@
           value={props.pivotX}
           step={0.1}
           location="TOP"
-          onchange={(value) => onchange({ property: "pivotX", value })}
+          setValue={(value) => onchange({ property: "pivotX", value })}
         />
       </Property>
       <Property label="Y">
@@ -174,7 +174,7 @@
           value={props.pivotY}
           step={0.1}
           location="BOTTOM"
-          onchange={(value) => onchange({ property: "pivotY", value })}
+          setValue={(value) => onchange({ property: "pivotY", value })}
         /></Property
       >
     {/if}
@@ -189,7 +189,7 @@
           step={0.01}
           min={0}
           max={1}
-          onchange={(value) => onchange({ property: "alpha", value })}
+          setValue={(value) => onchange({ property: "alpha", value })}
         />
       </Property>
     {/if}
@@ -198,7 +198,7 @@
         <Checkbox
           value={props.visible}
           hint="The visibility of the object"
-          onchange={(value) => onchange({ property: "visible", value })}
+          setValue={(value) => onchange({ property: "visible", value })}
         >
           Visible
         </Checkbox>
@@ -213,7 +213,7 @@
         <Checkbox
           value={props.sortableChildren}
           hint="If set to true, the container will sort its children by zIndex value"
-          onchange={(value) =>
+          setValue={(value) =>
             onchange({
               property: "sortableChildren",
               value,
@@ -227,7 +227,7 @@
       <Property label="Z Index">
         <NumberField
           value={props.zIndex}
-          onchange={(value) => onchange({ property: "zIndex", value })}
+          setValue={(value) => onchange({ property: "zIndex", value })}
         />
       </Property>
     {/if}
@@ -236,7 +236,7 @@
         <Checkbox
           value={props.cullable}
           hint="Should this object be rendered if the bounds of this object are out of frame?"
-          onchange={(value) => onchange({ property: "cullable", value })}
+          setValue={(value) => onchange({ property: "cullable", value })}
         >
           Cullable
         </Checkbox>
@@ -258,7 +258,7 @@
           step={0.01}
           suffix="r"
           location="TOP"
-          onchange={(value) => onchange({ property: "skewX", value })}
+          setValue={(value) => onchange({ property: "skewX", value })}
         />
       </Property>
       <Property label="Y">
@@ -267,7 +267,7 @@
           step={0.01}
           suffix="r"
           location="BOTTOM"
-          onchange={(value) => onchange({ property: "skewY", value })}
+          setValue={(value) => onchange({ property: "skewY", value })}
         />
       </Property>
     {/if}
@@ -277,7 +277,7 @@
           value={props.width}
           step={1}
           location="TOP"
-          onchange={(value) => onchange({ property: "width", value })}
+          setValue={(value) => onchange({ property: "width", value })}
         />
       </Property>
       <Property label="Height">
@@ -285,7 +285,7 @@
           value={props.height}
           step={1}
           location="BOTTOM"
-          onchange={(value) => onchange({ property: "height", value })}
+          setValue={(value) => onchange({ property: "height", value })}
         />
       </Property>
     {/if}
@@ -308,7 +308,7 @@
             { value: "static", label: "Static" },
             { value: "dynamic", label: "Dynamic" },
           ]}
-          onchange={(value) => onchange({ property: "eventMode", value })}
+          setValue={(value) => onchange({ property: "eventMode", value })}
         />
       </Property>
       <Property label="Cursor">
@@ -354,7 +354,7 @@
             // { value: "nwse-resize", label: "Resize (North West South East)" },
             // { value: "row-resize", label: "Resize (Row)" },
           ]}
-          onchange={(value) =>
+          setValue={(value) =>
             onchange({
               property: "cursor",
               value: value === "" ? undefined : value,
@@ -367,7 +367,7 @@
         <Checkbox
           value={props.interactive}
           hint="Enable interaction events for the Container. Touch, pointer and mouse"
-          onchange={(value) => onchange({ property: "interactive", value })}
+          setValue={(value) => onchange({ property: "interactive", value })}
         >
           Interactive
         </Checkbox>
@@ -379,7 +379,7 @@
         <Checkbox
           value={props.buttonMode}
           hint="If enabled, the mouse cursor use the pointer behavior when hovered over the Container if it is interactive Setting this changes the 'cursor' property to 'pointer'."
-          onchange={(value) => onchange({ property: "buttonMode", value })}
+          setValue={(value) => onchange({ property: "buttonMode", value })}
         >
           Button mode
         </Checkbox>
@@ -390,7 +390,7 @@
         <Checkbox
           value={props.interactiveChildren}
           hint="Determines if the children to the Container can be clicked/touched Setting this to false allows PixiJS to bypass a recursive hitTest function"
-          onchange={(value) =>
+          setValue={(value) =>
             onchange({
               property: "interactiveChildren",
               value,

@@ -61,7 +61,7 @@
       >
         <TextField
           value={props.fontFamily}
-          onchange={(value) => onchange({ property: "fontFamily", value })}
+          setValue={(value) => onchange({ property: "fontFamily", value })}
         />
       </Property>
     {/if}
@@ -71,7 +71,7 @@
           value={props.fontSize}
           min={0}
           step={1}
-          onchange={(value) => onchange({ property: "fontSize", value })}
+          setValue={(value) => onchange({ property: "fontSize", value })}
         />
       </Property>
     {/if}
@@ -82,7 +82,7 @@
             label="Normal"
             value={props.fontStyle === "normal"}
             location="LEFT"
-            onchange={() =>
+            setValue={() =>
               onchange({ property: "fontStyle", value: "normal" })}
           />
           <Toggle
@@ -90,14 +90,14 @@
             label="Italic"
             value={props.fontStyle === "italic"}
             location="CENTER"
-            onchange={() =>
+            setValue={() =>
               onchange({ property: "fontStyle", value: "italic" })}
           />
           <Toggle
             label="Oblique"
             value={props.fontStyle === "oblique"}
             location="RIGHT"
-            onchange={() =>
+            setValue={() =>
               onchange({ property: "fontStyle", value: "oblique" })}
           />
         </div>
@@ -110,7 +110,7 @@
             label="Normal"
             value={props.fontVariant === "normal"}
             location="LEFT"
-            onchange={() =>
+            setValue={() =>
               onchange({ property: "fontVariant", value: "normal" })}
           />
 
@@ -119,7 +119,7 @@
             label="Small Caps"
             value={props.fontVariant === "small-caps"}
             location="RIGHT"
-            onchange={() =>
+            setValue={() =>
               onchange({
                 property: "fontVariant",
                 value: "small-caps",
@@ -147,7 +147,7 @@
             "800",
             "900",
           ]}
-          onchange={(value) => onchange({ property: "fontWeight", value })}
+          setValue={(value) => onchange({ property: "fontWeight", value })}
         />
       </Property>
     {/if}
@@ -164,7 +164,7 @@
         <SelectMenu
           value={props.align}
           options={alignOptions}
-          onchange={(value) => onchange({ property: "align", value })}
+          setValue={(value) => onchange({ property: "align", value })}
         />
       </Property>
     {/if}
@@ -183,7 +183,7 @@
             "ideographic",
             "bottom",
           ]}
-          onchange={(value) => onchange({ property: "textBaseline", value })}
+          setValue={(value) => onchange({ property: "textBaseline", value })}
         />
       </Property>
     {/if}
@@ -198,7 +198,7 @@
           value={props.leading}
           min={0}
           step={0.1}
-          onchange={(value) => onchange({ property: "leading", value })}
+          setValue={(value) => onchange({ property: "leading", value })}
         />
       </Property>
     {/if}
@@ -210,7 +210,7 @@
         <NumberField
           value={props.letterSpacing}
           step={0.1}
-          onchange={(value) =>
+          setValue={(value) =>
             onchange({
               property: "letterSpacing",
               value,
@@ -227,7 +227,7 @@
         <NumberField
           value={props.lineHeight}
           step={1}
-          onchange={(value) => onchange({ property: "lineHeight", value })}
+          setValue={(value) => onchange({ property: "lineHeight", value })}
         />
       </Property>
     {/if}
@@ -237,7 +237,7 @@
           value={props.padding}
           min={0}
           step={1}
-          onchange={(value) => onchange({ property: "padding", value })}
+          setValue={(value) => onchange({ property: "padding", value })}
         />
       </Property>
     {/if}
@@ -251,20 +251,20 @@
             label="Normal"
             value={props.whiteSpace === "normal"}
             location="LEFT"
-            onchange={() =>
+            setValue={() =>
               onchange({ property: "whiteSpace", value: "normal" })}
           />
           <Toggle
             label="Pre"
             value={props.whiteSpace === "pre"}
             location="CENTER"
-            onchange={() => onchange({ property: "whiteSpace", value: "pre" })}
+            setValue={() => onchange({ property: "whiteSpace", value: "pre" })}
           />
           <Toggle
             label="Pre Line"
             value={props.whiteSpace === "pre-line"}
             location="RIGHT"
-            onchange={() =>
+            setValue={() =>
               onchange({ property: "whiteSpace", value: "pre-line" })}
           />
         </div>
@@ -275,7 +275,7 @@
         <Checkbox
           value={props.trim}
           hint="Trim transparent borders"
-          onchange={(value) => onchange({ property: "trim", value })}
+          setValue={(value) => onchange({ property: "trim", value })}
         >
           Trim
         </Checkbox>
@@ -289,7 +289,7 @@
     title="Word wrap"
     value={props.wordWrap}
     bind:expanded={expanded.wordWrap}
-    onchange={(value) => onchange({ property: "wordWrap", value })}
+    setValue={(value) => onchange({ property: "wordWrap", value })}
   >
     {#if typeof props.wordWrapWidth === "number"}
       <Property
@@ -300,7 +300,7 @@
           value={props.wordWrapWidth}
           min={0}
           step={1}
-          onchange={(value) =>
+          setValue={(value) =>
             onchange({
               property: "wordWrapWidth",
               value,
@@ -313,7 +313,7 @@
         <Checkbox
           value={props.breakWords}
           hint="Indicates if lines can be wrapped within words, it needs wordWrap to be set to true."
-          onchange={(value) => onchange({ property: "breakWords", value })}
+          setValue={(value) => onchange({ property: "breakWords", value })}
         >
           Break words
         </Checkbox>
@@ -327,7 +327,7 @@
     title="Drop shadow"
     value={props.dropShadow}
     bind:expanded={expanded.dropShadow}
-    onchange={(value) => onchange({ property: "dropShadow", value })}
+    setValue={(value) => onchange({ property: "dropShadow", value })}
   >
     {#if typeof props.dropShadowAlpha === "number"}
       <Property label="Alpha" hint="Set alpha for the drop shadow">
@@ -336,7 +336,7 @@
           step={0.01}
           min={0}
           max={1}
-          onchange={(value) =>
+          setValue={(value) =>
             onchange({
               property: "dropShadowAlpha",
               value,
@@ -348,7 +348,7 @@
       <Property label="Color" hint="A fill style to be used on the dropshadow">
         <TextField
           value={props.dropShadowColor}
-          onchange={(value) =>
+          setValue={(value) =>
             onchange({
               property: "dropShadowColor",
               value,
@@ -362,7 +362,7 @@
           value={props.dropShadowAngle}
           step={0.01}
           suffix="r"
-          onchange={(value) =>
+          setValue={(value) =>
             onchange({
               property: "dropShadowAngle",
               value,
@@ -376,7 +376,7 @@
           value={props.dropShadowBlur}
           min={0}
           step={0.1}
-          onchange={(value) =>
+          setValue={(value) =>
             onchange({
               property: "dropShadowBlur",
               value,
@@ -390,7 +390,7 @@
           value={props.dropShadowDistance}
           step={0.1}
           min={0}
-          onchange={(value) =>
+          setValue={(value) =>
             onchange({
               property: "dropShadowDistance",
               value,
@@ -410,7 +410,7 @@
       >
         <TextField
           value={props.stroke}
-          onchange={(value) =>
+          setValue={(value) =>
             onchange({
               property: "stroke",
               value,
@@ -427,7 +427,7 @@
           value={props.strokeThickness}
           min={0}
           step={0.1}
-          onchange={(value) =>
+          setValue={(value) =>
             onchange({
               property: "strokeThickness",
               value,

@@ -6,15 +6,15 @@
 
   type Props = {
     value: string;
+    setValue?: (value: string) => void;
     id?: string | undefined;
-    onchange?: (value: string) => void;
     oninput?: (value: string) => void;
   };
 
   let {
     value = $bindable(),
+    setValue,
     id = undefined,
-    onchange,
     oninput,
   }: Props = $props();
 
@@ -48,7 +48,7 @@
     }
     if (previous !== text) {
       value = text;
-      onchange?.(text);
+      setValue?.(text);
     }
     if (el.tagName === "TEXTAREA" && !text.includes("\n")) {
       multiline = false;

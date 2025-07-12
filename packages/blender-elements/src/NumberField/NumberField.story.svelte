@@ -15,7 +15,7 @@
     <div style="max-width: 200px;">
       <NumberField
         {value}
-        onchange={(val) => {
+        setValue={(val) => {
           value = val;
         }}
         location="TOP"

@@ -67,7 +67,7 @@ During this process the actual UI is also created and updated.
   "appends": [
     {
       "path": [0, 2],
-      "component": "NumberInput",
+      "component": "NumberField",
       "props": { "label": "Speed" },
       "data": 1
     }

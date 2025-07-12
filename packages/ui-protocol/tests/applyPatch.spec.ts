@@ -57,7 +57,7 @@ describe.sequential("applyPatch()", () => {
       data: [],
       props: [],
       replacements: [
-        { path: [0], component: "NumberInput", props: {}, data: 0 },
+        { path: [0], component: "NumberField", props: {}, data: 0 },
       ],
       appends: [
         {
@@ -95,7 +95,7 @@ describe.sequential("applyPatch()", () => {
             "setData": [Function],
             "setProps": [Function],
             "test": {
-              "component": "NumberInput",
+              "component": "NumberField",
               "data": 0,
               "props": {},
             },
@@ -183,7 +183,7 @@ describe.sequential("applyPatch()", () => {
             "setData": [Function],
             "setProps": [Function],
             "test": {
-              "component": "NumberInput",
+              "component": "NumberField",
               "data": 50,
               "props": {
                 "step": 10,

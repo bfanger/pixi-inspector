@@ -1,17 +1,21 @@
 <script lang="ts">
+  /**
+   * Inspired by Blender's Number field
+   * https://docs.blender.org/manual/en/latest/interface/controls/buttons/fields.html
+   */
   import blurOnEnter from "../actions/blurOnEnter";
   import numberDrag from "../actions/numberDrag";
   import revertOnEscape from "../actions/revertOnEscape";
 
   type Props = {
     value: number | undefined;
+    setValue?: (value: number) => void;
     suffix?: string;
     location?: "ALONE" | "TOP" | "MIDDLE" | "BOTTOM";
     id?: string;
     step?: number;
     min?: number;
     max?: number;
-    onchange?: (value: number) => void;
   };
   let {
     value = $bindable(),
@@ -21,7 +25,7 @@
     step,
     min,
     max,
-    onchange,
+    setValue,
   }: Props = $props();
 
   let el: HTMLInputElement;
@@ -80,7 +84,7 @@
       value = wanted;
       text = format(value);
       if (typeof value === "number") {
-        onchange?.(value);
+        setValue?.(value);
       }
     }
   }
@@ -88,19 +92,19 @@
   function onStepDown() {
     if (step && typeof value === "number") {
       value -= step;
-      onchange?.(value);
+      setValue?.(value);
     }
   }
   function onStepUp() {
     if (step && typeof value === "number") {
       value += step;
-      onchange?.(value);
+      setValue?.(value);
     }
   }
 
   function onChange(next: number) {
     value = next;
-    onchange?.(value);
+    setValue?.(value);
   }
 
   function onClick(e: MouseEvent) {

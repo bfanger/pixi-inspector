@@ -3,19 +3,15 @@ import type {
   TreeDisplayNode,
   TreeEvent,
   TreePatchDataDto,
-  TreePath,
-  TreePatchDto,
+  AsyncReceiver,
+  Sender,
 } from "./types";
 import { applyPatch, lookupNode } from "./tree-fns";
 
 export default function createSender(
   tree: TreeDisplayNode,
-  updateFn: (
-    data: TreePatchDataDto[],
-    event?: TreeEvent,
-  ) => Promise<TreePatchDto>,
-  syncFn: (data: TreePatchDataDto[], path: TreePath) => Promise<TreePatchDto>,
-) {
+  receiver: AsyncReceiver,
+): Sender {
   const data: { node: TreeDisplayNode; value: TreeValue }[] = [];
   const queue: {
     events: { node: TreeDisplayNode; event: TreeEvent }[];
@@ -42,24 +38,22 @@ export default function createSender(
     if (processing.events.length > 0) {
       for (const { node, event } of processing.events) {
         if (isNodeValid(tree, node, "dispatchEvent() failed: ")) {
-          applyPatch(tree, await updateFn(flushData(), event));
+          applyPatch(tree, await receiver.update(flushData(), event));
         }
       }
     }
     if (processing.sync.find((node) => node === tree)) {
-      applyPatch(tree, await syncFn(flushData(), tree.path));
+      applyPatch(tree, await receiver.sync(flushData(), tree.path));
     } else {
       for (const node of processing.sync) {
         if (isNodeValid(tree, node, "sync() failed: ")) {
-          applyPatch(tree, await syncFn(flushData(), node.path));
+          applyPatch(tree, await receiver.sync(flushData(), node.path));
         }
       }
     }
     if (processing.events.length === 0 && processing.sync.length === 0) {
-      applyPatch(tree, await updateFn(flushData()));
+      applyPatch(tree, await receiver.update(flushData()));
     }
-
-    // If there are new events or syncs, process them immediately
   }
 
   function schedule() {
@@ -68,6 +62,7 @@ export default function createSender(
         await Promise.resolve();
         await process();
       } while (
+        // If there are new events or syncs, process them immediately
         data.length > 0 ||
         queue.events.length > 0 ||
         queue.sync.length > 0
@@ -76,35 +71,36 @@ export default function createSender(
     })();
   }
 
-  function createDispatcher(node: TreeDisplayNode) {
-    return function dispatch(event: string, data?: TreeValue) {
-      queue.events.push({
-        node,
-        event: { path: node.path, type: event, data },
-      });
+  return {
+    createDispatcher(node: TreeDisplayNode) {
+      return function dispatch(event: string, data?: TreeValue) {
+        queue.events.push({
+          node,
+          event: { path: node.path, type: event, data },
+        });
+        if (!promise) {
+          schedule();
+        }
+        return promise!;
+      };
+    },
+
+    setData(node: TreeDisplayNode, value: TreeValue) {
+      data.push({ node, value });
       if (!promise) {
         schedule();
       }
-      return promise;
-    };
-  }
+      return promise!;
+    },
 
-  function setData(node: TreeDisplayNode, value: TreeValue) {
-    data.push({ node, value });
-    if (!promise) {
-      schedule();
-    }
-    return promise;
-  }
-
-  function sync(node: TreeDisplayNode = tree) {
-    queue.sync.push(node);
-    if (!promise) {
-      schedule();
-    }
-    return promise;
-  }
-  return { createDispatcher, setData, sync };
+    sync(node: TreeDisplayNode = tree) {
+      queue.sync.push(node);
+      if (!promise) {
+        schedule();
+      }
+      return promise!;
+    },
+  };
 }
 
 function isNodeValid(
