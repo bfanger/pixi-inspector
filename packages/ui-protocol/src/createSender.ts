@@ -3,14 +3,14 @@ import type {
   TreeDisplayNode,
   TreeEvent,
   TreePatchDataDto,
-  AsyncReceiver,
+  Connection,
   Sender,
 } from "./types";
 import { applyPatch, lookupNode } from "./tree-fns";
 
 export default function createSender(
   tree: TreeDisplayNode,
-  receiver: AsyncReceiver,
+  connection: Connection,
 ): Sender {
   const data: { node: TreeDisplayNode; value: TreeValue }[] = [];
   const queue: {
@@ -41,24 +41,24 @@ export default function createSender(
       data.length > 0
     ) {
       // Data only
-      return await receiver.set(flushData());
+      return await connection.set(flushData());
     }
     if (processing.events.length !== 0) {
       // Events
       for (const { node, event } of processing.events) {
         if (isNodeValid(tree, node, "dispatchEvent() failed: ")) {
-          applyPatch(tree, await receiver.dispatchEvent(flushData(), event));
+          applyPatch(tree, await connection.dispatchEvent(flushData(), event));
         }
       }
     }
     if (processing.sync.length !== 0) {
       // Sync
       if (processing.sync.find((node) => node === tree)) {
-        applyPatch(tree, await receiver.sync(flushData(), tree.path));
+        applyPatch(tree, await connection.sync(flushData(), tree.path));
       } else {
         for (const node of processing.sync) {
           if (isNodeValid(tree, node, "sync() failed: ")) {
-            applyPatch(tree, await receiver.sync(flushData(), node.path));
+            applyPatch(tree, await connection.sync(flushData(), node.path));
           }
         }
       }

@@ -8,7 +8,7 @@ export default function createReceiver(tree: TreeControllerNode): Receiver {
     },
     dispatchEvent(data, event) {
       applyData(tree, data);
-      return applyEvent(tree, data, event);
+      return applyEvent(tree, event);
     },
     sync(data, path) {
       applyData(tree, data);

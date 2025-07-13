@@ -1,16 +1,16 @@
 <script lang="ts">
-  import type { AsyncReceiver } from "../types";
+  import type { Connection } from "../types";
   import createSender from "../createSender";
   import VDOMNode from "./VDOMNode.svelte";
   import { onMount, type Component } from "svelte";
   import { createChild } from "./vdom.svelte";
 
   type Props = {
-    receiver: AsyncReceiver;
+    connection: Connection;
     Fallback?: Component;
   };
 
-  let { receiver, Fallback }: Props = $props();
+  let { connection, Fallback }: Props = $props();
 
   const tree = createChild(
     {
@@ -25,7 +25,7 @@
       sync: senderError,
     },
   );
-  const sender = createSender(tree, receiver);
+  const sender = createSender(tree, connection);
   tree.sender = sender;
 
   onMount(() => {

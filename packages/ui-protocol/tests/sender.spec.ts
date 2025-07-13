@@ -2,14 +2,16 @@ import { describe, it, expect } from "vitest";
 import createTestDisplayTree from "./createTestDisplayTree";
 import { createSender } from "../src";
 import { createTestControllerTree } from "./createTestControllerTree";
-import createTestReceiver from "./createTestReceiver";
+import createTestConnection from "./createTestConnection";
 
 describe.sequential("sender", () => {
   const displayTree = createTestDisplayTree();
   const [controllerTree, game] = createTestControllerTree();
 
-  const receiver = createTestReceiver(controllerTree);
-  const sender = createSender(displayTree, receiver);
+  const sender = createSender(
+    displayTree,
+    createTestConnection(controllerTree),
+  );
 
   it("sync() created both trees", async () => {
     expect(controllerTree).toMatchInlineSnapshot(`

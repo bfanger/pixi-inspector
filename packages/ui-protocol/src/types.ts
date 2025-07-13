@@ -120,33 +120,38 @@ export type TreePatchDto = {
 export type TreeLocation<T extends TreeNode> = { parent: T; index: number };
 
 /**
+ * A connection allows a Sender to communicate with a Receiver.
+ */
+export type Connection = {
+  /**
+   * Send data to existing nodes.
+   */
+  set: (data: TreePatchDataDto[]) => Promise<void>;
+
+  /**
+   * Send data to existing nodes, dispatch an event to a node and update the tree based on the event response.
+   */
+  dispatchEvent: (
+    data: TreePatchDataDto[],
+    event: TreeEvent,
+  ) => Promise<TreePatchDto>;
+
+  /**
+   * Send data to existing nodes & update part of the the tree.
+   */
+  sync: (data: TreePatchDataDto[], path: TreePath) => Promise<TreePatchDto>;
+};
+
+/**
  * A receiver cannot start a conversation, but has access to the actual objects.
  * The receiver in in control of "what" is displayed, but is not responsible for displaying it, that is the job of the sender.
  *
- * The receiver responsibility is to respond to messages from the sender with updates to how the tree should look.
+ * The receiver responsibility is to respond to events from the sender and respond with updates to tree.
  */
 export type Receiver = {
-  /**
-   * The sender has new data for existing nodes.
-   */
   set(data: TreePatchDataDto[]): void;
-  /**
-   * The sender has dispatched an event.
-   */
   dispatchEvent(data: TreePatchDataDto[], event: TreeEvent): TreePatchDto;
-  /**
-   * The sender wants to know the state of a part of the tree.
-   */
   sync(data: TreePatchDataDto[], path: TreePath): TreePatchDto;
-};
-
-export type AsyncReceiver = {
-  set(data: TreePatchDataDto[]): Promise<void>;
-  dispatchEvent(
-    data: TreePatchDataDto[],
-    event: TreeEvent,
-  ): Promise<TreePatchDto>;
-  sync(data: TreePatchDataDto[], path: TreePath): Promise<TreePatchDto>;
 };
 
 /**

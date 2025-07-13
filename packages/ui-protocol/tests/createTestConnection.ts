@@ -1,12 +1,12 @@
 import {
   createReceiver,
-  type AsyncReceiver,
+  type Connection,
   type TreeControllerNode,
 } from "../src";
 
-export default function createTestReceiver(
+export default function createTestConnection(
   tree: TreeControllerNode,
-): AsyncReceiver {
+): Connection {
   const receiver = createReceiver(tree);
   return {
     set: (data) => Promise.resolve(receiver.set(data)),

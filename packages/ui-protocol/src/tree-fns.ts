@@ -117,7 +117,9 @@ export function applyData(tree: TreeNode, data: TreePatchDataDto[]): void {
   for (const { path, value } of data) {
     const node = lookupNode(tree, path);
     if (!node.setData) {
-      throw new Error("data failed: Node didn't implement setData");
+      throw new Error(
+        `data failed: Node "/${path.join("/")}" didn't implement setData`,
+      );
     }
     node.setData(value);
   }
@@ -128,15 +130,13 @@ export function applyData(tree: TreeNode, data: TreePatchDataDto[]): void {
  */
 export function applyEvent(
   tree: TreeControllerNode,
-  data: TreePatchDataDto[],
   event: TreeEvent,
 ): TreePatchDto {
-  applyData(tree, data);
   const patch = createPatch();
   const node = lookupNode(tree, event.path);
   if (!node.dispatchEvent) {
     throw new Error(
-      "event failed: ControllerNode didn't implement dispatchEvent",
+      `event failed: ControllerNode "/${event.path.join("/")}" didn't implement dispatchEvent`,
     );
   }
   const partial: TreePatch = { appends: [], replacements: [] };
