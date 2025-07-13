@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import createTestDisplayTree from "./createTestDisplayTree";
-import { createSender } from "../src";
 import { createTestControllerTree } from "./createTestControllerTree";
 import createTestConnection from "./createTestConnection";
+import createSender from "../src/createSender";
 
 describe.sequential("sender", () => {
   const displayTree = createTestDisplayTree();

@@ -120,7 +120,12 @@ export type TreePatchDto = {
 export type TreeLocation<T extends TreeNode> = { parent: T; index: number };
 
 /**
- * A connection allows a Sender to communicate with a Receiver.
+ * A connection is used by a Sender (DisplayTree) to communicate with a receiver (ControllerTree).
+ *
+ * The sender must display the UI that is requested by the receiver.
+ * The receiver cannot start a conversation, but has synchronous access to the actual javascript objects.
+ * The receiver is in control of "what" will be displayed by the sender, but is not responsible for displaying the ui.
+ * The receivers responsibility is to respond to syncs & events from the sender and respond with updates to the tree.
  */
 export type Connection = {
   /**
@@ -143,20 +148,6 @@ export type Connection = {
 };
 
 /**
- * A receiver cannot start a conversation, but has access to the actual objects.
- * The receiver in in control of "what" is displayed, but is not responsible for displaying it, that is the job of the sender.
- *
- * The receiver responsibility is to respond to events from the sender and respond with updates to tree.
- */
-export type Receiver = {
-  set(data: TreePatchDataDto[]): void;
-  dispatchEvent(data: TreePatchDataDto[], event: TreeEvent): TreePatchDto;
-  sync(data: TreePatchDataDto[], path: TreePath): TreePatchDto;
-};
-
-/**
- * A sender must display the UI that is requested by the receiver.
- * A start a conversation send events and data or request ui sync.
  *
  * The sender sends any pending data changes along with an event or sync.
  * This is because the tree can be out of sync after the event/sync.
