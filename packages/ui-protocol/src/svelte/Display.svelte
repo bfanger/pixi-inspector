@@ -15,13 +15,12 @@
   const tree = createChild(
     {
       path: [],
-      data: null,
       component: "Container",
       props: {},
       children: [],
     },
     {
-      createDispatcher: senderError,
+      dispatchEvent: senderError,
       setData: senderError,
       sync: senderError,
     },

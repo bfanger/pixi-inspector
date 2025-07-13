@@ -16,12 +16,12 @@ export type TreeDisplayNode = TreeDisplayContainerNode | TreeDisplayLeafNode;
 export type TreeDisplayLeafNode = {
   readonly path: TreePath;
   setProps(props: TreeObjectValue): void;
-  setData(value: TreeValue): void;
+  setData?: (value: TreeValue) => void;
 };
 export type TreeDisplayContainerNode = {
   readonly path: TreePath;
   setProps(props: TreeObjectValue): void;
-  setData(value: TreeValue): void;
+  setData?: (value: TreeValue) => void;
   children: TreeDisplayNode[];
   setChild(index: number, init: TreePatchInitDto): TreeDisplayNode;
   truncate(length: number): void;
@@ -73,7 +73,7 @@ export type TreePatchInitDto = {
   path: TreePath;
   component: string;
   props: TreeObjectValue;
-  data: TreeValue;
+  data?: TreeValue;
   children?: TreePatchInitDto[];
 };
 
@@ -152,11 +152,17 @@ export type AsyncReceiver = {
 /**
  * A sender must display the UI that is requested by the receiver.
  * A start a conversation send events and data or request ui sync.
+ *
+ * The sender sends any pending data changes along with an event or sync.
+ * This is because the tree can be out of sync after the event/sync.
+ * Which minimizes the amount of errors and requests.
  */
 export type Sender = {
-  createDispatcher: (
+  dispatchEvent: (
     node: TreeDisplayNode,
-  ) => (event: string, data?: TreeValue) => Promise<void>;
+    event: string,
+    details?: TreeValue,
+  ) => Promise<void>;
   setData: (node: TreeDisplayNode, value: TreeValue) => Promise<void>;
   sync(node?: TreeDisplayNode): Promise<void>;
 };

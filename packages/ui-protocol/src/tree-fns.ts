@@ -22,7 +22,7 @@ export function lookupNode<T extends TreeNode>(root: T, path: TreePath): T {
   for (const index of path) {
     const child = node.children?.[index];
     if (!child) {
-      throw new Error("lookup failed: Node not found");
+      throw new Error(`lookupNode() failed: "/${path.join("/")}" not found`);
     }
     node = child as T & { children?: T[] };
   }
@@ -54,10 +54,7 @@ export function applyPatch(tree: TreeDisplayNode, patch: TreePatchDto) {
     const node = lookupNode(tree, path);
     node.setProps(props);
   }
-  for (const { path, value } of patch.data) {
-    const node = lookupNode(tree, path);
-    node.setData(value);
-  }
+  applyData(tree, patch.data);
   for (const replacement of patch.replacements) {
     const { parent, index } = lookupParent(tree, replacement.path);
     if ("setChild" in parent) {

@@ -81,21 +81,19 @@ export default function createSender(
   }
 
   return {
-    createDispatcher(node: TreeDisplayNode) {
-      return function dispatch(event: string, data?: TreeValue) {
-        queue.events.push({
-          node,
-          event: { path: node.path, type: event, data },
-        });
-        if (!promise) {
-          schedule();
-        }
-        return promise!;
-      };
-    },
-
     setData(node: TreeDisplayNode, value: TreeValue) {
       data.push({ node, value });
+      if (!promise) {
+        schedule();
+      }
+      return promise!;
+    },
+
+    dispatchEvent(node: TreeDisplayNode, event: string, data?: TreeValue) {
+      queue.events.push({
+        node,
+        event: { path: node.path, type: event, data },
+      });
       if (!promise) {
         schedule();
       }

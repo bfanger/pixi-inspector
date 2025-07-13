@@ -58,27 +58,25 @@ export function createChild(
     setProps(props: TreeObjectValue) {
       if ("dataProp" in config) {
         vdom.props = {
-          [config.dataProp]: vdom.props[config.dataProp],
           ...props,
           ...events,
+          [config.dataProp]: vdom.props[config.dataProp],
         };
       } else {
         vdom.props = { ...props, ...events };
       }
     },
-    setData(value: TreeValue) {
-      if ("dataProp" in config) {
-        vdom.props[config.dataProp] = value;
-      } else {
-        throw new Error("setData failed: No dataProp configured");
-      }
-    },
   };
   node = leaf;
-  if ("dataProp" in config) {
-    leaf.setData(init.data);
-  }
 
+  if ("dataProp" in config) {
+    node.setData = (value: TreeValue) => {
+      vdom.props[config.dataProp] = value;
+    };
+    node.setData(init.data);
+  } else if (init.data !== undefined) {
+    throw new Error("init with data failed: No dataProp configured");
+  }
   leaf.setProps(init.props);
 
   if (init.children === undefined) {

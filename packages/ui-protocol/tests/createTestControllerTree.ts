@@ -30,7 +30,6 @@ export function createTestControllerTree() {
           component: "NumberField",
           props: { label: "X", step: 1 },
           data: player.x,
-
           node,
         });
       }
