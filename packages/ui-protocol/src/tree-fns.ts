@@ -100,52 +100,51 @@ export function applyPatch(tree: TreeDisplayNode, patch: TreePatchDto) {
 /**
  * Synchronize the tree to match the current situation.
  */
-export function syncTree(tree: TreeControllerNode) {
-  const patch: TreePatchDto = {
-    props: [],
-    data: [],
-    replacements: [],
-    appends: [],
-    truncates: [],
-  };
-  syncNode(tree, [], patch);
+export function syncTree(
+  tree: TreeControllerNode,
+  path: TreePath = [],
+): TreePatchDto {
+  const patch = createPatch();
+  let node = tree;
+  if (path.length > 0) {
+    node = lookupNode(tree, path);
+  }
+  syncNode(node, path, patch);
   return patch;
 }
 
 /**
- * Send data to a specific nodes in the tree.
- * And/or dispatch an event and return the patch of the changes.
+ * Update values for specific nodes.
  */
-export function applyUpdate(
-  tree: TreeControllerNode,
-  data: TreePatchDataDto[],
-  event?: TreeEvent,
-) {
+export function applyData(tree: TreeNode, data: TreePatchDataDto[]): void {
   for (const { path, value } of data) {
     const node = lookupNode(tree, path);
     if (!node.setData) {
-      throw new Error("data failed: ControllerNode didn't implement setData");
+      throw new Error("data failed: Node didn't implement setData");
     }
     node.setData(value);
   }
-  const patch: TreePatchDto = {
-    props: [],
-    data: [],
-    replacements: [],
-    appends: [],
-    truncates: [],
-  };
-  if (event) {
-    const node = lookupNode(tree, event.path);
-    if (!node.dispatchEvent) {
-      throw new Error(
-        "event failed: ControllerNode didn't implement dispatchEvent",
-      );
-    }
-    const partial: TreePatch = { appends: [], replacements: [] };
-    node.dispatchEvent(event, partial);
-    applyPartial(patch, node, event.path, partial);
+}
+
+/**
+ * Dispatch an event and return the effects it had on the tree.
+ */
+export function applyEvent(
+  tree: TreeControllerNode,
+  data: TreePatchDataDto[],
+  event: TreeEvent,
+): TreePatchDto {
+  applyData(tree, data);
+  const patch = createPatch();
+  const node = lookupNode(tree, event.path);
+  if (!node.dispatchEvent) {
+    throw new Error(
+      "event failed: ControllerNode didn't implement dispatchEvent",
+    );
   }
+  const partial: TreePatch = { appends: [], replacements: [] };
+  node.dispatchEvent(event, partial);
+  applyPartial(patch, node, event.path, partial);
   return patch;
 }
 
@@ -156,7 +155,7 @@ export function syncNode(
   node: TreeControllerNode,
   path: TreePath,
   out: TreePatchDto,
-) {
+): void {
   const partial: TreePatch = {
     replacements: [],
     appends: [],
@@ -170,7 +169,6 @@ export function syncNode(
     syncNode(node.children![i], [...path, i], out);
   }
 }
-
 /**
  * Based on the partial patch information add changes to the target TreePatchDto.
  */
@@ -195,7 +193,7 @@ function applyPartial(
       throw new Error("Can't replace children of a leaf node");
     }
     target.replacements.push(
-      create(replacement, [...path, node.children.length]),
+      createInit(replacement, [...path, node.children.length]),
     );
     node.children[index] = replacement.node;
     skip.push(index);
@@ -205,7 +203,7 @@ function applyPartial(
     if (!node.children) {
       throw new Error("Can't append children to a leaf node");
     }
-    target.appends.push(create(append, [...path, node.children.length]));
+    target.appends.push(createInit(append, [...path, node.children.length]));
     node.children.push(append.node);
   }
 
@@ -224,7 +222,7 @@ function applyPartial(
 /**
  * From partial init information create a full patch dto.
  */
-function create(init: TreeInit, path: TreePath): TreePatchInitDto {
+function createInit(init: TreeInit, path: TreePath): TreePatchInitDto {
   const dto: TreePatchInitDto = {
     path,
     component: init.component,
@@ -238,9 +236,19 @@ function create(init: TreeInit, path: TreePath): TreePatchInitDto {
     }
     for (let i = 0; i < init.children.length; i++) {
       const childInit = init.children[i];
-      dto.children.push(create(childInit, [...path, i]));
+      dto.children.push(createInit(childInit, [...path, i]));
       init.node.children[i] = childInit.node;
     }
   }
   return dto;
+}
+
+function createPatch(): TreePatchDto {
+  return {
+    props: [],
+    data: [],
+    replacements: [],
+    appends: [],
+    truncates: [],
+  };
 }

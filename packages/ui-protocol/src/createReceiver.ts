@@ -1,16 +1,18 @@
-import { applyUpdate, lookupNode, syncNode } from "./tree-fns";
+import { applyData, applyEvent, syncTree } from "./tree-fns";
 import type { Receiver, TreeControllerNode } from "./types";
 
 export default function createReceiver(tree: TreeControllerNode): Receiver {
   return {
-    update(data, event) {
-      return applyUpdate(tree, data, event);
+    set(data) {
+      applyData(tree, data);
+    },
+    dispatchEvent(data, event) {
+      applyData(tree, data);
+      return applyEvent(tree, data, event);
     },
     sync(data, path) {
-      const patch = applyUpdate(tree, data);
-      const node = lookupNode(tree, path);
-      syncNode(node, path, patch);
-      return patch;
+      applyData(tree, data);
+      return syncTree(tree, path);
     },
   };
 }

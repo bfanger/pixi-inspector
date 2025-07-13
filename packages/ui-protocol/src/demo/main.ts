@@ -1,25 +1,17 @@
 import { mount } from "svelte";
-import Display from "../svelte/Display.svelte";
-import createReceiver from "../createReceiver";
-import { createTestControllerTree } from "../../tests/createTestControllerTree";
 import { GUI, type GUIController } from "dat.gui";
+import Display from "../svelte/Display.svelte";
+import { createTestControllerTree } from "../../tests/createTestControllerTree";
+import createTestReceiver from "../../tests/createTestReceiver";
 
 const el = document.body.querySelector("svelte-devtool");
 if (!el) {
   throw new Error("Element <svelte-devtool> not found");
 }
 const [tree, game] = createTestControllerTree();
-const receiver = createReceiver(tree);
+const receiver = createTestReceiver(tree);
 
-mount(Display, {
-  props: {
-    receiver: {
-      update: (data, event) => Promise.resolve(receiver.update(data, event)),
-      sync: (data, path) => Promise.resolve(receiver.sync(data, path)),
-    },
-  },
-  target: el,
-});
+mount(Display, { props: { receiver }, target: el });
 
 const gui = new GUI();
 const folder = gui.addFolder("Player");
@@ -42,15 +34,17 @@ const methods = {
     game.player = { x: 0, y: 0 };
     controller = folder.add(game.player, "x", -100, 100);
   },
-  sync() {
-    if (!game.player || !controller) {
-      console.warn("No player");
-      return;
-    }
-    controller.setValue(game.player.x);
-  },
 };
 // add button to dat.gui
 gui.add(methods, "remove");
 gui.add(methods, "add");
-gui.add(methods, "sync");
+
+setInterval(() => {
+  if (
+    game.player &&
+    controller &&
+    document.activeElement?.nodeName !== "INPUT"
+  ) {
+    controller.updateDisplay();
+  }
+}, 100);

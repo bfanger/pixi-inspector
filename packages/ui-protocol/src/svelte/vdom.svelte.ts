@@ -40,7 +40,13 @@ export function createChild(
       `No configuration available for Component: ${init.component}.`,
     );
   }
+  let node: SvelteNode;
   const events: Record<string, any> = {};
+  if ("setDataProp" in config) {
+    events[config.setDataProp] = (value: TreeValue) => {
+      node.sender.setData(node, value);
+    };
+  }
 
   const vdom = new VDOM();
   vdom.Component = config.component;
@@ -68,14 +74,11 @@ export function createChild(
       }
     },
   };
+  node = leaf;
   if ("dataProp" in config) {
     leaf.setData(init.data);
   }
-  if ("setDataProp" in config) {
-    events[config.setDataProp] = (value: TreeValue) => {
-      leaf.sender.setData(leaf, value);
-    };
-  }
+
   leaf.setProps(init.props);
 
   if (init.children === undefined) {
@@ -89,16 +92,16 @@ export function createChild(
     ...leaf,
     vdom: vdom as VDOM & { children: VDOM[] },
     children: [],
-    setChild(index, child) {
-      const node = createChild(child, container.sender);
-      container.vdom.children[index] = node.vdom;
-      return node;
+    setChild(index, childInit) {
+      const child = createChild(childInit, container.sender);
+      container.vdom.children[index] = child.vdom;
+      return child;
     },
     truncate(length: number) {
       container.vdom.children.length = length;
     },
     sender,
   };
-
+  node = container;
   return container;
 }

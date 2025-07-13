@@ -1,17 +1,15 @@
 import { describe, it, expect } from "vitest";
 import createTestDisplayTree from "./createTestDisplayTree";
-import { createReceiver, createSender } from "../src/";
+import { createSender } from "../src/";
 import { createTestControllerTree } from "./createTestControllerTree";
+import createTestReceiver from "./createTestReceiver";
 
 describe("bridge", () => {
   const displayTree = createTestDisplayTree();
   const [controllerTree, game] = createTestControllerTree();
 
-  const receiver = createReceiver(controllerTree);
-  const sender = createSender(displayTree, {
-    update: (data, event) => Promise.resolve(receiver.update(data, event)),
-    sync: (data, path) => Promise.resolve(receiver.sync(data, path)),
-  });
+  const receiver = createTestReceiver(controllerTree);
+  const sender = createSender(displayTree, receiver);
   const dispatchRootEvent = sender.createDispatcher(displayTree);
 
   it("should sync", async () => {

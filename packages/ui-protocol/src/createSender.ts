@@ -35,24 +35,33 @@ export default function createSender(
     queue.events = [];
     queue.sync = [];
 
-    if (processing.events.length > 0) {
+    if (
+      processing.events.length === 0 &&
+      processing.sync.length === 0 &&
+      data.length > 0
+    ) {
+      // Data only
+      return await receiver.set(flushData());
+    }
+    if (processing.events.length !== 0) {
+      // Events
       for (const { node, event } of processing.events) {
         if (isNodeValid(tree, node, "dispatchEvent() failed: ")) {
-          applyPatch(tree, await receiver.update(flushData(), event));
+          applyPatch(tree, await receiver.dispatchEvent(flushData(), event));
         }
       }
     }
-    if (processing.sync.find((node) => node === tree)) {
-      applyPatch(tree, await receiver.sync(flushData(), tree.path));
-    } else {
-      for (const node of processing.sync) {
-        if (isNodeValid(tree, node, "sync() failed: ")) {
-          applyPatch(tree, await receiver.sync(flushData(), node.path));
+    if (processing.sync.length !== 0) {
+      // Sync
+      if (processing.sync.find((node) => node === tree)) {
+        applyPatch(tree, await receiver.sync(flushData(), tree.path));
+      } else {
+        for (const node of processing.sync) {
+          if (isNodeValid(tree, node, "sync() failed: ")) {
+            applyPatch(tree, await receiver.sync(flushData(), node.path));
+          }
         }
       }
-    }
-    if (processing.events.length === 0 && processing.sync.length === 0) {
-      applyPatch(tree, await receiver.update(flushData()));
     }
   }
 

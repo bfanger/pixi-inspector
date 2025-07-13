@@ -127,10 +127,13 @@ export type TreeLocation<T extends TreeNode> = { parent: T; index: number };
  */
 export type Receiver = {
   /**
-   * The sender wants to set values.
+   * The sender has new data for existing nodes.
+   */
+  set(data: TreePatchDataDto[]): void;
+  /**
    * The sender has dispatched an event.
    */
-  update(data: TreePatchDataDto[], event?: TreeEvent): TreePatchDto;
+  dispatchEvent(data: TreePatchDataDto[], event: TreeEvent): TreePatchDto;
   /**
    * The sender wants to know the state of a part of the tree.
    */
@@ -138,7 +141,11 @@ export type Receiver = {
 };
 
 export type AsyncReceiver = {
-  update(data: TreePatchDataDto[], event?: TreeEvent): Promise<TreePatchDto>;
+  set(data: TreePatchDataDto[]): Promise<void>;
+  dispatchEvent(
+    data: TreePatchDataDto[],
+    event: TreeEvent,
+  ): Promise<TreePatchDto>;
   sync(data: TreePatchDataDto[], path: TreePath): Promise<TreePatchDto>;
 };
 
