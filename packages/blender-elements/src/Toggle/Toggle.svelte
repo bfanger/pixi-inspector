@@ -7,7 +7,7 @@
     value?: boolean | undefined;
     transparent?: boolean;
     hint?: string | undefined;
-    location?: "ALONE" | "LEFT" | "CENTER" | "RIGHT";
+    location?: "alone" | "left" | "center" | "right";
     setValue?: (value: boolean) => void;
     onclick?: () => void;
   };
@@ -18,7 +18,7 @@
     value = $bindable(undefined),
     transparent = false,
     hint = undefined,
-    location = "ALONE",
+    location = "alone",
     setValue,
     onclick,
   }: Props = $props();
@@ -76,18 +76,18 @@
     &.with-label {
       padding-inline: 4px;
     }
-    &[data-location="ALONE"] {
+    &[data-location="alone"] {
       border-radius: 2px / 3px;
     }
-    &[data-location="LEFT"] {
+    &[data-location="left"] {
       border-top-left-radius: 2px 3px;
       border-bottom-left-radius: 2px 3px;
       margin-right: 1px;
     }
-    &[data-location="CENTER"] {
+    &[data-location="center"] {
       margin-right: 1px;
     }
-    &[data-location="RIGHT"] {
+    &[data-location="right"] {
       border-top-right-radius: 2px 3px;
       border-bottom-right-radius: 2px 3px;
     }

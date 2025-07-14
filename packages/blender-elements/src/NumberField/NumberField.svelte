@@ -11,7 +11,7 @@
     value: number | undefined;
     setValue?: (value: number) => void;
     suffix?: string;
-    location?: "ALONE" | "TOP" | "MIDDLE" | "BOTTOM";
+    location?: "alone" | "top" | "middle" | "bottom";
     id?: string;
     step?: number;
     min?: number;
@@ -20,7 +20,7 @@
   let {
     value = $bindable(),
     suffix = "",
-    location = "ALONE",
+    location = "alone",
     id,
     step,
     min,
@@ -167,18 +167,18 @@
     &.focused {
       background-color: #222222;
     }
-    &[data-location="ALONE"] {
+    &[data-location="alone"] {
       border-radius: 2px / 3px;
     }
-    &[data-location="TOP"] {
+    &[data-location="top"] {
       border-top-left-radius: 2px 3px;
       border-top-right-radius: 2px 3px;
       margin-bottom: 1px;
     }
-    &[data-location="MIDDLE"] {
+    &[data-location="middle"] {
       margin-bottom: 1px;
     }
-    &[data-location="BOTTOM"] {
+    &[data-location="bottom"] {
       border-bottom-left-radius: 2px 3px;
       border-bottom-right-radius: 2px 3px;
     }

@@ -10,6 +10,7 @@ import type {
 } from "../types";
 import NumberField from "../../../blender-elements/src/NumberField/NumberField.svelte";
 import Container from "./Container.svelte";
+import Button from "../../../blender-elements/src/Button.svelte";
 
 export class VDOM {
   Component: Component<any> = $state(undefined as any as Component<any>);
@@ -21,6 +22,12 @@ const configs = {
   Container: { component: Container },
   NumberField: {
     component: NumberField,
+    dataProp: "value",
+    setDataProp: "setValue",
+  },
+  Button: {
+    component: Button,
+    events: ["onclick"],
     dataProp: "value",
     setDataProp: "setValue",
   },
@@ -46,6 +53,13 @@ export function createChild(
     events[config.setDataProp] = (value: TreeValue) => {
       node.sender.setData(node, value);
     };
+  }
+  if ("events" in config) {
+    for (const event of config.events) {
+      events[event] = (details?: TreeValue) => {
+        node.sender.dispatchEvent(node, event, details);
+      };
+    }
   }
 
   const vdom = new VDOM();

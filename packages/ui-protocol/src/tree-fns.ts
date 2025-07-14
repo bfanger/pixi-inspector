@@ -132,17 +132,19 @@ export function applyEvent(
   tree: TreeControllerNode,
   event: TreeEvent,
 ): TreePatchDto {
-  const patch = createPatch();
   const node = lookupNode(tree, event.path);
-  if (!node.dispatchEvent) {
-    throw new Error(
-      `event failed: ControllerNode "/${event.path.join("/")}" didn't implement dispatchEvent`,
-    );
+  const listener = node.events?.[event.type];
+  let syncParents: number | void | undefined;
+  if (listener) {
+    syncParents = listener(event.data);
   }
-  const partial: TreePatch = { appends: [], replacements: [] };
-  node.dispatchEvent(event, partial);
-  applyPartial(patch, node, event.path, partial);
-  return patch;
+  if (syncParents === undefined) {
+    syncParents = 0;
+  } else if (syncParents === Infinity) {
+    syncParents = event.path.length;
+  }
+  const path = event.path.slice(0, event.path.length - syncParents);
+  return syncTree(tree, path);
 }
 
 /**
@@ -157,7 +159,7 @@ export function syncNode(
     replacements: [],
     appends: [],
   };
-  node.sync(partial);
+  node.sync?.(partial);
   const { length, skip } = applyPartial(out, node, path, partial);
   for (let i = 0; i < length; i++) {
     if (skip.includes(i)) {

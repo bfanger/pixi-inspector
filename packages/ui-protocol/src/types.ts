@@ -5,9 +5,9 @@ export type TreeNode = TreeControllerNode | TreeDisplayNode;
  */
 export type TreeControllerNode = {
   children?: TreeControllerNode[];
-  sync(out: TreePatch): void;
-  setData?(value: TreeValue): void;
-  dispatchEvent?(event: TreeEvent, out: TreePatch): void;
+  sync?: (out: TreePatch) => void;
+  setData?: (value: TreeValue) => void;
+  events?: Record<string, (details?: TreeValue) => number | void | undefined>;
 };
 /**
  * TreeNode inside DevTools, connected to a (Svelte) Component
@@ -63,7 +63,7 @@ export type TreeInit = {
   node: TreeControllerNode;
   component: string;
   props: TreeObjectValue;
-  data: TreeValue;
+  data?: TreeValue;
   children?: TreeInit[];
 };
 /**

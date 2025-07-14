@@ -2,38 +2,57 @@ import type { TreeControllerNode } from "../src/types";
 
 type Player = { x: number; y: number };
 type Game = { player: Player | undefined };
-type TestPlayerController = TreeControllerNode & { player: Player };
 
 export function createTestControllerTree() {
   const game: Game = { player: { x: 10, y: 0 } };
+  let resetting = false;
 
   const tree: TreeControllerNode = {
     children: [],
-    dispatchEvent(event, patch) {
-      if (event.type === "reset") {
-        patch.truncate = 0;
-      }
+    events: {
+      reset() {
+        resetting = true;
+      },
     },
     sync(patch) {
-      const player = game.player;
-      if (player && this.children!.length === 0) {
-        const node: TestPlayerController = {
-          player,
-          sync(patch) {
-            patch.data = this.player.x;
-          },
-          setData(value: number) {
-            this.player.x = value;
-          },
-        };
-        patch.appends.push({
-          component: "NumberField",
-          props: { label: "X", step: 1 },
-          data: player.x,
-          node,
-        });
+      if (resetting) {
+        resetting = false;
+        if (tree.children!.length > 0) {
+          patch.truncate = 0;
+        }
+        return;
       }
-      if (!player && this.children?.length === 1) {
+      const player = game.player;
+      if (player && tree.children!.length === 0) {
+        patch.appends.push(
+          {
+            component: "NumberField",
+            props: { label: "X", step: 1 },
+            data: player.x,
+            node: {
+              sync(patch) {
+                patch.data = player.x;
+              },
+              setData(value) {
+                player.x = value as number;
+              },
+            },
+          },
+          {
+            component: "Button",
+            props: { label: "Add 10" },
+            node: {
+              events: {
+                onclick() {
+                  player.x += 10;
+                  return 1;
+                },
+              },
+            },
+          },
+        );
+      }
+      if (!player && tree.children?.length !== 0) {
         patch.truncate = 0;
       }
       return patch;

@@ -17,7 +17,9 @@ describe.sequential("sender", () => {
     expect(controllerTree).toMatchInlineSnapshot(`
       {
         "children": [],
-        "dispatchEvent": [Function],
+        "events": {
+          "reset": [Function],
+        },
         "sync": [Function],
       }
     `);
@@ -41,15 +43,18 @@ describe.sequential("sender", () => {
       {
         "children": [
           {
-            "player": {
-              "x": 10,
-              "y": 0,
-            },
             "setData": [Function],
             "sync": [Function],
           },
+          {
+            "events": {
+              "onclick": [Function],
+            },
+          },
         ],
-        "dispatchEvent": [Function],
+        "events": {
+          "reset": [Function],
+        },
         "sync": [Function],
       }
     `);
@@ -70,6 +75,23 @@ describe.sequential("sender", () => {
               "props": {
                 "label": "X",
                 "step": 1,
+              },
+            },
+            "truncate": [Function],
+          },
+          {
+            "children": undefined,
+            "path": [
+              1,
+            ],
+            "setChild": [Function],
+            "setData": [Function],
+            "setProps": [Function],
+            "test": {
+              "component": "Button",
+              "data": undefined,
+              "props": {
+                "label": "Add 10",
               },
             },
             "truncate": [Function],
@@ -100,12 +122,88 @@ describe.sequential("sender", () => {
     expect(displayTree.children?.[0].test.data).toBe(25);
   });
 
-  it("dispatchEvent() is handled by the receiver", async () => {
+  it("dispatchEvent(onclick) adds 10 and returns patch with updated value", async () => {
+    await sender.dispatchEvent(displayTree.children![1], "onclick");
+    expect(controllerTree).toMatchInlineSnapshot(`
+      {
+        "children": [
+          {
+            "setData": [Function],
+            "sync": [Function],
+          },
+          {
+            "events": {
+              "onclick": [Function],
+            },
+          },
+        ],
+        "events": {
+          "reset": [Function],
+        },
+        "sync": [Function],
+      }
+    `);
+    expect(displayTree).toMatchInlineSnapshot(`
+      {
+        "children": [
+          {
+            "children": undefined,
+            "path": [
+              0,
+            ],
+            "setChild": [Function],
+            "setData": [Function],
+            "setProps": [Function],
+            "test": {
+              "component": "NumberField",
+              "data": 35,
+              "props": {
+                "label": "X",
+                "step": 1,
+              },
+            },
+            "truncate": [Function],
+          },
+          {
+            "children": undefined,
+            "path": [
+              1,
+            ],
+            "setChild": [Function],
+            "setData": [Function],
+            "setProps": [Function],
+            "test": {
+              "component": "Button",
+              "data": undefined,
+              "props": {
+                "label": "Add 10",
+              },
+            },
+            "truncate": [Function],
+          },
+        ],
+        "path": [],
+        "setChild": [Function],
+        "setData": [Function],
+        "setProps": [Function],
+        "test": {
+          "component": "Container",
+          "data": null,
+          "props": {},
+        },
+        "truncate": [Function],
+      }
+    `);
+  });
+
+  it("dispatchEvent(reset) removes all child nodes", async () => {
     await sender.dispatchEvent(displayTree, "reset");
     expect(controllerTree).toMatchInlineSnapshot(`
       {
         "children": [],
-        "dispatchEvent": [Function],
+        "events": {
+          "reset": [Function],
+        },
         "sync": [Function],
       }
     `);

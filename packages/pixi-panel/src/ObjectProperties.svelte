@@ -63,7 +63,7 @@
       <NumberField
         value={props.x}
         step={1}
-        location="TOP"
+        location="top"
         setValue={(value) => onchange({ property: "x", value })}
       />
     </Property>
@@ -71,7 +71,7 @@
       <NumberField
         value={props.y}
         step={1}
-        location="BOTTOM"
+        location="bottom"
         setValue={(value) => onchange({ property: "y", value })}
       />
     </Property>
@@ -95,7 +95,7 @@
         <NumberField
           value={props.scaleX}
           step={0.05}
-          location="TOP"
+          location="top"
           setValue={(value) => onchange({ property: "scaleX", value })}
         />
       </Property>
@@ -103,7 +103,7 @@
         <NumberField
           value={props.scaleY}
           step={0.1}
-          location="BOTTOM"
+          location="bottom"
           setValue={(value) => onchange({ property: "scaleY", value })}
         />
       </Property>
@@ -119,7 +119,7 @@
           step={0.01}
           min={0}
           max={1}
-          location="TOP"
+          location="top"
           setValue={(value) => onchange({ property: "anchorX", value })}
         />
       </Property>
@@ -129,7 +129,7 @@
           step={0.01}
           min={0}
           max={1}
-          location="BOTTOM"
+          location="bottom"
           setValue={(value) => onchange({ property: "anchorY", value })}
         />
       </Property>
@@ -141,7 +141,7 @@
           step={0.01}
           min={0}
           max={1}
-          location="TOP"
+          location="top"
           setValue={(value) => onchange({ property: "originX", value })}
         />
       </Property>
@@ -151,7 +151,7 @@
           step={0.01}
           min={0}
           max={1}
-          location="BOTTOM"
+          location="bottom"
           setValue={(value) => onchange({ property: "originY", value })}
         />
       </Property>
@@ -165,7 +165,7 @@
         <NumberField
           value={props.pivotX}
           step={0.1}
-          location="TOP"
+          location="top"
           setValue={(value) => onchange({ property: "pivotX", value })}
         />
       </Property>
@@ -173,7 +173,7 @@
         <NumberField
           value={props.pivotY}
           step={0.1}
-          location="BOTTOM"
+          location="bottom"
           setValue={(value) => onchange({ property: "pivotY", value })}
         /></Property
       >
@@ -257,7 +257,7 @@
           value={props.skewX}
           step={0.01}
           suffix="r"
-          location="TOP"
+          location="top"
           setValue={(value) => onchange({ property: "skewX", value })}
         />
       </Property>
@@ -266,7 +266,7 @@
           value={props.skewY}
           step={0.01}
           suffix="r"
-          location="BOTTOM"
+          location="bottom"
           setValue={(value) => onchange({ property: "skewY", value })}
         />
       </Property>
@@ -276,7 +276,7 @@
         <NumberField
           value={props.width}
           step={1}
-          location="TOP"
+          location="top"
           setValue={(value) => onchange({ property: "width", value })}
         />
       </Property>
@@ -284,7 +284,7 @@
         <NumberField
           value={props.height}
           step={1}
-          location="BOTTOM"
+          location="bottom"
           setValue={(value) => onchange({ property: "height", value })}
         />
       </Property>

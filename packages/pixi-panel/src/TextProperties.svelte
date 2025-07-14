@@ -81,7 +81,7 @@
           <Toggle
             label="Normal"
             value={props.fontStyle === "normal"}
-            location="LEFT"
+            location="left"
             setValue={() =>
               onchange({ property: "fontStyle", value: "normal" })}
           />
@@ -89,14 +89,14 @@
             icon="italic"
             label="Italic"
             value={props.fontStyle === "italic"}
-            location="CENTER"
+            location="center"
             setValue={() =>
               onchange({ property: "fontStyle", value: "italic" })}
           />
           <Toggle
             label="Oblique"
             value={props.fontStyle === "oblique"}
-            location="RIGHT"
+            location="right"
             setValue={() =>
               onchange({ property: "fontStyle", value: "oblique" })}
           />
@@ -109,7 +109,7 @@
           <Toggle
             label="Normal"
             value={props.fontVariant === "normal"}
-            location="LEFT"
+            location="left"
             setValue={() =>
               onchange({ property: "fontVariant", value: "normal" })}
           />
@@ -118,7 +118,7 @@
             icon="small-caps"
             label="Small Caps"
             value={props.fontVariant === "small-caps"}
-            location="RIGHT"
+            location="right"
             setValue={() =>
               onchange({
                 property: "fontVariant",
@@ -250,20 +250,20 @@
           <Toggle
             label="Normal"
             value={props.whiteSpace === "normal"}
-            location="LEFT"
+            location="left"
             setValue={() =>
               onchange({ property: "whiteSpace", value: "normal" })}
           />
           <Toggle
             label="Pre"
             value={props.whiteSpace === "pre"}
-            location="CENTER"
+            location="center"
             setValue={() => onchange({ property: "whiteSpace", value: "pre" })}
           />
           <Toggle
             label="Pre Line"
             value={props.whiteSpace === "pre-line"}
-            location="RIGHT"
+            location="right"
             setValue={() =>
               onchange({ property: "whiteSpace", value: "pre-line" })}
           />

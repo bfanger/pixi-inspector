@@ -21,9 +21,9 @@
     <Toggle {icon} transparent />
     <br />
     <div style="display:inline-flex">
-      <Toggle icon="chevron-left" location="LEFT" />
-      <Toggle icon="eye-opened" bind:value location="CENTER" />
-      <Toggle icon="chevron-right" location="RIGHT" />
+      <Toggle icon="chevron-left" location="left" />
+      <Toggle icon="eye-opened" bind:value location="center" />
+      <Toggle icon="chevron-right" location="right" />
     </div>
 
     <div
@@ -31,7 +31,7 @@
     >
       <Toggle
         icon="bold"
-        location="LEFT"
+        location="left"
         label="Bold"
         value={font === "bold"}
         onclick={() => {
@@ -40,7 +40,7 @@
       />
       <Toggle
         icon="italic"
-        location="CENTER"
+        location="center"
         label="Italic"
         value={font === "italic"}
         onclick={() => {
@@ -49,7 +49,7 @@
       />
       <Toggle
         icon="small-caps"
-        location="RIGHT"
+        location="right"
         label="Small Caps"
         value={font === "small-caps"}
         onclick={() => {

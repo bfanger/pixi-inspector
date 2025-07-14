@@ -18,10 +18,10 @@
         setValue={(val) => {
           value = val;
         }}
-        location="TOP"
+        location="top"
       />
-      <NumberField bind:value step={1} location="MIDDLE" />
-      <NumberField bind:value step={1} min={0} max={200} location="BOTTOM" />
+      <NumberField bind:value step={1} location="middle" />
+      <NumberField bind:value step={1} min={0} max={200} location="bottom" />
     </div>
   </Base>
   {#snippet controls()}

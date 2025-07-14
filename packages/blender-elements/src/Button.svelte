@@ -1,14 +1,18 @@
 <script lang="ts">
   type Props = {
     value?: boolean | undefined;
-    location?: "ALONE" | "LEFT" | "CENTER" | "RIGHT";
+    setValue?: (value: boolean) => void;
+    location?: "alone" | "left" | "center" | "right";
+    label?: string;
     children?: import("svelte").Snippet;
     onclick?: () => void;
   };
 
   let {
     value = $bindable(undefined),
-    location = "ALONE",
+    setValue,
+    label = "",
+    location = "alone",
     children,
     onclick,
   }: Props = $props();
@@ -16,6 +20,7 @@
   function toggle() {
     if (typeof value === "boolean") {
       value = !value;
+      setValue?.(value);
     }
   }
 </script>
@@ -29,7 +34,7 @@
     toggle();
     onclick?.();
   }}
-  ondblclick={(e) => e.stopPropagation()}>{@render children?.()}</button
+  ondblclick={(e) => e.stopPropagation()}>{@render children?.()}{label}</button
 >
 
 <style>
@@ -44,18 +49,18 @@
     box-shadow: 0 1px 1px #00000099;
     cursor: pointer;
 
-    &[data-location="ALONE"] {
+    &[data-location="alone"] {
       border-radius: 2px / 3px;
     }
-    &[data-location="LEFT"] {
+    &[data-location="left"] {
       border-top-left-radius: 2px 3px;
       border-bottom-left-radius: 2px 3px;
       margin-right: 1px;
     }
-    &[data-location="CENTER"] {
+    &[data-location="center"] {
       margin-right: 1px;
     }
-    &[data-location="RIGHT"] {
+    &[data-location="right"] {
       border-top-right-radius: 2px 3px;
       border-bottom-right-radius: 2px 3px;
     }

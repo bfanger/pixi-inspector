@@ -20,6 +20,16 @@ describe.sequential("syncTree()", () => {
               "step": 1,
             },
           },
+          {
+            "component": "Button",
+            "data": undefined,
+            "path": [
+              1,
+            ],
+            "props": {
+              "label": "Add 10",
+            },
+          },
         ],
         "data": [],
         "props": [],
