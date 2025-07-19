@@ -72,6 +72,7 @@ describe.sequential("sender", () => {
             "test": {
               "component": "NumberField",
               "data": 10,
+              "events": undefined,
               "props": {
                 "label": "X",
                 "step": 1,
@@ -90,6 +91,9 @@ describe.sequential("sender", () => {
             "test": {
               "component": "Button",
               "data": undefined,
+              "events": [
+                "onclick",
+              ],
               "props": {
                 "label": "Add 10",
               },
@@ -157,6 +161,7 @@ describe.sequential("sender", () => {
             "test": {
               "component": "NumberField",
               "data": 35,
+              "events": undefined,
               "props": {
                 "label": "X",
                 "step": 1,
@@ -175,6 +180,9 @@ describe.sequential("sender", () => {
             "test": {
               "component": "Button",
               "data": undefined,
+              "events": [
+                "onclick",
+              ],
               "props": {
                 "label": "Add 10",
               },

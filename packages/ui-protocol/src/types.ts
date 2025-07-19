@@ -67,13 +67,14 @@ export type TreeInit = {
   children?: TreeInit[];
 };
 /**
- * Patch data for a new tree node
+ * Patch to create a new tree node
  */
 export type TreePatchInitDto = {
   path: TreePath;
   component: string;
   props: TreeObjectValue;
   data?: TreeValue;
+  events?: string[];
   children?: TreePatchInitDto[];
 };
 

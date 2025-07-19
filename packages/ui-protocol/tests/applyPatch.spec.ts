@@ -17,6 +17,7 @@ describe.sequential("applyPatch()", () => {
           component: "TextInput",
           props: {},
           data: "Hello world",
+          events: ["oninput"],
         },
       ],
     });
@@ -34,6 +35,9 @@ describe.sequential("applyPatch()", () => {
             "test": {
               "component": "TextInput",
               "data": "Hello world",
+              "events": [
+                "oninput",
+              ],
               "props": {},
             },
             "truncate": [Function],

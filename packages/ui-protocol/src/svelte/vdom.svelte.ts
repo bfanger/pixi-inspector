@@ -27,7 +27,6 @@ const configs = {
   },
   Button: {
     component: Button,
-    events: ["onclick"],
     dataProp: "value",
     setDataProp: "setValue",
   },
@@ -48,14 +47,14 @@ export function createChild(
     );
   }
   let node: SvelteNode;
-  const events: Record<string, any> = {};
+  const events: Record<string, (details?: TreeValue) => void> = {};
   if ("setDataProp" in config) {
     events[config.setDataProp] = (value: TreeValue) => {
       node.sender.setData(node, value);
     };
   }
-  if ("events" in config) {
-    for (const event of config.events) {
+  if (init.events) {
+    for (const event of init.events) {
       events[event] = (details?: TreeValue) => {
         node.sender.dispatchEvent(node, event, details);
       };

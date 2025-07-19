@@ -226,6 +226,7 @@ function createInit(init: TreeInit, path: TreePath): TreePatchInitDto {
     path,
     component: init.component,
     props: init.props,
+    events: init.node.events ? Object.keys(init.node.events) : undefined,
     data: init.data,
   };
   if (init.children) {

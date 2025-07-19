@@ -12,6 +12,7 @@ describe.sequential("syncTree()", () => {
           {
             "component": "NumberField",
             "data": 10,
+            "events": undefined,
             "path": [
               0,
             ],
@@ -23,6 +24,9 @@ describe.sequential("syncTree()", () => {
           {
             "component": "Button",
             "data": undefined,
+            "events": [
+              "onclick",
+            ],
             "path": [
               1,
             ],
