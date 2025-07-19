@@ -7,12 +7,13 @@
 
   type Props = {
     connection: Connection;
+    ondisconnect: () => void;
     Fallback?: Component;
   };
 
-  let { connection, Fallback }: Props = $props();
+  let { connection, ondisconnect, Fallback }: Props = $props();
 
-  const tree = createChild(
+  let tree = createChild(
     {
       path: [],
       component: "Container",
@@ -23,19 +24,34 @@
       dispatchEvent: senderError,
       setData: senderError,
       sync: senderError,
+      reset: senderError,
     },
   );
   const sender = createSender(tree, connection);
   tree.sender = sender;
 
-  onMount(() => {
-    let timer: ReturnType<typeof setTimeout>;
-    async function poll() {
+  let timer: ReturnType<typeof setTimeout>;
+  async function poll() {
+    try {
       await sender.sync();
       timer = setTimeout(poll, 1_000);
+    } catch (err) {
+      console.warn(new Error("sender.sync() failed", { cause: err }));
+      ondisconnect();
     }
-    poll();
-    return () => clearTimeout(timer);
+  }
+
+  onMount(() => {
+    let destroyed = false;
+    sender.reset().then(() => {
+      if (!destroyed) {
+        poll();
+      }
+    });
+    return () => {
+      destroyed = false;
+      clearTimeout(timer);
+    };
   });
 
   function senderError(): never {
@@ -43,7 +59,9 @@
   }
 </script>
 
-{#if Fallback && !tree.vdom.children?.length}
-  <Fallback />
+{#if tree}
+  {#if Fallback && !tree.vdom.children?.length}
+    <Fallback />
+  {/if}
+  <VDOMNode vdom={tree.vdom} />
 {/if}
-<VDOMNode vdom={tree.vdom} />

@@ -65,7 +65,11 @@ export default function createSender(
     }
   }
 
+  let resetting = false;
   function schedule() {
+    if (resetting) {
+      throw new Error("schedule() was called during a reset");
+    }
     promise = (async () => {
       do {
         await Promise.resolve();
@@ -79,7 +83,6 @@ export default function createSender(
       promise = undefined;
     })();
   }
-
   return {
     setData(node: TreeDisplayNode, value: TreeValue) {
       data.push({ node, value });
@@ -106,6 +109,26 @@ export default function createSender(
         schedule();
       }
       return promise!;
+    },
+
+    async reset() {
+      resetting = true;
+      promise = undefined;
+      try {
+        if ("children" in tree) {
+          tree.children = [];
+        }
+        const init = await connection.dispatchEvent([], {
+          path: [],
+          type: "reset",
+        });
+        queue.events = [];
+        queue.sync = [];
+        data.length = 0;
+        applyPatch(tree, init);
+      } finally {
+        resetting = false;
+      }
     },
   };
 }

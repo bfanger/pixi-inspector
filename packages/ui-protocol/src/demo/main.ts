@@ -1,4 +1,4 @@
-import { mount } from "svelte";
+import { mount, unmount } from "svelte";
 import { GUI, type GUIController } from "dat.gui";
 import Display from "../svelte/Display.svelte";
 import { createTestControllerTree } from "../../tests/createTestControllerTree";
@@ -7,16 +7,19 @@ import { iframeConnect, iframeListen } from "../iframeBridge";
 const devtool = document.body.querySelector("ui-devtool");
 const iframe = document.querySelector<HTMLIFrameElement>("iframe#ui-game");
 const insideIframe = document.body.querySelector("ui-iframe");
+
 if (devtool && iframe?.contentWindow) {
-  // throw new Error("Element <svelte-devtool> not found");
   const abortController = new AbortController();
-  mount(Display, {
+  const app = mount(Display, {
     props: {
       connection: await iframeConnect(
         iframe.contentWindow,
         "demo",
         abortController.signal,
       ),
+      ondisconnect: () => {
+        unmount(app);
+      },
     },
     target: devtool,
   });

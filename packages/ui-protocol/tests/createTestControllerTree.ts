@@ -5,23 +5,15 @@ type Game = { player: Player | undefined };
 
 export function createTestControllerTree() {
   const game: Game = { player: { x: 10, y: 0 } };
-  let resetting = false;
 
   const tree: TreeControllerNode = {
     children: [],
     events: {
       reset() {
-        resetting = true;
+        tree.children = [];
       },
     },
     sync(patch) {
-      if (resetting) {
-        resetting = false;
-        if (tree.children!.length > 0) {
-          patch.truncate = 0;
-        }
-        return;
-      }
       const player = game.player;
       if (player && tree.children!.length === 0) {
         patch.appends.push(

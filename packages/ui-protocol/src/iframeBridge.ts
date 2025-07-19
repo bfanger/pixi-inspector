@@ -100,11 +100,7 @@ export async function iframeConnect(
       target.postMessage({ type, data });
       return Promise.resolve();
     },
-    async dispatchEvent(data, event) {
-      return await send({ data, event });
-    },
-    async sync(data, path) {
-      return await send({ data, sync: path });
-    },
+    dispatchEvent: (data, event) => send({ data, event }),
+    sync: (data, path) => send({ data, sync: path }),
   };
 }

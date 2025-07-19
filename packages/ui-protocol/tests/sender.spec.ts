@@ -204,31 +204,19 @@ describe.sequential("sender", () => {
     `);
   });
 
-  it("dispatchEvent(reset) removes all child nodes", async () => {
-    await sender.dispatchEvent(displayTree, "reset");
-    expect(controllerTree).toMatchInlineSnapshot(`
-      {
-        "children": [],
-        "events": {
-          "reset": [Function],
-        },
-        "sync": [Function],
-      }
-    `);
-    expect(displayTree).toMatchInlineSnapshot(`
-      {
-        "children": [],
-        "path": [],
-        "setChild": [Function],
-        "setData": [Function],
-        "setProps": [Function],
-        "test": {
-          "component": "Container",
-          "data": null,
-          "props": {},
-        },
-        "truncate": [Function],
-      }
-    `);
+  it("reset() removes all child nodes from both trees & resyncs", async () => {
+    const controllerBefore = controllerTree.children?.[0];
+    const displayBefore = displayTree.children?.[0];
+    expect(controllerBefore).toBeDefined();
+    expect(displayBefore).toBeDefined();
+
+    await sender.reset();
+
+    const controllerAfter = controllerTree.children?.[0];
+    const displayAfter = displayTree.children?.[0];
+    expect(controllerAfter).toBeDefined();
+    expect(displayAfter).toBeDefined();
+    expect(controllerAfter).not.toBe(controllerBefore);
+    expect(displayAfter).not.toBe(displayBefore);
   });
 });
