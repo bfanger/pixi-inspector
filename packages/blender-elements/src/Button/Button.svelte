@@ -34,8 +34,14 @@
     toggle();
     onclick?.();
   }}
-  ondblclick={(e) => e.stopPropagation()}>{@render children?.()}{label}</button
+  ondblclick={(e) => e.stopPropagation()}
 >
+  {#if label}
+    {label}
+  {:else if children}
+    <span>{@render children?.()}</span>
+  {/if}
+</button>
 
 <style>
   .button {

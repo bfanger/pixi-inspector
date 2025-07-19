@@ -1,6 +1,6 @@
 <script lang="ts">
   import Base from "blender-elements/src/Base.svelte";
-  import Button from "blender-elements/src/Button.svelte";
+  import Button from "blender-elements/src/Button/Button.svelte";
   import type { BridgeFn } from "./types";
   import { setBridgeContext } from "./bridge-fns";
   import connect from "./connect";

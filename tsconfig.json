@@ -26,6 +26,8 @@
     "**/*.jsx",
     ".*.cjs",
     "**/*.cjs",
-    "**/.storybook/*.js"
+    "**/.storybook/*.ts",
+    "packages/blender-elements/.storybook/main.ts",
+    "packages/blender-elements/.storybook/preview.ts"
   ]
 }

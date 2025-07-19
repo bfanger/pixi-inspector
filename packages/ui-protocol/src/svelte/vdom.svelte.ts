@@ -10,7 +10,7 @@ import type {
 } from "../types";
 import NumberField from "../../../blender-elements/src/NumberField/NumberField.svelte";
 import Container from "./Container.svelte";
-import Button from "../../../blender-elements/src/Button.svelte";
+import Button from "../../../blender-elements/src/Button/Button.svelte";
 
 export class VDOM {
   Component: Component<any> = $state(undefined as any as Component<any>);

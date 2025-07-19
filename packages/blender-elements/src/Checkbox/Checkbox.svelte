@@ -2,13 +2,15 @@
   type Props = {
     value?: boolean | undefined;
     setValue?: (value: boolean) => void;
+    label?: string;
     hint?: string;
     children?: import("svelte").Snippet;
   };
 
   let {
     value = $bindable(undefined),
-    hint = "",
+    label,
+    hint,
     children,
     setValue,
   }: Props = $props();
@@ -25,7 +27,9 @@
       setValue?.(el.checked);
     }}
   />
-  {#if children}
+  {#if label}
+    <span>{label}</span>
+  {:else if children}
     <span>{@render children?.()}</span>
   {/if}
 </label>
