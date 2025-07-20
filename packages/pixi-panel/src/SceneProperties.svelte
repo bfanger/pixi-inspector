@@ -4,6 +4,7 @@
   import Panel from "blender-elements/src/Panel/Panel.svelte";
   import Property from "blender-elements/src/Property/Property.svelte";
   import type { NodeProperties } from "./types";
+  import PropertyGroups from "../../blender-elements/src/Property/PropertyGroups.svelte";
 
   type Props = {
     props: NodeProperties;
@@ -18,25 +19,27 @@
 
 {#if tickerPanel}
   <Panel title="Ticker" bind:expanded={expanded.ticker}>
-    {#if typeof props.speed === "number"}
-      <Property label="Speed" hint="Factor of current deltaTime">
-        <NumberField
-          value={props.speed}
-          step={0.01}
-          setValue={(value) => onchange({ property: "speed", value })}
-        />
-      </Property>
-    {/if}
-    {#if typeof props.started === "boolean"}
-      <Property>
-        <Checkbox
-          value={props.started}
-          hint="Whether or not this ticker has been started"
-          setValue={(value) => onchange({ property: "started", value })}
-        >
-          Started
-        </Checkbox>
-      </Property>
-    {/if}
+    <PropertyGroups>
+      {#if typeof props.speed === "number"}
+        <Property label="Speed" hint="Factor of current deltaTime">
+          <NumberField
+            value={props.speed}
+            step={0.01}
+            setValue={(value) => onchange({ property: "speed", value })}
+          />
+        </Property>
+      {/if}
+      {#if typeof props.started === "boolean"}
+        <Property>
+          <Checkbox
+            value={props.started}
+            hint="Whether or not this ticker has been started"
+            setValue={(value) => onchange({ property: "started", value })}
+          >
+            Started
+          </Checkbox>
+        </Property>
+      {/if}
+    </PropertyGroups>
   </Panel>
 {/if}

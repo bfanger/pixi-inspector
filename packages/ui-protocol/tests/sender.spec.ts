@@ -50,6 +50,7 @@ describe.sequential("sender", () => {
             "events": {
               "onclick": [Function],
             },
+            "sync": [Function],
           },
         ],
         "events": {
@@ -141,6 +142,7 @@ describe.sequential("sender", () => {
             "events": {
               "onclick": [Function],
             },
+            "sync": [Function],
           },
         ],
         "events": {

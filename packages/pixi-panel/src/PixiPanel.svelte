@@ -72,17 +72,6 @@
 </Base>
 
 <style>
-  :global(body) {
-    margin: 0;
-    color: #e5e5e5;
-    background: #161616;
-  }
-
-  :global(code) {
-    display: block;
-    padding: 8px;
-  }
-
   .pixi-panel {
     display: grid;
     grid-template-columns: 1fr;
@@ -107,6 +96,7 @@
   }
 
   .patch {
+    width: min-content;
     margin: 4px 12px;
   }
 

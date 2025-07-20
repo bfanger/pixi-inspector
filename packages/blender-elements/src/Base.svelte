@@ -12,10 +12,14 @@
 <style>
   .base {
     height: 100vh;
+
     font:
-      13px/1.3 system-ui,
+      11px/1.3 system-ui,
       sans-serif;
     -webkit-font-smoothing: antialiased;
+    color: #e5e5e5;
     text-shadow: 0 1px 1px #0006;
+
+    background: #161616;
   }
 </style>

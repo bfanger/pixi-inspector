@@ -57,11 +57,17 @@
 <style>
   .instructions {
     padding: 12px;
+    font-size: 13px;
   }
 
   code {
+    display: block;
+
     margin-block: 8px;
+    padding: 8px;
+
     color: rgb(145 168 203);
+
     background-color: #202020;
   }
 

@@ -12,8 +12,8 @@
     setValue={(val) => {
       x = val;
     }}
-    location="top"
+    rounded="top"
   />
-  <NumberField bind:value={y} step={1} location="middle" />
-  <NumberField bind:value={z} step={1} min={500} max={1000} location="bottom" />
+  <NumberField bind:value={y} step={1} rounded="none" />
+  <NumberField bind:value={z} step={1} min={500} max={1000} rounded="bottom" />
 </div>

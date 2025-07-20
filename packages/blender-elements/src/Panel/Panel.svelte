@@ -44,7 +44,7 @@
 <style>
   .panel {
     border-radius: 4px;
-    background: #353535;
+    background: #3d3d3d;
   }
 
   .title {
@@ -61,6 +61,7 @@
     padding: 4px 16px 4px 20px;
     border: 0;
 
+    font-size: inherit;
     color: inherit;
     text-align: left;
 

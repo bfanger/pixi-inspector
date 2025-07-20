@@ -30,9 +30,7 @@
     border: 0;
     border-radius: 3px;
 
-    font:
-      12px system-ui,
-      sans-serif;
+    font: inherit;
     color: #ddd;
     text-align: left;
 

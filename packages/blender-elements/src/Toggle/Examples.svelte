@@ -4,7 +4,7 @@
 
   let value = $state(false);
   let icon: Icon = $state("copy");
-  let font: "bold" | "italic" | "small-caps" = $state("bold");
+  let fontStyle: "bold" | "italic" | "small-caps" = $state("bold");
 </script>
 
 <Toggle {icon} bind:value />
@@ -24,27 +24,27 @@
     icon="bold"
     location="left"
     label="Bold"
-    value={font === "bold"}
+    value={fontStyle === "bold"}
     onclick={() => {
-      font = "bold";
+      fontStyle = "bold";
     }}
   />
   <Toggle
     icon="italic"
     location="center"
     label="Italic"
-    value={font === "italic"}
+    value={fontStyle === "italic"}
     onclick={() => {
-      font = "italic";
+      fontStyle = "italic";
     }}
   />
   <Toggle
     icon="small-caps"
     location="right"
     label="Small Caps"
-    value={font === "small-caps"}
+    value={fontStyle === "small-caps"}
     onclick={() => {
-      font = "small-caps";
+      fontStyle = "small-caps";
     }}
   />
 </div>

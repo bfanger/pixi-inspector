@@ -2,14 +2,13 @@
   type Props = {
     label?: string;
     hint?: string;
-    group?: boolean;
     children?: import("svelte").Snippet;
   };
 
-  let { label = "", hint = "", group = false, children }: Props = $props();
+  let { label = "", hint = "", children }: Props = $props();
 </script>
 
-<div class="property" class:group>
+<div class="property">
   <div class="label" title={hint}>{label}</div>
   <div class="value">
     {@render children?.()}
@@ -20,10 +19,7 @@
   .property {
     display: flex;
     gap: 8px;
-
-    &:not(:global(.group)) {
-      margin-bottom: 4px;
-    }
+    align-items: center;
   }
 
   .label {

@@ -70,6 +70,7 @@
     padding: 1px;
     border: none;
 
+    font: inherit;
     color: white;
 
     appearance: none;

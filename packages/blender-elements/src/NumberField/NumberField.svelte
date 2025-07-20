@@ -11,7 +11,7 @@
     value: number | undefined;
     setValue?: (value: number) => void;
     suffix?: string;
-    location?: "alone" | "top" | "middle" | "bottom";
+    rounded?: "all" | "top" | "bottom" | "none";
     id?: string;
     step?: number;
     min?: number;
@@ -20,7 +20,7 @@
   let {
     value = $bindable(),
     suffix = "",
-    location = "alone",
+    rounded = "all",
     id,
     step,
     min,
@@ -121,7 +121,7 @@
   }
 </script>
 
-<div class="number-field" class:active class:focused data-location={location}>
+<div class="number-field" class:active class:focused data-rounded={rounded}>
   <input
     class="input"
     {id}
@@ -169,21 +169,16 @@
       background-color: #222;
     }
 
-    &[data-location="alone"] {
+    &[data-rounded="all"] {
       border-radius: 2px / 3px;
     }
 
-    &[data-location="top"] {
-      margin-bottom: 1px;
+    &[data-rounded="top"] {
       border-top-left-radius: 2px 3px;
       border-top-right-radius: 2px 3px;
     }
 
-    &[data-location="middle"] {
-      margin-bottom: 1px;
-    }
-
-    &[data-location="bottom"] {
+    &[data-rounded="bottom"] {
       border-bottom-right-radius: 2px 3px;
       border-bottom-left-radius: 2px 3px;
     }
@@ -198,9 +193,7 @@
     padding-bottom: 2px;
     border: 0;
 
-    font:
-      12px system-ui,
-      sans-serif;
+    font: inherit;
     color: #e5e5e5;
     text-align: center;
     text-shadow: 0 1px 2px #000c;

@@ -5,6 +5,7 @@ type Game = { player: Player | undefined };
 
 export function createTestControllerTree() {
   const game: Game = { player: { x: 10, y: 0 } };
+  let resetLabel = false;
 
   const tree: TreeControllerNode = {
     children: [],
@@ -34,9 +35,22 @@ export function createTestControllerTree() {
             component: "Button",
             props: { label: "Add 10" },
             node: {
+              sync(patch) {
+                if (player.x >= 100 && !resetLabel) {
+                  patch.props = { label: "Reset" };
+                  resetLabel = true;
+                } else if (player.x < 100 && resetLabel) {
+                  patch.props = { label: "Add 10" };
+                  resetLabel = false;
+                }
+              },
               events: {
                 onclick() {
-                  player.x += 10;
+                  if (player.x >= 100) {
+                    player.x = 0;
+                  } else {
+                    player.x += 10;
+                  }
                   return 1;
                 },
               },

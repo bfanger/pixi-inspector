@@ -64,11 +64,9 @@ export function createChild(
       vdom.props.value = value;
     };
     node.setValue(init.value);
-    if (init.setValue) {
-      events.setValue ??= (value: TreeValue) => {
-        node.sender.setValue(node, value);
-      };
-    }
+    events.setValue ??= (value: TreeValue) => {
+      node.sender.setValue(node, value);
+    };
   }
 
   leaf.setProps(init.props);

@@ -42,11 +42,6 @@
     display: flex;
     gap: 2px;
     align-items: center;
-
-    font:
-      12px system-ui,
-      sans-serif;
-    color: white;
   }
 
   .input {
@@ -61,11 +56,6 @@
     outline: none;
     box-shadow: 0 1px 1px #0003;
 
-    &:hover {
-      border-color: #464646;
-      background: #656565;
-    }
-
     &:checked {
       background: #4772b3 var(--icon-checkbox) no-repeat center center;
     }
@@ -76,6 +66,11 @@
       &:checked {
         border-color: white;
       }
+    }
+
+    .checkbox:hover &:not(:checked) {
+      border-color: #464646;
+      background: #656565;
     }
   }
 </style>

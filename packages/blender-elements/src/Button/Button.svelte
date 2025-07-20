@@ -46,13 +46,18 @@
 <style>
   .button {
     cursor: pointer;
+    user-select: none;
 
+    display: block;
     flex-shrink: 0;
 
+    box-sizing: border-box;
+    width: 100%;
     height: 18px;
     padding-inline: 8px;
     border: 1px solid #3d3d3d;
 
+    font: inherit;
     color: #e6e6e6;
 
     appearance: none;

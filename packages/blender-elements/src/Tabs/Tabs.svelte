@@ -49,7 +49,7 @@
     padding-top: 8px;
     padding-left: 2px;
 
-    background: #1b1b1b;
+    background: #181818;
   }
 
   .tab {
@@ -74,7 +74,7 @@
     }
 
     &.active {
-      background-color: #2a2a2a;
+      background-color: #303030;
     }
 
     &:focus-visible {
@@ -103,6 +103,6 @@
   .content {
     overflow-y: auto;
     flex-grow: 1;
-    background: #2a2a2a;
+    background: #303030;
   }
 </style>

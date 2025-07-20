@@ -120,9 +120,7 @@
     border: 1px solid #3d3d3d;
     border-radius: 4px;
 
-    font:
-      12px system-ui,
-      sans-serif;
+    font: inherit;
     color: #fdfdfd;
 
     appearance: none;
@@ -146,6 +144,7 @@
       cursor: text;
     }
   }
+
   /* stylelint-disable-next-line no-descending-specificity */
   .spacer {
     position: relative;
