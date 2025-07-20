@@ -6,7 +6,7 @@ export type TreeNode = TreeControllerNode | TreeDisplayNode;
 export type TreeControllerNode = {
   children?: TreeControllerNode[];
   sync?: (out: TreePatch) => void;
-  setData?: (value: TreeValue) => void;
+  setValue?: (value: TreeValue) => void;
   events?: Record<string, (details?: TreeValue) => number | void | undefined>;
 };
 /**
@@ -16,12 +16,12 @@ export type TreeDisplayNode = TreeDisplayContainerNode | TreeDisplayLeafNode;
 export type TreeDisplayLeafNode = {
   readonly path: TreePath;
   setProps(props: TreeObjectValue): void;
-  setData?: (value: TreeValue) => void;
+  setValue?: (value: TreeValue) => void;
 };
 export type TreeDisplayContainerNode = {
   readonly path: TreePath;
   setProps(props: TreeObjectValue): void;
-  setData?: (value: TreeValue) => void;
+  setValue?: (value: TreeValue) => void;
   children: TreeDisplayNode[];
   setChild(index: number, init: TreePatchInitDto): TreeDisplayNode;
   truncate(length: number): void;
@@ -63,7 +63,7 @@ export type TreeInit = {
   node: TreeControllerNode;
   component: string;
   props: TreeObjectValue;
-  data?: TreeValue;
+  value?: TreeValue;
   children?: TreeInit[];
 };
 /**
@@ -73,7 +73,8 @@ export type TreePatchInitDto = {
   path: TreePath;
   component: string;
   props: TreeObjectValue;
-  data?: TreeValue;
+  value?: TreeValue;
+  setValue?: true;
   events?: string[];
   children?: TreePatchInitDto[];
 };
@@ -81,7 +82,7 @@ export type TreePatchInitDto = {
 /**
  * Patch data for an existing tree node
  */
-export type TreePatchDataDto = {
+export type TreePatchValueDto = {
   path: TreePath;
   value: TreeValue;
 };
@@ -105,14 +106,14 @@ export type TreePatchTruncateDto = {
 
 export type TreePatch = {
   props?: TreeObjectValue;
-  data?: TreeValue;
+  value?: TreeValue;
   replacements: Array<TreeInit & { index: number }>;
   appends: Array<TreeInit>;
   truncate?: number;
 };
 export type TreePatchDto = {
   props: TreePatchPropsDto[];
-  data: TreePatchDataDto[];
+  value: TreePatchValueDto[];
   replacements: TreePatchInitDto[];
   appends: TreePatchInitDto[];
   truncates: TreePatchTruncateDto[];
@@ -130,22 +131,22 @@ export type TreeLocation<T extends TreeNode> = { parent: T; index: number };
  */
 export type Connection = {
   /**
-   * Send data to existing nodes.
+   * Send values to existing nodes.
    */
-  set: (data: TreePatchDataDto[]) => Promise<void>;
+  set: (values: TreePatchValueDto[]) => Promise<void>;
 
   /**
-   * Send data to existing nodes, dispatch an event to a node and update the tree based on the event response.
+   * Send values to existing nodes, dispatch an event to a node and update the tree based on the event response.
    */
   dispatchEvent: (
-    data: TreePatchDataDto[],
+    values: TreePatchValueDto[],
     event: TreeEvent,
   ) => Promise<TreePatchDto>;
 
   /**
-   * Send data to existing nodes & update part of the the tree.
+   * Send values to existing nodes & update part of the the tree.
    */
-  sync: (data: TreePatchDataDto[], path: TreePath) => Promise<TreePatchDto>;
+  sync: (values: TreePatchValueDto[], path: TreePath) => Promise<TreePatchDto>;
 };
 
 /**
@@ -160,7 +161,7 @@ export type Sender = {
     event: string,
     details?: TreeValue,
   ) => Promise<void>;
-  setData: (node: TreeDisplayNode, value: TreeValue) => Promise<void>;
+  setValue: (node: TreeDisplayNode, value: TreeValue) => Promise<void>;
   sync(node?: TreeDisplayNode): Promise<void>;
   reset: () => Promise<void>;
 };

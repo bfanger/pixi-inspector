@@ -1,20 +1,20 @@
 /* eslint-disable @typescript-eslint/require-await */
-import { applyData, applyEvent, syncTree } from "../src/tree-fns";
+import { applyValues, applyEvent, syncTree } from "../src/tree-fns";
 import type { Connection, TreeControllerNode } from "../src/types";
 
 export default function createTestConnection(
   tree: TreeControllerNode,
 ): Connection {
   return {
-    set: async (data) => {
-      applyData(tree, data);
+    set: async (values) => {
+      applyValues(tree, values);
     },
-    dispatchEvent: async (data, event) => {
-      applyData(tree, data);
+    dispatchEvent: async (values, event) => {
+      applyValues(tree, values);
       return applyEvent(tree, event);
     },
-    sync: async (data, path) => {
-      applyData(tree, data);
+    sync: async (values, path) => {
+      applyValues(tree, values);
       return syncTree(tree, path);
     },
   };

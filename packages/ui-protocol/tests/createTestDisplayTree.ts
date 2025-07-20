@@ -12,7 +12,7 @@ export default function createTestDisplayTree() {
     path: [],
     component: "Container",
     props: {},
-    data: null,
+    value: null,
     children: [],
   });
 }
@@ -34,8 +34,8 @@ function createTestDisplayNode({
     setProps(props) {
       this.test.props = props;
     },
-    setData(data) {
-      this.test.data = data;
+    setValue(data) {
+      this.test.value = data;
     },
     truncate() {},
   };

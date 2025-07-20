@@ -2,27 +2,26 @@
   import type { Connection } from "../types";
   import createSender from "../createSender";
   import VDOMNode from "./VDOMNode.svelte";
-  import { onMount, type Component } from "svelte";
+  import { onMount } from "svelte";
   import { createChild } from "./vdom.svelte";
 
   type Props = {
     connection: Connection;
     ondisconnect: () => void;
-    Fallback?: Component;
   };
 
-  let { connection, ondisconnect, Fallback }: Props = $props();
+  let { connection, ondisconnect }: Props = $props();
 
   let tree = createChild(
     {
       path: [],
-      component: "Container",
+      component: "Fragment",
       props: {},
       children: [],
     },
     {
       dispatchEvent: senderError,
-      setData: senderError,
+      setValue: senderError,
       sync: senderError,
       reset: senderError,
     },
@@ -59,9 +58,4 @@
   }
 </script>
 
-{#if tree}
-  {#if Fallback && !tree.vdom.children?.length}
-    <Fallback />
-  {/if}
-  <VDOMNode vdom={tree.vdom} />
-{/if}
+<VDOMNode vdom={tree.vdom} />

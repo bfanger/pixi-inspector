@@ -11,7 +11,6 @@ describe.sequential("syncTree()", () => {
         "appends": [
           {
             "component": "NumberField",
-            "data": 10,
             "events": undefined,
             "path": [
               0,
@@ -20,10 +19,11 @@ describe.sequential("syncTree()", () => {
               "label": "X",
               "step": 1,
             },
+            "setValue": true,
+            "value": 10,
           },
           {
             "component": "Button",
-            "data": undefined,
             "events": [
               "onclick",
             ],
@@ -33,12 +33,14 @@ describe.sequential("syncTree()", () => {
             "props": {
               "label": "Add 10",
             },
+            "setValue": undefined,
+            "value": undefined,
           },
         ],
-        "data": [],
         "props": [],
         "replacements": [],
         "truncates": [],
+        "value": [],
       }
     `);
   });
@@ -46,7 +48,10 @@ describe.sequential("syncTree()", () => {
     expect(syncTree(controllerTree)).toMatchInlineSnapshot(`
       {
         "appends": [],
-        "data": [
+        "props": [],
+        "replacements": [],
+        "truncates": [],
+        "value": [
           {
             "path": [
               0,
@@ -54,16 +59,16 @@ describe.sequential("syncTree()", () => {
             "value": 10,
           },
         ],
-        "props": [],
-        "replacements": [],
-        "truncates": [],
       }
     `);
     game.player!.x += 5;
     expect(syncTree(controllerTree)).toMatchInlineSnapshot(`
       {
         "appends": [],
-        "data": [
+        "props": [],
+        "replacements": [],
+        "truncates": [],
+        "value": [
           {
             "path": [
               0,
@@ -71,9 +76,6 @@ describe.sequential("syncTree()", () => {
             "value": 15,
           },
         ],
-        "props": [],
-        "replacements": [],
-        "truncates": [],
       }
     `);
   });
@@ -82,7 +84,6 @@ describe.sequential("syncTree()", () => {
     expect(syncTree(controllerTree)).toMatchInlineSnapshot(`
       {
         "appends": [],
-        "data": [],
         "props": [],
         "replacements": [],
         "truncates": [
@@ -91,6 +92,7 @@ describe.sequential("syncTree()", () => {
             "path": [],
           },
         ],
+        "value": [],
       }
     `);
   });

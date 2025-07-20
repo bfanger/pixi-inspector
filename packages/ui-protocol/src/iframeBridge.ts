@@ -1,9 +1,9 @@
-import { applyData, applyEvent, syncTree } from "./tree-fns";
+import { applyValues, applyEvent, syncTree } from "./tree-fns";
 import type {
   Connection,
   TreeControllerNode,
   TreeEvent,
-  TreePatchDataDto,
+  TreePatchValueDto,
   TreePatchDto,
   TreePath,
 } from "./types";
@@ -30,7 +30,7 @@ export function iframeListen(
       e.source.postMessage({ type: responseType, connect: true });
     } else if (e.data?.type === type) {
       let patch: TreePatchDto | undefined;
-      applyData(tree, e.data.data);
+      applyValues(tree, e.data.values);
       if (e.data.event) {
         patch = applyEvent(tree, e.data.event);
       } else if (e.data.sync) {
@@ -82,7 +82,7 @@ export async function iframeConnect(
   clearInterval(interval);
 
   async function send(message: {
-    data: TreePatchDataDto[];
+    values: TreePatchValueDto[];
     event?: TreeEvent;
     sync?: TreePath;
   }) {
@@ -96,11 +96,11 @@ export async function iframeConnect(
     return promise;
   }
   return {
-    set(data) {
-      target.postMessage({ type, data });
+    set(values) {
+      target.postMessage({ type, values });
       return Promise.resolve();
     },
-    dispatchEvent: (data, event) => send({ data, event }),
-    sync: (data, path) => send({ data, sync: path }),
+    dispatchEvent: (values, event) => send({ values, event }),
+    sync: (values, path) => send({ values, sync: path }),
   };
 }

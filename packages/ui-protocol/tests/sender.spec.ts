@@ -28,12 +28,12 @@ describe.sequential("sender", () => {
         "children": [],
         "path": [],
         "setChild": [Function],
-        "setData": [Function],
         "setProps": [Function],
+        "setValue": [Function],
         "test": {
           "component": "Container",
-          "data": null,
           "props": {},
+          "value": null,
         },
         "truncate": [Function],
       }
@@ -43,7 +43,7 @@ describe.sequential("sender", () => {
       {
         "children": [
           {
-            "setData": [Function],
+            "setValue": [Function],
             "sync": [Function],
           },
           {
@@ -67,16 +67,17 @@ describe.sequential("sender", () => {
               0,
             ],
             "setChild": [Function],
-            "setData": [Function],
             "setProps": [Function],
+            "setValue": [Function],
             "test": {
               "component": "NumberField",
-              "data": 10,
               "events": undefined,
               "props": {
                 "label": "X",
                 "step": 1,
               },
+              "setValue": true,
+              "value": 10,
             },
             "truncate": [Function],
           },
@@ -86,44 +87,45 @@ describe.sequential("sender", () => {
               1,
             ],
             "setChild": [Function],
-            "setData": [Function],
             "setProps": [Function],
+            "setValue": [Function],
             "test": {
               "component": "Button",
-              "data": undefined,
               "events": [
                 "onclick",
               ],
               "props": {
                 "label": "Add 10",
               },
+              "setValue": undefined,
+              "value": undefined,
             },
             "truncate": [Function],
           },
         ],
         "path": [],
         "setChild": [Function],
-        "setData": [Function],
         "setProps": [Function],
+        "setValue": [Function],
         "test": {
           "component": "Container",
-          "data": null,
           "props": {},
+          "value": null,
         },
         "truncate": [Function],
       }
     `);
   });
 
-  it("setData() updates the value on the receiver", async () => {
-    await sender.setData(displayTree.children![0], 20);
+  it("setValue() updates the value on the receiver", async () => {
+    await sender.setValue(displayTree.children![0], 20);
     expect(game.player?.x).toBe(20);
   });
 
   it("sync() receives player.x update", async () => {
     game.player!.x += 5;
     await sender.sync();
-    expect(displayTree.children?.[0].test.data).toBe(25);
+    expect(displayTree.children?.[0].test.value).toBe(25);
   });
 
   it("dispatchEvent(onclick) adds 10 and returns patch with updated value", async () => {
@@ -132,7 +134,7 @@ describe.sequential("sender", () => {
       {
         "children": [
           {
-            "setData": [Function],
+            "setValue": [Function],
             "sync": [Function],
           },
           {
@@ -156,16 +158,17 @@ describe.sequential("sender", () => {
               0,
             ],
             "setChild": [Function],
-            "setData": [Function],
             "setProps": [Function],
+            "setValue": [Function],
             "test": {
               "component": "NumberField",
-              "data": 35,
               "events": undefined,
               "props": {
                 "label": "X",
                 "step": 1,
               },
+              "setValue": true,
+              "value": 35,
             },
             "truncate": [Function],
           },
@@ -175,29 +178,30 @@ describe.sequential("sender", () => {
               1,
             ],
             "setChild": [Function],
-            "setData": [Function],
             "setProps": [Function],
+            "setValue": [Function],
             "test": {
               "component": "Button",
-              "data": undefined,
               "events": [
                 "onclick",
               ],
               "props": {
                 "label": "Add 10",
               },
+              "setValue": undefined,
+              "value": undefined,
             },
             "truncate": [Function],
           },
         ],
         "path": [],
         "setChild": [Function],
-        "setData": [Function],
         "setProps": [Function],
+        "setValue": [Function],
         "test": {
           "component": "Container",
-          "data": null,
           "props": {},
+          "value": null,
         },
         "truncate": [Function],
       }

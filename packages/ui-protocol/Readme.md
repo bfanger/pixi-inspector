@@ -57,10 +57,10 @@ During this process the actual UI is also created and updated.
 
 ```json
 {
-  "data": [
+  "values": [
     {
       "path": [0, 1],
-      "data": 123
+      "value": 123
     }
   ],
   "replacements": [],
@@ -69,7 +69,7 @@ During this process the actual UI is also created and updated.
       "path": [0, 2],
       "component": "NumberField",
       "props": { "label": "Speed" },
-      "data": 1
+      "value": 1
     }
   ],
   "truncates": [{ "path": [1], "length": 1 }]

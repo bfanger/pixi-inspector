@@ -8,29 +8,13 @@ import type {
   TreePatchInitDto,
   TreeValue,
 } from "../types";
-import NumberField from "../../../blender-elements/src/NumberField/NumberField.svelte";
-import Container from "./Container.svelte";
-import Button from "../../../blender-elements/src/Button/Button.svelte";
+import components from "./components";
 
 export class VDOM {
   Component: Component<any> = $state(undefined as any as Component<any>);
   children?: VDOM[] = $state();
   props: Record<string, any> = $state({});
 }
-
-const configs = {
-  Container: { component: Container },
-  NumberField: {
-    component: NumberField,
-    dataProp: "value",
-    setDataProp: "setValue",
-  },
-  Button: {
-    component: Button,
-    dataProp: "value",
-    setDataProp: "setValue",
-  },
-} as const;
 
 export type SvelteNode = TreeDisplayNode & {
   vdom: VDOM;
@@ -40,19 +24,12 @@ export function createChild(
   init: TreePatchInitDto,
   sender: Sender,
 ): SvelteNode {
-  const config = configs[init.component as keyof typeof configs];
-  if (!config) {
-    throw new Error(
-      `No configuration available for Component: ${init.component}.`,
-    );
+  const component = components[init.component as keyof typeof components];
+  if (!component) {
+    throw new Error(`Component "${init.component}" is not available`);
   }
   let node: SvelteNode;
   const events: Record<string, (details?: TreeValue) => void> = {};
-  if ("setDataProp" in config) {
-    events[config.setDataProp] = (value: TreeValue) => {
-      node.sender.setData(node, value);
-    };
-  }
   if (init.events) {
     for (const event of init.events) {
       events[event] = (details?: TreeValue) => {
@@ -60,20 +37,20 @@ export function createChild(
       };
     }
   }
-
   const vdom = new VDOM();
-  vdom.Component = config.component;
+  vdom.Component = component;
 
   const leaf: TreeDisplayLeafNode & { vdom: VDOM; sender: Sender } = {
     vdom,
     sender,
     path: init.path,
+
     setProps(props: TreeObjectValue) {
-      if ("dataProp" in config) {
+      if (init.value !== undefined || init.setValue) {
         vdom.props = {
           ...props,
+          value: vdom.props.value,
           ...events,
-          [config.dataProp]: vdom.props[config.dataProp],
         };
       } else {
         vdom.props = { ...props, ...events };
@@ -82,14 +59,18 @@ export function createChild(
   };
   node = leaf;
 
-  if ("dataProp" in config) {
-    node.setData = (value: TreeValue) => {
-      vdom.props[config.dataProp] = value;
+  if (init.value !== undefined || init.setValue) {
+    node.setValue = (value: TreeValue) => {
+      vdom.props.value = value;
     };
-    node.setData(init.data);
-  } else if (init.data !== undefined) {
-    throw new Error("init with data failed: No dataProp configured");
+    node.setValue(init.value);
+    if (init.setValue) {
+      events.setValue ??= (value: TreeValue) => {
+        node.sender.setValue(node, value);
+      };
+    }
   }
+
   leaf.setProps(init.props);
 
   if (init.children === undefined) {

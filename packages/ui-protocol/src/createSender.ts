@@ -2,7 +2,7 @@ import type {
   TreeValue,
   TreeDisplayNode,
   TreeEvent,
-  TreePatchDataDto,
+  TreePatchValueDto,
   Connection,
   Sender,
 } from "./types";
@@ -20,9 +20,9 @@ export default function createSender(
   let promise: Promise<void> | undefined;
 
   function flushData() {
-    const dto: TreePatchDataDto[] = [];
+    const dto: TreePatchValueDto[] = [];
     for (const { node, value } of data) {
-      if (isNodeValid(tree, node, "setData() failed: ")) {
+      if (isNodeValid(tree, node, "setValue() failed: ")) {
         dto.push({ path: node.path, value });
       }
     }
@@ -84,7 +84,7 @@ export default function createSender(
     })();
   }
   return {
-    setData(node: TreeDisplayNode, value: TreeValue) {
+    setValue(node: TreeDisplayNode, value: TreeValue) {
       data.push({ node, value });
       if (!promise) {
         schedule();

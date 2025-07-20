@@ -8,7 +8,7 @@ import type {
   TreePatch,
   TreeInit,
   TreePatchInitDto,
-  TreePatchDataDto,
+  TreePatchValueDto,
   TreeEvent,
 } from "./types";
 
@@ -54,7 +54,7 @@ export function applyPatch(tree: TreeDisplayNode, patch: TreePatchDto) {
     const node = lookupNode(tree, path);
     node.setProps(props);
   }
-  applyData(tree, patch.data);
+  applyValues(tree, patch.value);
   for (const replacement of patch.replacements) {
     const { parent, index } = lookupParent(tree, replacement.path);
     if ("setChild" in parent) {
@@ -113,15 +113,15 @@ export function syncTree(
 /**
  * Update values for specific nodes.
  */
-export function applyData(tree: TreeNode, data: TreePatchDataDto[]): void {
-  for (const { path, value } of data) {
+export function applyValues(tree: TreeNode, values: TreePatchValueDto[]): void {
+  for (const { path, value } of values) {
     const node = lookupNode(tree, path);
-    if (!node.setData) {
+    if (!node.setValue) {
       throw new Error(
-        `data failed: Node "/${path.join("/")}" didn't implement setData`,
+        `Applying values failed: Node "/${path.join("/")}" didn't implement setValue()`,
       );
     }
-    node.setData(value);
+    node.setValue(value);
   }
 }
 
@@ -180,8 +180,8 @@ function applyPartial(
   let length = node.children?.length ?? 0;
   const skip: number[] = [];
 
-  if ("data" in partial) {
-    target.data.push({ path, value: partial.data });
+  if ("value" in partial) {
+    target.value.push({ path, value: partial.value });
   }
 
   if (partial.props) {
@@ -227,7 +227,8 @@ function createInit(init: TreeInit, path: TreePath): TreePatchInitDto {
     component: init.component,
     props: init.props,
     events: init.node.events ? Object.keys(init.node.events) : undefined,
-    data: init.data,
+    value: init.value,
+    setValue: init.node.setValue ? true : undefined,
   };
   if (init.children) {
     dto.children = [];
@@ -246,7 +247,7 @@ function createInit(init: TreeInit, path: TreePath): TreePatchInitDto {
 function createPatch(): TreePatchDto {
   return {
     props: [],
-    data: [],
+    value: [],
     replacements: [],
     appends: [],
     truncates: [],

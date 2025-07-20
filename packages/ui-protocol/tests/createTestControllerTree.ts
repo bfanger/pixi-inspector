@@ -20,12 +20,12 @@ export function createTestControllerTree() {
           {
             component: "NumberField",
             props: { label: "X", step: 1 },
-            data: player.x,
+            value: player.x,
             node: {
               sync(patch) {
-                patch.data = player.x;
+                patch.value = player.x;
               },
-              setData(value) {
+              setValue(value) {
                 player.x = value as number;
               },
             },
