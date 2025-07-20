@@ -38,57 +38,71 @@
     display: flex;
     height: 100%;
   }
+
   .tabs {
+    overflow-y: auto;
     display: flex;
-    flex-shrink: 0;
     flex-direction: column;
+    flex-shrink: 0;
+    gap: 2px;
+
     padding-top: 8px;
     padding-left: 2px;
-    gap: 2px;
+
     background: #1b1b1b;
-    overflow-y: auto;
   }
+
   .tab {
-    appearance: none;
+    cursor: pointer;
+
     position: relative;
-    border: 0;
+
+    box-sizing: border-box;
     width: 26px;
     height: 26px;
-    background: transparent;
-    box-sizing: border-box;
+    border: 0;
     border: 1px solid transparent;
     border-top-left-radius: 4px;
     border-bottom-left-radius: 4px;
+
+    appearance: none;
+    background: transparent;
     outline: none;
-    cursor: pointer;
 
     &:hover {
       background-color: #202020;
     }
+
     &.active {
       background-color: #2a2a2a;
     }
+
     &:focus-visible {
       border-color: #4772b3;
       border-right-color: transparent;
     }
   }
+
   .icon {
     position: absolute;
     top: 4px;
     left: 4px;
+
     width: 16px;
     height: 16px;
-    background: center center no-repeat;
+
     opacity: 0.8;
+    background: center center no-repeat;
   }
-  .tab:hover .icon,
-  .active .icon {
+
+  .active .icon,
+  .tab:hover .icon {
     opacity: 1;
   }
+
   .content {
-    background: #2a2a2a;
-    flex-grow: 1;
     overflow-y: auto;
+    flex-grow: 1;
+    background: #2a2a2a;
   }
 </style>

@@ -74,44 +74,54 @@
 <style>
   :global(body) {
     margin: 0;
-    background: #161616;
     color: #e5e5e5;
+    background: #161616;
   }
+
   :global(code) {
     display: block;
     padding: 8px;
   }
+
   .pixi-panel {
     display: grid;
-    grid-template-rows: minmax(50px, 1fr) minmax(210px, 55%);
     grid-template-columns: 1fr;
-    height: 100%;
+    grid-template-rows: minmax(50px, 1fr) minmax(210px, 55%);
     gap: 3px;
-    @media (min-width: 600px) {
-      grid-template-rows: 1fr;
+
+    height: 100%;
+
+    @media (width >= 600px) {
       grid-template-columns: 1fr minmax(300px, 40%);
+      grid-template-rows: 1fr;
     }
   }
+
   .outliner {
     overflow: auto;
     background: #303030;
   }
+
   .properties {
     overflow: auto;
   }
+
   .patch {
     margin: 4px 12px;
   }
+
   .not-connected {
     display: flex;
     flex-direction: column;
     height: 100%;
   }
+
   .instructions {
-    flex: 1;
     overflow: auto;
+    flex: 1;
   }
+
   .status {
-    margin: 0 2px 2px 2px;
+    margin: 0 2px 2px;
   }
 </style>

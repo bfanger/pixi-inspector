@@ -58,31 +58,38 @@
   .instructions {
     padding: 12px;
   }
+
   code {
-    background-color: #202020;
-    color: rgb(145, 168, 203);
     margin-block: 8px;
+    color: rgb(145 168 203);
+    background-color: #202020;
   }
+
   .with-copy {
     position: relative;
     padding-right: 30px;
   }
+
   .copy {
     position: absolute;
     top: 6px;
     right: 6px;
   }
+
   .pixi {
     color: #df5584;
   }
+
   .phaser {
     color: #bb73d6;
   }
+
   .engines {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    @media (min-width: 700px) {
+
+    @media (width >= 700px) {
       flex-direction: row;
       gap: 64px;
     }

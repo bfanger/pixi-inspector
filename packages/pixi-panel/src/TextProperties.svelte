@@ -445,20 +445,22 @@
 
 <style>
   .text {
-    padding-top: 8px;
-    padding-bottom: 8px;
     display: flex;
     align-items: center;
+    padding-top: 8px;
+    padding-bottom: 8px;
 
     & .label {
       flex-shrink: 0;
       margin-right: 8px;
     }
   }
+
   .two-columns {
     display: grid;
     grid-template-columns: 1fr 1fr;
   }
+
   .three-columns {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;

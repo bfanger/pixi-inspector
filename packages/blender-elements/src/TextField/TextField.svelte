@@ -110,49 +110,60 @@
   .input,
   .textarea,
   .spacer {
-    appearance: none;
     display: block;
+
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0;
+    padding: 2px 6px;
+    border: none;
+    border: 1px solid #3d3d3d;
+    border-radius: 4px;
+
     font:
       12px system-ui,
       sans-serif;
-    background-color: transparent;
-    border: none;
-    width: 100%;
-    box-sizing: border-box;
     color: #fdfdfd;
-    outline: none;
-    caret-color: #71a8ff;
-    padding: 2px 6px;
-    margin: 0;
+
+    appearance: none;
     background: #1d1d1d;
-    border: 1px solid #3d3d3d;
+    background-color: transparent;
+    outline: none;
     box-shadow: 0 1px 3px #0000004d;
-    border-radius: 4px;
+    caret-color: #71a8ff;
 
     &::selection {
       background-color: #4570b5;
     }
+
     &:hover:not(:global(:focus)) {
-      background: #232323;
       border-color: #414141;
+      background: #232323;
     }
+
+    /* stylelint-disable-next-line no-descending-specificity */
     &:focus {
       cursor: text;
     }
   }
+  /* stylelint-disable-next-line no-descending-specificity */
   .spacer {
     position: relative;
-    white-space: pre-wrap;
     width: 100%;
+    white-space: pre-wrap;
     visibility: hidden;
   }
+  /* stylelint-disable-next-line no-descending-specificity */
   .textarea {
+    resize: none;
+
     position: absolute;
     top: 0;
     left: 0;
+
+    overflow-y: hidden;
+
     width: 100%;
     height: 100%;
-    resize: none;
-    overflow-y: hidden;
   }
 </style>

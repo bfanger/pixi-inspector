@@ -53,53 +53,66 @@
   .search-field {
     position: relative;
   }
+
   .input {
+    cursor: default;
+
+    box-sizing: border-box;
+    width: 100%;
+    padding: 2px 20px 2px 25px;
+    border: none;
+    border: 1px solid #3d3d3d;
+    border-radius: 4px;
+
     font:
       12px system-ui,
       sans-serif;
-    background-color: transparent;
-    border: none;
-    width: 100%;
-    box-sizing: border-box;
     color: #fdfdfd;
-    outline: none;
-    caret-color: #71a8ff;
-    padding: 2px 20px 2px 25px;
+
     background: #1d1d1d;
-    border: 1px solid #3d3d3d;
+    background-color: transparent;
+    outline: none;
     box-shadow: 0 1px 3px #0000004d;
-    border-radius: 4px;
-    cursor: default;
+    caret-color: #71a8ff;
 
     &::selection {
       background-color: #4570b5;
     }
+
     &:focus {
       cursor: text;
     }
   }
+
   .search-field:hover .input:not(:global(:focus)) {
-    background: #232323;
     border-color: #414141;
+    background: #232323;
   }
+
   .search-icon {
     position: absolute;
     top: calc(50% - 8px);
     left: 4px;
-    background: var(--icon-search) center center no-repeat;
+
     width: 16px;
     height: 16px;
+
+    background: var(--icon-search) center center no-repeat;
   }
+
   .clear {
+    cursor: pointer;
+
     position: absolute;
     top: 0;
     right: 0;
+
     width: 20px;
     height: 100%;
-    background: var(--icon-cross) center center no-repeat;
     border: none;
+
     opacity: 0.8;
-    cursor: pointer;
+    background: var(--icon-cross) center center no-repeat;
 
     &:hover {
       opacity: 1;

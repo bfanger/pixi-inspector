@@ -183,44 +183,56 @@
   .outliner-row {
     display: flex;
     align-items: center;
-    background: #282828;
-    color: #c2c2c2;
+
     height: 20px;
-    padding-left: calc(var(--indent) * 20px);
-    outline: none;
     padding-right: 4px;
+    padding-left: calc(var(--indent) * 20px);
+
+    color: #c2c2c2;
+
+    background: #282828;
+    outline: none;
+
     &:nth-child(even) {
       background-color: #2b2b2b;
     }
+
     &:hover {
-      background-color: #444444;
+      background-color: #444;
     }
+
     &:focus {
       background-color: #334d80;
+
       &:hover {
         background-color: #4772b3;
       }
     }
+
     &.match {
       background-color: #2f552f;
+
       &:focus {
         background-color: #336659;
       }
     }
+
     &.active {
       color: #ffaf29;
     }
   }
+
   .toggle-spacer {
     width: 20px;
   }
+
   .title {
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
     user-select: none;
-    position: default;
+    overflow: hidden;
+    flex: 1;
+    text-overflow: ellipsis;
   }
+
   .muted .title {
     opacity: 0.5;
   }

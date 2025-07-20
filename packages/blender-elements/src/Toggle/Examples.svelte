@@ -18,7 +18,7 @@
 </div>
 
 <div
-  style="display: grid; width: 220px;max-width: 100%; grid-template-columns: repeat(3, minmax(min-content,1fr))"
+  style="display: grid; grid-template-columns: repeat(3, minmax(min-content,1fr)); width: 220px;max-width: 100%"
 >
   <Toggle
     icon="bold"

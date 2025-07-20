@@ -11,11 +11,11 @@
 
 <style>
   .base {
+    height: 100vh;
     font:
       13px/1.3 system-ui,
       sans-serif;
-    height: 100vh;
     -webkit-font-smoothing: antialiased;
-    text-shadow: 0 1px 1px #00000066;
+    text-shadow: 0 1px 1px #0006;
   }
 </style>

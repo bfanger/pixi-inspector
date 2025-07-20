@@ -133,13 +133,15 @@
     flex-direction: column;
     height: 100%;
   }
+
   .header {
     position: sticky;
-    padding: 3px 8px 5px 8px;
+    padding: 3px 8px 5px;
     background: #2d2d2d;
   }
+
   .body {
-    flex: 1;
     overflow-y: auto;
+    flex: 1;
   }
 </style>

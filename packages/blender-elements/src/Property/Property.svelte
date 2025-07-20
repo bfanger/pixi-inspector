@@ -25,16 +25,18 @@
       margin-bottom: 4px;
     }
   }
+
   .label {
-    text-align: right;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
     user-select: none;
-    flex: 1;
+
     overflow: hidden;
+    flex: 1;
+
+    text-align: right;
     text-overflow: ellipsis;
+    white-space: nowrap;
   }
+
   .value {
     flex: 2;
   }

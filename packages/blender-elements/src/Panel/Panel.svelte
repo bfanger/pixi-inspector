@@ -43,40 +43,52 @@
 
 <style>
   .panel {
-    background: #353535;
     border-radius: 4px;
+    background: #353535;
   }
+
   .title {
+    user-select: none;
+
+    position: relative;
+
     display: flex;
     gap: 4px;
-    appearance: none;
-    position: relative;
-    background: transparent;
-    border: 0;
-    color: inherit;
+
     box-sizing: border-box;
-    padding: 4px 16px 4px 20px;
-    min-height: 24px;
     width: 100%;
-    user-select: none;
+    min-height: 24px;
+    padding: 4px 16px 4px 20px;
+    border: 0;
+
+    color: inherit;
     text-align: left;
 
-    &:before {
+    appearance: none;
+    background: transparent;
+
+    &::before {
       content: "";
+
       position: absolute;
       top: 3px;
       left: 3px;
+
       width: 16px;
       height: 16px;
-      background: var(--icon-chevron-right) center center no-repeat;
+
       opacity: 0.5;
+      background: var(--icon-chevron-right) center center no-repeat;
     }
+
     &.expanded::before {
       background-image: var(--icon-chevron-down);
     }
   }
+
   .content {
     padding: 8px;
+
     &.disabled {
       opacity: 0.5;
     }

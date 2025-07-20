@@ -57,36 +57,43 @@
 
 <style>
   .toggle {
-    appearance: none;
-    background: transparent no-repeat center center;
-    border: none;
-    box-sizing: border-box;
-    display: inline-flex;
-    align-items: center;
-    gap: 2px;
-    box-sizing: border-box;
-    min-height: 18px;
-    min-width: 18px;
-    flex-shrink: 0;
-    opacity: 0.8;
-    color: white;
-    padding: 1px;
     cursor: pointer;
+
+    display: inline-flex;
+    flex-shrink: 0;
+    gap: 2px;
+    align-items: center;
+
+    box-sizing: border-box;
+    min-width: 18px;
+    min-height: 18px;
+    padding: 1px;
+    border: none;
+
+    color: white;
+
+    appearance: none;
+    opacity: 0.8;
+    background: transparent no-repeat center center;
 
     &.with-label {
       padding-inline: 4px;
     }
+
     &[data-location="alone"] {
       border-radius: 2px / 3px;
     }
+
     &[data-location="left"] {
+      margin-right: 1px;
       border-top-left-radius: 2px 3px;
       border-bottom-left-radius: 2px 3px;
-      margin-right: 1px;
     }
+
     &[data-location="center"] {
       margin-right: 1px;
     }
+
     &[data-location="right"] {
       border-top-right-radius: 2px 3px;
       border-bottom-right-radius: 2px 3px;
@@ -94,33 +101,37 @@
 
     &:not(:global(.transparent)) {
       background-color: #656565;
-      box-shadow: 0 1px 1px #00000099;
+      box-shadow: 0 1px 1px #0009;
     }
 
     &:hover {
       opacity: 1;
     }
+
     &.pressed,
     &:active {
-      background-color: #4772b3;
       opacity: 1;
+      background-color: #4772b3;
     }
   }
 
   .icon {
     display: inline-block;
+    flex-shrink: 0;
+
     width: 16px;
     height: 16px;
+
     background: transparent no-repeat center center;
     background-size: contain;
-    flex-shrink: 0;
   }
 
   .label {
-    flex: 1;
     overflow: hidden;
-    white-space: nowrap;
+    flex: 1;
+
     text-overflow: ellipsis;
-    text-shadow: 0 1px 1px #00000066;
+    text-shadow: 0 1px 1px #0006;
+    white-space: nowrap;
   }
 </style>

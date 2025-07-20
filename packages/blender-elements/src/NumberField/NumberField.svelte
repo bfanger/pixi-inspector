@@ -157,95 +157,114 @@
 <style>
   .number-field {
     position: relative;
-    background: #545454;
     overflow: hidden;
+    background: #545454;
 
     &:not(.focused, .active):hover {
       background-color: #656565;
     }
+
     &.active,
     &.focused {
-      background-color: #222222;
+      background-color: #222;
     }
+
     &[data-location="alone"] {
       border-radius: 2px / 3px;
     }
+
     &[data-location="top"] {
+      margin-bottom: 1px;
       border-top-left-radius: 2px 3px;
       border-top-right-radius: 2px 3px;
-      margin-bottom: 1px;
     }
+
     &[data-location="middle"] {
       margin-bottom: 1px;
     }
+
     &[data-location="bottom"] {
-      border-bottom-left-radius: 2px 3px;
       border-bottom-right-radius: 2px 3px;
+      border-bottom-left-radius: 2px 3px;
     }
   }
+
   .input {
-    background-color: transparent;
-    color: #e5e5e5;
-    border: 0;
-    text-align: center;
-    outline: none;
     display: block;
-    width: 100%;
+
     box-sizing: border-box;
+    width: 100%;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    border: 0;
+
     font:
       12px system-ui,
       sans-serif;
-    padding-top: 2px;
-    padding-bottom: 2px;
-    text-shadow: 0 1px 2px #000000cc;
+    color: #e5e5e5;
+    text-align: center;
+    text-shadow: 0 1px 2px #000c;
+
+    background-color: transparent;
+    outline: none;
+
+    &::selection {
+      background-color: #4570b5;
+    }
 
     &:focus {
       color: #e5e5e5;
     }
-    &::selection {
-      background-color: #4570b5;
-    }
   }
 
   :not(.focused, .active) .input:hover {
-    background-color: #797979;
     color: #fcfcfc;
+    background-color: #797979;
   }
+
   .drag {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
     cursor: col-resize;
-  }
-  .arrow {
     position: absolute;
-    background: none;
-    border: none;
-    color: white;
+    inset: 0;
+  }
+
+  .arrow {
+    cursor: pointer;
+
+    position: absolute;
     top: 0;
     bottom: 0;
-    width: 13px;
-    background: #656565 no-repeat center center;
+
     display: none;
-    cursor: pointer;
+
+    width: 13px;
+    border: none;
+
+    color: white;
+
+    background: none;
+    background: #656565 no-repeat center center;
+
     &.left {
       left: 0;
       background-image: var(--icon-chevron-left);
     }
+
     &.right {
       right: 0;
       background-image: var(--icon-chevron-right);
     }
   }
+
   .number-field:hover .arrow {
     display: block;
   }
 
+  /* stylelint-disable-next-line no-descending-specificity */
   .active .arrow {
-    background-color: #222222;
+    background-color: #222;
   }
+
   :not(.focused, .active) .arrow:hover {
     background-color: #797979;
   }

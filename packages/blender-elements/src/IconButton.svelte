@@ -26,19 +26,23 @@
 
 <style>
   .toggle {
-    appearance: none;
-    background: transparent no-repeat center center;
-    border: none;
+    cursor: pointer;
+
+    flex-shrink: 0;
+
     width: 20px;
     height: 20px;
+    border: none;
+
+    appearance: none;
     opacity: 0.6;
-    flex-shrink: 0;
-    cursor: pointer;
+    background: transparent no-repeat center center;
 
     &:active,
     &:hover {
       opacity: 0.8;
     }
+
     &.muted {
       opacity: 0.3;
     }
