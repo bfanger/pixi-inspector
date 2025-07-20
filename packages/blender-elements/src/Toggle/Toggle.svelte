@@ -7,7 +7,7 @@
     value?: boolean | undefined;
     transparent?: boolean;
     hint?: string | undefined;
-    location?: "alone" | "left" | "center" | "right";
+    rounded?: "all" | "left" | "right" | "none";
     setValue?: (value: boolean) => void;
     onclick?: () => void;
   };
@@ -18,7 +18,7 @@
     value = $bindable(undefined),
     transparent = false,
     hint = undefined,
-    location = "alone",
+    rounded = "all",
     setValue,
     onclick,
   }: Props = $props();
@@ -36,7 +36,7 @@
   class:pressed={value}
   class:transparent
   class:with-label={label}
-  data-location={location}
+  data-rounded={rounded}
   title={hint}
   onclick={(e) => {
     e.stopPropagation();
@@ -81,21 +81,16 @@
       padding-inline: 4px;
     }
 
-    &[data-location="alone"] {
+    &[data-rounded="all"] {
       border-radius: 2px / 3px;
     }
 
-    &[data-location="left"] {
-      margin-right: 1px;
+    &[data-rounded="left"] {
       border-top-left-radius: 2px 3px;
       border-bottom-left-radius: 2px 3px;
     }
 
-    &[data-location="center"] {
-      margin-right: 1px;
-    }
-
-    &[data-location="right"] {
+    &[data-rounded="right"] {
       border-top-right-radius: 2px 3px;
       border-bottom-right-radius: 2px 3px;
     }

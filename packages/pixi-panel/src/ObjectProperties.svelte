@@ -323,7 +323,6 @@
           hint="Enable interaction events for the Container. Touch, pointer and mouse. This now replaces the interactive property."
         >
           <SelectMenu
-            legend="Event Mode"
             value={props.eventMode}
             options={[
               { value: "none", label: "None" },
@@ -337,7 +336,6 @@
         </Property>
         <Property label="Cursor">
           <SelectMenu
-            legend="Cursor"
             value={props.cursor ?? ""}
             options={[
               ...(props.cursor ? [] : [{ value: "", label: "" }]),

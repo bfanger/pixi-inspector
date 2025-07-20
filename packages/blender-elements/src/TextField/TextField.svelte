@@ -124,8 +124,7 @@
     color: #fdfdfd;
 
     appearance: none;
-    background: #1d1d1d;
-    background-color: transparent;
+    background: #1d1d1c;
     outline: none;
     box-shadow: 0 1px 3px #0000004d;
     caret-color: #71a8ff;

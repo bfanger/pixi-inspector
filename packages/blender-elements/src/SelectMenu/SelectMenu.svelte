@@ -8,10 +8,9 @@
     value: string;
     setValue?: (value: string) => void;
     options: OptionType[];
-    legend?: string;
   };
 
-  let { value = $bindable(), options, legend = "", setValue }: Props = $props();
+  let { value = $bindable(), options, setValue }: Props = $props();
 
   let current = $derived(
     options.find((option) => {
@@ -23,7 +22,7 @@
   );
 
   let el: HTMLDivElement | undefined = $state();
-  let expanded: undefined | { x: "LEFT" | "RIGHT"; y: "UP" | "DOWN" } =
+  let expanded: undefined | { x: "left" | "right"; y: "up" | "down" } =
     $state();
   let timer: number | undefined;
 
@@ -35,8 +34,8 @@
 
   async function expand() {
     expanded = {
-      x: "LEFT",
-      y: "DOWN",
+      x: "left",
+      y: "down",
     };
     await tick();
 
@@ -50,10 +49,10 @@
     const { x, y, height } = bounds;
     const { innerHeight } = window;
     if (x < 0) {
-      expanded.x = "RIGHT";
+      expanded.x = "right";
     }
     if (y + height > innerHeight) {
-      expanded.y = "UP";
+      expanded.y = "up";
     }
   }
 
@@ -71,12 +70,10 @@
 </script>
 
 <div
-  class="search-field"
+  class="select-menu"
   class:expanded
-  class:up={expanded?.y === "UP"}
-  class:right={expanded?.x === "RIGHT"}
-  class:down={expanded?.y === "DOWN"}
-  class:left={expanded?.x === "LEFT"}
+  data-y={expanded?.y}
+  data-x={expanded?.x}
 >
   <button class="value" onclick={expand}>
     {#if typeof current === "string"}
@@ -101,27 +98,28 @@
       <div class="options" onmouseenter={onEnter}>
         {#each options as option (option)}
           {#if typeof option === "string"}
-            <Option value={option} onclick={() => select(option)} />
+            <Option
+              value={option}
+              active={option === value}
+              onclick={() => select(option)}
+            />
           {:else}
             <Option
               value={option.value}
               icon={option.icon}
               label={option.label}
+              active={option.value === value}
               onclick={() => select(option)}
             />
           {/if}
         {/each}
       </div>
-      {#if legend}
-        <!-- svelte-ignore a11y_no_static_element_interactions -->
-        <div class="legend" onmouseenter={onEnter}>{legend}</div>
-      {/if}
     </div>
   {/if}
 </div>
 
 <style>
-  .search-field {
+  .select-menu {
     position: relative;
   }
 
@@ -137,7 +135,7 @@
     min-height: 18px;
     padding: 2px 20px 1px 4px;
     border: none;
-    border: 1px solid #3d3d3d;
+    border: 1px solid #3c3c3e;
     border-radius: 4px;
 
     font: inherit;
@@ -146,7 +144,6 @@
 
     appearance: none;
     background: #282828;
-    background-color: transparent;
     outline: none;
     box-shadow: 0 1px 3px #0000004d;
 
@@ -165,8 +162,8 @@
     }
 
     &:hover {
-      border-color: #414141;
-      background: #232323;
+      border-color: #464646;
+      background: #303030;
     }
   }
 
@@ -175,13 +172,13 @@
     background: #446290;
   }
 
-  .expanded.up .value {
+  [data-y="up"] .value {
     border-top-color: #446290;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
   }
 
-  .expanded.down .value {
+  [data-y="down"] .value {
     border-bottom-color: #446290;
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
@@ -209,23 +206,23 @@
     background: #181818;
   }
 
-  .up .popout {
+  [data-y="up"] .popout {
     bottom: 100%;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
   }
 
-  .right .popout {
+  [data-x="right"] .popout {
     left: 0;
   }
 
-  .down .popout {
+  [data-y="down"] .popout {
     top: 100%;
     border-bottom-right-radius: 4px;
     border-bottom-left-radius: 4px;
   }
 
-  .left .popout {
+  [data-x="left"] .popout {
     right: 0;
   }
 
@@ -244,15 +241,5 @@
     gap: 4px;
 
     padding: 2px;
-  }
-
-  .legend {
-    position: relative;
-    padding: 5px 8px 4px;
-    color: #989898;
-  }
-
-  .down .legend {
-    border-top: 1px solid #2f2f2f;
   }
 </style>

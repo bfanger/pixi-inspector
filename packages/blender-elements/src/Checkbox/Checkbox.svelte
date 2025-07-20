@@ -40,7 +40,7 @@
     user-select: none;
 
     display: flex;
-    gap: 2px;
+    gap: 3px;
     align-items: center;
   }
 

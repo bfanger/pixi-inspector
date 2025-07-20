@@ -3,13 +3,20 @@
     value: string;
     icon?: string | undefined;
     label?: string | undefined;
+    active?: boolean;
     onclick: () => void;
   };
 
-  let { value, icon = undefined, label = undefined, onclick }: Props = $props();
+  let {
+    value,
+    icon = undefined,
+    label = undefined,
+    active,
+    onclick,
+  }: Props = $props();
 </script>
 
-<button class="option" {onclick}>
+<button class="option" class:active {onclick}>
   {#if icon}
     <span class="icon" style="background-image: var(--icon-{icon})"></span>
   {/if}
@@ -36,10 +43,15 @@
 
     background: transparent;
 
-    &:hover {
+    &:not(.active):hover {
       color: #fff;
-      background: #4772b3;
+      background: #3f3f3f;
     }
+  }
+
+  .active {
+    color: #fff;
+    background: #4773b3;
   }
 
   .icon {

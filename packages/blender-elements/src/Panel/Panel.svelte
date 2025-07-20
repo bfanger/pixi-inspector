@@ -54,6 +54,7 @@
 
     display: flex;
     gap: 4px;
+    align-items: center;
 
     box-sizing: border-box;
     width: 100%;
