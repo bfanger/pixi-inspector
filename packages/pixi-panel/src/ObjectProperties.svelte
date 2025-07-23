@@ -4,9 +4,8 @@
   import Panel from "blender-elements/src/Panel/Panel.svelte";
   import Property from "blender-elements/src/Property/Property.svelte";
   import SelectMenu from "blender-elements/src/SelectMenu/SelectMenu.svelte";
+  import Box from "blender-elements/src/Box/Box.svelte";
   import type { NodeProperties } from "./types";
-  import PropertyGroup from "../../blender-elements/src/Property/PropertyGroup.svelte";
-  import PropertyGroups from "../../blender-elements/src/Property/PropertyGroups.svelte";
 
   type Props = {
     props: NodeProperties;
@@ -61,8 +60,8 @@
 
 {#if transformPanel}
   <Panel title="Transform" bind:expanded={expanded.transform}>
-    <PropertyGroups>
-      <PropertyGroup>
+    <Box gap={6} padding={8}>
+      <Box gap={1}>
         <Property label="Location X">
           <NumberField
             value={props.x}
@@ -79,7 +78,7 @@
             setValue={(value) => onchange({ property: "y", value })}
           />
         </Property>
-      </PropertyGroup>
+      </Box>
 
       {#if typeof props.angle === "number"}
         <Property label="Angle" hint="The angle of the object in degrees">
@@ -92,7 +91,7 @@
         </Property>
       {/if}
       {#if typeof props.scaleX === "number"}
-        <PropertyGroup>
+        <Box gap={1}>
           <Property
             label="Scale X"
             hint="The scale factors of this object along the local coordinate axes"
@@ -112,16 +111,16 @@
               setValue={(value) => onchange({ property: "scaleY", value })}
             />
           </Property>
-        </PropertyGroup>
+        </Box>
       {/if}
-    </PropertyGroups>
+    </Box>
   </Panel>
 {/if}
 {#if transformOriginPanel}
   <Panel title="Transform Origin" bind:expanded={expanded.transformOrigin}>
-    <PropertyGroups>
+    <Box gap={6} padding={8}>
       {#if typeof props.anchorX === "number"}
-        <PropertyGroup>
+        <Box gap={1}>
           <Property label="Anchor X">
             <NumberField
               value={props.anchorX}
@@ -142,10 +141,10 @@
               setValue={(value) => onchange({ property: "anchorY", value })}
             />
           </Property>
-        </PropertyGroup>
+        </Box>
       {/if}
       {#if typeof props.originX === "number"}
-        <PropertyGroup>
+        <Box gap={1}>
           <Property label="Origin X">
             <NumberField
               value={props.originX}
@@ -166,10 +165,10 @@
               setValue={(value) => onchange({ property: "originY", value })}
             />
           </Property>
-        </PropertyGroup>
+        </Box>
       {/if}
       {#if typeof props.pivotX === "number"}
-        <PropertyGroup>
+        <Box gap={1}>
           <Property
             label="Pivot X"
             hint="The center of rotation, scaling, and skewing for this display object in its local space"
@@ -189,14 +188,14 @@
               setValue={(value) => onchange({ property: "pivotY", value })}
             /></Property
           >
-        </PropertyGroup>
+        </Box>
       {/if}
-    </PropertyGroups>
+    </Box>
   </Panel>
 {/if}
 {#if visibilityPanel}
   <Panel title="Visibility" bind:expanded={expanded.visibility}>
-    <PropertyGroups>
+    <Box gap={6} padding={8}>
       {#if typeof props.alpha === "number"}
         <Property label="Alpha" hint="The opacity of the object">
           <NumberField
@@ -219,12 +218,12 @@
           </Checkbox>
         </Property>
       {/if}
-    </PropertyGroups>
+    </Box>
   </Panel>
 {/if}
 {#if renderPanel}
   <Panel title="Rendering" bind:expanded={expanded.rendering}>
-    <PropertyGroups>
+    <Box gap={6} padding={8}>
       {#if typeof props.sortableChildren === "boolean"}
         <Property>
           <Checkbox
@@ -259,15 +258,15 @@
           </Checkbox>
         </Property>
       {/if}
-    </PropertyGroups>
+    </Box>
   </Panel>
 {/if}
 
 {#if skewDimensionsPanel}
   <Panel title={skewDimensionsPanel} bind:expanded={expanded.skewDimensions}>
-    <PropertyGroups>
+    <Box gap={6} padding={8}>
       {#if typeof props.skewX === "number"}
-        <PropertyGroup>
+        <Box gap={1}>
           <Property
             label="Skew X"
             hint="The skew factor for the object in radians"
@@ -289,10 +288,10 @@
               setValue={(value) => onchange({ property: "skewY", value })}
             />
           </Property>
-        </PropertyGroup>
+        </Box>
       {/if}
       {#if typeof props.width === "number"}
-        <PropertyGroup>
+        <Box gap={1}>
           <Property label="Width">
             <NumberField
               value={props.width}
@@ -309,14 +308,14 @@
               setValue={(value) => onchange({ property: "height", value })}
             />
           </Property>
-        </PropertyGroup>
+        </Box>
       {/if}
-    </PropertyGroups>
+    </Box>
   </Panel>
 {/if}
 {#if interactivePanel}
   <Panel title="Interactivity" bind:expanded={expanded.interactive}>
-    <PropertyGroups>
+    <Box gap={6} padding={8}>
       {#if typeof props.eventMode === "string"}
         <Property
           label="Event mode"
@@ -422,6 +421,6 @@
           </Checkbox>
         </Property>
       {/if}
-    </PropertyGroups>
+    </Box>
   </Panel>
 {/if}

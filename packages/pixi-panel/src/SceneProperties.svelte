@@ -3,8 +3,8 @@
   import NumberField from "blender-elements/src/NumberField/NumberField.svelte";
   import Panel from "blender-elements/src/Panel/Panel.svelte";
   import Property from "blender-elements/src/Property/Property.svelte";
+  import Box from "blender-elements/src/Box/Box.svelte";
   import type { NodeProperties } from "./types";
-  import PropertyGroups from "../../blender-elements/src/Property/PropertyGroups.svelte";
 
   type Props = {
     props: NodeProperties;
@@ -19,7 +19,7 @@
 
 {#if tickerPanel}
   <Panel title="Ticker" bind:expanded={expanded.ticker}>
-    <PropertyGroups>
+    <Box gap={6} padding={8}>
       {#if typeof props.speed === "number"}
         <Property label="Speed" hint="Factor of current deltaTime">
           <NumberField
@@ -40,6 +40,6 @@
           </Checkbox>
         </Property>
       {/if}
-    </PropertyGroups>
+    </Box>
   </Panel>
 {/if}

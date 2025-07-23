@@ -12,7 +12,8 @@
     "verbatimModuleSyntax": true,
     "paths": {
       "pixi-panel/*": ["./node_modules/pixi-panel/*"]
-    }
+    },
+    "allowArbitraryExtensions": true
   },
   "include": [
     "**/*.d.ts",

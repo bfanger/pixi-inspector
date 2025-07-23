@@ -6,8 +6,9 @@
   import SelectMenu from "blender-elements/src/SelectMenu/SelectMenu.svelte";
   import TextField from "blender-elements/src/TextField/TextField.svelte";
   import Toggle from "blender-elements/src/Toggle/Toggle.svelte";
+  import Box from "blender-elements/src/Box/Box.svelte";
+  import Grid from "blender-elements/src/Grid/Grid.svelte";
   import type { NodeProperties } from "./types";
-  import PropertyGroups from "../../blender-elements/src/Property/PropertyGroups.svelte";
 
   type Props = {
     props: NodeProperties;
@@ -55,7 +56,7 @@
 
 {#if fontPanel}
   <Panel title="Font" bind:expanded={expanded.font}>
-    <PropertyGroups>
+    <Box gap={6} padding={8}>
       {#if typeof props.fontFamily === "string"}
         <Property
           label="Family"
@@ -79,7 +80,7 @@
       {/if}
       {#if typeof props.fontStyle === "string"}
         <Property label="Style" hint="The font style">
-          <div class="three-columns">
+          <Grid cols={3} gap={1}>
             <Toggle
               label="Normal"
               value={props.fontStyle === "normal"}
@@ -102,12 +103,12 @@
               setValue={() =>
                 onchange({ property: "fontStyle", value: "oblique" })}
             />
-          </div>
+          </Grid>
         </Property>
       {/if}
       {#if typeof props.fontVariant === "string"}
         <Property label="Variant" hint="The font variant">
-          <div class="two-columns">
+          <Grid cols={2} gap={1}>
             <Toggle
               label="Normal"
               value={props.fontVariant === "normal"}
@@ -127,7 +128,7 @@
                   value: "small-caps",
                 })}
             />
-          </div>
+          </Grid>
         </Property>
       {/if}
       {#if typeof props.fontWeight === "string"}
@@ -153,13 +154,13 @@
           />
         </Property>
       {/if}
-    </PropertyGroups>
+    </Box>
   </Panel>
 {/if}
 
 {#if alignmentPanel}
   <Panel title="Alignment" bind:expanded={expanded.alignment}>
-    <PropertyGroups>
+    <Box gap={6} padding={8}>
       {#if typeof props.align === "string"}
         <Property
           label="Align"
@@ -191,13 +192,13 @@
           />
         </Property>
       {/if}
-    </PropertyGroups>
+    </Box>
   </Panel>
 {/if}
 
 {#if spacingPanel}
   <Panel title="Spacing" bind:expanded={expanded.spacing}>
-    <PropertyGroups>
+    <Box gap={2}>
       {#if typeof props.leading === "number"}
         <Property label="Leading" hint="The space between lines">
           <NumberField
@@ -252,7 +253,7 @@
           label="White Space"
           hint="Determines whether newlines & spaces are collapsed or preserved"
         >
-          <div class="three-columns">
+          <Grid cols={3} gap={1}>
             <Toggle
               label="Normal"
               value={props.whiteSpace === "normal"}
@@ -274,7 +275,7 @@
               setValue={() =>
                 onchange({ property: "whiteSpace", value: "pre-line" })}
             />
-          </div>
+          </Grid>
         </Property>
       {/if}
       {#if typeof props.trim === "boolean"}
@@ -288,7 +289,7 @@
           </Checkbox>
         </Property>
       {/if}
-    </PropertyGroups>
+    </Box>
   </Panel>
 {/if}
 
@@ -299,7 +300,7 @@
     bind:expanded={expanded.wordWrap}
     setValue={(value) => onchange({ property: "wordWrap", value })}
   >
-    <PropertyGroups>
+    <Box gap={6} padding={8}>
       {#if typeof props.wordWrapWidth === "number"}
         <Property
           label="Width"
@@ -328,7 +329,7 @@
           </Checkbox>
         </Property>
       {/if}
-    </PropertyGroups>
+    </Box>
   </Panel>
 {/if}
 
@@ -339,7 +340,7 @@
     bind:expanded={expanded.dropShadow}
     setValue={(value) => onchange({ property: "dropShadow", value })}
   >
-    <PropertyGroups>
+    <Box gap={6} padding={8}>
       {#if typeof props.dropShadowAlpha === "number"}
         <Property label="Alpha" hint="Set alpha for the drop shadow">
           <NumberField
@@ -412,13 +413,13 @@
           />
         </Property>
       {/if}
-    </PropertyGroups>
+    </Box>
   </Panel>
 {/if}
 
 {#if strokePanel}
   <Panel title="Stroke" bind:expanded={expanded.stroke}>
-    <PropertyGroups>
+    <Box gap={6} padding={8}>
       {#if typeof props.stroke === "string"}
         <Property
           label="Stroke"
@@ -451,7 +452,7 @@
           />
         </Property>
       {/if}
-    </PropertyGroups>
+    </Box>
   </Panel>
 {/if}
 
@@ -471,17 +472,5 @@
       flex-shrink: 0;
       margin-right: 8px;
     }
-  }
-
-  .two-columns {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1px;
-  }
-
-  .three-columns {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 1px;
   }
 </style>

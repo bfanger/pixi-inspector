@@ -4,7 +4,7 @@
   import VDOMNode from "./VDOMNode.svelte";
   import { onMount } from "svelte";
   import { createChild } from "./vdom.svelte";
-  import Base from "../../../blender-elements/src/Base.svelte";
+  import Base from "blender-elements/src/Base.svelte";
 
   type Props = {
     connection: Connection;

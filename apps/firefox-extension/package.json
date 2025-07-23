@@ -12,11 +12,11 @@
   },
   "devDependencies": {
     "concurrently": "^9.2.0",
-    "esbuild": "^0.25.7",
+    "esbuild": "^0.25.8",
     "esbuild-svelte": "^0.9.3",
     "pixi-panel": "workspace:*",
     "rimraf": "^6.0.1",
-    "svelte": "^5.36.8",
+    "svelte": "^5.36.13",
     "web-ext": "^8.9.0"
   }
 }

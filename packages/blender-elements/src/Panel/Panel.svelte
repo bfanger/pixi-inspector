@@ -33,7 +33,7 @@
   {#if expanded}
     <div
       class="content"
-      class:disabled={value === false}
+      class:unused={value === false}
       transition:slide={{ duration: 150 }}
     >
       {@render children?.()}
@@ -88,11 +88,7 @@
     }
   }
 
-  .content {
-    padding: 8px;
-
-    &.disabled {
-      opacity: 0.5;
-    }
+  .content.unused {
+    opacity: 0.5;
   }
 </style>

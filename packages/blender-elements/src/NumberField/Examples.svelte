@@ -1,7 +1,7 @@
 <script lang="ts">
   import Panel from "../Panel/Panel.svelte";
   import Property from "../Property/Property.svelte";
-  import PropertyGroup from "../Property/PropertyGroup.svelte";
+  import Box from "../Box/Box.svelte";
   import NumberField from "./NumberField.svelte";
 
   let x = $state(123);
@@ -11,7 +11,7 @@
 
 <div style="max-width: 250px;">
   <Panel title="Buttons in a group">
-    <PropertyGroup>
+    <Box gap={1}>
       <Property label="Location X">
         <NumberField
           value={x}
@@ -34,6 +34,6 @@
           rounded="bottom"
         />
       </Property>
-    </PropertyGroup>
+    </Box>
   </Panel>
 </div>
