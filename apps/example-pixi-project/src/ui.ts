@@ -9,85 +9,92 @@ import type {
   TreeValue,
 } from "../../../packages/ui-protocol/src/types";
 
-import type { PixiDevtools } from "../../../packages/pixi-panel/src/types";
+import type {
+  PixiDevtools,
+  PropertyTab,
+} from "../../../packages/pixi-panel/src/types";
 import pixiDevtools from "../../../packages/pixi-panel/src/pixi-devtools/pixiDevtools";
 import pixiDevtoolsOutline from "../../../packages/pixi-panel/src/pixi-devtools/pixiDevtoolsOutline";
 import pixiDevtoolsSelection from "../../../packages/pixi-panel/src/pixi-devtools/pixiDevtoolsSelection";
+import pixiDevtoolsProperties from "../../../packages/pixi-panel/src/pixi-devtools/pixiDevtoolsProperties";
 
 const abortController = new AbortController();
 
 const legacy = pixiDevtools() as PixiDevtools;
 legacy.selection = pixiDevtoolsSelection(legacy);
-legacy.outline = pixiDevtoolsOutline(legacy);
+const outline = pixiDevtoolsOutline(legacy);
+legacy.outline = outline;
+const properties = pixiDevtoolsProperties(legacy);
+legacy.properties = properties;
 // win.__PIXI_INSPECTOR_LEGACY__.viewport = (${pixiDevtoolsViewport.toString()}(win.__PIXI_INSPECTOR_LEGACY__));
 // win.__PIXI_INSPECTOR_LEGACY__.overlay = (${pixiDevtoolsOverlay.toString()}(win.__PIXI_INSPECTOR_LEGACY__));
-// win.__PIXI_INSPECTOR_LEGACY__.properties = (${pixiDevtoolsProperties.toString()}(win.__PIXI_INSPECTOR_LEGACY__));
 // win.__PIXI_INSPECTOR_LEGACY__.clickToSelect = (${pixiDevtoolsClickToSelect.toString()}(win.__PIXI_INSPECTOR_LEGACY__));
 
 const legacyController = {
   children: [],
   sync(out) {
-    if (legacyController.children?.length === 0) {
-      out.appends.push({
-        component: "ScheneGraphLegacy",
-        props: {},
-        value: legacy.outline.tree(),
-        node: {
-          sync(out) {
-            out.value = legacy.outline.tree();
-          },
-          events: {
-            onexpand(path: TreeValue) {
-              legacy.outline.expand(path as string[]);
+    if (this.children?.length === 0) {
+      out.appends.push(
+        {
+          component: "SceneGraphLegacy",
+          props: {},
+          value: outline.tree(),
+          node: {
+            sync(out) {
+              out.value = outline.tree();
             },
-            oncollapse(path: TreeValue) {
-              legacy.outline.collapse(path as string[]);
-            },
-            onactivate(path: TreeValue) {
-              legacy.outline.activate(path as string[]);
-            },
-            onselectable(path: TreeValue) {
-              legacy.outline.selectable(path as string[]);
-            },
-            onunselectable(path: TreeValue) {
-              legacy.outline.unselectable(path as string[]);
-            },
-            onshow(path: TreeValue) {
-              legacy.outline.show(path as string[]);
-            },
-            onhide(path: TreeValue) {
-              legacy.outline.hide(path as string[]);
-            },
-            onlog(path: TreeValue) {
-              legacy.outline.log(path as string[]);
-            },
-            onmouseenter(path: TreeValue) {
-              legacy.outline.highlight(path as string[]);
-            },
-            onmouseleave() {
-              legacy.outline.highlight([]);
+            events: {
+              onexpand: (path) => outline.expand(path as string[]),
+              oncollapse: (path) => outline.collapse(path as string[]),
+              onactivate: (path) => outline.activate(path as string[]),
+              onselectable: (path) => outline.selectable(path as string[]),
+              onunselectable: (path) => outline.unselectable(path as string[]),
+              onshow: (path) => outline.show(path as string[]),
+              onhide: (path) => outline.hide(path as string[]),
+              onlog: (path) => outline.log(path as string[]),
+              onmouseenter: (path) => outline.highlight(path as string[]),
+              onmouseleave: () => outline.highlight([]),
             },
           },
-        },
-        children: [
-          {
-            component: "SearchField",
-            value: legacy.outline.query,
-            props: { label: "Search" },
-            node: {
-              sync(out) {
-                out.value = legacy.outline.query;
-              },
-              events: {
-                setValue(value: TreeValue) {
-                  legacy.outline.query = value as string;
-                  return 1;
+          children: [
+            {
+              component: "SearchField",
+              value: outline.query,
+              props: { label: "Search" },
+              node: {
+                sync(out) {
+                  out.value = outline.query;
+                },
+                events: {
+                  setValue(value: TreeValue) {
+                    outline.query = value as string;
+                    return outline.query.length >= 2 ? 1 : 0;
+                  },
                 },
               },
             },
+          ],
+        },
+        {
+          component: "PropertiesLegacy",
+          value: properties.values(),
+          props: {},
+          node: {
+            sync(out) {
+              out.value = properties.values();
+            },
+            setValue(value: TreeValue) {
+              const event = value as { property: string; value: number };
+              properties.set(event.property, event.value);
+            },
+            events: {
+              onactivate: (tab) => {
+                properties.activate(tab as PropertyTab);
+              },
+            },
           },
-        ],
-      });
+        },
+      );
     }
   },
 } satisfies TreeControllerNode;

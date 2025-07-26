@@ -78,7 +78,7 @@
   }
 </script>
 
-<Tabs {tabs} {active} onactivate={(tab: any) => onActivate(tab)}>
+<Tabs {tabs} {active} onactivate={(tab) => onActivate(tab)}>
   {#if values}
     <div class="panels">
       {#if active?.group === "scene"}

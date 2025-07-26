@@ -1,19 +1,14 @@
-<script lang="ts" module>
-  export type Tab = {
-    icon: string;
-    label: string;
-  };
-</script>
+<script lang="ts" generics="T extends { icon: string; label: string }">
+  import type { Snippet } from "svelte";
 
-<script lang="ts">
-  type Props = {
-    tabs: Tab[];
-    active: Tab | undefined;
-    children?: import("svelte").Snippet;
-    onactivate?: (tab: Tab) => void;
+  type Props<T> = {
+    tabs: T[];
+    active: T | undefined;
+    children?: Snippet;
+    onactivate?: (tab: T) => void;
   };
 
-  let { tabs, active, children, onactivate }: Props = $props();
+  let { tabs, active, children, onactivate }: Props<T> = $props();
 </script>
 
 <div class="tab-layout">
