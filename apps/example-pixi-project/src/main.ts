@@ -52,4 +52,6 @@ import { Application, Assets, Container, Sprite } from "pixi.js";
     (globalThis as any).__PIXI_RENDERER__ = app.renderer;
   }
   (globalThis as any).$pixi = container.children[12];
+
+  import("./ui");
 })();

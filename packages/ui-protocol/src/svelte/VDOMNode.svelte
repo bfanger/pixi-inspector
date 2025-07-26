@@ -9,16 +9,16 @@
   let { vdom }: Props = $props();
 </script>
 
-{#if typeof vdom.children === "undefined"}
+{#if vdom.children === undefined}
   <vdom.Component {...vdom.props} />
 {:else if vdom.Component === Fragment}
-  {#each vdom.children as node (node)}
-    <VDOMNode vdom={node} {...vdom.props} />
+  {#each vdom.children as child (child)}
+    <VDOMNode vdom={child} />
   {/each}
 {:else}
-  <vdom.Component>
-    {#each vdom.children as node (node)}
-      <VDOMNode vdom={node} {...vdom.props} />
+  <vdom.Component {...vdom.props}>
+    {#each vdom.children as child (child)}
+      <VDOMNode vdom={child} />
     {/each}
   </vdom.Component>
 {/if}

@@ -22,7 +22,6 @@
   let error = $derived($tree.error);
 
   let query = $state("");
-  let el: HTMLDivElement | undefined = $state();
 
   $effect.pre(() => {
     bridge(`__PIXI_INSPECTOR__.outline.query = ${JSON.stringify(query)}`).then(
@@ -93,12 +92,7 @@
   <div class="header">
     <SearchField bind:value={query} />
   </div>
-  <div
-    class="body"
-    bind:this={el}
-    onfocusin={onFocusIn}
-    onfocusout={onFocusOut}
-  >
+  <div class="body" onfocusin={onFocusIn} onfocusout={onFocusOut}>
     {#if error}
       <Warning>{error.message}</Warning>
     {/if}

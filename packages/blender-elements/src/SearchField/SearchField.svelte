@@ -5,11 +5,11 @@
 
   type Props = {
     value: string;
+    setValue?: (value: string) => void;
     id?: string | undefined;
-    onchange?: (value: string) => void;
   };
 
-  let { value = $bindable(), id = undefined, onchange }: Props = $props();
+  let { value = $bindable(), setValue, id }: Props = $props();
 
   let text = $state(value);
   let previous = $state(value);
@@ -17,7 +17,7 @@
   function onInput() {
     if (text !== value) {
       value = text;
-      onchange?.(value);
+      setValue?.(value);
     }
   }
   function onFocus() {
@@ -26,7 +26,7 @@
   function clear() {
     text = "";
     value = "";
-    onchange?.(text);
+    setValue?.(text);
   }
 </script>
 

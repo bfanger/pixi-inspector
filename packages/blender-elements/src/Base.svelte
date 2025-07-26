@@ -11,8 +11,6 @@
 
 <style>
   .base {
-    height: 100vh;
-
     font:
       11px/1.3 system-ui,
       sans-serif;

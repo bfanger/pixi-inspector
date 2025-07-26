@@ -74,7 +74,7 @@ export function createChild(
   if (init.children === undefined) {
     return leaf;
   }
-  vdom.children = [];
+
   const container: TreeDisplayContainerNode & {
     vdom: VDOM & { children: VDOM[] };
     sender: Sender;
@@ -92,6 +92,10 @@ export function createChild(
     },
     sender,
   };
+  container.children = init.children.map((childInit) =>
+    createChild(childInit, container.sender),
+  );
+  vdom.children = container.children.map((child) => (child as SvelteNode).vdom);
   node = container;
   return container;
 }

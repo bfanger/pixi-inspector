@@ -119,10 +119,16 @@ importers:
 
   apps/example-pixi-project:
     dependencies:
+      '@sveltejs/vite-plugin-svelte':
+        specifier: ^6.1.0
+        version: 6.1.0(svelte@5.36.13)(vite@7.0.5(@types/node@24.1.0)(jiti@1.21.6)(sass@1.80.5)(yaml@2.8.0))
       pixi.js:
         specifier: ^8.11.0
         version: 8.11.0
     devDependencies:
+      ui-protocol:
+        specifier: workspace:*
+        version: link:../../packages/ui-protocol
       vite:
         specifier: ^7.0.5
         version: 7.0.5(@types/node@24.1.0)(jiti@1.21.6)(sass@1.80.5)(yaml@2.8.0)
