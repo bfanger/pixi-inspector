@@ -43,7 +43,7 @@ const ctx = await esbuild.context({
 });
 if (WATCH) {
   await ctx.watch();
-  await ctx.serve({ port: 10808 });
+  await ctx.serve({ port: 10808, cors: { origin: "*" } });
 } else {
   await ctx.rebuild();
   await ctx.dispose();

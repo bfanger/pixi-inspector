@@ -1,117 +1,38 @@
 <script lang="ts">
   import Base from "blender-elements/src/Base.svelte";
-  import Button from "blender-elements/src/Button/Button.svelte";
+  import Instructions from "./Instructions.svelte";
   import type { BridgeFn } from "./types";
   import { setBridgeContext } from "./bridge-fns";
-  import connect from "./connect";
-  import Instructions from "./Instructions.svelte";
-  import patchPixi from "./patchPixi";
-  import PropertiesArea from "./PropertiesArea.svelte";
-  import SceneGraphArea from "./SceneGraphArea.svelte";
+  import { evalConnect } from "../../ui-protocol/src/evalBridge";
+  import type { Connection } from "../../ui-protocol/src/types";
   import Warning from "./Warning.svelte";
-
+  import Display from "../../ui-protocol/src/svelte/Display.svelte";
   type Props = {
     bridge: BridgeFn;
   };
 
   let { bridge }: Props = $props();
 
-  let refresh: () => void = $state(undefined as any);
+  setBridgeContext(bridge);
 
-  const connection = connect(bridge);
-  const { error } = connection;
-
-  setBridgeContext(<T,>(code: string) =>
-    bridge<T>(code).catch((err) => {
-      connection.retry();
-      throw err;
-    }),
+  let connectionPromise: Promise<Connection> = $state(
+    evalConnect("pixi", bridge),
   );
-  async function applyPatch() {
-    await patchPixi(bridge);
-    connection.retry();
-  }
 </script>
 
 <Base>
-  {#if $connection === "CONNECTED"}
-    <div class="pixi-panel">
-      <div class="outliner">
-        <SceneGraphArea onactivate={refresh} />
-      </div>
-      <div class="properties">
-        <PropertiesArea bind:refresh />
-      </div>
-    </div>
-  {:else if $connection !== "INJECT"}
-    <div class="not-connected">
-      <div class="instructions">
-        <Instructions />
-      </div>
-      <div class="status">
-        {#if $connection === "NOT_FOUND"}
-          <Warning>No Application or Game configured for debugging</Warning>
-        {:else if $connection === "DISCONNECTED"}
-          <Warning>Connection lost</Warning>
-        {:else if $connection === "PATCHABLE"}
-          <div class="patch">
-            <Button onclick={applyPatch}>Patch render engine</Button>
-          </div>
-          <Warning
-            >"Patch render engine" is available. This type of Devtools
-            connection is less reliable</Warning
-          >
-        {:else if $connection === "ERROR"}
-          <Warning icon="error">{$error}</Warning>
-        {:else}
-          <Warning icon="error">{$connection}</Warning>
-        {/if}
-      </div>
-    </div>
-  {/if}
+  {#await connectionPromise}
+    <Instructions />
+  {:then connection}
+    <Display
+      {connection}
+      ondisconnect={() => {
+        setTimeout(() => {
+          connectionPromise = evalConnect("pixi", bridge);
+        }, 1000);
+      }}
+    />
+  {:catch err}
+    <Warning message="Failed to connect: {err.message}" />
+  {/await}
 </Base>
-
-<style>
-  .pixi-panel {
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: minmax(50px, 1fr) minmax(210px, 55%);
-    gap: 3px;
-
-    min-height: 100vh;
-
-    @media (width >= 600px) {
-      grid-template-columns: 1fr minmax(300px, 40%);
-      grid-template-rows: 1fr;
-    }
-  }
-
-  .outliner {
-    overflow: auto;
-    background: #303030;
-  }
-
-  .properties {
-    overflow: auto;
-  }
-
-  .patch {
-    width: min-content;
-    margin: 4px 12px;
-  }
-
-  .not-connected {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-  }
-
-  .instructions {
-    overflow: auto;
-    flex: 1;
-  }
-
-  .status {
-    margin: 0 2px 2px;
-  }
-</style>

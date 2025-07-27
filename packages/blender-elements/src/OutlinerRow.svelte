@@ -50,13 +50,18 @@
 
   const ctx = getContext<{ focused: boolean }>("scene-graph");
 
-  $effect.pre(() => {
+  let scrolled = false;
+
+  $effect(() => {
     if (el && active) {
       if (ctx.focused) {
         el.focus();
-      } else {
+      } else if (!scrolled) {
         el.scrollIntoView();
+        scrolled = true;
       }
+    } else {
+      scrolled = false;
     }
   });
   const external = $state({

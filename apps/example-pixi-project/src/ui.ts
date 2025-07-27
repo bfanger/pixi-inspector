@@ -1,14 +1,9 @@
 import { mount, unmount } from "svelte";
 import Display from "../../../packages/ui-protocol/src/svelte/Display.svelte";
-import {
-  iframeConnect,
-  iframeListen,
-} from "../../../packages/ui-protocol/src/iframeBridge";
 import type {
   TreeControllerNode,
   TreeValue,
 } from "../../../packages/ui-protocol/src/types";
-
 import type {
   PixiDevtools,
   PropertyTab,
@@ -17,8 +12,13 @@ import pixiDevtools from "../../../packages/pixi-panel/src/pixi-devtools/pixiDev
 import pixiDevtoolsOutline from "../../../packages/pixi-panel/src/pixi-devtools/pixiDevtoolsOutline";
 import pixiDevtoolsSelection from "../../../packages/pixi-panel/src/pixi-devtools/pixiDevtoolsSelection";
 import pixiDevtoolsProperties from "../../../packages/pixi-panel/src/pixi-devtools/pixiDevtoolsProperties";
-
-const abortController = new AbortController();
+import pixiDevtoolsViewport from "../../../packages/pixi-panel/src/pixi-devtools/pixiDevtoolsViewport";
+import pixiDevtoolsOverlay from "../../../packages/pixi-panel/src/pixi-devtools/pixiDevtoolsOverlay";
+import pixiDevtoolsClickToSelect from "../../../packages/pixi-panel/src/pixi-devtools/pixiDevtoolsClickToSelect";
+import {
+  evalConnect,
+  evalListen,
+} from "../../../packages/ui-protocol/src/evalBridge";
 
 const legacy = pixiDevtools() as PixiDevtools;
 legacy.selection = pixiDevtoolsSelection(legacy);
@@ -26,9 +26,9 @@ const outline = pixiDevtoolsOutline(legacy);
 legacy.outline = outline;
 const properties = pixiDevtoolsProperties(legacy);
 legacy.properties = properties;
-// win.__PIXI_INSPECTOR_LEGACY__.viewport = (${pixiDevtoolsViewport.toString()}(win.__PIXI_INSPECTOR_LEGACY__));
-// win.__PIXI_INSPECTOR_LEGACY__.overlay = (${pixiDevtoolsOverlay.toString()}(win.__PIXI_INSPECTOR_LEGACY__));
-// win.__PIXI_INSPECTOR_LEGACY__.clickToSelect = (${pixiDevtoolsClickToSelect.toString()}(win.__PIXI_INSPECTOR_LEGACY__));
+legacy.viewport = pixiDevtoolsViewport(legacy);
+legacy.overlay = pixiDevtoolsOverlay(legacy);
+pixiDevtoolsClickToSelect(legacy);
 
 const legacyController = {
   children: [],
@@ -99,18 +99,25 @@ const legacyController = {
   },
 } satisfies TreeControllerNode;
 
-iframeListen(legacyController, window, "pixi", abortController.signal);
+evalListen(legacyController, "pixi");
 
-const target = document.createElement("div");
-document.body.appendChild(target);
-
-const devtools = mount(Display, {
-  props: {
-    connection: await iframeConnect(window, "pixi", abortController.signal),
-    ondisconnect: () => {
-      unmount(devtools);
-      target.remove();
+const target = document.querySelector("dev-tools");
+if (target) {
+  const devtools = mount(Display, {
+    props: {
+      connection: await evalConnect(
+        "pixi",
+        // eslint-disable-next-line @typescript-eslint/require-await
+        async (code) => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+          return eval(code);
+        },
+      ),
+      ondisconnect: () => {
+        unmount(devtools);
+        target.remove();
+      },
     },
-  },
-  target,
-});
+    target,
+  });
+}
