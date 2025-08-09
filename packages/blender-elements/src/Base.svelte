@@ -1,9 +1,10 @@
 <script lang="ts">
+  import type { Snippet } from "svelte";
   import { css } from "./icons";
-  type Props = {
-    children?: import("svelte").Snippet;
-  };
 
+  type Props = {
+    children?: Snippet;
+  };
   let { children }: Props = $props();
 </script>
 
@@ -11,6 +12,8 @@
 
 <style>
   .base {
+    height: 100%;
+
     font:
       11px/1.3 system-ui,
       sans-serif;

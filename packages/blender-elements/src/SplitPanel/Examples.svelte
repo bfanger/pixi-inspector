@@ -7,12 +7,12 @@
 
 <div style="height: calc(100svh - 30px)">
   <SplitPanels direction="column">
-    <SplitPanel
+    <SplitPanel min={16}
       ><div class="example-panel" style:background-color="lawngreen">
         1
       </div></SplitPanel
     >
-    <SplitPanel {size}
+    <SplitPanel {size} min={100}
       ><div class="example-panel" style:background-color="lightcoral">
         <h1>{size}</h1>
         <button onclick={() => (size = 3)}>Size = 3</button>
@@ -29,7 +29,12 @@
 
 <style>
   .example-panel {
+    overflow: auto;
     display: flow-root;
-    min-height: 100%;
+
+    box-sizing: border-box;
+    height: 100%;
+    border: 1px solid #3c3c3c;
+    border-radius: 4px;
   }
 </style>

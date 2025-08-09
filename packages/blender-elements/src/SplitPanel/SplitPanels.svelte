@@ -14,6 +14,7 @@
     el: HTMLDivElement;
     size: number;
     offset: number;
+    min: number;
   };
   let pair: [PanelData, PanelData] | undefined;
 
@@ -22,14 +23,21 @@
     pair = undefined;
     const panels: PanelData[] = Array.from(el.children)
       .filter((child) => child.classList.contains("split-panel"))
-      .map((el) => {
+      .map((div) => {
+        const el = div as HTMLDivElement;
         const bounds = el.getBoundingClientRect();
-        return {
-          grow: parseFloat((el as HTMLDivElement).style.flexGrow),
-          el: el as HTMLDivElement,
+
+        const panel: PanelData = {
+          grow: parseFloat(el.style.flexGrow),
+          el,
           size: direction === "row" ? bounds.width : bounds.height,
           offset: direction === "row" ? bounds.left : bounds.top,
+          min:
+            direction === "row"
+              ? parseFloat(el.style.minWidth)
+              : parseFloat(el.style.minHeight),
         };
+        return panel;
       });
 
     if (panels.length < 2) {
@@ -57,15 +65,14 @@
     }
 
     let distance = (direction === "row" ? e.clientX : e.clientY) - dragFrom;
-    const buffer = 10;
 
     if (distance > 0) {
-      if (distance > pair[1].size - buffer) {
-        distance = pair[1].size - buffer;
+      if (distance > pair[1].size - pair[1].min) {
+        distance = pair[1].size - pair[1].min;
       }
     } else {
-      if (pair[0].size + distance < buffer) {
-        distance = -pair[0].size + buffer;
+      if (pair[0].size + distance < pair[0].min) {
+        distance = -pair[0].size + pair[0].min;
       }
     }
     const totalSize = pair[0].size + pair[1].size;

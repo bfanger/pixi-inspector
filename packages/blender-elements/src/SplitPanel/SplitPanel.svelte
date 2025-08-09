@@ -3,9 +3,10 @@
 
   type Props = {
     size?: number;
+    min?: number;
     children: Snippet;
   };
-  let { size, children }: Props = $props();
+  let { size, min = 3, children }: Props = $props();
   let sizeOrDefault = $derived(size ?? 1);
 
   function sizeAction(el: HTMLDivElement) {
@@ -14,33 +15,26 @@
     $effect(() => {
       if (from !== sizeOrDefault) {
         from = sizeOrDefault;
-
         el.style.flexGrow = `${parseFloat(el.style.flexGrow) * (sizeOrDefault / from)}`;
       }
     });
   }
 </script>
 
-<div class="split-panel" {@attach sizeAction}>
+<div
+  class="split-panel"
+  style:min-width="{min}px"
+  style:min-height="{min}px"
+  {@attach sizeAction}
+>
   {@render children()}
 </div>
 
 <style>
   .split-panel {
-    pointer-events: none;
     cursor: default;
-
     position: relative;
-
-    overflow: auto;
     flex-basis: 0;
     flex-grow: 1;
-
-    border: 1px solid #3c3c3c;
-    border-radius: 4px;
-
-    :global(> *) {
-      pointer-events: auto;
-    }
   }
 </style>
