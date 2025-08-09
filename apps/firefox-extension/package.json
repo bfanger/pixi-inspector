@@ -16,7 +16,7 @@
     "esbuild-svelte": "^0.9.3",
     "pixi-panel": "workspace:*",
     "rimraf": "^6.0.1",
-    "svelte": "^5.36.13",
+    "svelte": "^5.38.0",
     "web-ext": "^8.9.0"
   }
 }
