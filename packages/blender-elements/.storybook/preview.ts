@@ -8,7 +8,7 @@ export default preview;
  * Same CSS as <Base /> component
  */
 document.body.style = `
-    height: 100vh;
+    min-height: 100vh;
 
     font:
       11px/1.3 system-ui,

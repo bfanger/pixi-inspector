@@ -5,7 +5,7 @@
   let size = $state(2);
 </script>
 
-<div style="height: calc(100svh - 30px)">
+<div style="display: grid; min-height: calc(100svh - 32px);">
   <SplitPanels direction="column">
     <SplitPanel min={16}
       ><div class="example-panel" style:background-color="lawngreen">

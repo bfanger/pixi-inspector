@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { type Snippet } from "svelte";
+  import { setContext, type Snippet } from "svelte";
 
   type Props = {
     direction: "row" | "column";
@@ -17,6 +17,11 @@
     min: number;
   };
   let pair: [PanelData, PanelData] | undefined;
+  setContext("SplitPanel", {
+    get direction() {
+      return direction;
+    },
+  });
 
   function dragStart(e: MouseEvent) {
     dragFrom = direction === "row" ? e.clientX : e.clientY;
