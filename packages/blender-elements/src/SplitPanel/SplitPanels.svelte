@@ -1,12 +1,16 @@
 <script lang="ts">
   import { setContext, type Snippet } from "svelte";
+  import throttle from "../throttle";
 
   type Props = {
     direction: "row" | "column";
     children: Snippet;
+    onResize?: (size: { width: number; height: number }) => void;
   };
-  let { direction, children }: Props = $props();
+  let { direction, children, onResize }: Props = $props();
   let dragFrom = $state<number>();
+  let clientWidth = $state(0);
+  let clientHeight = $state(0);
   let el: HTMLDivElement;
 
   type PanelData = {
@@ -15,6 +19,7 @@
     size: number;
     offset: number;
     min: number;
+    max: number;
   };
   let pair: [PanelData, PanelData] | undefined;
   setContext("SplitPanel", {
@@ -22,37 +27,56 @@
       return direction;
     },
   });
+  let throttledResize = $derived(throttle(150, onResize));
+
+  $effect(() => {
+    throttledResize?.({ width: clientWidth, height: clientHeight });
+  });
 
   function dragStart(e: MouseEvent) {
     dragFrom = direction === "row" ? e.clientX : e.clientY;
     pair = undefined;
+    let totalGrow = 0;
+    let totalSize = 0;
     const panels: PanelData[] = Array.from(el.children)
       .filter((child) => child.classList.contains("split-panel"))
       .map((div) => {
         const el = div as HTMLDivElement;
         const bounds = el.getBoundingClientRect();
-
+        const grow = parseFloat(el.style.flexGrow);
+        const size = direction === "row" ? bounds.width : bounds.height;
+        totalGrow += grow;
+        totalSize += size;
         const panel: PanelData = {
-          grow: parseFloat(el.style.flexGrow),
+          grow,
           el,
-          size: direction === "row" ? bounds.width : bounds.height,
+          size,
           offset: direction === "row" ? bounds.left : bounds.top,
           min:
             direction === "row"
-              ? parseFloat(el.style.minWidth)
-              : parseFloat(el.style.minHeight),
+              ? parseFloat(el.style.minWidth) || 0
+              : parseFloat(el.style.minHeight) || 0,
+          max:
+            direction === "row"
+              ? parseFloat(el.style.maxWidth)
+              : parseFloat(el.style.maxHeight),
         };
         return panel;
       });
 
     if (panels.length < 2) {
       return;
-    } else if (panels.length === 2) {
+    }
+
+    for (const panel of panels) {
+      panel.el.style.flexGrow = `${(panel.size / totalSize) * totalGrow}`;
+    }
+    if (panels.length === 2) {
       pair = [panels[0], panels[1]];
     } else {
       for (let i = 1; i < panels.length; i++) {
         const panel = panels[i];
-        if (panel.size + panel.offset > dragFrom) {
+        if (Math.ceil(panel.size + panel.offset) > dragFrom) {
           pair = [panels[i - 1], panel];
           break;
         }
@@ -75,9 +99,19 @@
       if (distance > pair[1].size - pair[1].min) {
         distance = pair[1].size - pair[1].min;
       }
+      if (pair[0].max > 0) {
+        if (pair[0].size + distance > pair[0].max) {
+          distance = pair[0].max - pair[0].size;
+        }
+      }
     } else {
       if (pair[0].size + distance < pair[0].min) {
         distance = -pair[0].size + pair[0].min;
+      }
+      if (pair[1].max > 0) {
+        if (distance * -1 + pair[1].size > pair[1].max) {
+          distance = pair[1].size - pair[1].max;
+        }
       }
     }
     const totalSize = pair[0].size + pair[1].size;
@@ -103,6 +137,8 @@
     style:cursor={direction === "column" ? "row-resize" : "col-resize"}
     onmousedown={dragStart}
     onmousemove={drag}
+    bind:clientWidth
+    bind:clientHeight
   ></div>
   {@render children()}
 </div>
@@ -111,16 +147,15 @@
   .split-panels {
     position: relative;
 
-    overflow: auto;
     display: flex;
+    flex-wrap: nowrap;
     gap: 3px;
 
-    min-height: 100%;
+    width: 100%;
+    height: 100%;
   }
 
   .divider-area {
-    cursor: move;
-
     position: absolute;
     inset: 1px;
 

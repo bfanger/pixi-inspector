@@ -9,6 +9,8 @@
   import PropertiesArea from "./PropertiesArea.svelte";
   import SceneGraphArea from "./SceneGraphArea.svelte";
   import Warning from "./Warning.svelte";
+  import SplitPanels from "../../blender-elements/src/SplitPanel/SplitPanels.svelte";
+  import SplitPanel from "../../blender-elements/src/SplitPanel/SplitPanel.svelte";
 
   type Props = {
     bridge: BridgeFn;
@@ -17,6 +19,7 @@
   let { bridge }: Props = $props();
 
   let refresh: () => void = $state(undefined as any);
+  let width: number = $state(0);
 
   const connection = connect(bridge);
   const { error } = connection;
@@ -36,12 +39,28 @@
 <Base>
   {#if $connection === "CONNECTED"}
     <div class="pixi-panel">
-      <div class="outliner">
-        <SceneGraphArea onactivate={refresh} />
-      </div>
-      <div class="properties">
-        <PropertiesArea bind:refresh />
-      </div>
+      <SplitPanels
+        direction={width > 600 ? "row" : "column"}
+        onResize={(size) => {
+          width = size.width;
+        }}
+      >
+        <SplitPanel minWidth={200} minHeight={100} size={1}>
+          <div class="outliner">
+            <SceneGraphArea onactivate={refresh} />
+          </div>
+        </SplitPanel>
+        <SplitPanel
+          minWidth={200}
+          minHeight={200}
+          maxHeight={600}
+          size={width > 600 ? 1 : 1.5}
+        >
+          <div class="properties">
+            <PropertiesArea bind:refresh />
+          </div>
+        </SplitPanel>
+      </SplitPanels>
     </div>
   {:else if $connection !== "INJECT"}
     <div class="not-connected">
@@ -73,26 +92,18 @@
 
 <style>
   .pixi-panel {
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: minmax(50px, 1fr) minmax(210px, 55%);
-    gap: 3px;
-
-    min-height: 100vh;
-
-    @media (width >= 600px) {
-      grid-template-columns: 1fr minmax(300px, 40%);
-      grid-template-rows: 1fr;
-    }
+    height: 100vh;
   }
 
   .outliner {
     overflow: auto;
-    background: #303030;
+    height: 100%;
+    background: #282828;
   }
 
   .properties {
     overflow: auto;
+    height: 100%;
   }
 
   .patch {

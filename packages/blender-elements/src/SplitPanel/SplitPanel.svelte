@@ -1,14 +1,23 @@
 <script lang="ts">
-  import { getContext, untrack, type Snippet } from "svelte";
+  import { untrack, type Snippet } from "svelte";
 
   type Props = {
     size?: number;
-    min?: number;
+    minWidth?: number;
+    minHeight?: number;
+    maxWidth?: number;
+    maxHeight?: number;
     children: Snippet;
   };
-  let { size, min = 3, children }: Props = $props();
+  let {
+    size,
+    minWidth = 3,
+    minHeight = 3,
+    maxWidth,
+    maxHeight,
+    children,
+  }: Props = $props();
   let sizeOrDefault = $derived(size ?? 1);
-  const ctx = getContext<{ direction: "row" | "column" }>("SplitPanel");
 
   function sizeAction(el: HTMLDivElement) {
     let from = untrack(() => sizeOrDefault);
@@ -24,8 +33,10 @@
 
 <div
   class="split-panel"
-  style:min-width={ctx.direction === "row" ? `${min}px` : undefined}
-  style:min-height={ctx.direction === "column" ? `${min}px` : undefined}
+  style:min-width="{minWidth}px"
+  style:min-height="{minHeight}px"
+  style:max-width={maxWidth ? `${maxWidth}px` : undefined}
+  style:max-height={maxHeight ? `${maxHeight}px` : undefined}
   {@attach sizeAction}
 >
   {@render children()}
