@@ -51,10 +51,14 @@ if (insideIframe) {
       game.player = { x: 0, y: 0 };
       controller = folder.add(game.player, "x", -100, 100);
     },
+    replace() {
+      game.replace++;
+    },
   };
   // add button to dat.gui
   gui.add(methods, "remove");
   gui.add(methods, "add");
+  gui.add(methods, "replace");
 
   setInterval(() => {
     if (

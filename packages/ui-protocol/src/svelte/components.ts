@@ -9,8 +9,8 @@ import TextField from "blender-elements/src/TextField/TextField.svelte";
 import SearchField from "blender-elements/src/SearchField/SearchField.svelte";
 import Grid from "blender-elements/src/Grid/Grid.svelte";
 import SceneGraphLegacy from "./legacy/SceneGraphLegacy.svelte";
-import SplitPanel from "../../../blender-elements/src/SplitPanel/SplitPanel.svelte";
-import SplitPanels from "../../../blender-elements/src/SplitPanel/SplitPanels.svelte";
+import SplitPanel from "blender-elements/src/SplitPanel/SplitPanel.svelte";
+import SplitPanels from "blender-elements/src/SplitPanel/SplitPanels.svelte";
 import PropertiesLegacy from "./legacy/PropertiesLegacy.svelte";
 
 const components = {

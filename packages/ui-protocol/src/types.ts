@@ -150,7 +150,6 @@ export type Connection = {
 };
 
 /**
- *
  * The sender sends any pending data changes along with an event or sync.
  * This is because the tree can be out of sync after the event/sync.
  * Which minimizes the amount of errors and requests.

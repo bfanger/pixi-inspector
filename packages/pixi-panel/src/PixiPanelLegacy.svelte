@@ -9,8 +9,8 @@
   import PropertiesArea from "./PropertiesArea.svelte";
   import SceneGraphArea from "./SceneGraphArea.svelte";
   import Warning from "./Warning.svelte";
-  import SplitPanels from "../../blender-elements/src/SplitPanel/SplitPanels.svelte";
-  import SplitPanel from "../../blender-elements/src/SplitPanel/SplitPanel.svelte";
+  import SplitPanels from "blender-elements/src/SplitPanel/SplitPanels.svelte";
+  import SplitPanel from "blender-elements/src/SplitPanel/SplitPanel.svelte";
 
   type Props = {
     bridge: BridgeFn;

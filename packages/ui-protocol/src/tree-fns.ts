@@ -191,9 +191,7 @@ function applyPartial(
     if (!node.children) {
       throw new Error("Can't replace children of a leaf node");
     }
-    target.replacements.push(
-      createInit(replacement, [...path, node.children.length]),
-    );
+    target.replacements.push(createInit(replacement, [...path, index]));
     node.children[index] = replacement.node;
     skip.push(index);
   }

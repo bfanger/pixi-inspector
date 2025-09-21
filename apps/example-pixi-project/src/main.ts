@@ -53,5 +53,5 @@ import { Application, Assets, Container, Sprite } from "pixi.js";
   }
   (globalThis as any).$pixi = container.children[12];
 
-  import("./ui");
+  // import("./ui");
 })();

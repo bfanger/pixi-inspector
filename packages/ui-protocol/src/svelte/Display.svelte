@@ -34,7 +34,7 @@
   async function poll() {
     try {
       await sender.sync();
-      timer = setTimeout(poll, 1_000);
+      timer = setTimeout(() => requestAnimationFrame(poll), 1_000);
     } catch (err) {
       console.warn(new Error("sender.sync() failed", { cause: err }));
       ondisconnect();

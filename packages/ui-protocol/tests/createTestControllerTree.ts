@@ -1,11 +1,12 @@
 import type { TreeControllerNode } from "../src/types";
 
 type Player = { x: number; y: number };
-type Game = { player: Player | undefined };
+type Game = { player: Player | undefined; replace: number };
 
 export function createTestControllerTree() {
-  const game: Game = { player: { x: 10, y: 0 } };
+  const game: Game = { player: { x: 10, y: 0 }, replace: 0 };
   let resetLabel = false;
+  const previousReplace = game.replace;
 
   const tree: TreeControllerNode = {
     children: [],
@@ -58,8 +59,17 @@ export function createTestControllerTree() {
           },
         );
       }
-      if (!player && tree.children?.length !== 0) {
-        patch.truncate = 0;
+      if (tree.children?.length !== 0) {
+        if (!player) {
+          patch.truncate = 0;
+        } else if (game.replace !== previousReplace) {
+          patch.replacements.push({
+            index: 0,
+            component: "Button",
+            props: { label: `Replaced ${game.replace}` },
+            node: {},
+          });
+        }
       }
       return patch;
     },

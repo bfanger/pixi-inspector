@@ -4,6 +4,7 @@ import { createTestControllerTree } from "./createTestControllerTree";
 
 describe.sequential("syncTree()", () => {
   const [controllerTree, game] = createTestControllerTree();
+
   it("should append NumberField connected to a PlayerLocationController", () => {
     const patch = syncTree(controllerTree);
     expect(patch).toMatchInlineSnapshot(`
@@ -44,6 +45,7 @@ describe.sequential("syncTree()", () => {
       }
     `);
   });
+
   it("should report the current x value", () => {
     expect(syncTree(controllerTree)).toMatchInlineSnapshot(`
       {
@@ -79,6 +81,33 @@ describe.sequential("syncTree()", () => {
       }
     `);
   });
+
+  it("should replace the input with a button", () => {
+    game.replace++;
+    expect(syncTree(controllerTree)).toMatchInlineSnapshot(`
+      {
+        "appends": [],
+        "props": [],
+        "replacements": [
+          {
+            "component": "Button",
+            "events": undefined,
+            "path": [
+              0,
+            ],
+            "props": {
+              "label": "Replaced 1",
+            },
+            "setValue": undefined,
+            "value": undefined,
+          },
+        ],
+        "truncates": [],
+        "value": [],
+      }
+    `);
+  });
+
   it("should truncate the tree", () => {
     game.player = undefined;
     expect(syncTree(controllerTree)).toMatchInlineSnapshot(`

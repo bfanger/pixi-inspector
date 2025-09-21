@@ -210,6 +210,84 @@ describe.sequential("sender", () => {
     `);
   });
 
+  it("updating the replace counter, will replace the input with a button", async () => {
+    game.replace = 123;
+    await sender.sync();
+    expect(controllerTree).toMatchInlineSnapshot(`
+      {
+        "children": [
+          {},
+          {
+            "events": {
+              "onclick": [Function],
+            },
+            "sync": [Function],
+          },
+        ],
+        "events": {
+          "reset": [Function],
+        },
+        "sync": [Function],
+      }
+    `);
+    expect(displayTree).toMatchInlineSnapshot(`
+      {
+        "children": [
+          {
+            "children": undefined,
+            "path": [
+              0,
+            ],
+            "setChild": [Function],
+            "setProps": [Function],
+            "setValue": [Function],
+            "test": {
+              "component": "Button",
+              "events": undefined,
+              "props": {
+                "label": "Replaced 123",
+              },
+              "setValue": undefined,
+              "value": undefined,
+            },
+            "truncate": [Function],
+          },
+          {
+            "children": undefined,
+            "path": [
+              1,
+            ],
+            "setChild": [Function],
+            "setProps": [Function],
+            "setValue": [Function],
+            "test": {
+              "component": "Button",
+              "events": [
+                "onclick",
+              ],
+              "props": {
+                "label": "Add 10",
+              },
+              "setValue": undefined,
+              "value": undefined,
+            },
+            "truncate": [Function],
+          },
+        ],
+        "path": [],
+        "setChild": [Function],
+        "setProps": [Function],
+        "setValue": [Function],
+        "test": {
+          "component": "Container",
+          "props": {},
+          "value": null,
+        },
+        "truncate": [Function],
+      }
+    `);
+  });
+
   it("reset() removes all child nodes from both trees & resyncs", async () => {
     const controllerBefore = controllerTree.children?.[0];
     const displayBefore = displayTree.children?.[0];

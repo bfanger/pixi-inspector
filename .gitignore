@@ -6,3 +6,5 @@ node_modules
 /packages/blender-elements/.histoire/
 
 *storybook.log
+/packages/pixi-panel/build/ui-mini.txt
+/packages/pixi-panel/build/ui-legacy.txt
