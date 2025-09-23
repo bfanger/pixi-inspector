@@ -15,7 +15,7 @@
     "vitest": "^3.2.4"
   },
   "dependencies": {
-    "svelte": "^5.39.3",
-    "vite": "^7.1.6"
+    "svelte": "^5.39.5",
+    "vite": "^7.1.7"
   }
 }
