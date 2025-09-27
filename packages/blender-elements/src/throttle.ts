@@ -7,6 +7,9 @@
 export default function throttle<
   T extends undefined | ((...args: any[]) => void),
 >(intervalMs: number, fn: T): T {
+  if (intervalMs <= 0) {
+    return fn;
+  }
   if (fn === undefined) {
     // Allowing undefined is convenient for converting eventHandlers.
     return undefined as T;

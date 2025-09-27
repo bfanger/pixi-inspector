@@ -17,7 +17,7 @@ describe.sequential("applyPatch()", () => {
           component: "TextInput",
           props: {},
           value: "Hello world",
-          events: ["oninput"],
+          events: [{ event: "oninput" }],
         },
       ],
     });

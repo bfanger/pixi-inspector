@@ -1,8 +1,8 @@
 <script lang="ts">
   import { setContext, type Snippet } from "svelte";
-  import Tree from "../../../../pixi-panel/src/Tree.svelte";
-  import type { OutlinerNode } from "../../../../pixi-panel/src/types";
-  import Warning from "../../../../pixi-panel/src/Warning.svelte";
+  import Tree from "./Tree.svelte";
+  import type { OutlinerNode } from "./types";
+  import Warning from "./Warning.svelte";
 
   type Props = {
     value: OutlinerNode;
@@ -77,12 +77,12 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    background: #2d2d2d;
   }
 
   .search-field {
     position: sticky;
-    padding: 3px 8px 5px;
-    background: #2d2d2d;
+    padding: 5px;
   }
 
   .tree {

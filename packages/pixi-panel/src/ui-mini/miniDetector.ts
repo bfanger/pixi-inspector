@@ -11,13 +11,13 @@ export default function miniDetector() {
     props: {},
     children: [createNode(previous)],
     node: {
-      sync(out) {
+      sync(patch) {
         const client = detectClient();
         if (client && win.__PIXI_DEVTOOLS_LEGACY__ && !injected) {
           injected = true;
-          out.replacements.push({ index: 0, ...createNode(client) });
+          patch.replacements.push({ index: 0, ...createNode(client) });
         } else if (previous !== client) {
-          out.replacements.push({ index: 0, ...createNode(client) });
+          patch.replacements.push({ index: 0, ...createNode(client) });
         }
         previous = client;
       },
@@ -25,8 +25,8 @@ export default function miniDetector() {
   } satisfies TreeInit;
 }
 
-function createNode(app: DetectedClient): TreeInit {
-  if (!app) {
+function createNode(client: DetectedClient): TreeInit {
+  if (!client) {
     return {
       component: "Instructions",
       children: [],
@@ -42,7 +42,13 @@ function createNode(app: DetectedClient): TreeInit {
     component: "PixiInject",
     children: [],
     props: {},
-    node: {},
+    node: {
+      events: {
+        onload: () => {
+          return Infinity; // Trigger sync after legacy ui controller is injected
+        },
+      },
+    },
   };
 }
 

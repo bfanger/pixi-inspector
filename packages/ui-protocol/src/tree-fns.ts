@@ -133,9 +133,10 @@ export function applyEvent(
   event: TreeEvent,
 ): TreePatchDto {
   const node = lookupNode(tree, event.path);
-  const listener = node.events?.[event.type];
+  const handler = node.events?.[event.type];
   let syncParents: number | void | undefined;
-  if (listener) {
+  if (handler) {
+    const listener = typeof handler === "function" ? handler : handler[0];
     syncParents = listener(event.data);
   }
   if (syncParents === undefined) {
@@ -224,10 +225,15 @@ function createInit(init: TreeInit, path: TreePath): TreePatchInitDto {
     path,
     component: init.component,
     props: init.props,
-    events: init.node.events ? Object.keys(init.node.events) : undefined,
+    events: undefined,
     value: init.value,
     setValue: init.node.setValue ? true : undefined,
   };
+  if (init.node.events) {
+    dto.events = Object.entries(init.node.events).map(([event, fn]) =>
+      typeof fn === "function" ? { event } : { event, ...fn[1] },
+    );
+  }
   if (init.children) {
     dto.children = [];
     if (!init.node.children) {

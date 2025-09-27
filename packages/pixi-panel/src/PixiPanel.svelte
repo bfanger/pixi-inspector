@@ -4,7 +4,6 @@
   import type { BridgeFn } from "./types";
   import { setBridgeContext } from "./bridge-fns";
   import { evalConnect } from "ui-protocol/src/evalBridge";
-  import type { Connection } from "ui-protocol/src/types";
   import Warning from "./Warning.svelte";
   import Display from "ui-protocol/src/svelte/Display.svelte";
   import { onDestroy } from "svelte";
@@ -13,10 +12,14 @@
   import PixiInject from "./PixiInject.svelte";
   // @ts-ignore
   import miniUI from "../build/ui-mini.txt?raw";
+  import SceneGraphLegacy from "./SceneGraphLegacy.svelte";
+  import PropertiesLegacy from "./PropertiesLegacy.svelte";
 
   Object.assign(components, {
     Instructions,
     PixiInject,
+    PixiSceneGraph: SceneGraphLegacy,
+    PixiProperties: PropertiesLegacy,
   });
 
   type Props = {
@@ -25,6 +28,7 @@
   let { bridge }: Props = $props();
 
   setBridgeContext(bridge);
+  let disconnected = $state(false);
 
   const abortController = new AbortController();
   onDestroy(() => {
@@ -36,34 +40,47 @@
     if (signal.aborted) {
       throw new Error(`reconnected aborted: ${signal.reason}`);
     }
-    const promise = evalConnect("pixi", bridge, {
-      signal,
+    const promise = Promise.all([
+      bridge(miniUI),
+      evalConnect("pixi", bridge, {
+        signal,
+      }),
+    ]);
+    promise.then(() => {
+      disconnected = false;
     });
-    void bridge(miniUI);
+    const timeout = setTimeout(() => {
+      requestAnimationFrame(reconnect);
+    }, 500);
+    promise.finally(() => clearTimeout(timeout));
     return promise;
   }
 
-  let connectionPromise: Promise<Connection> = $state(reconnect());
-
-  void bridge(miniUI);
+  let connectionPromise = $state(reconnect());
 </script>
 
 <Base>
-  {#await connectionPromise}
-    <div in:fade={{ delay: 1000, duration: 100 }}>
-      <Warning message="Connecting taking longer than expected..." />
+  {#if disconnected}
+    <div in:fade={{ delay: 100, duration: 100 }}>
+      <Warning message="Disconnected. Reconnecting..." />
     </div>
-  {:then connection}
-    <Display
-      {connection}
-      ondisconnect={() => {
-        connectionPromise = Promise.reject(new Error("Disconnected"));
-        setTimeout(() => (connectionPromise = reconnect()), 500);
-      }}
-    />
-  {:catch err}
-    <Warning message="Failed to connect: {err.message}" />
-  {/await}
+  {:else}
+    {#await connectionPromise}
+      <div in:fade={{ delay: 1000, duration: 100 }}>
+        <Warning message="Connecting taking longer than expected..." />
+      </div>
+    {:then [, connection]}
+      <Display
+        {connection}
+        ondisconnect={() => {
+          disconnected = true;
+          reconnect();
+        }}
+      />
+    {:catch err}
+      <Warning message={err.message} />
+    {/await}
+  {/if}
 </Base>
 
 <style>

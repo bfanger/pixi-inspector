@@ -17,7 +17,12 @@ import { Application, Assets, Container, Sprite } from "pixi.js";
   const { canvas } = app;
   canvas.style.width = "640px";
   canvas.style.maxWidth = "100%";
-  document.body.appendChild(canvas);
+  const devTools = document.querySelector("dev-tools");
+  if (!devTools) {
+    document.body.appendChild(canvas);
+  } else {
+    document.body.insertBefore(canvas, devTools);
+  }
 
   const container = new Container();
 
@@ -53,5 +58,5 @@ import { Application, Assets, Container, Sprite } from "pixi.js";
   }
   (globalThis as any).$pixi = container.children[12];
 
-  // import("./ui");
+  import("./ui");
 })();

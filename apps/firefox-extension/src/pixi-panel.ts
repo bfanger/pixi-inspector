@@ -1,5 +1,5 @@
 import type { BridgeFn } from "pixi-panel/src/types";
-import PixiPanel from "pixi-panel/src/PixiPanelLegacy.svelte";
+import PixiPanel from "pixi-panel/src/PixiPanel.svelte";
 import { mount } from "svelte";
 
 const bridge: BridgeFn = (code: string) =>

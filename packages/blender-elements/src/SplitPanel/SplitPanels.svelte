@@ -1,13 +1,12 @@
 <script lang="ts">
   import { setContext, type Snippet } from "svelte";
-  import throttle from "../throttle";
 
   type Props = {
     direction: "row" | "column";
     children: Snippet;
-    onResize?: (size: { width: number; height: number }) => void;
+    onresize?: (size: { width: number; height: number }) => void;
   };
-  let { direction, children, onResize }: Props = $props();
+  let { direction, children, onresize }: Props = $props();
   let dragFrom = $state<number>();
   let clientWidth = $state(0);
   let clientHeight = $state(0);
@@ -27,10 +26,9 @@
       return direction;
     },
   });
-  let throttledResize = $derived(throttle(150, onResize));
 
   $effect(() => {
-    throttledResize?.({ width: clientWidth, height: clientHeight });
+    onresize?.({ width: clientWidth, height: clientHeight });
   });
 
   function dragStart(e: MouseEvent) {

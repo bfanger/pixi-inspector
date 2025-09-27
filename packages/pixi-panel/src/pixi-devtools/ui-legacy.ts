@@ -20,93 +20,80 @@ pixiDevtoolsClickToSelect(legacy);
 
 const win = window as any;
 win.__PIXI_DEVTOOLS_LEGACY__ = function legacyInit() {
+  let direction = "row";
   return {
     component: "Fragment",
     props: {},
-    children: [],
-    node: {
-      sync(out) {
-        if (this.children?.length === 0) {
-          out.appends.push({
-            component: "SplitPanels",
-            props: { direction: "column" },
+    node: {},
+    children: [
+      {
+        component: "SplitPanels",
+        props: { direction: "column" },
+        node: {
+          sync(patch) {
+            patch.props = { direction };
+          },
+          events: {
+            onresize: [
+              (details) => {
+                const size = details as { width: number; height: number };
+                direction = size.width > 500 ? "row" : "column";
+              },
+              { throttle: 100 },
+            ],
+          },
+        },
+        children: [
+          {
+            component: "SplitPanel",
+            props: { minWidth: 200, minHeight: 100, size: 2 },
             node: {},
             children: [
               {
-                component: "SplitPanel",
-                props: { size: 2 },
-                node: {},
-                children: [
-                  {
-                    component: "SceneGraphLegacy",
-                    props: {},
-                    value: outline.tree(),
-                    node: {
-                      sync(out) {
-                        out.value = outline.tree();
-                      },
-                      events: {
-                        onexpand: (path) => outline.expand(path as string[]),
-                        oncollapse: (path) =>
-                          outline.collapse(path as string[]),
-                        onactivate: (path) =>
-                          outline.activate(path as string[]),
-                        onselectable: (path) =>
-                          outline.selectable(path as string[]),
-                        onunselectable: (path) =>
-                          outline.unselectable(path as string[]),
-                        onshow: (path) => outline.show(path as string[]),
-                        onhide: (path) => outline.hide(path as string[]),
-                        onlog: (path) => outline.log(path as string[]),
-                        onmouseenter: (path) =>
-                          outline.highlight(path as string[]),
-                        onmouseleave: () => outline.highlight([]),
-                      },
-                    },
-                    children: [
-                      {
-                        component: "SearchField",
-                        value: outline.query,
-                        props: { label: "Search" },
-                        node: {
-                          sync(out) {
-                            out.value = outline.query;
-                          },
-                          events: {
-                            setValue(value: TreeValue) {
-                              outline.query = value as string;
-                              return outline.query.length >= 2 ? 1 : 0;
-                            },
-                          },
-                        },
-                      },
-                    ],
+                component: "PixiSceneGraph",
+                props: {},
+                value: outline.tree(),
+                node: {
+                  sync(patch) {
+                    patch.value = outline.tree();
                   },
-                ],
-              },
-              {
-                component: "SplitPanel",
-                props: { size: 3 },
-                node: {},
+                  events: {
+                    onexpand: (path) => outline.expand(path as string[]),
+                    oncollapse: (path) => outline.collapse(path as string[]),
+                    onactivate: (path) => {
+                      outline.activate(path as string[]);
+                      return 3;
+                    },
+                    onselectable: (path) =>
+                      outline.selectable(path as string[]),
+                    onunselectable: (path) =>
+                      outline.unselectable(path as string[]),
+                    onshow: (path) => {
+                      outline.show(path as string[]);
+                      return 3;
+                    },
+                    onhide: (path) => {
+                      outline.hide(path as string[]);
+                      return 3;
+                    },
+                    onlog: (path) => outline.log(path as string[]),
+                    onmouseenter: (path) => outline.highlight(path as string[]),
+                    onmouseleave: () => outline.highlight([]),
+                  },
+                },
                 children: [
                   {
-                    component: "PropertiesLegacy",
-                    value: properties.values(),
-                    props: {},
+                    component: "SearchField",
+                    value: outline.query,
+                    props: { label: "Search" },
                     node: {
-                      sync(out) {
-                        out.value = properties.values();
-                      },
-                      setValue(value: TreeValue) {
-                        const event = value as {
-                          property: string;
-                          value: number;
-                        };
-                        properties.set(event.property, event.value);
+                      sync(patch) {
+                        patch.value = outline.query;
                       },
                       events: {
-                        onactivate: (tab) => {
-                          properties.activate(tab as PropertyTab);
+                        setValue(value: TreeValue) {
+                          outline.query = value as string;
+                          return outline.query.length >= 2 ? 1 : 0;
                         },
                       },
                     },
@@ -114,9 +101,43 @@ win.__PIXI_DEVTOOLS_LEGACY__ = function legacyInit() {
                 ],
               },
             ],
-          });
-        }
+          },
+          {
+            component: "SplitPanel",
+            props: {
+              minWidth: 200,
+              minHeight: 200,
+              maxHeight: 600,
+              size: 3,
+            },
+            node: {},
+            children: [
+              {
+                component: "PixiProperties",
+                value: properties.values(),
+                props: {},
+                node: {
+                  sync(out) {
+                    out.value = properties.values();
+                  },
+                  setValue(value: TreeValue) {
+                    const event = value as {
+                      property: string;
+                      value: number;
+                    };
+                    properties.set(event.property, event.value);
+                  },
+                  events: {
+                    onactivate: (tab) => {
+                      properties.activate(tab as PropertyTab);
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        ],
       },
-    },
+    ],
   } satisfies TreeInit;
 };

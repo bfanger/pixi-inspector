@@ -9,6 +9,7 @@ import type {
   TreeValue,
 } from "../types";
 import components from "./components";
+import throttle from "../../../blender-elements/src/throttle";
 
 export class VDOM {
   Component: Component<any> = $state(undefined as any as Component<any>);
@@ -29,42 +30,46 @@ export function createChild(
     throw new Error(`Component "${init.component}" is not available`);
   }
   let node: SvelteNode;
-  const events: Record<string, (details?: TreeValue) => void> = {};
-  if (init.events) {
-    for (const event of init.events) {
-      events[event] = (details?: TreeValue) => {
-        node.sender.dispatchEvent(node, event, details);
-      };
-    }
-  }
+
   const vdom = new VDOM();
   vdom.Component = component;
 
+  const keys = new Set<string>(); // eslint-disable-line svelte/prefer-svelte-reactivity
+  for (const key in init.props) {
+    keys.add(key);
+    vdom.props[key] = init.props[key];
+  }
+  if (init.events) {
+    for (const { event, throttle: ms } of init.events) {
+      const handler = (details?: TreeValue) => {
+        node.sender.dispatchEvent(node, event, details);
+      };
+      vdom.props[event] = ms ? throttle(ms, handler) : handler;
+    }
+  }
   const leaf: TreeDisplayLeafNode & { vdom: VDOM; sender: Sender } = {
     vdom,
     sender,
     path: init.path,
 
     setProps(props: TreeObjectValue) {
-      if (init.value !== undefined || init.setValue) {
-        vdom.props = {
-          ...props,
-          value: vdom.props.value,
-          ...events,
-        };
-      } else {
-        vdom.props = { ...props, ...events };
+      for (const key in props) {
+        keys.add(key);
+      }
+      for (const key of keys) {
+        vdom.props[key] = props[key];
       }
     },
   };
   node = leaf;
 
   if (init.value !== undefined || init.setValue) {
+    vdom.props.value = init.value;
     node.setValue = (value: TreeValue) => {
       vdom.props.value = value;
     };
     node.setValue(init.value);
-    events.setValue ??= (value: TreeValue) => {
+    vdom.props.setValue ??= (value: TreeValue) => {
       node.sender.setValue(node, value);
     };
   }

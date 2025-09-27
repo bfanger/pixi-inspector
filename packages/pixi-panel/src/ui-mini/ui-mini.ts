@@ -6,9 +6,9 @@ const win = window as any;
 win.__UI_PROTOCOL__ = win.__UI_PROTOCOL__ ?? {};
 const root = {
   children: [],
-  sync(out) {
+  sync(patch) {
     if (root.children.length === 0) {
-      out.appends.push(miniDetector());
+      patch.appends.push(miniDetector());
     }
   },
   events: {

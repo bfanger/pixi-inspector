@@ -1,13 +1,10 @@
 <script lang="ts">
-  import Tabs from "../../../../blender-elements/src/Tabs/Tabs.svelte";
-  import ObjectProperties from "../../../../pixi-panel/src/ObjectProperties.svelte";
-  import SceneProperties from "../../../../pixi-panel/src/SceneProperties.svelte";
-  import TextProperties from "../../../../pixi-panel/src/TextProperties.svelte";
-  import type {
-    PropertyTab,
-    PropertyTabState,
-  } from "../../../../pixi-panel/src/types";
-  import type { TreeValue } from "../../types";
+  import Tabs from "blender-elements/src/Tabs/Tabs.svelte";
+  import ObjectProperties from "./ObjectProperties.svelte";
+  import SceneProperties from "./SceneProperties.svelte";
+  import TextProperties from "./TextProperties.svelte";
+  import type { PropertyTab, PropertyTabState } from "./types";
+  import type { TreeValue } from "ui-protocol/src/types";
 
   type Props = {
     value: PropertyTabState;

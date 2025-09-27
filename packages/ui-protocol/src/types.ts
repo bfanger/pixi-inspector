@@ -5,9 +5,12 @@ export type TreeNode = TreeControllerNode | TreeDisplayNode;
  */
 export type TreeControllerNode = {
   children?: TreeControllerNode[];
-  sync?: (out: TreePatch) => void;
+  sync?: (patch: TreePatch) => void;
   setValue?: (value: TreeValue) => void;
-  events?: Record<string, (details?: TreeValue) => number | void | undefined>;
+  events?: Record<
+    string,
+    TreeEventHandler | [TreeEventHandler, { throttle?: number }]
+  >;
 };
 /**
  * TreeNode inside DevTools, connected to a (Svelte) Component
@@ -43,6 +46,8 @@ export type TreeObjectValue = {
 };
 type TreeArrayValue = TreeValue[];
 
+type TreeEventHandler = (details?: TreeValue) => number | void | undefined;
+
 /**
  * A path into the tree structure bases on depth & index.
  *
@@ -75,7 +80,7 @@ export type TreePatchInitDto = {
   props: TreeObjectValue;
   value?: TreeValue;
   setValue?: true;
-  events?: string[];
+  events?: { event: string; throttle?: number }[];
   children?: TreePatchInitDto[];
 };
 
