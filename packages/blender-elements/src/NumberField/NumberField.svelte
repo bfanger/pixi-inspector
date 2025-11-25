@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Mexp from "math-expression-evaluator";
   /**
    * Inspired by Blender's Number field
    * https://docs.blender.org/manual/en/latest/interface/controls/buttons/fields.html
@@ -60,10 +61,11 @@
   }
 
   function onInput() {
-    if (Number.isNaN(Number(el.value))) {
+    try {
+      wanted = new Mexp().eval(el.value);
+    } catch {
       return;
     }
-    wanted = Number(el.value);
     if (value !== wanted) {
       value = wanted;
     }
