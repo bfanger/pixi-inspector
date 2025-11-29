@@ -5,11 +5,11 @@
     "dev": "vite dev"
   },
   "dependencies": {
-    "@sveltejs/vite-plugin-svelte": "^6.2.0",
-    "pixi.js": "^8.13.2"
+    "@sveltejs/vite-plugin-svelte": "^6.2.1",
+    "pixi.js": "^8.14.3"
   },
   "devDependencies": {
     "ui-protocol": "workspace:*",
-    "vite": "^7.1.7"
+    "vite": "^7.2.4"
   }
 }

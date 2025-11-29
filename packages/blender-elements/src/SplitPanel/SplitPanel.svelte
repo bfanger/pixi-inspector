@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { untrack, type Snippet } from "svelte";
+  import { getContext, untrack, type Snippet } from "svelte";
 
   type Props = {
     size?: number;
@@ -19,6 +19,12 @@
   }: Props = $props();
   let sizeOrDefault = $derived(size ?? 1);
 
+  const ctx = getContext<{ direction: "row" | "column" }>("SplitPanel");
+  if (!ctx) {
+    console.warn("SplitPanel must be used within a SplitPanels component.");
+  }
+  let { direction } = $derived(ctx);
+
   function sizeAction(el: HTMLDivElement) {
     let from = untrack(() => sizeOrDefault);
     el.style.flexGrow = `${sizeOrDefault}`;
@@ -33,10 +39,18 @@
 
 <div
   class="split-panel"
-  style:min-width="{minWidth}px"
-  style:min-height="{minHeight}px"
-  style:max-width={maxWidth ? `${maxWidth}px` : undefined}
-  style:max-height={maxHeight ? `${maxHeight}px` : undefined}
+  style:min-width={direction === "row" && minWidth
+    ? `${minWidth}px`
+    : undefined}
+  style:min-height={direction === "column" && minHeight
+    ? `${minHeight}px`
+    : undefined}
+  style:max-width={direction === "row" && maxWidth
+    ? `${maxWidth}px`
+    : undefined}
+  style:max-height={direction === "column" && maxHeight
+    ? `${maxHeight}px`
+    : undefined}
   {@attach sizeAction}
 >
   {@render children()}

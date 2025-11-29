@@ -11,9 +11,9 @@
   "devDependencies": {
     "blender-elements": "workspace:*",
     "concurrently": "^9.2.1",
-    "esbuild": "^0.25.10",
+    "esbuild": "^0.27.0",
     "phaser": "^3.90.0",
-    "pixi.js": "^8.13.2",
+    "pixi.js": "^8.14.3",
     "ui-protocol": "workspace:*"
   }
 }

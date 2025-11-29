@@ -1,13 +1,17 @@
-<script lang="ts">
-  import Mexp from "math-expression-evaluator";
+<script lang="ts" module>
   /**
    * Inspired by Blender's Number field
    * https://docs.blender.org/manual/en/latest/interface/controls/buttons/fields.html
    */
+  import Mexp from "math-expression-evaluator";
   import blurOnEnter from "../actions/blurOnEnter";
   import numberDrag from "../actions/numberDrag";
   import revertOnEscape from "../actions/revertOnEscape";
 
+  const mexp = new Mexp();
+</script>
+
+<script lang="ts">
   type Props = {
     value: number | undefined;
     setValue?: (value: number) => void;
@@ -62,7 +66,7 @@
 
   function onInput() {
     try {
-      wanted = new Mexp().eval(el.value);
+      wanted = mexp.eval(el.value);
     } catch {
       return;
     }

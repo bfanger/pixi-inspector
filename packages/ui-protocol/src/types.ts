@@ -46,7 +46,7 @@ export type TreeObjectValue = {
 };
 type TreeArrayValue = TreeValue[];
 
-type TreeEventHandler = (details?: TreeValue) => number | void | undefined;
+type TreeEventHandler = (details?: TreeValue) => number | void;
 
 /**
  * A path into the tree structure bases on depth & index.

@@ -107,7 +107,7 @@ win.__PIXI_DEVTOOLS_LEGACY__ = function legacyInit() {
             props: {
               minWidth: 200,
               minHeight: 200,
-              maxHeight: 600,
+              maxHeight: 680,
               size: 3,
             },
             node: {},

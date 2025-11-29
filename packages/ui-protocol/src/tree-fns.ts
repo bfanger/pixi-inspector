@@ -134,7 +134,7 @@ export function applyEvent(
 ): TreePatchDto {
   const node = lookupNode(tree, event.path);
   const handler = node.events?.[event.type];
-  let syncParents: number | void | undefined;
+  let syncParents: number | void = undefined;
   if (handler) {
     const listener = typeof handler === "function" ? handler : handler[0];
     syncParents = listener(event.data);
