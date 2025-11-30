@@ -16,7 +16,7 @@
     depth?: number;
     value: boolean; // For detecting the refresh
     refresh: (depth: number) => void;
-    children: Snippet;
+    children?: Snippet;
   };
   let { interval, depth, value, refresh, children }: Props = $props();
 
@@ -32,13 +32,16 @@
   $effect(() => {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     value; // React to value changes
-    timer = window.setTimeout(() => poll(timer!), interval);
-
-    return () => {
-      clearTimeout(timer);
-      timer = undefined;
-    };
+    if (!interval) {
+      console.error("Invalid interval", interval);
+    } else {
+      timer = window.setTimeout(() => poll(timer!), interval);
+      return () => {
+        clearTimeout(timer);
+        timer = undefined;
+      };
+    }
   });
 </script>
 
-{@render children()}
+{@render children?.()}

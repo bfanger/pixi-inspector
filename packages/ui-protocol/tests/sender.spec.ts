@@ -53,6 +53,13 @@ describe.sequential("sender", () => {
             },
             "sync": [Function],
           },
+          {
+            "events": {
+              "refresh": [Function],
+            },
+            "setValue": [Function],
+            "sync": [Function],
+          },
         ],
         "events": {
           "reset": [Function],
@@ -106,6 +113,30 @@ describe.sequential("sender", () => {
             },
             "truncate": [Function],
           },
+          {
+            "children": undefined,
+            "path": [
+              2,
+            ],
+            "setChild": [Function],
+            "setProps": [Function],
+            "setValue": [Function],
+            "test": {
+              "component": "Refresh",
+              "events": [
+                {
+                  "event": "refresh",
+                },
+              ],
+              "props": {
+                "depth": 1,
+                "interval": 500,
+              },
+              "setValue": true,
+              "value": undefined,
+            },
+            "truncate": [Function],
+          },
         ],
         "path": [],
         "setChild": [Function],
@@ -145,6 +176,13 @@ describe.sequential("sender", () => {
             "events": {
               "onclick": [Function],
             },
+            "sync": [Function],
+          },
+          {
+            "events": {
+              "refresh": [Function],
+            },
+            "setValue": [Function],
             "sync": [Function],
           },
         ],
@@ -200,6 +238,30 @@ describe.sequential("sender", () => {
             },
             "truncate": [Function],
           },
+          {
+            "children": undefined,
+            "path": [
+              2,
+            ],
+            "setChild": [Function],
+            "setProps": [Function],
+            "setValue": [Function],
+            "test": {
+              "component": "Refresh",
+              "events": [
+                {
+                  "event": "refresh",
+                },
+              ],
+              "props": {
+                "depth": 1,
+                "interval": 500,
+              },
+              "setValue": true,
+              "value": false,
+            },
+            "truncate": [Function],
+          },
         ],
         "path": [],
         "setChild": [Function],
@@ -226,6 +288,13 @@ describe.sequential("sender", () => {
             "events": {
               "onclick": [Function],
             },
+            "sync": [Function],
+          },
+          {
+            "events": {
+              "refresh": [Function],
+            },
+            "setValue": [Function],
             "sync": [Function],
           },
         ],
@@ -277,6 +346,30 @@ describe.sequential("sender", () => {
               },
               "setValue": undefined,
               "value": undefined,
+            },
+            "truncate": [Function],
+          },
+          {
+            "children": undefined,
+            "path": [
+              2,
+            ],
+            "setChild": [Function],
+            "setProps": [Function],
+            "setValue": [Function],
+            "test": {
+              "component": "Refresh",
+              "events": [
+                {
+                  "event": "refresh",
+                },
+              ],
+              "props": {
+                "depth": 1,
+                "interval": 500,
+              },
+              "setValue": true,
+              "value": true,
             },
             "truncate": [Function],
           },

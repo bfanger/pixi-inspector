@@ -1,3 +1,4 @@
+import refreshNode from "../src/refreshNode";
 import type { TreeControllerNode } from "../src/types";
 
 type Player = { x: number; y: number };
@@ -56,6 +57,11 @@ export function createTestControllerTree() {
                 },
               },
             },
+          },
+          {
+            component: "Refresh",
+            node: refreshNode(),
+            props: { interval: 500, depth: 1 },
           },
         );
       }

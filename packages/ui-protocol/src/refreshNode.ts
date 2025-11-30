@@ -1,4 +1,4 @@
-import type { TreeControllerNode } from "./types";
+import type { TreeControllerNode, TreePatch } from "./types";
 
 /**
  * Node that handles the data & events of the Refresh component.
@@ -13,13 +13,15 @@ import type { TreeControllerNode } from "./types";
  *   children: [
  *     ...
  */
-export default function refreshNode(sync?: TreeControllerNode["sync"]) {
+export default function refreshNode(
+  sync?: (patch: TreePatch, controller: TreeControllerNode) => void,
+) {
   let tick = false;
-  return {
+  const node: TreeControllerNode = {
     sync(patch) {
       tick = !tick;
       patch.value = tick;
-      return sync?.(patch);
+      return sync?.(patch, node);
     },
     setValue(update) {
       tick = update as boolean;
@@ -29,5 +31,6 @@ export default function refreshNode(sync?: TreeControllerNode["sync"]) {
         return depth as number;
       },
     },
-  } satisfies TreeControllerNode;
+  };
+  return node;
 }

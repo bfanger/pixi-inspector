@@ -39,6 +39,23 @@ describe.sequential("syncTree()", () => {
             "setValue": undefined,
             "value": undefined,
           },
+          {
+            "component": "Refresh",
+            "events": [
+              {
+                "event": "refresh",
+              },
+            ],
+            "path": [
+              2,
+            ],
+            "props": {
+              "depth": 1,
+              "interval": 500,
+            },
+            "setValue": true,
+            "value": undefined,
+          },
         ],
         "props": [],
         "replacements": [],
@@ -62,6 +79,12 @@ describe.sequential("syncTree()", () => {
             ],
             "value": 10,
           },
+          {
+            "path": [
+              2,
+            ],
+            "value": true,
+          },
         ],
       }
     `);
@@ -78,6 +101,12 @@ describe.sequential("syncTree()", () => {
               0,
             ],
             "value": 15,
+          },
+          {
+            "path": [
+              2,
+            ],
+            "value": false,
           },
         ],
       }
@@ -105,7 +134,14 @@ describe.sequential("syncTree()", () => {
           },
         ],
         "truncates": [],
-        "value": [],
+        "value": [
+          {
+            "path": [
+              2,
+            ],
+            "value": true,
+          },
+        ],
       }
     `);
   });
