@@ -26,7 +26,9 @@ describe.sequential("syncTree()", () => {
           {
             "component": "Button",
             "events": [
-              "onclick",
+              {
+                "event": "onclick",
+              },
             ],
             "path": [
               1,

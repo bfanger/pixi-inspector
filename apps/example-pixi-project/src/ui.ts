@@ -38,7 +38,7 @@ if (target) {
           return eval(code);
         },
       ),
-      ondisconnect: () => {
+      onerror: () => {
         unmount(devtools);
         target.remove();
       },

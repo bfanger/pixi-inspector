@@ -4,24 +4,27 @@ import Display from "../svelte/Display.svelte";
 import { createTestControllerTree } from "../../tests/createTestControllerTree";
 import { iframeConnect, iframeListen } from "../iframeBridge";
 
-const devtool = document.body.querySelector("ui-devtool");
+const target = document.body.querySelector("ui-devtool");
 const iframe = document.querySelector<HTMLIFrameElement>("iframe#ui-game");
 const insideIframe = document.body.querySelector("ui-iframe");
 
-if (devtool && iframe?.contentWindow) {
+if (target && iframe?.contentWindow) {
   const abortController = new AbortController();
+  const connection = await iframeConnect(
+    iframe.contentWindow,
+    "demo",
+    abortController.signal,
+  );
   const app = mount(Display, {
     props: {
-      connection: await iframeConnect(
-        iframe.contentWindow,
-        "demo",
-        abortController.signal,
-      ),
-      ondisconnect: () => {
+      connection,
+      onerror(err) {
+        console.error(err);
         unmount(app);
+        abortController.abort();
       },
     },
-    target: devtool,
+    target,
   });
 }
 

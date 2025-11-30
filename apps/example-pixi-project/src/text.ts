@@ -1,7 +1,13 @@
 /**
  * https://pixijs.com/examples/text/pixi-text
  */
-import { Application, Color, FillGradient, Text, TextStyle } from "pixi.js";
+import {
+  Application,
+  FillGradient,
+  Text,
+  TextStyle,
+  type LinearGradientOptions,
+} from "pixi.js";
 
 (async () => {
   const app = new Application();
@@ -11,6 +17,7 @@ import { Application, Color, FillGradient, Text, TextStyle } from "pixi.js";
     background: "#1099bb",
     resizeTo: window,
   });
+  app.canvas.style.display = "block";
 
   document.body.appendChild(app.canvas);
 
@@ -20,18 +27,15 @@ import { Application, Color, FillGradient, Text, TextStyle } from "pixi.js";
   basicText.y = 100;
 
   app.stage.addChild(basicText);
-
-  const fill = new FillGradient(0, 0, 0, 36 * 1.7 * 7);
-
-  const colors = [0xffffff, 0x00ff99].map((color) =>
-    Color.shared.setValue(color).toNumber(),
-  );
-
-  colors.forEach((number, index) => {
-    const ratio = index / colors.length;
-
-    fill.addColorStop(ratio, number);
-  });
+  const fill = new FillGradient({
+    type: "linear",
+    start: { x: 0, y: 0 },
+    end: { x: 0, y: 3.1 },
+    colorStops: [
+      { offset: 0, color: 0xffffff },
+      { offset: 1, color: 0x00ff99 },
+    ],
+  } satisfies LinearGradientOptions);
 
   const style = new TextStyle({
     fontFamily: "Arial",
@@ -86,6 +90,5 @@ import { Application, Color, FillGradient, Text, TextStyle } from "pixi.js";
   skewText.y = 480;
 
   app.stage.addChild(skewText);
-
   (globalThis as any).__PIXI_APP__ = app;
 })();

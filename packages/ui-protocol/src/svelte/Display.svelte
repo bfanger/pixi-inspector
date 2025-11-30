@@ -8,10 +8,10 @@
 
   type Props = {
     connection: Connection;
-    ondisconnect: () => void;
+    onerror: (error: Error) => void;
   };
 
-  let { connection, ondisconnect }: Props = $props();
+  let { connection, onerror }: Props = $props();
 
   let tree = createChild(
     {
@@ -27,30 +27,18 @@
       reset: senderError,
     },
   );
-  const sender = createSender(tree, connection);
+  const sender = createSender(tree, connection, onerror);
   tree.sender = sender;
-
-  let timer: ReturnType<typeof setTimeout>;
-  async function poll() {
-    try {
-      await sender.sync();
-      timer = setTimeout(() => requestAnimationFrame(poll), 1_000);
-    } catch (err) {
-      console.warn(new Error("sender.sync() failed", { cause: err }));
-      ondisconnect();
-    }
-  }
 
   onMount(() => {
     let destroyed = false;
     sender.reset().then(() => {
       if (!destroyed) {
-        poll();
+        sender.sync();
       }
     });
     return () => {
       destroyed = false;
-      clearTimeout(timer);
     };
   });
 

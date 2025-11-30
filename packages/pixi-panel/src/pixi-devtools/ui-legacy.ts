@@ -7,6 +7,7 @@ import pixiDevtoolsProperties from "./pixiDevtoolsProperties";
 import pixiDevtoolsViewport from "./pixiDevtoolsViewport";
 import pixiDevtoolsOverlay from "./pixiDevtoolsOverlay";
 import pixiDevtoolsClickToSelect from "./pixiDevtoolsClickToSelect";
+import refreshNode from "ui-protocol/src/refreshNode";
 
 const legacy = pixiDevtools() as PixiDevtools;
 legacy.selection = pixiDevtoolsSelection(legacy);
@@ -50,53 +51,62 @@ win.__PIXI_DEVTOOLS_LEGACY__ = function legacyInit() {
             node: {},
             children: [
               {
-                component: "PixiSceneGraph",
-                props: {},
-                value: outline.tree(),
-                node: {
-                  sync(patch) {
-                    patch.value = outline.tree();
-                  },
-                  events: {
-                    onexpand: (path) => outline.expand(path as string[]),
-                    oncollapse: (path) => outline.collapse(path as string[]),
-                    onactivate: (path) => {
-                      outline.activate(path as string[]);
-                      return 3;
-                    },
-                    onselectable: (path) =>
-                      outline.selectable(path as string[]),
-                    onunselectable: (path) =>
-                      outline.unselectable(path as string[]),
-                    onshow: (path) => {
-                      outline.show(path as string[]);
-                      return 3;
-                    },
-                    onhide: (path) => {
-                      outline.hide(path as string[]);
-                      return 3;
-                    },
-                    onlog: (path) => outline.log(path as string[]),
-                    onmouseenter: (path) => outline.highlight(path as string[]),
-                    onmouseleave: () => outline.highlight([]),
-                  },
-                },
+                component: "Refresh",
+                props: { interval: 1_000 },
+                node: refreshNode(),
                 children: [
                   {
-                    component: "SearchField",
-                    value: outline.query,
-                    props: { label: "Search" },
+                    component: "PixiSceneGraph",
+                    props: {},
+                    value: outline.tree(),
                     node: {
                       sync(patch) {
-                        patch.value = outline.query;
+                        patch.value = outline.tree();
                       },
                       events: {
-                        setValue(value: TreeValue) {
-                          outline.query = value as string;
-                          return outline.query.length >= 2 ? 1 : 0;
+                        onexpand: (path) => outline.expand(path as string[]),
+                        oncollapse: (path) =>
+                          outline.collapse(path as string[]),
+                        onactivate: (path) => {
+                          outline.activate(path as string[]);
+                          return 3;
                         },
+                        onselectable: (path) =>
+                          outline.selectable(path as string[]),
+                        onunselectable: (path) =>
+                          outline.unselectable(path as string[]),
+                        onshow: (path) => {
+                          outline.show(path as string[]);
+                          return 3;
+                        },
+                        onhide: (path) => {
+                          outline.hide(path as string[]);
+                          return 3;
+                        },
+                        onlog: (path) => outline.log(path as string[]),
+                        onmouseenter: (path) =>
+                          outline.highlight(path as string[]),
+                        onmouseleave: () => outline.highlight([]),
                       },
                     },
+                    children: [
+                      {
+                        component: "SearchField",
+                        value: outline.query,
+                        props: { label: "Search" },
+                        node: {
+                          sync(patch) {
+                            patch.value = outline.query;
+                          },
+                          events: {
+                            setValue(value: TreeValue) {
+                              outline.query = value as string;
+                              return outline.query.length >= 2 ? 1 : 0;
+                            },
+                          },
+                        },
+                      },
+                    ],
                   },
                 ],
               },
@@ -113,26 +123,33 @@ win.__PIXI_DEVTOOLS_LEGACY__ = function legacyInit() {
             node: {},
             children: [
               {
-                component: "PixiProperties",
-                value: properties.values(),
-                props: {},
-                node: {
-                  sync(out) {
-                    out.value = properties.values();
-                  },
-                  setValue(value: TreeValue) {
-                    const event = value as {
-                      property: string;
-                      value: number;
-                    };
-                    properties.set(event.property, event.value);
-                  },
-                  events: {
-                    onactivate: (tab) => {
-                      properties.activate(tab as PropertyTab);
+                component: "Refresh",
+                props: { interval: 200 },
+                node: refreshNode(),
+                children: [
+                  {
+                    component: "PixiProperties",
+                    value: properties.values(),
+                    props: {},
+                    node: {
+                      sync(out) {
+                        out.value = properties.values();
+                      },
+                      setValue(value: TreeValue) {
+                        const event = value as {
+                          property: string;
+                          value: number;
+                        };
+                        properties.set(event.property, event.value);
+                      },
+                      events: {
+                        onactivate: (tab) => {
+                          properties.activate(tab as PropertyTab);
+                        },
+                      },
                     },
                   },
-                },
+                ],
               },
             ],
           },

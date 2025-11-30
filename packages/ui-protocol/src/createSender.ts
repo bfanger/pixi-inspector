@@ -11,6 +11,7 @@ import { applyPatch, lookupNode } from "./tree-fns";
 export default function createSender(
   tree: TreeDisplayNode,
   connection: Connection,
+  onerror: (err: Error) => void,
 ): Sender {
   const data: { node: TreeDisplayNode; value: TreeValue }[] = [];
   const queue: {
@@ -73,7 +74,12 @@ export default function createSender(
     promise = (async () => {
       do {
         await Promise.resolve();
-        await process();
+        try {
+          await process();
+        } catch (err) {
+          onerror(err as Error);
+          throw err;
+        }
       } while (
         // If there are new events or syncs, process them immediately
         data.length > 0 ||

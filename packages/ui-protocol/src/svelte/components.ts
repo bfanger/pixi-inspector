@@ -10,9 +10,11 @@ import SearchField from "blender-elements/src/SearchField/SearchField.svelte";
 import Grid from "blender-elements/src/Grid/Grid.svelte";
 import SplitPanel from "blender-elements/src/SplitPanel/SplitPanel.svelte";
 import SplitPanels from "blender-elements/src/SplitPanel/SplitPanels.svelte";
+import Refresh from "./Refresh.svelte";
 
 const components = {
   Fragment,
+  Refresh,
   Box,
   Grid,
   NumberField,

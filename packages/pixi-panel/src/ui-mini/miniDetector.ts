@@ -1,4 +1,5 @@
 import type { Application, Container } from "pixi.js";
+import refreshNode from "ui-protocol/src/refreshNode";
 import type { TreeInit } from "ui-protocol/src/types";
 
 const win = window as any;
@@ -7,21 +8,21 @@ export default function miniDetector() {
   let injected = false;
 
   return {
-    component: "Fragment",
-    props: {},
+    component: "Refresh",
+    props: { interval: 250 },
     children: [createNode(previous)],
-    node: {
-      sync(patch) {
-        const client = detectClient();
-        if (client && win.__PIXI_DEVTOOLS_LEGACY__ && !injected) {
-          injected = true;
-          patch.replacements.push({ index: 0, ...createNode(client) });
-        } else if (previous !== client) {
-          patch.replacements.push({ index: 0, ...createNode(client) });
-        }
-        previous = client;
-      },
-    },
+    node: refreshNode((patch) => {
+      const client = detectClient();
+      if (client && win.__PIXI_DEVTOOLS_LEGACY__ && !injected) {
+        injected = true;
+        patch.props = { interval: 2_500 };
+        patch.replacements.push({ index: 0, ...createNode(client) });
+      } else if (previous !== client) {
+        patch.props = { interval: 5_000 };
+        patch.replacements.push({ index: 0, ...createNode(client) });
+      }
+      previous = client;
+    }),
   } satisfies TreeInit;
 }
 

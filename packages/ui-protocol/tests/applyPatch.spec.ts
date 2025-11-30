@@ -35,7 +35,9 @@ describe.sequential("applyPatch()", () => {
             "test": {
               "component": "TextInput",
               "events": [
-                "oninput",
+                {
+                  "event": "oninput",
+                },
               ],
               "props": {},
               "value": "Hello world",

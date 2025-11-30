@@ -9,6 +9,17 @@ const bridge: BridgeFn = (code: string) =>
         if (err instanceof Error) {
           reject(err);
         }
+        const parts = err.description?.split("%s") ?? [];
+        if (parts.length > 1 && Array.isArray(err.details)) {
+          let message = "";
+          for (let i = 0; i < parts.length; i++) {
+            message += parts[i];
+            if (i > 0 && err.details && err.details[i - 1] !== undefined) {
+              message += JSON.stringify(err.details[i - 1]);
+            }
+          }
+          reject(new Error(message));
+        }
         reject(new Error(err.value || err.description || err.code));
       }
       resolve(result as any);

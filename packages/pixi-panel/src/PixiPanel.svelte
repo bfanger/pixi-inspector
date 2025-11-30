@@ -14,6 +14,7 @@
   import miniUI from "../build/ui-mini.txt?raw";
   import SceneGraphLegacy from "./SceneGraphLegacy.svelte";
   import PropertiesLegacy from "./PropertiesLegacy.svelte";
+  import type { Connection } from "ui-protocol/src/types";
 
   Object.assign(components, {
     Instructions,
@@ -28,7 +29,8 @@
   let { bridge }: Props = $props();
 
   setBridgeContext(bridge);
-  let disconnected = $state(false);
+  let errorMessage = $state("");
+  let connectionPromise = $state<Promise<Connection>>();
 
   const abortController = new AbortController();
   onDestroy(() => {
@@ -36,52 +38,89 @@
   });
   const signal = abortController.signal;
 
+  // Wait 1s before showing the error, but start reconnecting after 250ms
+  let ignoreErrors = false;
+  function onerror(err: unknown) {
+    if (!ignoreErrors) {
+      ignoreErrors = true;
+      setTimeout(() => {
+        setTimeout(() => {
+          if (ignoreErrors) {
+            if (err instanceof Error) {
+              errorMessage = err.message;
+            }
+            errorMessage ||= "Connection lost. Reconnecting...";
+            ignoreErrors = false;
+          }
+        }, 750);
+        reconnect();
+      }, 250);
+    }
+  }
+
   function reconnect() {
     if (signal.aborted) {
       throw new Error(`reconnected aborted: ${signal.reason}`);
     }
     const promise = Promise.all([
-      bridge(miniUI),
-      evalConnect("pixi", bridge, {
-        signal,
-      }),
-    ]);
-    promise.then(() => {
-      disconnected = false;
+      Promise.try(() => bridge(miniUI)),
+      evalConnect("pixi", bridge, { signal }),
+    ]).then(([, connection]) => {
+      errorMessage = "";
+      ignoreErrors = false;
+      return connection;
     });
+
+    connectionPromise = promise;
+
     const timeout = setTimeout(() => {
-      requestAnimationFrame(reconnect);
+      requestAnimationFrame(() => {
+        errorMessage = "Connection timed out, retrying...";
+        if (promise === connectionPromise) {
+          reconnect();
+        }
+      });
     }, 500);
-    promise.finally(() => clearTimeout(timeout));
-    return promise;
+    promise.finally(() => {
+      clearTimeout(timeout);
+    });
+    promise.catch((err) => {
+      errorMessage =
+        err instanceof Error ? err.message : "Connection failed, retrying...";
+      setTimeout(() => {
+        requestAnimationFrame(() => {
+          if (promise === connectionPromise) {
+            reconnect();
+          }
+        });
+      }, 500);
+    });
   }
 
-  let connectionPromise = $state(reconnect());
+  reconnect();
 </script>
 
-<Base>
-  {#if disconnected}
+{#if errorMessage}
+  <Base>
     <div in:fade={{ delay: 100, duration: 100 }}>
-      <Warning message="Disconnected. Reconnecting..." />
+      <Warning message={errorMessage} />
     </div>
-  {:else}
-    {#await connectionPromise}
+  </Base>
+{:else if connectionPromise}
+  {#await connectionPromise}
+    <Base>
       <div in:fade={{ delay: 1000, duration: 100 }}>
         <Warning message="Connecting taking longer than expected..." />
       </div>
-    {:then [, connection]}
-      <Display
-        {connection}
-        ondisconnect={() => {
-          disconnected = true;
-          reconnect();
-        }}
-      />
-    {:catch err}
+    </Base>
+  {:then connection}
+    <Display {connection} {onerror} />
+  {:catch err}
+    <Base>
       <Warning message={err.message} />
-    {/await}
-  {/if}
-</Base>
+    </Base>
+  {/await}
+{/if}
 
 <style>
   :global(html) {

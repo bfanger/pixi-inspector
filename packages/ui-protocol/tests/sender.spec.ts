@@ -11,6 +11,7 @@ describe.sequential("sender", () => {
   const sender = createSender(
     displayTree,
     createTestConnection(controllerTree),
+    console.error,
   );
 
   it("sync() created both trees", async () => {
@@ -93,7 +94,9 @@ describe.sequential("sender", () => {
             "test": {
               "component": "Button",
               "events": [
-                "onclick",
+                {
+                  "event": "onclick",
+                },
               ],
               "props": {
                 "label": "Add 10",
@@ -185,7 +188,9 @@ describe.sequential("sender", () => {
             "test": {
               "component": "Button",
               "events": [
-                "onclick",
+                {
+                  "event": "onclick",
+                },
               ],
               "props": {
                 "label": "Add 10",
@@ -263,7 +268,9 @@ describe.sequential("sender", () => {
             "test": {
               "component": "Button",
               "events": [
-                "onclick",
+                {
+                  "event": "onclick",
+                },
               ],
               "props": {
                 "label": "Add 10",
