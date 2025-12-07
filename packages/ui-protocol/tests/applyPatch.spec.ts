@@ -50,7 +50,7 @@ describe.sequential("applyPatch()", () => {
         "setProps": [Function],
         "setValue": [Function],
         "test": {
-          "component": "Container",
+          "component": "Fragment",
           "props": {},
           "value": null,
         },
@@ -68,7 +68,7 @@ describe.sequential("applyPatch()", () => {
       appends: [
         {
           path: [1],
-          component: "Container",
+          component: "Fragment",
           props: {},
           value: null,
           children: [
@@ -149,7 +149,7 @@ describe.sequential("applyPatch()", () => {
             "setProps": [Function],
             "setValue": [Function],
             "test": {
-              "component": "Container",
+              "component": "Fragment",
               "props": {},
               "value": null,
             },
@@ -161,7 +161,7 @@ describe.sequential("applyPatch()", () => {
         "setProps": [Function],
         "setValue": [Function],
         "test": {
-          "component": "Container",
+          "component": "Fragment",
           "props": {},
           "value": null,
         },
@@ -203,7 +203,7 @@ describe.sequential("applyPatch()", () => {
         "setProps": [Function],
         "setValue": [Function],
         "test": {
-          "component": "Container",
+          "component": "Fragment",
           "props": {},
           "value": null,
         },

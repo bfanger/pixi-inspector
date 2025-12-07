@@ -109,14 +109,6 @@ export default function createSender(
       return promise!;
     },
 
-    sync(node: TreeDisplayNode = tree) {
-      queue.sync.push(node);
-      if (!promise) {
-        schedule();
-      }
-      return promise!;
-    },
-
     async reset() {
       resetting = true;
       promise = undefined;

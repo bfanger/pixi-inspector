@@ -166,6 +166,5 @@ export type Sender = {
     details?: TreeValue,
   ) => Promise<void>;
   setValue: (node: TreeDisplayNode, value: TreeValue) => Promise<void>;
-  sync(node?: TreeDisplayNode): Promise<void>;
   reset: () => Promise<void>;
 };

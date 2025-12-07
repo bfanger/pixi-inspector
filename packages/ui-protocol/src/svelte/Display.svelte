@@ -25,7 +25,6 @@
       {
         dispatchEvent: senderError,
         setValue: senderError,
-        sync: senderError,
         reset: senderError,
       },
     );
@@ -34,15 +33,7 @@
   });
 
   onMount(() => {
-    let destroyed = false;
-    tree.sender.reset().then(() => {
-      if (!destroyed) {
-        tree.sender.sync();
-      }
-    });
-    return () => {
-      destroyed = false;
-    };
+    tree.sender.reset();
   });
 
   function senderError(): never {

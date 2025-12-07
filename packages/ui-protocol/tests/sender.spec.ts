@@ -14,7 +14,7 @@ describe.sequential("sender", () => {
     console.error,
   );
 
-  it("sync() created both trees", async () => {
+  it("reset() populates both trees", async () => {
     expect(controllerTree).toMatchInlineSnapshot(`
       {
         "children": [],
@@ -32,14 +32,14 @@ describe.sequential("sender", () => {
         "setProps": [Function],
         "setValue": [Function],
         "test": {
-          "component": "Container",
+          "component": "Fragment",
           "props": {},
           "value": null,
         },
         "truncate": [Function],
       }
     `);
-    await sender.sync();
+    await sender.reset();
     expect(controllerTree).toMatchInlineSnapshot(`
       {
         "children": [
@@ -143,7 +143,7 @@ describe.sequential("sender", () => {
         "setProps": [Function],
         "setValue": [Function],
         "test": {
-          "component": "Container",
+          "component": "Fragment",
           "props": {},
           "value": null,
         },
@@ -159,7 +159,7 @@ describe.sequential("sender", () => {
 
   it("sync() receives player.x update", async () => {
     game.player!.x += 5;
-    await sender.sync();
+    await sender.dispatchEvent(displayTree, "refresh");
     expect(displayTree.children?.[0].test.value).toBe(25);
   });
 
@@ -268,7 +268,7 @@ describe.sequential("sender", () => {
         "setProps": [Function],
         "setValue": [Function],
         "test": {
-          "component": "Container",
+          "component": "Fragment",
           "props": {},
           "value": null,
         },
@@ -279,7 +279,7 @@ describe.sequential("sender", () => {
 
   it("updating the replace counter, will replace the input with a button", async () => {
     game.replace = 123;
-    await sender.sync();
+    await sender.dispatchEvent(displayTree, "refresh");
     expect(controllerTree).toMatchInlineSnapshot(`
       {
         "children": [
@@ -379,7 +379,7 @@ describe.sequential("sender", () => {
         "setProps": [Function],
         "setValue": [Function],
         "test": {
-          "component": "Container",
+          "component": "Fragment",
           "props": {},
           "value": null,
         },

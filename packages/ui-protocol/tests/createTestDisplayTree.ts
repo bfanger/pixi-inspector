@@ -10,7 +10,7 @@ type TestNode = TreeDisplayNode & {
 export default function createTestDisplayTree() {
   return createTestDisplayNode({
     path: [],
-    component: "Container",
+    component: "Fragment",
     props: {},
     value: null,
     children: [],
