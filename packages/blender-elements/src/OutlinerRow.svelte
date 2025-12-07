@@ -64,15 +64,11 @@
       scrolled = false;
     }
   });
-  const external = $state({
+  const external = $derived({
     indent,
     activate() {
       onactivate();
     },
-  });
-
-  $effect.pre(() => {
-    external.indent = indent;
   });
 
   onMount(() => {

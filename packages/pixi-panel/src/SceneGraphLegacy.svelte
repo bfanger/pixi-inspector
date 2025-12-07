@@ -82,7 +82,7 @@
 
   .search-field {
     position: sticky;
-    padding: 5px;
+    padding: 8px;
   }
 
   .tree {

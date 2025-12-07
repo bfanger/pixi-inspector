@@ -28,7 +28,7 @@
   };
   let { bridge }: Props = $props();
 
-  setBridgeContext(bridge);
+  setBridgeContext((...args) => bridge(...args));
   let errorMessage = $state("");
   let connectionPromise = $state<Promise<Connection>>();
 
@@ -100,27 +100,23 @@
   reconnect();
 </script>
 
-{#if errorMessage}
-  <Base>
+<Base>
+  {#if errorMessage}
     <div in:fade={{ delay: 100, duration: 100 }}>
       <Warning message={errorMessage} />
     </div>
-  </Base>
-{:else if connectionPromise}
-  {#await connectionPromise}
-    <Base>
+  {:else if connectionPromise}
+    {#await connectionPromise}
       <div in:fade={{ delay: 1000, duration: 100 }}>
         <Warning message="Connecting taking longer than expected..." />
       </div>
-    </Base>
-  {:then connection}
-    <Display {connection} {onerror} />
-  {:catch err}
-    <Base>
+    {:then connection}
+      <Display {connection} {onerror} />
+    {:catch err}
       <Warning message={err.message} />
-    </Base>
-  {/await}
-{/if}
+    {/await}
+  {/if}
+</Base>
 
 <style>
   :global(html) {

@@ -17,6 +17,7 @@ if (target && iframe?.contentWindow) {
   );
   const app = mount(Display, {
     props: {
+      base: true,
       connection,
       onerror(err) {
         console.error(err);

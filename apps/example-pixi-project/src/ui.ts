@@ -30,6 +30,7 @@ const target = document.querySelector("dev-tools");
 if (target) {
   const devtools = mount(Display, {
     props: {
+      base: true,
       connection: await evalConnect(
         "pixi",
         // eslint-disable-next-line @typescript-eslint/require-await

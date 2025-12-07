@@ -5,6 +5,7 @@
   import TextProperties from "./TextProperties.svelte";
   import type { PropertyTab, PropertyTabState } from "./types";
   import type { TreeValue } from "ui-protocol/src/types";
+  import Box from "blender-elements/src/Box/Box.svelte";
 
   type Props = {
     value: PropertyTabState;
@@ -47,24 +48,26 @@
 
 <Tabs {active} {tabs} onactivate={(tab) => onactivate(tab.group)}>
   {#if value.properties}
-    {#if active?.group === "scene"}
-      <SceneProperties
-        props={value.properties}
-        bind:expanded
-        onchange={setValue}
-      />
-    {:else if active?.group === "object"}
-      <ObjectProperties
-        props={value.properties}
-        bind:expanded
-        onchange={setValue}
-      />
-    {:else if active?.group === "text"}
-      <TextProperties
-        props={value.properties}
-        bind:expanded
-        onchange={setValue}
-      />
-    {/if}
+    <Box padding="8px" gap="1px">
+      {#if active?.group === "scene"}
+        <SceneProperties
+          props={value.properties}
+          bind:expanded
+          onchange={setValue}
+        />
+      {:else if active?.group === "object"}
+        <ObjectProperties
+          props={value.properties}
+          bind:expanded
+          onchange={setValue}
+        />
+      {:else if active?.group === "text"}
+        <TextProperties
+          props={value.properties}
+          bind:expanded
+          onchange={setValue}
+        />
+      {/if}
+    </Box>
   {/if}
 </Tabs>

@@ -8,33 +8,36 @@
 
   type Props = {
     connection: Connection;
+    base?: boolean;
     onerror: (error: Error) => void;
   };
 
-  let { connection, onerror }: Props = $props();
+  let { connection, base = false, onerror }: Props = $props();
 
-  let tree = createChild(
-    {
-      path: [],
-      component: "Fragment",
-      props: {},
-      children: [],
-    },
-    {
-      dispatchEvent: senderError,
-      setValue: senderError,
-      sync: senderError,
-      reset: senderError,
-    },
-  );
-  const sender = createSender(tree, connection, onerror);
-  tree.sender = sender;
+  let tree = $derived.by(() => {
+    let tree = createChild(
+      {
+        path: [],
+        component: "Fragment",
+        props: {},
+        children: [],
+      },
+      {
+        dispatchEvent: senderError,
+        setValue: senderError,
+        sync: senderError,
+        reset: senderError,
+      },
+    );
+    tree.sender = createSender(tree, connection, onerror);
+    return tree;
+  });
 
   onMount(() => {
     let destroyed = false;
-    sender.reset().then(() => {
+    tree.sender.reset().then(() => {
       if (!destroyed) {
-        sender.sync();
+        tree.sender.sync();
       }
     });
     return () => {
@@ -47,6 +50,10 @@
   }
 </script>
 
-<Base>
+{#if base}
+  <Base>
+    <VDOMNode vdom={tree.vdom} />
+  </Base>
+{:else}
   <VDOMNode vdom={tree.vdom} />
-</Base>
+{/if}
