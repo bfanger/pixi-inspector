@@ -71,6 +71,12 @@ function detectClient() {
   if (renderer) {
     return renderer;
   }
+  const officialHook = getGlobal<{ stage: unknown } | undefined>(
+    "__PIXI_DEVTOOLS_WRAPPER__",
+  );
+  if (officialHook?.stage) {
+    return officialHook.stage;
+  }
   return undefined;
 }
 

@@ -61,6 +61,10 @@ export default function pixiDevtools() {
         return (patched.lastObjectRendered ??
           patched._lastObjectRendered) as Container;
       }
+      const officialHook = getGlobal("__PIXI_DEVTOOLS_WRAPPER__");
+      if (officialHook?.stage) {
+        return officialHook.stage as Container;
+      }
       return undefined;
     },
     renderer(): Renderer<ICanvas> | Game | undefined {
@@ -81,6 +85,10 @@ export default function pixiDevtools() {
       const patched = getGlobal("__PATCHED_RENDERER__");
       if (patched) {
         return patched as Renderer<ICanvas>;
+      }
+      const officialHook = getGlobal("__PIXI_DEVTOOLS_WRAPPER__");
+      if (officialHook?.renderer) {
+        return officialHook.renderer as Renderer<ICanvas>;
       }
       return undefined;
     },
