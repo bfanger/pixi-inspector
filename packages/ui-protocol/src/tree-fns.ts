@@ -193,6 +193,9 @@ function applyPartial(
       throw new Error("Can't replace children of a leaf node");
     }
     target.replacements.push(createInit(replacement, [...path, index]));
+    if (!replacement.node) {
+      throw new Error("createInit didn't create the missing node?");
+    }
     node.children[index] = replacement.node;
     skip.push(index);
   }
@@ -202,6 +205,9 @@ function applyPartial(
       throw new Error("Can't append children to a leaf node");
     }
     target.appends.push(createInit(append, [...path, node.children.length]));
+    if (!append.node) {
+      throw new Error("createInit didn't create the missing node?");
+    }
     node.children.push(append.node);
   }
 
@@ -221,10 +227,12 @@ function applyPartial(
  * From partial init information create a full patch dto.
  */
 function createInit(init: TreeInit, path: TreePath): TreePatchInitDto {
+  init.node = init.node ?? {};
+  init.props = init.props ?? {};
   const dto: TreePatchInitDto = {
     path,
     component: init.component,
-    props: init.props,
+    props: init.props ?? {},
     events: undefined,
     value: init.value,
     setValue: init.node.setValue ? true : undefined,
@@ -242,6 +250,9 @@ function createInit(init: TreeInit, path: TreePath): TreePatchInitDto {
     for (let i = 0; i < init.children.length; i++) {
       const childInit = init.children[i];
       dto.children.push(createInit(childInit, [...path, i]));
+      if (!childInit.node) {
+        throw new Error("createInit didn't create the missing node?");
+      }
       init.node.children[i] = childInit.node;
     }
   }

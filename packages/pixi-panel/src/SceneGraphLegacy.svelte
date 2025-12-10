@@ -2,7 +2,7 @@
   import { setContext, type Snippet } from "svelte";
   import Tree from "./Tree.svelte";
   import type { OutlinerNode } from "./types";
-  import Warning from "./Warning.svelte";
+  import Warning from "blender-elements/src/Warning/Warning.svelte";
 
   type Props = {
     value: OutlinerNode;

@@ -24,8 +24,6 @@ win.__PIXI_DEVTOOLS_LEGACY__ = function legacyInit() {
   let direction = "row";
   return {
     component: "Fragment",
-    props: {},
-    node: {},
     children: [
       {
         component: "SplitPanels",
@@ -57,7 +55,6 @@ win.__PIXI_DEVTOOLS_LEGACY__ = function legacyInit() {
                 children: [
                   {
                     component: "PixiSceneGraph",
-                    props: {},
                     value: outline.tree(),
                     node: {
                       sync(patch) {
@@ -130,7 +127,6 @@ win.__PIXI_DEVTOOLS_LEGACY__ = function legacyInit() {
                   {
                     component: "PixiProperties",
                     value: properties.values(),
-                    props: {},
                     node: {
                       sync(out) {
                         out.value = properties.values();

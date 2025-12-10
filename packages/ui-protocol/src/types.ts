@@ -65,9 +65,9 @@ export type TreeEventHandler = (details?: TreeValue) => number | void;
 export type TreePath = number[];
 
 export type TreeInit = {
-  node: TreeControllerNode;
   component: string;
-  props: TreeObjectValue;
+  node?: TreeControllerNode;
+  props?: TreeObjectValue;
   value?: TreeValue;
   children?: TreeInit[];
 };

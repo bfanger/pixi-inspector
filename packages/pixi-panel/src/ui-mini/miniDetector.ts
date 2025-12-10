@@ -29,10 +29,60 @@ export default function miniDetector() {
 function createNode(client: DetectedClient): TreeInit {
   if (!client) {
     return {
-      component: "Instructions",
-      children: [],
-      props: {},
-      node: {},
+      component: "Box",
+      props: { gap: 10, padding: 4 },
+      children: [
+        {
+          component: "Box",
+          props: { gap: 5 },
+          children: [],
+          node: {
+            sync(patch) {
+              const hasPixi = !!getGlobal("PIXI");
+              if (hasPixi && this.children!.length === 0) {
+                patch.appends.push(
+                  {
+                    component: "Warning",
+                    props: {
+                      message:
+                        '"Patch render engine" is available. This type of Devtools connection is less reliable',
+                    },
+                  },
+                  {
+                    component: "Button",
+                    props: { label: "Patch render engine" },
+                    node: {
+                      events: {
+                        onclick() {
+                          const PIXI = getGlobal<any>("PIXI");
+                          if (!PIXI) {
+                            console.error("Patching PIXI failed");
+                            return;
+                          }
+                          for (const prop of ["Renderer", "WebGLRenderer"]) {
+                            const Renderer = PIXI[prop];
+                            if (Renderer) {
+                              const { render } = Renderer.prototype;
+                              Renderer.prototype.render =
+                                function pixiDevtoolsRender(...args: any[]) {
+                                  win.__PATCHED_RENDERER__ = this;
+                                  win.__PATCHED_RENDERER_STAGE__ = args[0];
+                                  return render.call(this, ...args) as unknown;
+                                };
+                            }
+                          }
+                          return 3;
+                        },
+                      },
+                    },
+                  },
+                );
+              }
+            },
+          },
+        },
+        { component: "PixiInstructions" },
+      ],
     };
   }
   const legacyInit: unknown = win.__PIXI_DEVTOOLS_LEGACY__;
@@ -42,7 +92,6 @@ function createNode(client: DetectedClient): TreeInit {
   return {
     component: "PixiInject",
     children: [],
-    props: {},
     node: {
       events: {
         onload: () => {
@@ -70,6 +119,10 @@ function detectClient() {
   const renderer = getGlobal<unknown>("__PIXI_RENDERER__");
   if (renderer) {
     return renderer;
+  }
+  const patchedRenderer = getGlobal<unknown>("__PATCHED_RENDERER__");
+  if (patchedRenderer) {
+    return patchedRenderer;
   }
   const officialHook = getGlobal<{ stage: unknown } | undefined>(
     "__PIXI_DEVTOOLS_WRAPPER__",

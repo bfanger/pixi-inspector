@@ -11,6 +11,7 @@ import Grid from "blender-elements/src/Grid/Grid.svelte";
 import SplitPanel from "blender-elements/src/SplitPanel/SplitPanel.svelte";
 import SplitPanels from "blender-elements/src/SplitPanel/SplitPanels.svelte";
 import Refresh from "./Refresh.svelte";
+import Warning from "blender-elements/src/Warning/Warning.svelte";
 
 const components = {
   Fragment,
@@ -26,5 +27,6 @@ const components = {
   SplitPanel,
   SplitPanels,
   Property,
+  Warning,
 } as const;
 export default components;

@@ -2,8 +2,8 @@
   import { getBridgeContext } from "./bridge-fns";
   // @ts-ignore
   import uiLegacy from "../build/ui-legacy.txt?raw";
-  import Warning from "./Warning.svelte";
   import { fade } from "svelte/transition";
+  import Warning from "blender-elements/src/Warning/Warning.svelte";
 
   type Props = {
     onload?: () => void;

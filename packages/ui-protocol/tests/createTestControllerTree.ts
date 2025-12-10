@@ -73,7 +73,6 @@ export function createTestControllerTree() {
             index: 0,
             component: "Button",
             props: { label: `Replaced ${game.replace}` },
-            node: {},
           });
         }
       }

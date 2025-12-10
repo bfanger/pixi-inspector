@@ -56,10 +56,15 @@ export default function pixiDevtools() {
         return (renderer.lastObjectRendered ??
           renderer._lastObjectRendered) as Container;
       }
+
       const patched = getGlobal("__PATCHED_RENDERER__");
       if (patched) {
         return (patched.lastObjectRendered ??
           patched._lastObjectRendered) as Container;
+      }
+      const stageFromPatched = getGlobal("__PATCHED_RENDERER_STAGE__");
+      if (stageFromPatched) {
+        return stageFromPatched as Container;
       }
       const officialHook = getGlobal("__PIXI_DEVTOOLS_WRAPPER__");
       if (officialHook?.stage) {

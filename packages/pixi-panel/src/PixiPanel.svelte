@@ -4,7 +4,7 @@
   import type { BridgeFn } from "./types";
   import { setBridgeContext } from "./bridge-fns";
   import { evalConnect } from "ui-protocol/src/evalBridge";
-  import Warning from "./Warning.svelte";
+  import Warning from "blender-elements/src/Warning/Warning.svelte";
   import Display from "ui-protocol/src/svelte/Display.svelte";
   import { onDestroy } from "svelte";
   import components from "ui-protocol/src/svelte/components";
@@ -17,7 +17,7 @@
   import type { Connection } from "ui-protocol/src/types";
 
   Object.assign(components, {
-    Instructions,
+    PixiInstructions: Instructions,
     PixiInject,
     PixiSceneGraph: SceneGraphLegacy,
     PixiProperties: PropertiesLegacy,

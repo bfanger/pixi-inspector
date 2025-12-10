@@ -1,8 +1,10 @@
 <script lang="ts">
+  import type { Snippet } from "svelte";
+
   type Props = {
     icon?: "warning" | "error";
     message?: string;
-    children?: import("svelte").Snippet;
+    children?: Snippet;
   };
 
   let { icon = "warning", message = "", children }: Props = $props();

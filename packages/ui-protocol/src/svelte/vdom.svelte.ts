@@ -9,7 +9,7 @@ import type {
   TreeValue,
 } from "../types";
 import components from "./components";
-import throttle from "../../../blender-elements/src/throttle";
+import throttle from "../throttle";
 
 export class VDOM {
   Component: Component<any> = $state(undefined as any as Component<any>);
