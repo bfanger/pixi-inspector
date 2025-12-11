@@ -5,7 +5,7 @@ import type { OutlinerNode, PixiDevtools, UniversalNode } from "../types";
  * Treeview operations
  */
 export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
-  const metaProperty = Symbol("pixi-devtools-outline");
+  const metaPropertyMap = new WeakMap<UniversalNode, Meta>()
 
   devtools.on("activate", (node) => {
     if (node) {
@@ -31,18 +31,16 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
    * Get the metadata from a node or create it if it doesn't exist
    */
   function augment(node: UniversalNode) {
-    let meta: Meta = (node as any)[metaProperty];
-
-    if (meta) {
-      return meta;
+    if (!metaPropertyMap.has(node)) {
+      const newMeta = {
+        id: autoId(),
+        expanded: false,
+      };
+      metaPropertyMap.set(node, newMeta);
+      return newMeta;
     }
-    meta = {
-      id: autoId(),
-      expanded: false,
-    };
 
-    (node as any)[metaProperty] = meta;
-    return meta;
+    return metaPropertyMap.get(node)!;
   }
 
   function findIn(
@@ -58,7 +56,7 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
       return undefined;
     }
     const node = children.find(
-      (child) => (child as any)[metaProperty]?.id === id,
+      (child) => metaPropertyMap.get(child)?.id === id,
     );
     if (node) {
       return findIn(path.slice(1), node);
@@ -75,27 +73,23 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
   }
 
   function buildName(node: UniversalNode) {
-    let name = "";
     if (devtools.inVersionRange(8)) {
-      if ("label" in node && node.label !== null && node.label !== "") {
+      if ("label" in node && node.label) {
         if (node.label === "Sprite") {
           return node.label;
         }
         if (node.constructor.name) {
-          name += `${node.constructor.name} `;
+          return `${node.constructor.name} "${node.label}"`;
         }
-        name += `"${node.label}"`;
+        return `"${node.label}"`;
       }
-    } else if ("name" in node && node.name !== null && node.name !== "") {
+    } else if ("name" in node) {
       if (node.constructor.name) {
-        name += `${node.constructor.name} `;
+        return `${node.constructor.name} "${node.name}"`;
       }
-      name += `"${node.name}"`;
+      return `"${node.name}"`;
     }
-    if (!name) {
-      name = node.constructor.name ?? "anonymous";
-    }
-    return name;
+    return node.constructor.name ?? "anonymous";
   }
 
   function buildTree(node: UniversalNode): OutlinerNode {
@@ -119,11 +113,16 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
     return tree;
   }
 
+  /**
+   *
+   * @param query Lower case version of the query
+   * @param node Node to search
+   * @returns
+   */
   function searchResults(query: string, node: UniversalNode): OutlinerNode {
     const meta = augment(node);
     const name = buildName(node);
-    const match: boolean | undefined =
-      name.toLowerCase().indexOf(query.toLowerCase()) >= 0;
+    const match = name.toLowerCase().indexOf(query) !== -1;
     const children = devtools.childrenOf(node);
     if (!children || children.length === 0) {
       return {
@@ -137,9 +136,13 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
       };
     }
 
-    const results = children
-      .map((child) => searchResults(query, child))
-      .filter((result) => result.match !== false);
+    const results: OutlinerNode[] = [];
+    for (const child of children) {
+      const result = searchResults(query, child);
+      if (result.match !== false) {
+        results.push(result);
+      }
+    }
 
     return {
       id: meta.id,
@@ -156,8 +159,7 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
   function expandParentsFor(node: UniversalNode) {
     const parent = devtools.parentOf(node);
     if (parent) {
-      const meta = augment(parent);
-      meta.expanded = true;
+      augment(parent).expanded = true;
       expandParentsFor(parent);
     }
   }
@@ -177,12 +179,11 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
           visible: false,
         };
       }
-      if (!(root as any)[metaProperty]) {
-        const meta = augment(root);
-        meta.expanded = true;
+      if (!metaPropertyMap.has(root)) {
+        augment(root).expanded = true;
       }
       if (this.query) {
-        return searchResults(this.query, root);
+        return searchResults(this.query.toLowerCase(), root);
       }
       return buildTree(root);
     },
