@@ -5,7 +5,7 @@ import type { OutlinerNode, PixiDevtools, UniversalNode } from "../types";
  * Treeview operations
  */
 export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
-  const metaProperty = Symbol("pixi-devtools-outline");
+  const metaPropertyMap = new WeakMap<UniversalNode, Meta>()
 
   devtools.on("activate", (node) => {
     if (node) {
@@ -31,18 +31,16 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
    * Get the metadata from a node or create it if it doesn't exist
    */
   function augment(node: UniversalNode) {
-    let meta: Meta = (node as any)[metaProperty];
-
-    if (meta) {
-      return meta;
+    if (!metaPropertyMap.has(node)) {
+      const newMeta = {
+        id: autoId(),
+        expanded: false,
+      };
+      metaPropertyMap.set(node, newMeta);
+      return newMeta;
     }
-    meta = {
-      id: autoId(),
-      expanded: false,
-    };
 
-    (node as any)[metaProperty] = meta;
-    return meta;
+    return metaPropertyMap.get(node)!;
   }
 
   function findIn(
@@ -58,7 +56,7 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
       return undefined;
     }
     const node = children.find(
-      (child) => (child as any)[metaProperty]?.id === id,
+      (child) => metaPropertyMap.get(child)?.id === id,
     );
     if (node) {
       return findIn(path.slice(1), node);
@@ -177,9 +175,8 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
           visible: false,
         };
       }
-      if (!(root as any)[metaProperty]) {
-        const meta = augment(root);
-        meta.expanded = true;
+      if (!metaPropertyMap.has(root)) {
+        augment(root).expanded = true;
       }
       if (this.query) {
         return searchResults(this.query, root);

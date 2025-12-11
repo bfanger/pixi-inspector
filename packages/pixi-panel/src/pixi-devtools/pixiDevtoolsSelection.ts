@@ -2,7 +2,7 @@ import type { PixiDevtools, UniversalNode } from "../types";
 
 export default function pixiDevtoolsSelection(devtools: PixiDevtools) {
   const win = window as any;
-  const metaProperty = Symbol("pixi-devtools-selectable");
+  const metaPropertyMap = new WeakMap<UniversalNode, boolean>();
   let highlight: UniversalNode | undefined;
 
   return {
@@ -14,13 +14,13 @@ export default function pixiDevtoolsSelection(devtools: PixiDevtools) {
       devtools.dispatchEvent("activate", node);
     },
     selectable(node: UniversalNode) {
-      return (node as any)[metaProperty] !== false;
+      return metaPropertyMap.get(node) !== false;
     },
     disable(node: UniversalNode) {
-      (node as any)[metaProperty] = false;
+      metaPropertyMap.set(node, false);
     },
     enable(node: UniversalNode) {
-      (node as any)[metaProperty] = true;
+      metaPropertyMap.set(node, true);
     },
     highlighted(): UniversalNode | undefined {
       return highlight;
