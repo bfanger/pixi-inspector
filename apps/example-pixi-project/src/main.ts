@@ -58,5 +58,9 @@ import { Application, Assets, Container, Sprite } from "pixi.js";
   }
   (globalThis as any).$pixi = container.children[12];
 
+  (globalThis as any).destroyBunny = () => {
+    container.children[12]?.destroy();
+  };
+
   import("./ui");
 })();

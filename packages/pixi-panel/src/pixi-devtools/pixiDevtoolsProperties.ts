@@ -256,7 +256,7 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
       definitions.scene.push(...appDefinitions.scene);
     }
     const node = devtools.selection.active();
-    if (node) {
+    if (node && (!("destroyed" in node) || !node.destroyed)) {
       const nodeDefinitions = getPropDefinition(node);
       definitions.object.push(...nodeDefinitions.object);
       definitions.text.push(...nodeDefinitions.text);

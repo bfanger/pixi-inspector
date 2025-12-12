@@ -26,7 +26,7 @@ export function evalListen(tree: TreeControllerNode, id: string) {
   };
 
   if (receivers[id]) {
-    console.warn(`receiver "${id}" was overwritten`);
+    console.debug(`[devtools] receiver "${id}" was overwritten`); // eslint-disable-line no-console
     // @TODO send reset/truncate, before overwriting
   }
 
