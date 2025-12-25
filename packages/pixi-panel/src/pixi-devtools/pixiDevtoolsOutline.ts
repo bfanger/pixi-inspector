@@ -5,7 +5,7 @@ import type { OutlinerNode, PixiDevtools, UniversalNode } from "../types";
  * Treeview operations
  */
 export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
-  const metaPropertyMap = new WeakMap<UniversalNode, Meta>()
+  const metaPropertyMap = new WeakMap<UniversalNode, Meta>();
 
   devtools.on("activate", (node) => {
     if (node) {
@@ -83,7 +83,7 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
         }
         return `"${node.label}"`;
       }
-    } else if ("name" in node) {
+    } else if ("name" in node && node.name) {
       if (node.constructor.name) {
         return `${node.constructor.name} "${node.name}"`;
       }
