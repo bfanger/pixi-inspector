@@ -9,7 +9,7 @@ export type TreeControllerNode = {
   setValue?: (value: TreeValue) => void;
   events?: Record<
     string,
-    TreeEventHandler | [TreeEventHandler, { throttle?: number }]
+    TreeEventHandler | [TreeEventHandler, TreeEventOptions]
   >;
 };
 /**
@@ -64,6 +64,19 @@ export type TreeEventHandler = (details?: TreeValue) => number | void;
  */
 export type TreePath = number[];
 
+type TreeEventOptions = {
+  /**
+   * Debounce in milliseconds.
+   * Wait calling the handler until X milliseconds have passed, every event resets the timer.
+   */
+  debounce?: number;
+  /**
+   * Throttle in milliseconds
+   * The event handler will be called at most once every X milliseconds.
+   */
+  throttle?: number;
+};
+
 export type TreeInit = {
   component: string;
   node?: TreeControllerNode;
@@ -80,7 +93,7 @@ export type TreePatchInitDto = {
   props: TreeObjectValue;
   value?: TreeValue;
   setValue?: true;
-  events?: { event: string; throttle?: number }[];
+  events?: ({ event: string } & TreeEventOptions)[];
   children?: TreePatchInitDto[];
 };
 

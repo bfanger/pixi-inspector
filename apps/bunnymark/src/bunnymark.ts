@@ -1,11 +1,6 @@
 import PIXI from "pixi.js";
 import Stats from "stats.js";
 
-// $(document).ready(onReady);
-
-// $(window).resize(resize);
-// window.onorientationchange = resize;
-
 const width = 480;
 const height = 320;
 
@@ -226,3 +221,5 @@ function update() {
   requestAnimationFrame(update);
   stats.end();
 }
+
+(globalThis as any).__PIXI_STAGE__ = stage;

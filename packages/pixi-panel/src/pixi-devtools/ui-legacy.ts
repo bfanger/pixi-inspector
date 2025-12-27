@@ -20,7 +20,31 @@ legacy.overlay = pixiDevtoolsOverlay(legacy);
 pixiDevtoolsClickToSelect(legacy);
 
 const win = window as any;
-win.__PIXI_DEVTOOLS_LEGACY__ = function legacyInit() {
+win.__PIXI_DEVTOOLS_LEGACY__ = function legacyInit(): TreeInit {
+  const searchField: TreeInit = {
+    component: "SearchField",
+    value: outline.query,
+    props: { label: "Search" },
+    node: {
+      sync(patch) {
+        patch.value = outline.query;
+      },
+      events: {
+        setValue: [
+          (value: TreeValue) => {
+            outline.query = value as string;
+            return 2;
+          },
+          { debounce: 300 },
+        ],
+        onclear() {
+          outline.query = "";
+          return 2;
+        },
+      },
+    },
+  };
+
   let direction = "row";
   return {
     component: "Fragment",
@@ -51,61 +75,14 @@ win.__PIXI_DEVTOOLS_LEGACY__ = function legacyInit() {
               {
                 component: "Refresh",
                 props: { interval: 1_000 },
-                node: refreshNode(),
-                children: [
-                  {
-                    component: "PixiSceneGraph",
-                    value: outline.tree(),
-                    node: {
-                      sync(patch) {
-                        patch.value = outline.tree();
-                      },
-                      events: {
-                        onexpand: (path) => outline.expand(path as string[]),
-                        oncollapse: (path) =>
-                          outline.collapse(path as string[]),
-                        onactivate: (path) => {
-                          outline.activate(path as string[]);
-                          return 3;
-                        },
-                        onselectable: (path) =>
-                          outline.selectable(path as string[]),
-                        onunselectable: (path) =>
-                          outline.unselectable(path as string[]),
-                        onshow: (path) => {
-                          outline.show(path as string[]);
-                          return 3;
-                        },
-                        onhide: (path) => {
-                          outline.hide(path as string[]);
-                          return 3;
-                        },
-                        onlog: (path) => outline.log(path as string[]),
-                        onmouseenter: (path) =>
-                          outline.highlight(path as string[]),
-                        onmouseleave: () => outline.highlight([]),
-                      },
-                    },
-                    children: [
-                      {
-                        component: "SearchField",
-                        value: outline.query,
-                        props: { label: "Search" },
-                        node: {
-                          sync(patch) {
-                            patch.value = outline.query;
-                          },
-                          events: {
-                            setValue(value: TreeValue) {
-                              outline.query = value as string;
-                              return outline.query.length >= 2 ? 1 : 0;
-                            },
-                          },
-                        },
-                      },
-                    ],
-                  },
-                ],
+                node: refreshNode((patch) => {
+                  if (outline.query.length === 0) {
+                    patch.props = { interval: 1_000 };
+                  } else {
+                    patch.props = { interval: 5_000 };
+                  }
+                }),
+                children: [initSceneGraph([searchField])],
               },
             ],
           },
@@ -154,3 +131,37 @@ win.__PIXI_DEVTOOLS_LEGACY__ = function legacyInit() {
     ],
   } satisfies TreeInit;
 };
+
+function initSceneGraph(children: TreeInit[]): TreeInit {
+  return {
+    component: "PixiSceneGraph",
+    value: outline.tree(),
+    node: {
+      sync(patch) {
+        patch.value = outline.tree();
+      },
+      events: {
+        onexpand: (path) => outline.expand(path as string[]),
+        oncollapse: (path) => outline.collapse(path as string[]),
+        onactivate: (path) => {
+          outline.activate(path as string[]);
+          return 3;
+        },
+        onselectable: (path) => outline.selectable(path as string[]),
+        onunselectable: (path) => outline.unselectable(path as string[]),
+        onshow: (path) => {
+          outline.show(path as string[]);
+          return 3;
+        },
+        onhide: (path) => {
+          outline.hide(path as string[]);
+          return 3;
+        },
+        onlog: (path) => outline.log(path as string[]),
+        onmouseenter: (path) => outline.highlight(path as string[]),
+        onmouseleave: () => outline.highlight([]),
+      },
+    },
+    children,
+  };
+}

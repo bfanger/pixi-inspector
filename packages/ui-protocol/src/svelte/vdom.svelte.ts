@@ -10,6 +10,7 @@ import type {
 } from "../types";
 import components from "./components";
 import throttle from "../throttle";
+import debounce from "../debounce";
 
 export class VDOM {
   Component: Component<any> = $state(undefined as any as Component<any>);
@@ -40,11 +41,17 @@ export function createChild(
     vdom.props[key] = init.props[key];
   }
   if (init.events) {
-    for (const { event, throttle: ms } of init.events) {
+    for (const config of init.events) {
       const handler = (details?: TreeValue) => {
-        node.sender.dispatchEvent(node, event, details);
+        node.sender.dispatchEvent(node, config.event, details);
       };
-      vdom.props[event] = ms ? throttle(ms, handler) : handler;
+      if (config.throttle) {
+        vdom.props[config.event] = throttle(config.throttle, handler);
+      } else if (config.debounce) {
+        vdom.props[config.event] = debounce(config.debounce, handler);
+      } else {
+        vdom.props[config.event] = handler;
+      }
     }
   }
   const leaf: TreeDisplayLeafNode & { vdom: VDOM; sender: Sender } = {

@@ -7,9 +7,10 @@
     value: string;
     setValue?: (value: string) => void;
     id?: string | undefined;
+    onclear?: () => void;
   };
 
-  let { value = $bindable(), setValue, id }: Props = $props();
+  let { value = $bindable(), setValue, id, onclear }: Props = $props();
 
   let text = $state(value);
   let previous = $state(value);
@@ -18,6 +19,9 @@
     if (text !== value) {
       value = text;
       setValue?.(value);
+      if (value === "") {
+        onclear?.();
+      }
     }
   }
   function onFocus() {
@@ -27,6 +31,7 @@
     text = "";
     value = "";
     setValue?.(text);
+    onclear?.();
   }
 </script>
 
