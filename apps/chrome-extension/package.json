@@ -8,10 +8,10 @@
     "format": "prettier --write ."
   },
   "devDependencies": {
-    "esbuild": "^0.27.1",
-    "esbuild-svelte": "^0.9.3",
+    "esbuild": "^0.27.2",
+    "esbuild-svelte": "^0.9.4",
     "pixi-panel": "workspace:*",
     "rimraf": "^6.1.2",
-    "svelte": "^5.45.6"
+    "svelte": "^5.46.1"
   }
 }

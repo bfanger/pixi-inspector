@@ -3,13 +3,15 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite dev --port 8081"
+    "dev": "vite dev --port 8081",
+    "test": "vitest run"
   },
   "devDependencies": {
-    "@types/pixi.js": "^3.0.34",
+    "@types/pixi.js": "3",
     "@types/stats.js": "^0.17.4",
-    "pixi.js": "^3.0.11",
+    "pixi.js": "3",
     "stats.js": "^0.17.0",
-    "vite": "^7.2.6"
+    "vite": "^7.3.0",
+    "vitest": "^4.0.16"
   }
 }
