@@ -11,17 +11,19 @@ export default function miniDetector() {
     component: "Refresh",
     props: { interval: 250 },
     children: [createNode(previous)],
-    node: refreshNode((patch) => {
-      const client = detectClient();
-      if (client && win.__PIXI_DEVTOOLS_LEGACY__ && !injected) {
-        injected = true;
-        patch.props = { interval: 2_500 };
-        patch.replacements.push({ index: 0, ...createNode(client) });
-      } else if (previous !== client) {
-        patch.props = { interval: 5_000 };
-        patch.replacements.push({ index: 0, ...createNode(client) });
-      }
-      previous = client;
+    node: refreshNode({
+      sync(patch) {
+        const client = detectClient();
+        if (client && win.__PIXI_DEVTOOLS_LEGACY__ && !injected) {
+          injected = true;
+          patch.props = { interval: 2_500 };
+          patch.replacements.push({ index: 0, ...createNode(client) });
+        } else if (previous !== client) {
+          patch.props = { interval: 5_000 };
+          patch.replacements.push({ index: 0, ...createNode(client) });
+        }
+        previous = client;
+      },
     }),
   } satisfies TreeInit;
 }

@@ -75,12 +75,14 @@ win.__PIXI_DEVTOOLS_LEGACY__ = function legacyInit(): TreeInit {
               {
                 component: "Refresh",
                 props: { interval: 1_000 },
-                node: refreshNode((patch) => {
-                  if (outline.query.length === 0) {
-                    patch.props = { interval: 1_000 };
-                  } else {
-                    patch.props = { interval: 5_000 };
-                  }
+                node: refreshNode({
+                  sync(patch) {
+                    if (outline.query.length === 0) {
+                      patch.props = { interval: 1_000 };
+                    } else {
+                      patch.props = { interval: 5_000 };
+                    }
+                  },
                 }),
                 children: [initSceneGraph([searchField])],
               },
@@ -169,6 +171,21 @@ function initSceneGraph(children: TreeInit[]): TreeInit {
         onmouseleave: () => outline.highlight([]),
       },
     },
-    children,
+    children: [
+      ...children,
+      {
+        component: "Refresh",
+        props: { interval: 100 },
+        node: refreshNode({
+          refresh() {
+            if (previous$pixi !== win.$pixi) {
+              previous$pixi = win.$pixi;
+              return 3;
+            }
+            return 0;
+          },
+        }),
+      },
+    ],
   };
 }
