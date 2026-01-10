@@ -10,7 +10,7 @@ import pixiDevtoolsClickToSelect from "./pixiDevtoolsClickToSelect";
 import refreshNode from "ui-protocol/src/refreshNode";
 
 const legacy = pixiDevtools() as PixiDevtools;
-legacy.selection = pixiDevtoolsSelection(legacy);
+legacy.selection = pixiDevtoolsSelection();
 const outline = pixiDevtoolsOutline(legacy);
 legacy.outline = outline;
 const properties = pixiDevtoolsProperties(legacy);
@@ -133,11 +133,18 @@ win.__PIXI_DEVTOOLS_LEGACY__ = function legacyInit(): TreeInit {
 };
 
 function initSceneGraph(children: TreeInit[]): TreeInit {
+  let previous$pixi: any = undefined;
   return {
     component: "PixiSceneGraph",
     value: outline.tree(),
     node: {
       sync(patch) {
+        if (previous$pixi !== win.$pixi) {
+          if (win.$pixi) {
+            outline.expandParentsFor(win.$pixi);
+          }
+          previous$pixi = win.$pixi;
+        }
         patch.value = outline.tree();
       },
       events: {

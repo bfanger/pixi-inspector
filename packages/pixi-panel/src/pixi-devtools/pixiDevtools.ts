@@ -2,12 +2,7 @@ import type { Game, GameObjects, Scene } from "phaser";
 import type { Application, Container, ICanvas, Renderer } from "pixi.js";
 import type { UniversalNode } from "../types";
 
-type EventDetail = {
-  activate: UniversalNode | undefined;
-};
-
 export default function pixiDevtools() {
-  const eventTarget = new EventTarget();
   const win = window as any;
   let detectedVersion: number | undefined | null = null;
 
@@ -188,32 +183,6 @@ export default function pixiDevtools() {
         return true;
       }
       return false;
-    },
-    on<T extends keyof EventDetail>(
-      event: T,
-      callback: (detail: EventDetail[T]) => void,
-    ) {
-      const listener = (e: any) => {
-        callback(e.detail);
-      };
-      eventTarget.addEventListener(`pixi:${event}`, listener);
-      return () => eventTarget.removeEventListener(`pixi:${event}`, listener);
-    },
-    once<T extends keyof EventDetail>(
-      event: T,
-      callback: (detail: EventDetail[T]) => void,
-    ) {
-      const off = this.on(event, (e) => {
-        off();
-        callback(e);
-      });
-      return off;
-    },
-    dispatchEvent<T extends keyof EventDetail>(
-      event: T,
-      detail: EventDetail[T],
-    ) {
-      eventTarget.dispatchEvent(new CustomEvent(`pixi:${event}`, { detail }));
     },
   };
 }

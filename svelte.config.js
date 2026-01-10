@@ -8,6 +8,6 @@ import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
  */
 const svelteConfig = {
   preprocess: [vitePreprocess()],
-  compilerOptions: { css: "injected" },
+  compilerOptions: { css: "injected", fragments: "tree" },
 };
 export default svelteConfig;

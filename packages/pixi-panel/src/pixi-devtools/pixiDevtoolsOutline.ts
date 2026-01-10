@@ -7,12 +7,6 @@ import type { OutlinerNode, PixiDevtools, UniversalNode } from "../types";
 export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
   const metaPropertyMap = new WeakMap<UniversalNode, Meta>();
 
-  devtools.on("activate", (node) => {
-    if (node) {
-      expandParentsFor(node);
-    }
-  });
-
   function autoId() {
     autoId.current += 1;
     if (autoId.current > Number.MAX_SAFE_INTEGER) {
@@ -156,14 +150,6 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
     };
   }
 
-  function expandParentsFor(node: UniversalNode) {
-    const parent = devtools.parentOf(node);
-    if (parent) {
-      augment(parent).expanded = true;
-      expandParentsFor(parent);
-    }
-  }
-
   return {
     query: "",
 
@@ -233,6 +219,13 @@ export default function pixiDevtoolsOutline(devtools: PixiDevtools) {
       const node = find(path);
       if (node) {
         console.info(node);
+      }
+    },
+    expandParentsFor(node: UniversalNode) {
+      const parent = devtools.parentOf(node);
+      if (parent) {
+        augment(parent).expanded = true;
+        this.expandParentsFor(parent);
       }
     },
   };

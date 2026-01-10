@@ -1,6 +1,6 @@
-import type { PixiDevtools, UniversalNode } from "../types";
+import type { UniversalNode } from "../types";
 
-export default function pixiDevtoolsSelection(devtools: PixiDevtools) {
+export default function pixiDevtoolsSelection() {
   const win = window as any;
   const metaPropertyMap = new WeakMap<UniversalNode, boolean>();
   let highlight: UniversalNode | undefined;
@@ -11,7 +11,6 @@ export default function pixiDevtoolsSelection(devtools: PixiDevtools) {
     },
     activate(node?: UniversalNode) {
       win.$pixi = node;
-      devtools.dispatchEvent("activate", node);
     },
     selectable(node: UniversalNode) {
       return metaPropertyMap.get(node) !== false;
