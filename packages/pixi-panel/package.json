@@ -13,7 +13,7 @@
     "concurrently": "^9.2.1",
     "esbuild": "^0.27.2",
     "phaser": "^3.90.0",
-    "pixi.js": "^8.14.3",
+    "pixi.js": "^8.15.0",
     "ui-protocol": "workspace:*"
   }
 }
