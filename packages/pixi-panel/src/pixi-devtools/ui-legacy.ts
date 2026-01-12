@@ -179,7 +179,6 @@ function initSceneGraph(children: TreeInit[]): TreeInit {
         node: refreshNode({
           refresh() {
             if (previous$pixi !== win.$pixi) {
-              previous$pixi = win.$pixi;
               return 3;
             }
             return 0;
