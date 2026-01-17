@@ -12,10 +12,10 @@
     "@types/dat.gui": "^0.7.13",
     "blender-elements": "workspace:*",
     "dat.gui": "^0.7.9",
-    "vitest": "^4.0.16"
+    "vitest": "^4.0.17"
   },
   "dependencies": {
-    "svelte": "^5.46.1",
+    "svelte": "^5.46.4",
     "vite": "^7.3.1"
   }
 }
