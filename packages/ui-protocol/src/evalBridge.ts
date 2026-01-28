@@ -43,7 +43,7 @@ export async function evalConnect(
 ): Promise<Connection> {
   const connectInterval = options?.connectInterval ?? 1_000;
   const signal = options?.signal ?? new AbortController().signal;
-  const target = `__UI_PROTOCOL__[${JSON.stringify(id)}]`;
+  const target = `window.__UI_PROTOCOL__?.[${JSON.stringify(id)}]`;
   const connected = Promise.withResolvers<void>();
   let timer: ReturnType<typeof setTimeout> | undefined = undefined;
 
