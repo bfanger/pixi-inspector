@@ -1,4 +1,136 @@
-export function unsafeHexToRgb(hex: string) {
+export function hexToRgb(color: string) {
+  const rgb = unsafeHexToRgb(color);
+  if (rgb === undefined) {
+    return [0, 0, 0, undefined] as const;
+  }
+  return rgb;
+}
+
+function toHex(channel: number) {
+  return Math.round(Math.max(0, Math.min(255, channel)))
+    .toString(16)
+    .padStart(2, "0");
+}
+
+export function rgbToHex(r: number, g: number, b: number, a?: number): string {
+  if (a === undefined) {
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+  }
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}${toHex(a)}`;
+}
+
+export function rgbToHsv(
+  r: number,
+  g: number,
+  b: number,
+): [number, number, number] {
+  r /= 255;
+  g /= 255;
+  b /= 255;
+
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const v = max;
+  let h = 0;
+  let s;
+
+  const d = max - min;
+  if (max === 0) {
+    s = 0;
+  } else {
+    s = d / max;
+  }
+
+  if (max === min) {
+    h = 0;
+  } else {
+    switch (max) {
+      case r:
+        h = (g - b) / d + (g < b ? 6 : 0);
+        break;
+      case g:
+        h = (b - r) / d + 2;
+        break;
+      case b:
+        h = (r - g) / d + 4;
+        break;
+    }
+    h /= 6;
+  }
+
+  return [h * 360, s * 100, v * 100];
+}
+
+export function hsvToRgb(
+  h: number,
+  s: number,
+  v: number,
+): [number, number, number] {
+  const hue = h / 360;
+  const saturation = s / 100;
+  const value = v / 100;
+
+  let r = 0;
+  let g = 0;
+  let b = 0;
+
+  const i = Math.floor(hue * 6);
+  const f = hue * 6 - i;
+  const p = value * (1 - saturation);
+  const q = value * (1 - saturation * f);
+  const t = value * (1 - saturation * (1 - f));
+
+  const vInt = i % 6;
+
+  switch (vInt) {
+    case 0:
+      r = value;
+      g = t;
+      b = p;
+      break;
+    case 1:
+      r = q;
+      g = value;
+      b = p;
+      break;
+    case 2:
+      r = p;
+      g = value;
+      b = t;
+      break;
+    case 3:
+      r = p;
+      g = q;
+      b = value;
+      break;
+    case 4:
+      r = t;
+      g = p;
+      b = value;
+      break;
+    case 5:
+      r = value;
+      g = p;
+      b = q;
+      break;
+  }
+
+  return [r * 255, g * 255, b * 255];
+}
+
+export function hexToHsv(
+  hex: string,
+): [number, number, number, number | undefined] {
+  const [r, g, b, a] = hexToRgb(hex);
+  return [...rgbToHsv(r, g, b), a];
+}
+
+export function hsvToHex(h: number, s: number, v: number, a?: number): string {
+  const [r, g, b] = hsvToRgb(h, s, v);
+  return rgbToHex(r, g, b, a);
+}
+
+function unsafeHexToRgb(hex: string) {
   let r;
   let g;
   let b;
@@ -33,122 +165,4 @@ export function unsafeHexToRgb(hex: string) {
     return undefined;
   }
   return [r, g, b, a] as const;
-}
-
-export function hexToRgb(color: string) {
-  const rgb = unsafeHexToRgb(color);
-  if (rgb === undefined) {
-    return [0, 0, 0, undefined] as const;
-  }
-  return rgb;
-}
-
-function toHex(channel: number) {
-  return Math.round(Math.max(0, Math.min(255, channel)))
-    .toString(16)
-    .padStart(2, "0");
-}
-
-export function rgbToHex(r: number, g: number, b: number, a?: number): string {
-  if (a === undefined) {
-    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-  }
-  return `#${toHex(r)}${toHex(g)}${toHex(b)}${toHex(a)}`;
-}
-
-export function rgbToHsl(
-  r: number,
-  g: number,
-  b: number,
-): [number, number, number] {
-  r /= 255;
-  g /= 255;
-  b /= 255;
-
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  let h = 0;
-  let s;
-  const l = (max + min) / 2;
-
-  if (max === min) {
-    h = s = 0;
-  } else {
-    const d = max - min;
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-
-    switch (max) {
-      case r:
-        h = (g - b) / d + (g < b ? 6 : 0);
-        break;
-      case g:
-        h = (b - r) / d + 2;
-        break;
-      case b:
-        h = (r - g) / d + 4;
-        break;
-    }
-    h /= 6;
-  }
-
-  return [h * 360, s * 100, l * 100];
-}
-
-export function hslToRgb(
-  h: number,
-  s: number,
-  l: number,
-): [number, number, number] {
-  const hue = h / 360;
-  const saturation = s / 100;
-  const lightness = l / 100;
-
-  let r, g, b;
-
-  if (saturation === 0) {
-    r = g = b = lightness;
-  } else {
-    const q =
-      lightness < 0.5
-        ? lightness * (1 + saturation)
-        : lightness + saturation - lightness * saturation;
-    const p = 2 * lightness - q;
-
-    r = hue2rgb(p, q, hue + 1 / 3);
-    g = hue2rgb(p, q, hue);
-    b = hue2rgb(p, q, hue - 1 / 3);
-  }
-
-  return [r * 255, g * 255, b * 255];
-}
-
-function hue2rgb(p: number, q: number, t: number) {
-  if (t < 0) {
-    t += 1;
-  }
-  if (t > 1) {
-    t -= 1;
-  }
-  if (t < 1 / 6) {
-    return p + (q - p) * 6 * t;
-  }
-  if (t <= 1 / 2) {
-    return q;
-  }
-  if (t < 2 / 3) {
-    return p + (q - p) * (2 / 3 - t) * 6;
-  }
-  return p;
-}
-
-export function hexToHsl(
-  hex: string,
-): [number, number, number, number | undefined] {
-  const [r, g, b, a] = hexToRgb(hex);
-  return [...rgbToHsl(r, g, b), a];
-}
-
-export function hslToHex(h: number, s: number, l: number, a?: number): string {
-  const [r, g, b] = hslToRgb(h, s, l);
-  return rgbToHex(r, g, b, a);
 }

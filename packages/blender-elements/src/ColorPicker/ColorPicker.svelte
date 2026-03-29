@@ -3,8 +3,9 @@
   import Property from "../Property/Property.svelte";
   import RangeField from "../RangeField/RangeField.svelte";
   import Toggle from "../Toggle/Toggle.svelte";
-  import LightnessRange from "./LightnessRange.svelte";
-  import { hexToHsl, hexToRgb, hslToHex, rgbToHex } from "./color-fns";
+  import LightnessRange from "./BrightnessSlider.svelte";
+  import { hexToHsv, hexToRgb, hsvToHex, rgbToHex } from "./color-fns";
+  import ColorWheel from "./ColorWheel.svelte";
 
   type Props = {
     value: string;
@@ -16,18 +17,18 @@
   /** Shadow value to detect prop changes */
   let wanted = $state(value);
   let hex = $state(value);
-  const initial = hexToHsl(value);
+  const initial = hexToHsv(value);
   let h = $state(initial[0]);
   let s = $state(initial[1]);
-  let l = $state(initial[2]);
+  let v = $state(initial[2]);
   let [r, g, b, a] = $derived(hexToRgb(value));
 
-  let mode = $state<"rgb" | "hsl">("hsl");
+  let mode = $state<"rgb" | "hsv">("hsv");
 
   $effect(() => {
     if (wanted !== value) {
       wanted = value;
-      [h, s, l] = hexToHsl(value);
+      [h, s, v] = hexToHsv(value);
     }
   });
 
@@ -35,20 +36,20 @@
     value = val;
     wanted = value;
     hex = value;
-    [h, s, l] = hexToHsl(value);
+    [h, s, v] = hexToHsv(value);
     setValue?.(value);
   }
 
-  function setValueHSL(
+  function setValueHSV(
     hue: number,
     saturation: number,
-    lightness: number,
+    brightness: number,
     alpha: number | undefined,
   ) {
-    syncValue(hslToHex(hue, saturation, lightness, alpha));
+    syncValue(hsvToHex(hue, saturation, brightness, alpha));
     h = hue;
     s = saturation;
-    l = lightness;
+    v = brightness;
   }
 
   function setValueRGB(red: number, green: number, blue: number) {
@@ -59,8 +60,8 @@
     if (initial[3] === undefined && alpha === 255) {
       return setAlpha(undefined);
     }
-    if (mode === "hsl") {
-      setValueHSL(h, s, l, alpha);
+    if (mode === "hsv") {
+      setValueHSV(h, s, v, alpha);
     } else {
       syncValue(rgbToHex(r, g, b, alpha));
     }
@@ -103,14 +104,19 @@
 
 <div class="color-picker">
   <div class="visual">
-    <div class="hue"></div>
+    <ColorWheel
+      hue={h}
+      saturation={s}
+      brightness={v}
+      setValue={(hue, saturation) => setValueHSV(hue, saturation, v, a)}
+    />
     <LightnessRange
-      value={l}
-      setValue={(value) => setValueHSL(h, s, value, a)}
+      value={v}
+      setValue={(brightness) => setValueHSV(h, s, brightness, a)}
     />
   </div>
   <div>
-    <div class="rgb-hsl">
+    <div class="rgb-hsv">
       <Toggle
         label="RGB"
         rounded="left"
@@ -118,12 +124,13 @@
         onclick={() => {
           mode = "rgb";
         }}
-      /><Toggle
-        label="HSL"
+      />
+      <Toggle
+        label="HSV"
         rounded="right"
-        value={mode === "hsl"}
+        value={mode === "hsv"}
         onclick={() => {
-          mode = "hsl";
+          mode = "hsv";
         }}
       />
     </div>
@@ -156,27 +163,27 @@
       {:else}
         <RangeField
           from={0}
-          till={360}
+          till={1}
           label="Hue"
           rounded="top"
-          value={h}
-          setValue={(hue) => setValueHSL(hue, s, l, a)}
+          value={h / 360}
+          setValue={(hue) => setValueHSV(hue * 360, s, v, a)}
         />
         <RangeField
           from={0}
-          till={100}
+          till={1}
           label="Saturation"
           rounded="none"
-          value={s}
-          setValue={(saturation) => setValueHSL(h, saturation, l, a)}
+          value={s / 100}
+          setValue={(saturation) => setValueHSV(h, saturation * 100, v, a)}
         />
         <RangeField
           from={0}
-          till={100}
-          label="Lightness"
+          till={1}
+          label="Brightness"
           rounded="none"
-          value={l}
-          setValue={(lightness) => setValueHSL(h, s, lightness, a)}
+          value={v / 100}
+          setValue={(lightness) => setValueHSV(h, s, lightness * 100, a)}
         />
       {/if}
       <RangeField
@@ -199,9 +206,11 @@
 
 <style>
   .color-picker {
-    width: 400px;
+    box-sizing: border-box;
+    width: 200px;
     max-width: 100vw;
-    padding: 16px;
+    padding: 8px;
+
     background: #181818;
   }
 
@@ -211,7 +220,7 @@
     margin-bottom: 16px;
   }
 
-  .rgb-hsl {
+  .rgb-hsv {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1px;

@@ -15,7 +15,7 @@
 />
 
 <input
-  class="lightness-range"
+  class="brightness-slider"
   class:active
   type="range"
   style:color="hsl(0 0 {value})"
@@ -33,7 +33,7 @@
 />
 
 <style>
-  .lightness-range {
+  .brightness-slider {
     height: 160px;
     margin: 0;
     padding: 0;
