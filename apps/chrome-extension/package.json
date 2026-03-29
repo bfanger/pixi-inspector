@@ -4,8 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "node build.js --watch",
-    "build": "node build.js && rm -f ../../chrome-extension.zip && zip -r ../../chrome-extension.zip build/ -x \"*.DS_Store\"",
-    "format": "prettier --write ."
+    "build": "node build.js && rm -f ../../chrome-extension.zip && zip -r ../../chrome-extension.zip build/ -x \"*.DS_Store\""
   },
   "devDependencies": {
     "esbuild": "^0.27.4",

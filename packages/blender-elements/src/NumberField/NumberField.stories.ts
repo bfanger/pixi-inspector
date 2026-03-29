@@ -18,7 +18,6 @@ export const Random: StoryObj = {
       ? faker.number.int({ min: 10, max: 10_000 })
       : undefined,
     suffix: faker.datatype.boolean() ? faker.science.unit().symbol : undefined,
-    hint: faker.lorem.sentence(),
     step: faker.helpers.arrayElement([0.001, 0.01, 0.1, 1, 10]),
     location: faker.helpers.arrayElement(["alone", "top", "middle", "bottom"]),
   },

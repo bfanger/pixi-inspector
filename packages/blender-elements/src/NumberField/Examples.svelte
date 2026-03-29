@@ -10,8 +10,8 @@
 </script>
 
 <div style="max-width: 250px;">
-  <Panel title="Buttons in a group">
-    <Box gap={1}>
+  <Panel title="NumberField in a group">
+    <Box gap={1} padding={8}>
       <Property label="Location X">
         <NumberField
           value={x}

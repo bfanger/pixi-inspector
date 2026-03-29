@@ -13,23 +13,21 @@
 
 <script lang="ts">
   type Props = {
+    from: number;
+    till: number;
     value: number | undefined;
     setValue?: (value: number) => void;
-    suffix?: string;
+    label?: string;
     rounded?: "all" | "top" | "bottom" | "none";
     id?: string;
-    step?: number;
-    min?: number;
-    max?: number;
   };
   let {
+    from,
+    till,
     value = $bindable(),
-    suffix = "",
+    label = "",
     rounded = "all",
     id,
-    step,
-    min,
-    max,
     setValue,
   }: Props = $props();
 
@@ -40,6 +38,24 @@
   let focused = $state(false);
   let active = $state(false);
   let previous = $state(value);
+
+  let clientWidth = $state(1);
+  let range = $derived(till - from);
+  let normalized = $derived.by(() => {
+    if (value === undefined || value <= from) {
+      return 0;
+    } else if (value >= till) {
+      return 1;
+    }
+    return (value - from) / range;
+  });
+  let percentage = $derived(`${(normalized * 100).toPrecision(2)}%`);
+
+  let step = $derived.by(() => {
+    const perPixel = range / clientWidth;
+    const multiplier = Math.pow(10, 1 - Math.floor(Math.log10(perPixel)) - 1);
+    return Math.round(perPixel * multiplier) / multiplier;
+  });
 
   $effect(() => {
     if (wanted !== value && document.activeElement !== el) {
@@ -53,15 +69,9 @@
       return "";
     }
     if (val > 1000000) {
-      return Math.round(val).toString() + suffix;
+      return Math.round(val).toString();
     }
-    return (
-      val
-        .toFixed(6)
-        .toString()
-        .substring(0, 7)
-        .replace(/\.?0+$/, "") + suffix
-    );
+    return val.toFixed(3).toString().substring(0, 7);
   }
 
   function onInput() {
@@ -78,9 +88,10 @@
   function onFocus() {
     previous = value;
     focused = true;
-    if (suffix && text.endsWith(suffix)) {
-      text = text.substring(0, text.length - suffix.length);
-      el.value = text;
+    if (value === undefined) {
+      el.value = "";
+    } else {
+      el.value = `${value}`;
     }
     el.select();
   }
@@ -93,19 +104,7 @@
       if (typeof value === "number") {
         setValue?.(value);
       }
-    }
-  }
-
-  function onStepDown() {
-    if (step && typeof value === "number") {
-      value -= step;
-      setValue?.(value);
-    }
-  }
-  function onStepUp() {
-    if (step && typeof value === "number") {
-      value += step;
-      setValue?.(value);
+      text = format(value);
     }
   }
 
@@ -130,7 +129,18 @@
   }
 </script>
 
-<div class="number-field" class:active class:focused data-rounded={rounded}>
+<div
+  class="range-field"
+  class:active
+  class:focused
+  class:with-label={label}
+  style:--percentage={percentage}
+  data-rounded={rounded}
+  bind:clientWidth
+>
+  {#if label}
+    <label class="label" for={id}>{label}</label>
+  {/if}
   <input
     class="input"
     {id}
@@ -142,40 +152,48 @@
     onfocus={onFocus}
     onblur={onBlur}
   />
-  {#if !focused && step}
+
+  {#if !focused}
     <div
       class="drag"
       use:numberDrag={{
         value,
         step,
-        min,
-        max,
+        min: from,
+        max: till,
         onChange,
         onClick,
         onDown,
         onUp,
       }}
-    >
-      <button class="arrow left" onclick={onStepDown} aria-label="down"
-      ></button>
-      <button class="arrow right" onclick={onStepUp} aria-label="up"></button>
-    </div>
+    ></div>
   {/if}
 </div>
 
 <style>
-  .number-field {
+  .range-field {
+    --background: #545454;
+
     position: relative;
     overflow: hidden;
-    background: #545454;
+    background: linear-gradient(
+      to right,
+      #4772b3 0%,
+      #4772b3 var(--percentage),
+      var(--background) var(--percentage),
+      var(--background) 100%
+    );
 
     &:not(.focused, .active):hover {
-      background-color: #656565;
+      --background: #656565;
     }
 
-    &.active,
+    &.active {
+      --background: #222;
+    }
+
     &.focused {
-      background-color: #222;
+      background: #222;
     }
 
     &[data-rounded="all"] {
@@ -193,13 +211,23 @@
     }
   }
 
+  .label {
+    position: absolute;
+    top: 2px;
+    left: 8px;
+
+    .range-field:focus-within & {
+      display: none;
+    }
+  }
+
   .input {
     display: block;
 
     box-sizing: border-box;
     width: 100%;
-    padding-top: 2px;
-    padding-bottom: 2px;
+    padding-block: 2px;
+    padding-inline: 8px;
     border: 0;
 
     font: inherit;
@@ -214,8 +242,14 @@
       background-color: #4570b5;
     }
 
+    .with-label & {
+      padding-right: 8px;
+      text-align: right;
+    }
+
     &:focus {
       color: #e5e5e5;
+      text-align: left;
     }
   }
 
@@ -228,46 +262,5 @@
     cursor: col-resize;
     position: absolute;
     inset: 0;
-  }
-
-  .arrow {
-    cursor: pointer;
-
-    position: absolute;
-    top: 0;
-    bottom: 0;
-
-    display: none;
-
-    width: 13px;
-    border: none;
-
-    color: white;
-
-    background: none;
-    background: #656565 no-repeat center center;
-
-    &.left {
-      left: 0;
-      background-image: var(--icon-chevron-left);
-    }
-
-    &.right {
-      right: 0;
-      background-image: var(--icon-chevron-right);
-    }
-  }
-
-  .number-field:hover .arrow {
-    display: block;
-  }
-
-  /* stylelint-disable-next-line no-descending-specificity */
-  .active .arrow {
-    background-color: #222;
-  }
-
-  :not(.focused, .active) .arrow:hover {
-    background-color: #797979;
   }
 </style>

@@ -11,11 +11,11 @@
     "build": "pnpm --parallel build",
     "test": "pnpm --parallel test",
     "lint": "concurrently -c \"#c596c7\",\"#4b32c3\",\"#676778\",\"#fafafa\" --kill-others-on-fail \"npm:lint:*\"",
-    "lint:prettier": "prettier --check .",
+    "lint:prettier": "prettier --check --log-level=warn .",
     "lint:eslint": "eslint --max-warnings=0 .",
     "lint:svelte-check": "svelte-check --fail-on-warnings",
     "lint:stylelint": "stylelint --max-warnings=0 \"packages/*/src/**/*.{css,svelte}\"",
-    "format": "eslint --fix . && stylelint --fix \"packages/*/src/**/*.{css,svelte}\" && prettier --write .",
+    "format": "eslint --fix . && stylelint --fix \"packages/*/src/**/*.{css,svelte}\" && prettier --write --log-level=warn .",
     "preinstall": "npx only-allow pnpm",
     "postinstall": "husky || true"
   },
