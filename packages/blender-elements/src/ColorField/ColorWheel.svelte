@@ -1,9 +1,6 @@
 <script lang="ts" module>
   async function generateColorWheel() {
-    const canvas = document.createElement("canvas");
-    canvas.width = 320;
-    canvas.height = 320;
-
+    const canvas = new OffscreenCanvas(320, 320);
     const ctx = canvas.getContext("2d");
     if (!ctx) {
       return "";
@@ -34,20 +31,11 @@
       }
     }
     ctx.putImageData(imageData, 0, 0);
-    const blob = await new Promise<Blob>((resolve, reject) => {
-      canvas.toBlob((blob) => {
-        if (!blob) {
-          return reject(
-            new Error("Failed to create an image from the colorwheel canvas"),
-          );
-        }
-        resolve(blob);
-      });
-    });
+    const blob = await canvas.convertToBlob();
     return URL.createObjectURL(blob);
   }
 
-  let colorWheelPromise = generateColorWheel();
+  let colorWheelPromise: Promise<string> | undefined;
 </script>
 
 <script lang="ts">
@@ -74,7 +62,9 @@
     80 +
       (saturation / 100) * 80 * Math.sin((hue * Math.PI) / 180 + Math.PI / 2),
   );
-
+  if (!colorWheelPromise) {
+    colorWheelPromise = generateColorWheel();
+  }
   colorWheelPromise.then((url) => {
     src = url;
   });
@@ -121,14 +111,14 @@
     bind:this={el}
     {src}
     draggable="false"
-    alt="Color wheel"
+    alt=""
     style:filter="brightness({brightness / 100})"
     onpointerdown={handlePointerDown}
   />
   <div
     class="marker"
     class:selecting
-    style:border-color="hsl(0 0 {100 - brightness})"
+    style:border-color="hsl(0 0 {(100 - brightness) * 0.4 + 60})"
     style:background-color={hsvToHex(hue, saturation, brightness)}
     style:top="{markerY}px"
     style:left="{markerX}px"
@@ -141,9 +131,13 @@
   }
 
   img {
+    user-select: none;
+
     width: 160px;
     height: 160px;
     border-radius: 50%;
+
+    background: gray;
 
     &:active {
       cursor: none;

@@ -174,6 +174,7 @@
   .range-field {
     --background: #545454;
 
+    user-select: none;
     position: relative;
     overflow: hidden;
     background: linear-gradient(

@@ -78,6 +78,10 @@
       background: linear-gradient(to top, #000, #fff);
     }
 
+    &:active {
+      cursor: none;
+    }
+
     &:focus-visible::-webkit-slider-thumb,
     &.active::-webkit-slider-thumb {
       width: 15px;

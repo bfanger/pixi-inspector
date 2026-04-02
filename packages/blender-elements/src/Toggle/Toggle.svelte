@@ -58,6 +58,7 @@
 <style>
   .toggle {
     cursor: pointer;
+    user-select: none;
 
     display: inline-flex;
     flex-shrink: 0;

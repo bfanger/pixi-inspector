@@ -7,6 +7,7 @@ export default defineConfig({
   plugins: [svelte(), storybookTest()] as ViteUserConfig["plugins"],
   test: {
     browser: {
+      api: 60808,
       enabled: true,
       headless: true,
       instances: [{ browser: "chromium" }],
