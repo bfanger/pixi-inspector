@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { ComponentProps } from "svelte";
   import { hexToRgb } from "./color-fns";
   import ColorPopup from "./ColorPopup.svelte";
 
@@ -9,15 +10,40 @@
   let { value, setValue }: Props = $props();
   let [r, g, b] = $derived(hexToRgb(value));
   let popupVisible = $state(false);
-  let flipped = $state(false);
+  type PopupLocation = ComponentProps<typeof ColorPopup>["location"];
+  type PopupVariant = ComponentProps<typeof ColorPopup>["variant"];
+  let location = $state<PopupLocation>("overlap");
+  let variant = $state<PopupVariant>("tall");
+  let innerHeight = $state(window.innerHeight);
 
   function popupLocation(el: HTMLElement) {
     if (!popupVisible) {
       return;
     }
-    flipped = el.getBoundingClientRect().top < 320;
+    const bounds = el.getBoundingClientRect();
+    if (bounds.top > 320) {
+      location = "top";
+      variant = "tall";
+    } else if (innerHeight - bounds.bottom > 320) {
+      location = "bottom";
+      variant = "tall";
+    } else if (bounds.top > 180) {
+      location = "top";
+      variant = "wide";
+    } else if (innerHeight - bounds.bottom > 180) {
+      location = "bottom";
+      variant = "wide";
+    } else if (innerHeight > 400) {
+      location = "overlap";
+      variant = "tall";
+    } else {
+      location = "overlap";
+      variant = "wide";
+    }
   }
 </script>
+
+<svelte:window bind:innerHeight />
 
 <button
   aria-label={value}
@@ -35,7 +61,8 @@
   <ColorPopup
     bind:value
     {setValue}
-    {flipped}
+    {location}
+    {variant}
     onclose={() => {
       popupVisible = false;
     }}

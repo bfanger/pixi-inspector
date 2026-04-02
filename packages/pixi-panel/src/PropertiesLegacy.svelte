@@ -31,6 +31,7 @@
   );
   let expanded = $state({
     ticker: true,
+    renderer: true,
     transform: true,
     transformOrigin: true,
     skewDimensions: true,

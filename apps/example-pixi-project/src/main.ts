@@ -9,6 +9,7 @@ import { Application, Assets, Container, Sprite } from "pixi.js";
   await app.init({
     preference: "webgl",
     background: "#1099bb",
+    backgroundAlpha: 0.9999,
     width: 640,
     height: 480,
     resolution: window.devicePixelRatio || 1,

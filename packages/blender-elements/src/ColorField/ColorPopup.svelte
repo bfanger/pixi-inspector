@@ -10,11 +10,18 @@
   type Props = {
     value: string;
     setValue?: (value: string) => void;
-    flipped: boolean;
+    variant: "tall" | "wide";
+    location: "top" | "bottom" | "overlap";
     onclose: () => void;
   };
 
-  let { value = $bindable(), setValue, flipped, onclose }: Props = $props();
+  let {
+    value = $bindable(),
+    setValue,
+    variant,
+    location,
+    onclose,
+  }: Props = $props();
 
   /** Shadow value to detect prop changes */
   let wanted = $state(value);
@@ -112,19 +119,21 @@
 
 <dialog
   class="color-popup"
-  class:flipped
+  data-location={location}
   closedby="any"
   oncancel={() => onclose()}
   {@attach (el: HTMLDialogElement) => el.showModal()}
 >
-  <div onwheel={handleWheel}>
-    <div class="visual">
-      <ColorWheel
-        hue={h}
-        saturation={s}
-        brightness={v}
-        setValue={(hue, saturation) => setValueHSV(hue, saturation, v, a)}
-      />
+  <div onwheel={handleWheel} class="tall-or-wide" data-variant={variant}>
+    <div class="wheel-and-slider">
+      <div class="wheel">
+        <ColorWheel
+          hue={h}
+          saturation={s}
+          brightness={v}
+          setValue={(hue, saturation) => setValueHSV(hue, saturation, v, a)}
+        />
+      </div>
       <LightnessRange
         value={v}
         setValue={(brightness) => setValueHSV(h, s, brightness, a)}
@@ -206,15 +215,15 @@
           till={1}
           label="Alpha"
           rounded="bottom"
-          value={a ? a / 255 : 1}
+          value={a === undefined ? 1 : a / 255}
           setValue={(alpha) => setAlpha(alpha ? alpha * 255 : alpha)}
         />
       </div>
-    </div>
-    <div>
-      <Property label="Hex">
-        <TextField bind:value={hex} setValue={setHex} />
-      </Property>
+      <div>
+        <Property label="Hex">
+          <TextField bind:value={hex} setValue={setHex} />
+        </Property>
+      </div>
     </div>
   </div>
 </dialog>
@@ -222,15 +231,12 @@
 <style>
   .color-popup {
     position: absolute;
-    right: anchor(right);
-    bottom: anchor(top);
-    left: auto;
+    inset: auto anchor(right) auto auto;
     position-anchor: --color-field;
     position-try-fallbacks: flip-block;
 
     box-sizing: border-box;
-    width: 200px;
-    max-width: 100vw;
+    max-height: 100vh;
     padding: 8px;
     border: 0;
     border-radius: 2px 3px;
@@ -244,16 +250,41 @@
       opacity: 0;
     }
 
-    &.flipped {
+    &[data-location="top"] {
+      bottom: anchor(top);
+    }
+
+    &[data-location="bottom"] {
       top: anchor(bottom);
-      bottom: auto;
+      position-try-fallbacks: flip-block;
+    }
+
+    &[data-location="overlap"] {
+      top: 50%;
+      transform: translate(0, -50%);
     }
   }
 
-  .visual {
+  .tall-or-wide {
     display: flex;
+    gap: 8px;
+
+    &[data-variant="tall"] {
+      flex-direction: column;
+    }
+  }
+
+  .wheel-and-slider {
+    display: flex;
+    flex-shrink: 0;
     justify-content: space-between;
-    margin-bottom: 16px;
+
+    width: 184px;
+    max-width: 100vw;
+  }
+
+  .wheel {
+    margin-block: auto;
   }
 
   .rgb-hsv {

@@ -5,11 +5,15 @@
   import Property from "blender-elements/src/Property/Property.svelte";
   import Box from "blender-elements/src/Box/Box.svelte";
   import type { NodeProperties } from "./types";
+  import ColorField from "../../blender-elements/src/ColorField/ColorField.svelte";
 
   type Props = {
     props: NodeProperties;
     expanded: Record<string, boolean>;
-    onchange: (change: { property: string; value: number | boolean }) => void;
+    onchange: (change: {
+      property: string;
+      value: number | boolean | string;
+    }) => void;
   };
 
   let { props, expanded = $bindable(), onchange }: Props = $props();
@@ -38,6 +42,24 @@
           >
             Started
           </Checkbox>
+        </Property>
+      {/if}
+    </Box>
+  </Panel>
+{/if}
+
+{#if props.background !== undefined}
+  <Panel title="Renderer" bind:expanded={expanded.renderer}>
+    <Box gap={6} padding={8}>
+      {#if typeof props.speed === "number"}
+        <Property
+          label="Background"
+          hint="The background color and alpha of the main view."
+        >
+          <ColorField
+            value={props.background}
+            setValue={(value) => onchange({ property: "background", value })}
+          />
         </Property>
       {/if}
     </Box>

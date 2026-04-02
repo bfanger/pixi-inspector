@@ -87,13 +87,13 @@
 
   function onBlur() {
     focused = false;
-    text = format(value);
     if (wanted !== previous) {
       value = wanted;
       if (typeof value === "number") {
         setValue?.(value);
       }
     }
+    text = format(value);
   }
 
   function onStepDown() {

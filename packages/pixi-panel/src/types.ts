@@ -83,6 +83,7 @@ export type NodeProperties = {
   // Scene
   speed?: number;
   started?: boolean;
+  background?: string;
   // Text
   text?: string;
   align?: TextStyleAlign;
