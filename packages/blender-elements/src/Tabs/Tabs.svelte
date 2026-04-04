@@ -1,31 +1,37 @@
-<script lang="ts" generics="T extends { icon: string; label: string }">
+<script lang="ts" generics="T extends Record<string, Tab>">
   import type { Snippet } from "svelte";
+  import type { Icon } from "../icons";
 
+  export type Tab = { icon: Icon; label: string };
   type Props<T> = {
-    tabs: T[];
-    active: T | undefined;
-    children?: Snippet;
-    onactivate?: (tab: T) => void;
+    tabs: T;
+    active: keyof T;
+    onactivate: (tab: keyof T) => void;
+    children: Snippet;
   };
 
-  let { tabs, active, children, onactivate }: Props<T> = $props();
+  let { tabs, active = $bindable(), onactivate, children }: Props<T> = $props();
 </script>
 
 <div class="tab-layout">
   <div class="tabs">
-    {#each tabs as tab (tab)}
+    {#each Object.keys(tabs) as key (key)}
+      {@const tab = tabs[key]}
       <button
         class="tab"
-        class:active={tab === active}
+        class:active={key === active}
         title={tab.label}
         aria-label={tab.label}
-        onclick={() => onactivate?.(tab)}
+        onmousedown={() => {
+          active = key;
+          onactivate(key);
+        }}
       >
         <div class="icon" style:background-image="var(--icon-{tab.icon})"></div>
       </button>
     {/each}
   </div>
-  <div class="content">{@render children?.()}</div>
+  <div class="content">{@render children()}</div>
 </div>
 
 <style>

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Tabs from "blender-elements/src/Tabs/Tabs.svelte";
+  import Tabs, { type Tab } from "blender-elements/src/Tabs/Tabs.svelte";
   import ObjectProperties from "./ObjectProperties.svelte";
   import SceneProperties from "./SceneProperties.svelte";
   import TextProperties from "./TextProperties.svelte";
@@ -13,21 +13,19 @@
     onactivate: (tab: PropertyTab) => void;
   };
   let { value, setValue, onactivate }: Props = $props();
-  type Tab = {
-    group: PropertyTab;
-    icon: string;
-    label: string;
-  };
-  const availableTabs: Tab[] = [
-    { group: "scene", icon: "scene", label: "Scene Properties" },
-    { group: "object", icon: "object", label: "Object Properties" },
-    { group: "text", icon: "text", label: "Text Properties" },
-  ];
-  let tabs = $derived(
-    availableTabs.filter((tab) => value.tabs.includes(tab.group)),
-  );
-  let active = $derived(
-    availableTabs.find((tab) => tab.group === value.active),
+
+  const availableTabs = {
+    scene: { icon: "scene", label: "Scene Properties" },
+    object: { icon: "object", label: "Object Properties" },
+    text: { icon: "text", label: "Text Properties" },
+  } as const;
+
+  let filteredTabs = $derived(
+    Object.fromEntries(
+      Object.entries(availableTabs).filter(([key]) =>
+        value.tabs.includes(key as PropertyTab),
+      ),
+    ) as Record<PropertyTab, Tab>,
   );
   let expanded = $state({
     ticker: true,
@@ -47,22 +45,22 @@
   });
 </script>
 
-<Tabs {active} {tabs} onactivate={(tab) => onactivate(tab.group)}>
+<Tabs active={value.active} tabs={filteredTabs} {onactivate}>
   {#if value.properties}
     <Box padding="8px" gap="1px">
-      {#if active?.group === "scene"}
+      {#if value.active === "scene"}
         <SceneProperties
           props={value.properties}
           bind:expanded
           onchange={setValue}
         />
-      {:else if active?.group === "object"}
+      {:else if value.active === "object"}
         <ObjectProperties
           props={value.properties}
           bind:expanded
           onchange={setValue}
         />
-      {:else if active?.group === "text"}
+      {:else if value.active === "text"}
         <TextProperties
           props={value.properties}
           bind:expanded

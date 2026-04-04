@@ -12,6 +12,7 @@ import SplitPanel from "blender-elements/src/SplitPanel/SplitPanel.svelte";
 import SplitPanels from "blender-elements/src/SplitPanel/SplitPanels.svelte";
 import Refresh from "./Refresh.svelte";
 import Warning from "blender-elements/src/Warning/Warning.svelte";
+import Tabs from "blender-elements/src/Tabs/Tabs.svelte";
 
 const components = {
   Fragment,
@@ -28,5 +29,6 @@ const components = {
   SplitPanels,
   Property,
   Warning,
+  Tabs,
 } as const;
 export default components;
