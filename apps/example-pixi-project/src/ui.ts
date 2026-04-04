@@ -5,15 +5,8 @@ import {
   evalListen,
 } from "../../../packages/ui-protocol/src/evalBridge";
 import "../../../packages/pixi-panel/src/pixi-devtools/ui-legacy";
+import "../../../packages/pixi-panel/src/init";
 import type { TreeControllerNode } from "../../../packages/ui-protocol/src/types";
-import components from "../../../packages/ui-protocol/src/svelte/components";
-import SceneGraphLegacy from "../../../packages/pixi-panel/src/SceneGraphLegacy.svelte";
-import PropertiesLegacy from "../../../packages/pixi-panel/src/PropertiesLegacy.svelte";
-
-Object.assign(components, {
-  PixiSceneGraph: SceneGraphLegacy,
-  PixiProperties: PropertiesLegacy,
-});
 
 const win = window as any;
 const rootController = {

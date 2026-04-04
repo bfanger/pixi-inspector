@@ -6,11 +6,11 @@
   type Props<T> = {
     tabs: T;
     active: keyof T;
-    onactivate: (tab: keyof T) => void;
+    setActive?: (tab: keyof T) => void;
     children: Snippet;
   };
 
-  let { tabs, active = $bindable(), onactivate, children }: Props<T> = $props();
+  let { tabs, active = $bindable(), setActive, children }: Props<T> = $props();
 </script>
 
 <div class="tab-layout">
@@ -24,7 +24,7 @@
         aria-label={tab.label}
         onmousedown={() => {
           active = key;
-          onactivate(key);
+          setActive?.(key);
         }}
       >
         <div class="icon" style:background-image="var(--icon-{tab.icon})"></div>

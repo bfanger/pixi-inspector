@@ -98,10 +98,10 @@ export default function createSender(
       return promise!;
     },
 
-    dispatchEvent(node: TreeDisplayNode, event: string, data?: TreeValue) {
+    dispatchEvent(node: TreeDisplayNode, event: string, ...args: TreeValue[]) {
       queue.events.push({
         node,
-        event: { path: node.path, type: event, data },
+        event: { path: node.path, type: event, args },
       });
       if (!promise) {
         schedule();
@@ -119,6 +119,7 @@ export default function createSender(
         const init = await connection.dispatchEvent([], {
           path: [],
           type: "reset",
+          args: [],
         });
         queue.events = [];
         queue.sync = [];

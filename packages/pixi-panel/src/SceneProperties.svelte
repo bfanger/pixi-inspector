@@ -8,37 +8,39 @@
   import ColorInput from "../../blender-elements/src/ColorInput/ColorInput.svelte";
 
   type Props = {
-    props: NodeProperties;
+    value: NodeProperties;
     expanded: Record<string, boolean>;
-    onchange: (change: {
-      property: string;
-      value: number | boolean | string;
-    }) => void;
+    setValue: (update: { property: string; value: any }) => void;
+    setExpanded?: (section: string, expanded: boolean) => void;
   };
 
-  let { props, expanded = $bindable(), onchange }: Props = $props();
+  let { value, expanded, setValue, setExpanded }: Props = $props();
 
-  let tickerPanel = $derived(typeof props.speed === "number");
+  let tickerPanel = $derived(typeof value.speed === "number");
 </script>
 
 {#if tickerPanel}
-  <Panel title="Ticker" bind:expanded={expanded.ticker}>
+  <Panel
+    title="Ticker"
+    expanded={expanded.ticker}
+    setExpanded={(val) => setExpanded?.("ticker", val)}
+  >
     <Box gap={6} padding={8}>
-      {#if typeof props.speed === "number"}
+      {#if typeof value.speed === "number"}
         <Property label="Speed" hint="Factor of current deltaTime">
           <NumberInput
-            value={props.speed}
+            value={value.speed}
             step={0.01}
-            setValue={(value) => onchange({ property: "speed", value })}
+            setValue={(value) => setValue({ property: "speed", value })}
           />
         </Property>
       {/if}
-      {#if typeof props.started === "boolean"}
+      {#if typeof value.started === "boolean"}
         <Property>
           <CheckboxInput
-            value={props.started}
+            value={value.started}
             hint="Whether or not this ticker has been started"
-            setValue={(value) => onchange({ property: "started", value })}
+            setValue={(value) => setValue({ property: "started", value })}
           >
             Started
           </CheckboxInput>
@@ -48,17 +50,21 @@
   </Panel>
 {/if}
 
-{#if props.background !== undefined}
-  <Panel title="Renderer" bind:expanded={expanded.renderer}>
+{#if value.background !== undefined}
+  <Panel
+    title="Renderer"
+    expanded={expanded.renderer}
+    setExpanded={(value) => setExpanded?.("renderer", value)}
+  >
     <Box gap={6} padding={8}>
-      {#if typeof props.speed === "number"}
+      {#if typeof value.speed === "number"}
         <Property
           label="Background"
           hint="The background color and alpha of the main view."
         >
           <ColorInput
-            value={props.background}
-            setValue={(value) => onchange({ property: "background", value })}
+            value={value.background}
+            setValue={(value) => setValue({ property: "background", value })}
           />
         </Property>
       {/if}

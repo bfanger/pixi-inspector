@@ -28,7 +28,17 @@ export function createChild(
 ): SvelteNode {
   const component = components[init.component as keyof typeof components];
   if (!component) {
-    throw new Error(`Component "${init.component}" is not available`);
+    if (!components["Warning"]) {
+      throw new Error(`Component "${init.component}" is not registered`);
+    }
+    return createChild(
+      {
+        ...init,
+        component: "Warning",
+        props: { message: `Component "${init.component}" was not registered}` },
+      },
+      sender,
+    );
   }
   let node: SvelteNode;
 
@@ -42,8 +52,8 @@ export function createChild(
   }
   if (init.events) {
     for (const config of init.events) {
-      const handler = (details?: TreeValue) => {
-        node.sender.dispatchEvent(node, config.event, details);
+      const handler = (...args: TreeValue[]) => {
+        node.sender.dispatchEvent(node, config.event, ...args);
       };
       if (config.throttle) {
         vdom.props[config.event] = throttle(config.throttle, handler);
@@ -75,7 +85,6 @@ export function createChild(
     node.setValue = (value: TreeValue) => {
       vdom.props.value = value;
     };
-    node.setValue(init.value);
     vdom.props.setValue ??= (value: TreeValue) => {
       node.sender.setValue(node, value);
     };

@@ -319,7 +319,6 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
         const { key, get } = definitions[active][i];
         properties[key] = get();
       }
-
       return { tabs: available, active, properties };
     },
 

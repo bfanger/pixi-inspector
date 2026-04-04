@@ -1,5 +1,5 @@
 import type { TreeInit, TreeValue } from "ui-protocol/src/types";
-import type { PixiDevtools, PropertyTab } from "../types";
+import type { PixiDevtools, PropertyTab, PropertyTabState } from "../types";
 import pixiDevtools from "./pixiDevtools";
 import pixiDevtoolsOutline from "./pixiDevtoolsOutline";
 import pixiDevtoolsSelection from "./pixiDevtoolsSelection";
@@ -97,36 +97,7 @@ win.__PIXI_DEVTOOLS_LEGACY__ = function legacyInit(): TreeInit {
               size: 3,
             },
             node: {},
-            children: [
-              {
-                component: "Refresh",
-                props: { interval: 200 },
-                node: refreshNode(),
-                children: [
-                  {
-                    component: "PixiProperties",
-                    value: properties.values(),
-                    node: {
-                      sync(out) {
-                        out.value = properties.values();
-                      },
-                      setValue(value: TreeValue) {
-                        const event = value as {
-                          property: string;
-                          value: number;
-                        };
-                        properties.set(event.property, event.value);
-                      },
-                      events: {
-                        onactivate: (tab) => {
-                          properties.activate(tab as PropertyTab);
-                        },
-                      },
-                    },
-                  },
-                ],
-              },
-            ],
+            children: [initProperties()],
           },
         ],
       },
@@ -184,6 +155,140 @@ function initSceneGraph(children: TreeInit[]): TreeInit {
             return 0;
           },
         }),
+      },
+    ],
+  };
+}
+
+function initProperties(): TreeInit {
+  let previous$pixi: any = win.$pixi;
+  let propertyTabState: PropertyTabState = properties.values();
+  let skipNext = true;
+  let previousTab = "";
+
+  const availableTabs = {
+    scene: { icon: "scene", label: "Scene Properties" },
+    object: { icon: "object", label: "Object Properties" },
+    text: { icon: "text", label: "Text Properties" },
+  } as const;
+
+  function enabledTabs(tabs: PropertyTab[]) {
+    return Object.fromEntries(
+      Object.entries(availableTabs).filter(([key]) =>
+        tabs.includes(key as PropertyTab),
+      ),
+    );
+  }
+  const expanded = {
+    ticker: true,
+    renderer: true,
+    transform: true,
+    transformOrigin: true,
+    skewDimensions: true,
+    visibility: true,
+    rendering: true,
+    interactive: true,
+    font: true,
+    alignment: true,
+    spacing: true,
+    wordWrap: true,
+    dropShadow: true,
+    stroke: true,
+  };
+  const propertyComponents = {
+    scene: "PixiSceneProperties",
+    object: "PixiObjectProperties",
+    text: "PixiTextProperties",
+  } as const;
+
+  function initPropertyPanel(): TreeInit {
+    return {
+      component: propertyComponents[propertyTabState.active],
+      props: { expanded },
+      value: propertyTabState.properties,
+      node: {
+        setValue(data) {
+          const { property, value } = data as {
+            property: string;
+            value: number;
+          };
+          properties.set(property, value);
+          return 0;
+        },
+        events: {
+          setExpanded(key, value) {
+            expanded[key as keyof typeof expanded] = value as boolean;
+          },
+        },
+        sync(out) {
+          if (skipNext) {
+            skipNext = false;
+          } else {
+            propertyTabState = properties.values();
+          }
+          out.value = propertyTabState.properties;
+        },
+      },
+    };
+  }
+
+  return {
+    component: "Refresh",
+    props: { interval: 200 },
+    node: refreshNode(),
+    children: [
+      {
+        component: "Tabs",
+        props: {
+          tabs: enabledTabs(propertyTabState.tabs),
+          active: propertyTabState.active,
+        },
+        children: [
+          {
+            component: "Box",
+            props: { padding: 8, gap: 1 },
+            children: [],
+            node: {
+              sync(out) {
+                if (
+                  propertyTabState &&
+                  propertyTabState.active !== previousTab
+                ) {
+                  previousTab = propertyTabState.active;
+                  if (propertyTabState.tabs.length === 0) {
+                    out.truncate = 0;
+                  } else if (this.children?.length === 0) {
+                    out.appends.push(initPropertyPanel());
+                  } else {
+                    out.replacements.push({
+                      index: 0,
+                      ...initPropertyPanel(),
+                    });
+                  }
+                }
+              },
+            },
+          },
+        ],
+        node: {
+          events: {
+            setActive(tab) {
+              properties.activate(tab as PropertyTab);
+            },
+          },
+          sync(out) {
+            if (previous$pixi !== win.$pixi) {
+              propertyTabState = properties.values();
+              skipNext = true;
+              // Detect which tabs are available for the new object
+              previous$pixi = win.pixi;
+              out.props = {
+                tabs: enabledTabs(propertyTabState.tabs),
+                active: propertyTabState.active,
+              };
+            }
+          },
+        },
       },
     ],
   };

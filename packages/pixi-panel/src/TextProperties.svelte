@@ -11,25 +11,26 @@
   import type { NodeProperties } from "./types";
 
   type Props = {
-    props: NodeProperties;
+    value: NodeProperties;
     expanded: Record<string, boolean>;
-    onchange: (e: { property: string; value: any }) => void;
+    setValue: (update: { property: string; value: any }) => void;
+    setExpanded?: (section: string, expanded: boolean) => void;
   };
 
-  let { props, expanded = $bindable(), onchange }: Props = $props();
+  let { value, expanded, setValue: onchange, setExpanded }: Props = $props();
 
   let fontPanel = $derived(
-    typeof props.fontFamily === "string" ||
-      typeof props.fontSize === "number" ||
-      typeof props.fontStyle === "string" ||
-      typeof props.fontVariant === "string",
+    typeof value.fontFamily === "string" ||
+      typeof value.fontSize === "number" ||
+      typeof value.fontStyle === "string" ||
+      typeof value.fontVariant === "string",
   );
   let alignmentPanel = $derived(
-    typeof props.align === "string" || typeof props.textBaseline === "string",
+    typeof value.align === "string" || typeof value.textBaseline === "string",
   );
-  let spacingPanel = $derived(typeof props.letterSpacing === "number");
-  let dropShadowPanel = $derived(typeof props.dropShadow === "boolean");
-  let strokePanel = $derived(typeof props.stroke === "string");
+  let spacingPanel = $derived(typeof value.letterSpacing === "number");
+  let dropShadowPanel = $derived(typeof value.dropShadow === "boolean");
+  let strokePanel = $derived(typeof value.stroke === "string");
 
   const alignOptions = [
     { value: "left", label: "Left", icon: "text-left" },
@@ -39,7 +40,7 @@
   ];
 </script>
 
-{#if typeof props.text === "string"}
+{#if typeof value.text === "string"}
   <div class="text">
     <label
       class="label"
@@ -48,42 +49,46 @@
     >
     <TextInput
       id="text"
-      value={props.text}
+      value={value.text}
       oninput={(value) => onchange({ property: "text", value })}
     />
   </div>
 {/if}
 
 {#if fontPanel}
-  <Panel title="Font" bind:expanded={expanded.font}>
+  <Panel
+    title="Font"
+    expanded={expanded.font}
+    setExpanded={(val) => setExpanded?.("font", val)}
+  >
     <Box gap={6} padding={8}>
-      {#if typeof props.fontFamily === "string"}
+      {#if typeof value.fontFamily === "string"}
         <Property
           label="Family"
           hint="The font family, can be a single font name, or a list of names where the first is the preferred font."
         >
           <TextInput
-            value={props.fontFamily}
+            value={value.fontFamily}
             setValue={(value) => onchange({ property: "fontFamily", value })}
           />
         </Property>
       {/if}
-      {#if typeof props.fontSize === "number"}
+      {#if typeof value.fontSize === "number"}
         <Property label="Size" hint="The font size">
           <NumberInput
-            value={props.fontSize}
+            value={value.fontSize}
             min={0}
             step={1}
             setValue={(value) => onchange({ property: "fontSize", value })}
           />
         </Property>
       {/if}
-      {#if typeof props.fontStyle === "string"}
+      {#if typeof value.fontStyle === "string"}
         <Property label="Style" hint="The font style">
           <Grid cols={3}>
             <ToggleButton
               label="Normal"
-              value={props.fontStyle === "normal"}
+              value={value.fontStyle === "normal"}
               rounded="left"
               setValue={() =>
                 onchange({ property: "fontStyle", value: "normal" })}
@@ -91,14 +96,14 @@
             <ToggleButton
               icon="italic"
               label="Italic"
-              value={props.fontStyle === "italic"}
+              value={value.fontStyle === "italic"}
               rounded="none"
               setValue={() =>
                 onchange({ property: "fontStyle", value: "italic" })}
             />
             <ToggleButton
               label="Oblique"
-              value={props.fontStyle === "oblique"}
+              value={value.fontStyle === "oblique"}
               rounded="right"
               setValue={() =>
                 onchange({ property: "fontStyle", value: "oblique" })}
@@ -106,12 +111,12 @@
           </Grid>
         </Property>
       {/if}
-      {#if typeof props.fontVariant === "string"}
+      {#if typeof value.fontVariant === "string"}
         <Property label="Variant" hint="The font variant">
           <Grid cols={2}>
             <ToggleButton
               label="Normal"
-              value={props.fontVariant === "normal"}
+              value={value.fontVariant === "normal"}
               rounded="left"
               setValue={() =>
                 onchange({ property: "fontVariant", value: "normal" })}
@@ -120,7 +125,7 @@
             <ToggleButton
               icon="small-caps"
               label="Small Caps"
-              value={props.fontVariant === "small-caps"}
+              value={value.fontVariant === "small-caps"}
               rounded="right"
               setValue={() =>
                 onchange({
@@ -131,10 +136,10 @@
           </Grid>
         </Property>
       {/if}
-      {#if typeof props.fontWeight === "string"}
+      {#if typeof value.fontWeight === "string"}
         <Property label="Weight" hint="The font weight">
           <SelectMenu
-            value={props.fontWeight}
+            value={value.fontWeight}
             options={[
               "normal",
               "bold",
@@ -159,27 +164,31 @@
 {/if}
 
 {#if alignmentPanel}
-  <Panel title="Alignment" bind:expanded={expanded.alignment}>
+  <Panel
+    title="Alignment"
+    expanded={expanded.alignment}
+    setExpanded={(val) => setExpanded?.("alignment", val)}
+  >
     <Box gap={6} padding={8}>
-      {#if typeof props.align === "string"}
+      {#if typeof value.align === "string"}
         <Property
           label="Align"
           hint="Alignment for multiline text, does not affect single line text"
         >
           <SelectMenu
-            value={props.align}
+            value={value.align}
             options={alignOptions}
             setValue={(value) => onchange({ property: "align", value })}
           />
         </Property>
       {/if}
-      {#if typeof props.textBaseline === "string"}
+      {#if typeof value.textBaseline === "string"}
         <Property
           label="Baseline"
           hint="The baseline of the text that is rendered."
         >
           <SelectMenu
-            value={props.textBaseline}
+            value={value.textBaseline}
             options={[
               "alphabetic",
               "top",
@@ -197,25 +206,29 @@
 {/if}
 
 {#if spacingPanel}
-  <Panel title="Spacing" bind:expanded={expanded.spacing}>
+  <Panel
+    title="Spacing"
+    expanded={expanded.spacing}
+    setExpanded={(val) => setExpanded?.("spacing", val)}
+  >
     <Box gap={2}>
-      {#if typeof props.leading === "number"}
+      {#if typeof value.leading === "number"}
         <Property label="Leading" hint="The space between lines">
           <NumberInput
-            value={props.leading}
+            value={value.leading}
             min={0}
             step={0.1}
             setValue={(value) => onchange({ property: "leading", value })}
           />
         </Property>
       {/if}
-      {#if typeof props.letterSpacing === "number"}
+      {#if typeof value.letterSpacing === "number"}
         <Property
           label="Letter spacing"
           hint="The amount of spacing between letters"
         >
           <NumberInput
-            value={props.letterSpacing}
+            value={value.letterSpacing}
             step={0.1}
             setValue={(value) =>
               onchange({
@@ -226,29 +239,29 @@
         </Property>
       {/if}
 
-      {#if typeof props.lineHeight === "number"}
+      {#if typeof value.lineHeight === "number"}
         <Property
           label="Line height"
           hint="The line height, a number that represents the vertical space that a letter uses"
         >
           <NumberInput
-            value={props.lineHeight}
+            value={value.lineHeight}
             step={1}
             setValue={(value) => onchange({ property: "lineHeight", value })}
           />
         </Property>
       {/if}
-      {#if typeof props.padding === "number"}
+      {#if typeof value.padding === "number"}
         <Property label="Padding">
           <NumberInput
-            value={props.padding}
+            value={value.padding}
             min={0}
             step={1}
             setValue={(value) => onchange({ property: "padding", value })}
           />
         </Property>
       {/if}
-      {#if typeof props.whiteSpace === "string"}
+      {#if typeof value.whiteSpace === "string"}
         <Property
           label="White Space"
           hint="Determines whether newlines & spaces are collapsed or preserved"
@@ -256,21 +269,21 @@
           <Grid cols={3}>
             <ToggleButton
               label="Normal"
-              value={props.whiteSpace === "normal"}
+              value={value.whiteSpace === "normal"}
               rounded="left"
               setValue={() =>
                 onchange({ property: "whiteSpace", value: "normal" })}
             />
             <ToggleButton
               label="Pre"
-              value={props.whiteSpace === "pre"}
+              value={value.whiteSpace === "pre"}
               rounded="none"
               setValue={() =>
                 onchange({ property: "whiteSpace", value: "pre" })}
             />
             <ToggleButton
               label="Pre Line"
-              value={props.whiteSpace === "pre-line"}
+              value={value.whiteSpace === "pre-line"}
               rounded="right"
               setValue={() =>
                 onchange({ property: "whiteSpace", value: "pre-line" })}
@@ -278,10 +291,10 @@
           </Grid>
         </Property>
       {/if}
-      {#if typeof props.trim === "boolean"}
+      {#if typeof value.trim === "boolean"}
         <Property>
           <CheckboxInput
-            value={props.trim}
+            value={value.trim}
             hint="Trim transparent borders"
             setValue={(value) => onchange({ property: "trim", value })}
           >
@@ -293,21 +306,22 @@
   </Panel>
 {/if}
 
-{#if typeof props.wordWrap === "boolean"}
+{#if typeof value.wordWrap === "boolean"}
   <Panel
     title="Word wrap"
-    value={props.wordWrap}
-    bind:expanded={expanded.wordWrap}
+    value={value.wordWrap}
+    expanded={expanded.wordWrap}
     setValue={(value) => onchange({ property: "wordWrap", value })}
+    setExpanded={(val) => setExpanded?.("wordWrap", val)}
   >
     <Box gap={6} padding={8}>
-      {#if typeof props.wordWrapWidth === "number"}
+      {#if typeof value.wordWrapWidth === "number"}
         <Property
           label="Width"
           hint="The width at which text will wrap, it needs wordWrap to be set to true"
         >
           <NumberInput
-            value={props.wordWrapWidth}
+            value={value.wordWrapWidth}
             min={0}
             step={1}
             setValue={(value) =>
@@ -318,10 +332,10 @@
           />
         </Property>
       {/if}
-      {#if typeof props.breakWords === "boolean"}
+      {#if typeof value.breakWords === "boolean"}
         <Property>
           <CheckboxInput
-            value={props.breakWords}
+            value={value.breakWords}
             hint="Indicates if lines can be wrapped within words, it needs wordWrap to be set to true."
             setValue={(value) => onchange({ property: "breakWords", value })}
           >
@@ -336,15 +350,16 @@
 {#if dropShadowPanel}
   <Panel
     title="Drop shadow"
-    value={props.dropShadow}
-    bind:expanded={expanded.dropShadow}
+    value={value.dropShadow}
+    expanded={expanded.dropShadow}
     setValue={(value) => onchange({ property: "dropShadow", value })}
+    setExpanded={(val) => setExpanded?.("dropShadow", val)}
   >
     <Box gap={6} padding={8}>
-      {#if typeof props.dropShadowAlpha === "number"}
+      {#if typeof value.dropShadowAlpha === "number"}
         <Property label="Alpha" hint="Set alpha for the drop shadow">
           <NumberInput
-            value={props.dropShadowAlpha}
+            value={value.dropShadowAlpha}
             step={0.01}
             min={0}
             max={1}
@@ -356,13 +371,13 @@
           />
         </Property>
       {/if}
-      {#if typeof props.dropShadowColor === "string"}
+      {#if typeof value.dropShadowColor === "string"}
         <Property
           label="Color"
           hint="A fill style to be used on the dropshadow"
         >
           <TextInput
-            value={props.dropShadowColor}
+            value={value.dropShadowColor}
             setValue={(value) =>
               onchange({
                 property: "dropShadowColor",
@@ -371,10 +386,10 @@
           />
         </Property>
       {/if}
-      {#if typeof props.dropShadowAngle === "number"}
+      {#if typeof value.dropShadowAngle === "number"}
         <Property label="Angle" hint="Set a angle of the drop shadow">
           <NumberInput
-            value={props.dropShadowAngle}
+            value={value.dropShadowAngle}
             step={0.01}
             suffix="r"
             setValue={(value) =>
@@ -385,10 +400,10 @@
           />
         </Property>
       {/if}
-      {#if typeof props.dropShadowBlur === "number"}
+      {#if typeof value.dropShadowBlur === "number"}
         <Property label="Blur" hint="Set a shadow blur radius">
           <NumberInput
-            value={props.dropShadowBlur}
+            value={value.dropShadowBlur}
             min={0}
             step={0.1}
             setValue={(value) =>
@@ -399,10 +414,10 @@
           />
         </Property>
       {/if}
-      {#if typeof props.dropShadowDistance === "number"}
+      {#if typeof value.dropShadowDistance === "number"}
         <Property label="Distance" hint="Set a distance of the drop shadow">
           <NumberInput
-            value={props.dropShadowDistance}
+            value={value.dropShadowDistance}
             step={0.1}
             min={0}
             setValue={(value) =>
@@ -418,15 +433,19 @@
 {/if}
 
 {#if strokePanel}
-  <Panel title="Stroke" bind:expanded={expanded.stroke}>
+  <Panel
+    title="Stroke"
+    expanded={expanded.stroke}
+    setExpanded={(val) => setExpanded?.("stroke", val)}
+  >
     <Box gap={6} padding={8}>
-      {#if typeof props.stroke === "string"}
+      {#if typeof value.stroke === "string"}
         <Property
           label="Stroke"
           hint="A canvas fillstyle that will be used on the text stroke"
         >
           <TextInput
-            value={props.stroke}
+            value={value.stroke}
             setValue={(value) =>
               onchange({
                 property: "stroke",
@@ -435,13 +454,13 @@
           />
         </Property>
       {/if}
-      {#if typeof props.strokeThickness === "number"}
+      {#if typeof value.strokeThickness === "number"}
         <Property
           label="Thickness"
           hint="A number that represents the thickness of the stroke"
         >
           <NumberInput
-            value={props.strokeThickness}
+            value={value.strokeThickness}
             min={0}
             step={0.1}
             setValue={(value) =>

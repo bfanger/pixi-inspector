@@ -30,7 +30,7 @@ export type TreeDisplayContainerNode = {
   truncate(length: number): void;
 };
 
-export type TreeEvent = { path: TreePath; type: string; data?: TreeValue };
+export type TreeEvent = { path: TreePath; type: string; args: TreeValue[] };
 
 // JSON-compatible type & undefined
 export type TreeValue =
@@ -46,7 +46,7 @@ export type TreeObjectValue = {
 };
 type TreeArrayValue = TreeValue[];
 
-export type TreeEventHandler = (details?: TreeValue) => number | void;
+export type TreeEventHandler = (...args: TreeValue[]) => number | void;
 
 /**
  * A path into the tree structure bases on depth & index.
@@ -176,7 +176,7 @@ export type Sender = {
   dispatchEvent: (
     node: TreeDisplayNode,
     event: string,
-    details?: TreeValue,
+    ...args: TreeValue[]
   ) => Promise<void>;
   setValue: (node: TreeDisplayNode, value: TreeValue) => Promise<void>;
   reset: () => Promise<void>;

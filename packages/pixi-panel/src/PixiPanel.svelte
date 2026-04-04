@@ -1,27 +1,17 @@
 <script lang="ts">
   import Base from "blender-elements/src/Base.svelte";
-  import Instructions from "./Instructions.svelte";
   import type { BridgeFn } from "./types";
   import { setBridgeContext } from "./bridge-fns";
   import { evalConnect } from "ui-protocol/src/evalBridge";
   import Warning from "blender-elements/src/Warning/Warning.svelte";
   import Display from "ui-protocol/src/svelte/Display.svelte";
   import { onDestroy } from "svelte";
-  import components from "ui-protocol/src/svelte/components";
   import { fade } from "svelte/transition";
-  import PixiInject from "./PixiInject.svelte";
   // @ts-ignore
   import miniUI from "../build/ui-mini.txt?raw";
-  import SceneGraphLegacy from "./SceneGraphLegacy.svelte";
-  import PropertiesLegacy from "./PropertiesLegacy.svelte";
-  import type { Connection } from "ui-protocol/src/types";
+  import "./init";
 
-  Object.assign(components, {
-    PixiInstructions: Instructions,
-    PixiInject,
-    PixiSceneGraph: SceneGraphLegacy,
-    PixiProperties: PropertiesLegacy,
-  });
+  import type { Connection } from "ui-protocol/src/types";
 
   type Props = {
     bridge: BridgeFn;

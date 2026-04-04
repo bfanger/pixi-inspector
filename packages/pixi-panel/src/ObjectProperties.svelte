@@ -8,49 +8,47 @@
   import type { NodeProperties } from "./types";
 
   type Props = {
-    props: NodeProperties;
+    value: NodeProperties;
     expanded: Record<string, boolean>;
-    onchange: (change: {
-      property: string;
-      value: number | boolean | string | undefined;
-    }) => void;
+    setValue: (update: { property: string; value: any }) => void;
+    setExpanded?: (section: string, expanded: boolean) => void;
   };
 
-  let { props, expanded = $bindable(), onchange }: Props = $props();
+  let { value, expanded, setValue, setExpanded }: Props = $props();
 
   let transformPanel = $derived(
-    typeof props.x === "number" ||
-      typeof props.angle === "number" ||
-      typeof props.scaleX === "number",
+    typeof value.x === "number" ||
+      typeof value.angle === "number" ||
+      typeof value.scaleX === "number",
   );
 
   let transformOriginPanel = $derived(
-    typeof props.originX === "number" ||
-      typeof props.anchorX === "number" ||
-      typeof props.pivotX === "number",
+    typeof value.originX === "number" ||
+      typeof value.anchorX === "number" ||
+      typeof value.pivotX === "number",
   );
 
   let visibilityPanel = $derived(
-    typeof props.alpha === "number" || typeof props.visible === "boolean",
+    typeof value.alpha === "number" || typeof value.visible === "boolean",
   );
   let renderPanel = $derived(
-    typeof props.sortableChildren === "boolean" ||
-      typeof props.zIndex === "number" ||
-      typeof props.cullable === "boolean",
+    typeof value.sortableChildren === "boolean" ||
+      typeof value.zIndex === "number" ||
+      typeof value.cullable === "boolean",
   );
 
   let interactivePanel = $derived(
-    typeof props.interactive === "boolean" ||
-      typeof props.interactiveChildren === "boolean",
+    typeof value.interactive === "boolean" ||
+      typeof value.interactiveChildren === "boolean",
   );
 
   let skewDimensionsPanel = $state("");
   $effect.pre(() => {
-    if (typeof props.width === "number" && typeof props.skewX === "number") {
+    if (typeof value.width === "number" && typeof value.skewX === "number") {
       skewDimensionsPanel = "Skew & Dimensions";
-    } else if (typeof props.width === "number") {
+    } else if (typeof value.width === "number") {
       skewDimensionsPanel = "Dimensions";
-    } else if (typeof props.skewX === "number") {
+    } else if (typeof value.skewX === "number") {
       skewDimensionsPanel = "Skew";
     } else {
       skewDimensionsPanel = "";
@@ -59,56 +57,60 @@
 </script>
 
 {#if transformPanel}
-  <Panel title="Transform" bind:expanded={expanded.transform}>
+  <Panel
+    title="Transform"
+    expanded={expanded.transform}
+    setExpanded={(val) => setExpanded?.("transform", val)}
+  >
     <Box gap={6} padding={8}>
       <Box gap={1}>
         <Property label="Location X">
           <NumberInput
-            value={props.x}
+            value={value.x}
             step={1}
             rounded="top"
-            setValue={(value) => onchange({ property: "x", value })}
+            setValue={(value) => setValue({ property: "x", value })}
           />
         </Property>
         <Property label="Y">
           <NumberInput
-            value={props.y}
+            value={value.y}
             step={1}
             rounded="bottom"
-            setValue={(value) => onchange({ property: "y", value })}
+            setValue={(value) => setValue({ property: "y", value })}
           />
         </Property>
       </Box>
 
-      {#if typeof props.angle === "number"}
+      {#if typeof value.angle === "number"}
         <Property label="Angle" hint="The angle of the object in degrees">
           <NumberInput
-            value={props.angle}
+            value={value.angle}
             step={1}
             suffix="°"
-            setValue={(value) => onchange({ property: "angle", value })}
+            setValue={(value) => setValue({ property: "angle", value })}
           />
         </Property>
       {/if}
-      {#if typeof props.scaleX === "number"}
+      {#if typeof value.scaleX === "number"}
         <Box gap={1}>
           <Property
             label="Scale X"
             hint="The scale factors of this object along the local coordinate axes"
           >
             <NumberInput
-              value={props.scaleX}
+              value={value.scaleX}
               step={0.05}
               rounded="top"
-              setValue={(value) => onchange({ property: "scaleX", value })}
+              setValue={(value) => setValue({ property: "scaleX", value })}
             />
           </Property>
           <Property label="Y">
             <NumberInput
-              value={props.scaleY}
+              value={value.scaleY}
               step={0.1}
               rounded="bottom"
-              setValue={(value) => onchange({ property: "scaleY", value })}
+              setValue={(value) => setValue({ property: "scaleY", value })}
             />
           </Property>
         </Box>
@@ -117,75 +119,79 @@
   </Panel>
 {/if}
 {#if transformOriginPanel}
-  <Panel title="Transform Origin" bind:expanded={expanded.transformOrigin}>
+  <Panel
+    title="Transform Origin"
+    expanded={expanded.transformOrigin}
+    setExpanded={(val) => setExpanded?.("transformOrigin", val)}
+  >
     <Box gap={6} padding={8}>
-      {#if typeof props.anchorX === "number"}
+      {#if typeof value.anchorX === "number"}
         <Box gap={1}>
           <Property label="Anchor X">
             <NumberInput
-              value={props.anchorX}
+              value={value.anchorX}
               step={0.01}
               min={0}
               max={1}
               rounded="top"
-              setValue={(value) => onchange({ property: "anchorX", value })}
+              setValue={(value) => setValue({ property: "anchorX", value })}
             />
           </Property>
           <Property label="Y">
             <NumberInput
-              value={props.anchorY}
+              value={value.anchorY}
               step={0.01}
               min={0}
               max={1}
               rounded="bottom"
-              setValue={(value) => onchange({ property: "anchorY", value })}
+              setValue={(value) => setValue({ property: "anchorY", value })}
             />
           </Property>
         </Box>
       {/if}
-      {#if typeof props.originX === "number"}
+      {#if typeof value.originX === "number"}
         <Box gap={1}>
           <Property label="Origin X">
             <NumberInput
-              value={props.originX}
+              value={value.originX}
               step={0.01}
               min={0}
               max={1}
               rounded="top"
-              setValue={(value) => onchange({ property: "originX", value })}
+              setValue={(value) => setValue({ property: "originX", value })}
             />
           </Property>
           <Property label="Y">
             <NumberInput
-              value={props.originY}
+              value={value.originY}
               step={0.01}
               min={0}
               max={1}
               rounded="bottom"
-              setValue={(value) => onchange({ property: "originY", value })}
+              setValue={(value) => setValue({ property: "originY", value })}
             />
           </Property>
         </Box>
       {/if}
-      {#if typeof props.pivotX === "number"}
+      {#if typeof value.pivotX === "number"}
         <Box gap={1}>
           <Property
             label="Pivot X"
             hint="The center of rotation, scaling, and skewing for this display object in its local space"
           >
             <NumberInput
-              value={props.pivotX}
+              value={value.pivotX}
               step={0.1}
               rounded="top"
-              setValue={(value) => onchange({ property: "pivotX", value })}
+              setValue={(value) => setValue({ property: "pivotX", value })}
             />
           </Property>
           <Property label="Y">
             <NumberInput
-              value={props.pivotY}
+              value={value.pivotY}
               step={0.1}
               rounded="bottom"
-              setValue={(value) => onchange({ property: "pivotY", value })}
+              setValue={(value) => setValue({ property: "pivotY", value })}
             /></Property
           >
         </Box>
@@ -194,25 +200,29 @@
   </Panel>
 {/if}
 {#if visibilityPanel}
-  <Panel title="Visibility" bind:expanded={expanded.visibility}>
+  <Panel
+    title="Visibility"
+    expanded={expanded.visibility}
+    setExpanded={(val) => setExpanded?.("visibility", val)}
+  >
     <Box gap={6} padding={8}>
-      {#if typeof props.alpha === "number"}
+      {#if typeof value.alpha === "number"}
         <Property label="Alpha" hint="The opacity of the object">
           <NumberInput
-            value={props.alpha}
+            value={value.alpha}
             step={0.01}
             min={0}
             max={1}
-            setValue={(value) => onchange({ property: "alpha", value })}
+            setValue={(value) => setValue({ property: "alpha", value })}
           />
         </Property>
       {/if}
-      {#if typeof props.visible === "boolean"}
+      {#if typeof value.visible === "boolean"}
         <Property>
           <CheckboxInput
-            value={props.visible}
+            value={value.visible}
             hint="The visibility of the object"
-            setValue={(value) => onchange({ property: "visible", value })}
+            setValue={(value) => setValue({ property: "visible", value })}
           >
             Visible
           </CheckboxInput>
@@ -222,15 +232,19 @@
   </Panel>
 {/if}
 {#if renderPanel}
-  <Panel title="Rendering" bind:expanded={expanded.rendering}>
+  <Panel
+    title="Rendering"
+    expanded={expanded.rendering}
+    setExpanded={(val) => setExpanded?.("rendering", val)}
+  >
     <Box gap={6} padding={8}>
-      {#if typeof props.sortableChildren === "boolean"}
+      {#if typeof value.sortableChildren === "boolean"}
         <Property>
           <CheckboxInput
-            value={props.sortableChildren}
+            value={value.sortableChildren}
             hint="If set to true, the container will sort its children by zIndex value"
             setValue={(value) =>
-              onchange({
+              setValue({
                 property: "sortableChildren",
                 value,
               })}
@@ -239,20 +253,20 @@
           </CheckboxInput>
         </Property>
       {/if}
-      {#if typeof props.zIndex === "number"}
+      {#if typeof value.zIndex === "number"}
         <Property label="Z Index">
           <NumberInput
-            value={props.zIndex}
-            setValue={(value) => onchange({ property: "zIndex", value })}
+            value={value.zIndex}
+            setValue={(value) => setValue({ property: "zIndex", value })}
           />
         </Property>
       {/if}
-      {#if typeof props.cullable === "boolean"}
+      {#if typeof value.cullable === "boolean"}
         <Property>
           <CheckboxInput
-            value={props.cullable}
+            value={value.cullable}
             hint="Should this object be rendered if the bounds of this object are out of frame?"
-            setValue={(value) => onchange({ property: "cullable", value })}
+            setValue={(value) => setValue({ property: "cullable", value })}
           >
             Cullable
           </CheckboxInput>
@@ -263,49 +277,53 @@
 {/if}
 
 {#if skewDimensionsPanel}
-  <Panel title={skewDimensionsPanel} bind:expanded={expanded.skewDimensions}>
+  <Panel
+    title={skewDimensionsPanel}
+    expanded={expanded.skewDimensions}
+    setExpanded={(val) => setExpanded?.("skewDimensions", val)}
+  >
     <Box gap={6} padding={8}>
-      {#if typeof props.skewX === "number"}
+      {#if typeof value.skewX === "number"}
         <Box gap={1}>
           <Property
             label="Skew X"
             hint="The skew factor for the object in radians"
           >
             <NumberInput
-              value={props.skewX}
+              value={value.skewX}
               step={0.01}
               suffix="r"
               rounded="top"
-              setValue={(value) => onchange({ property: "skewX", value })}
+              setValue={(value) => setValue({ property: "skewX", value })}
             />
           </Property>
           <Property label="Y">
             <NumberInput
-              value={props.skewY}
+              value={value.skewY}
               step={0.01}
               suffix="r"
               rounded="bottom"
-              setValue={(value) => onchange({ property: "skewY", value })}
+              setValue={(value) => setValue({ property: "skewY", value })}
             />
           </Property>
         </Box>
       {/if}
-      {#if typeof props.width === "number"}
+      {#if typeof value.width === "number"}
         <Box gap={1}>
           <Property label="Width">
             <NumberInput
-              value={props.width}
+              value={value.width}
               step={1}
               rounded="top"
-              setValue={(value) => onchange({ property: "width", value })}
+              setValue={(value) => setValue({ property: "width", value })}
             />
           </Property>
           <Property label="Height">
             <NumberInput
-              value={props.height}
+              value={value.height}
               step={1}
               rounded="bottom"
-              setValue={(value) => onchange({ property: "height", value })}
+              setValue={(value) => setValue({ property: "height", value })}
             />
           </Property>
         </Box>
@@ -314,15 +332,19 @@
   </Panel>
 {/if}
 {#if interactivePanel}
-  <Panel title="Interactivity" bind:expanded={expanded.interactive}>
+  <Panel
+    title="Interactivity"
+    expanded={expanded.interactive}
+    setExpanded={(val) => setExpanded?.("interactive", val)}
+  >
     <Box gap={6} padding={8}>
-      {#if typeof props.eventMode === "string"}
+      {#if typeof value.eventMode === "string"}
         <Property
           label="Event mode"
           hint="Enable interaction events for the Container. Touch, pointer and mouse. This now replaces the interactive property."
         >
           <SelectMenu
-            value={props.eventMode}
+            value={value.eventMode}
             options={[
               { value: "none", label: "None" },
               { value: "passive", label: "Passive" },
@@ -330,14 +352,14 @@
               { value: "static", label: "Static" },
               { value: "dynamic", label: "Dynamic" },
             ]}
-            setValue={(value) => onchange({ property: "eventMode", value })}
+            setValue={(value) => setValue({ property: "eventMode", value })}
           />
         </Property>
         <Property label="Cursor">
           <SelectMenu
-            value={props.cursor ?? ""}
+            value={value.cursor ?? ""}
             options={[
-              ...(props.cursor ? [] : [{ value: "", label: "" }]),
+              ...(value.cursor ? [] : [{ value: "", label: "" }]),
               { value: "auto", label: "Auto" },
               { value: "default", label: "Default" },
               { value: "none", label: "None" },
@@ -376,43 +398,43 @@
               // { value: "row-resize", label: "Resize (Row)" },
             ]}
             setValue={(value) =>
-              onchange({
+              setValue({
                 property: "cursor",
                 value: value === "" ? undefined : value,
               })}
           />
         </Property>
       {/if}
-      {#if typeof props.interactive === "boolean"}
+      {#if typeof value.interactive === "boolean"}
         <Property>
           <CheckboxInput
-            value={props.interactive}
+            value={value.interactive}
             hint="Enable interaction events for the Container. Touch, pointer and mouse"
-            setValue={(value) => onchange({ property: "interactive", value })}
+            setValue={(value) => setValue({ property: "interactive", value })}
           >
             Interactive
           </CheckboxInput>
         </Property>
       {/if}
 
-      {#if typeof props.buttonMode === "boolean"}
+      {#if typeof value.buttonMode === "boolean"}
         <Property>
           <CheckboxInput
-            value={props.buttonMode}
+            value={value.buttonMode}
             hint="If enabled, the mouse cursor use the pointer behavior when hovered over the Container if it is interactive Setting this changes the 'cursor' property to 'pointer'."
-            setValue={(value) => onchange({ property: "buttonMode", value })}
+            setValue={(value) => setValue({ property: "buttonMode", value })}
           >
             Button mode
           </CheckboxInput>
         </Property>
       {/if}
-      {#if typeof props.interactiveChildren === "boolean"}
+      {#if typeof value.interactiveChildren === "boolean"}
         <Property>
           <CheckboxInput
-            value={props.interactiveChildren}
+            value={value.interactiveChildren}
             hint="Determines if the children to the Container can be clicked/touched Setting this to false allows PixiJS to bypass a recursive hitTest function"
             setValue={(value) =>
-              onchange({
+              setValue({
                 property: "interactiveChildren",
                 value,
               })}
