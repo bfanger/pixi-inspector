@@ -2,7 +2,7 @@
   import Panel from "../Panel/Panel.svelte";
   import Property from "../Property/Property.svelte";
   import Box from "../Box/Box.svelte";
-  import NumberField from "./NumberField.svelte";
+  import NumberInput from "./NumberInput.svelte";
 
   let x = $state(123);
   let y = $state(456);
@@ -10,10 +10,10 @@
 </script>
 
 <div style="max-width: 250px;">
-  <Panel title="NumberField in a group">
+  <Panel title="NumberInput in a group">
     <Box gap={1} padding={8}>
       <Property label="Location X">
-        <NumberField
+        <NumberInput
           value={x}
           step={0.1}
           setValue={(val) => {
@@ -23,10 +23,10 @@
         />
       </Property>
       <Property label="Y">
-        <NumberField bind:value={y} rounded="none" />
+        <NumberInput bind:value={y} rounded="none" />
       </Property>
       <Property label="Z">
-        <NumberField
+        <NumberInput
           bind:value={z}
           step={1}
           min={500}

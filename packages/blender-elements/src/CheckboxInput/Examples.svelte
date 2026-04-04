@@ -1,13 +1,13 @@
 <script lang="ts">
-  import Checkbox from "./Checkbox.svelte";
+  import CheckboxInput from "./CheckboxInput.svelte";
 
   let value = $state(false);
   let toggle = $state(true);
 </script>
 
-<Checkbox bind:value>Via bind:value {value}</Checkbox>
+<CheckboxInput bind:value>Via bind:value {value}</CheckboxInput>
 
-<Checkbox
+<CheckboxInput
   label="via setValue props: {toggle}"
   value={toggle}
   setValue={(checked) => {

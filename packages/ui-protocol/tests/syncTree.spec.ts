@@ -5,13 +5,13 @@ import { createTestControllerTree } from "./createTestControllerTree";
 describe.sequential("syncTree()", () => {
   const [controllerTree, game] = createTestControllerTree();
 
-  it("should append NumberField connected to a PlayerLocationController", () => {
+  it("should append NumberInput connected to a PlayerLocationController", () => {
     const patch = syncTree(controllerTree);
     expect(patch).toMatchInlineSnapshot(`
       {
         "appends": [
           {
-            "component": "NumberField",
+            "component": "NumberInput",
             "events": undefined,
             "path": [
               0,

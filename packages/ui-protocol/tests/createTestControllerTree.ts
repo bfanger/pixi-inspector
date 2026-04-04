@@ -21,7 +21,7 @@ export function createTestControllerTree() {
       if (player && tree.children!.length === 0) {
         patch.appends.push(
           {
-            component: "NumberField",
+            component: "NumberInput",
             props: { label: "X", step: 1 },
             value: player.x,
             node: {

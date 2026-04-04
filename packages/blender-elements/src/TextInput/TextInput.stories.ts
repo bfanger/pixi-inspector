@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/svelte-vite";
 import { faker } from "@faker-js/faker/locale/en";
-import TextField from "./TextField.svelte";
+import TextInput from "./TextInput.svelte";
 
-const meta: Meta<typeof TextField> = {
-  title: "Form control / TextField",
-  component: TextField,
+const meta: Meta<typeof TextInput> = {
+  title: "Form control / TextInput",
+  component: TextInput,
 };
 export default meta;
 

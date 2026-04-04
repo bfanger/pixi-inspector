@@ -1,6 +1,6 @@
 <script lang="ts">
   import { slide } from "svelte/transition";
-  import Checkbox from "../Checkbox/Checkbox.svelte";
+  import CheckboxInput from "../CheckboxInput/CheckboxInput.svelte";
 
   type Props = {
     title: string;
@@ -26,7 +26,7 @@
 <section class="panel">
   <button class="title" class:expanded onclick={onToggleExpanded}>
     {#if typeof value === "boolean"}
-      <Checkbox bind:value {setValue} />
+      <CheckboxInput bind:value {setValue} />
     {/if}
     <span>{title}</span>
   </button>

@@ -2,11 +2,11 @@ import type { Meta, StoryObj } from "@storybook/svelte-vite";
 import { faker } from "@faker-js/faker/locale/en";
 import { expect, fn } from "storybook/test";
 
-import Checkbox from "./Checkbox.svelte";
+import CheckboxInput from "./CheckboxInput.svelte";
 
-const meta: Meta<typeof Checkbox> = {
+const meta: Meta<typeof CheckboxInput> = {
   title: "Form control / Checkbox",
-  component: Checkbox,
+  component: CheckboxInput,
   args: { setValue: fn() },
 };
 

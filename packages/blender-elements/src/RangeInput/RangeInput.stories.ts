@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/svelte-vite";
 import { faker } from "@faker-js/faker/locale/en";
-import RangeField from "./RangeField.svelte";
+import RangeInput from "./RangeInput.svelte";
 
-const meta: Meta<typeof RangeField> = {
-  title: "Form control / RangeField",
-  component: RangeField,
+const meta: Meta<typeof RangeInput> = {
+  title: "Form control / RangeInput",
+  component: RangeInput,
 };
 export default meta;
 

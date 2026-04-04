@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/svelte-vite";
 import { faker } from "@faker-js/faker/locale/en";
 
-import ColorField from "./ColorField.svelte";
+import ColorInput from "./ColorInput.svelte";
 import { fn } from "storybook/test";
 
-const meta: Meta<typeof ColorField> = {
-  title: "Form control / ColorField",
-  component: ColorField,
+const meta: Meta<typeof ColorInput> = {
+  title: "Form control / ColorInput",
+  component: ColorInput,
   args: {
     value: "#0000ff",
     setValue: fn(),

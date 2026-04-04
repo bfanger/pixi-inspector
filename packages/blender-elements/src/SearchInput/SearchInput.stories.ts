@@ -1,10 +1,10 @@
 import type { Meta } from "@storybook/svelte-vite";
 import { faker } from "@faker-js/faker/locale/en";
-import SearchField from "./SearchField.svelte";
+import SearchInput from "./SearchInput.svelte";
 
-const meta: Meta<typeof SearchField> = {
-  title: "Form control / SearchField",
-  component: SearchField,
+const meta: Meta<typeof SearchInput> = {
+  title: "Form control / SearchInput",
+  component: SearchInput,
 };
 export default meta;
 

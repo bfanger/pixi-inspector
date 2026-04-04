@@ -1,10 +1,10 @@
 <script lang="ts">
-  import Checkbox from "blender-elements/src/Checkbox/Checkbox.svelte";
-  import NumberField from "blender-elements/src/NumberField/NumberField.svelte";
+  import CheckboxInput from "blender-elements/src/CheckboxInput/CheckboxInput.svelte";
+  import NumberInput from "blender-elements/src/NumberInput/NumberInput.svelte";
   import Panel from "blender-elements/src/Panel/Panel.svelte";
   import Property from "blender-elements/src/Property/Property.svelte";
   import SelectMenu from "blender-elements/src/SelectMenu/SelectMenu.svelte";
-  import TextField from "blender-elements/src/TextField/TextField.svelte";
+  import TextInput from "blender-elements/src/TextInput/TextInput.svelte";
   import Toggle from "blender-elements/src/Toggle/Toggle.svelte";
   import Box from "blender-elements/src/Box/Box.svelte";
   import Grid from "blender-elements/src/Grid/Grid.svelte";
@@ -46,7 +46,7 @@
       for="text"
       title="Use shift-enter to create a multiline string">Text</label
     >
-    <TextField
+    <TextInput
       id="text"
       value={props.text}
       oninput={(value) => onchange({ property: "text", value })}
@@ -62,7 +62,7 @@
           label="Family"
           hint="The font family, can be a single font name, or a list of names where the first is the preferred font."
         >
-          <TextField
+          <TextInput
             value={props.fontFamily}
             setValue={(value) => onchange({ property: "fontFamily", value })}
           />
@@ -70,7 +70,7 @@
       {/if}
       {#if typeof props.fontSize === "number"}
         <Property label="Size" hint="The font size">
-          <NumberField
+          <NumberInput
             value={props.fontSize}
             min={0}
             step={1}
@@ -201,7 +201,7 @@
     <Box gap={2}>
       {#if typeof props.leading === "number"}
         <Property label="Leading" hint="The space between lines">
-          <NumberField
+          <NumberInput
             value={props.leading}
             min={0}
             step={0.1}
@@ -214,7 +214,7 @@
           label="Letter spacing"
           hint="The amount of spacing between letters"
         >
-          <NumberField
+          <NumberInput
             value={props.letterSpacing}
             step={0.1}
             setValue={(value) =>
@@ -231,7 +231,7 @@
           label="Line height"
           hint="The line height, a number that represents the vertical space that a letter uses"
         >
-          <NumberField
+          <NumberInput
             value={props.lineHeight}
             step={1}
             setValue={(value) => onchange({ property: "lineHeight", value })}
@@ -240,7 +240,7 @@
       {/if}
       {#if typeof props.padding === "number"}
         <Property label="Padding">
-          <NumberField
+          <NumberInput
             value={props.padding}
             min={0}
             step={1}
@@ -280,13 +280,13 @@
       {/if}
       {#if typeof props.trim === "boolean"}
         <Property>
-          <Checkbox
+          <CheckboxInput
             value={props.trim}
             hint="Trim transparent borders"
             setValue={(value) => onchange({ property: "trim", value })}
           >
             Trim
-          </Checkbox>
+          </CheckboxInput>
         </Property>
       {/if}
     </Box>
@@ -306,7 +306,7 @@
           label="Width"
           hint="The width at which text will wrap, it needs wordWrap to be set to true"
         >
-          <NumberField
+          <NumberInput
             value={props.wordWrapWidth}
             min={0}
             step={1}
@@ -320,13 +320,13 @@
       {/if}
       {#if typeof props.breakWords === "boolean"}
         <Property>
-          <Checkbox
+          <CheckboxInput
             value={props.breakWords}
             hint="Indicates if lines can be wrapped within words, it needs wordWrap to be set to true."
             setValue={(value) => onchange({ property: "breakWords", value })}
           >
             Break words
-          </Checkbox>
+          </CheckboxInput>
         </Property>
       {/if}
     </Box>
@@ -343,7 +343,7 @@
     <Box gap={6} padding={8}>
       {#if typeof props.dropShadowAlpha === "number"}
         <Property label="Alpha" hint="Set alpha for the drop shadow">
-          <NumberField
+          <NumberInput
             value={props.dropShadowAlpha}
             step={0.01}
             min={0}
@@ -361,7 +361,7 @@
           label="Color"
           hint="A fill style to be used on the dropshadow"
         >
-          <TextField
+          <TextInput
             value={props.dropShadowColor}
             setValue={(value) =>
               onchange({
@@ -373,7 +373,7 @@
       {/if}
       {#if typeof props.dropShadowAngle === "number"}
         <Property label="Angle" hint="Set a angle of the drop shadow">
-          <NumberField
+          <NumberInput
             value={props.dropShadowAngle}
             step={0.01}
             suffix="r"
@@ -387,7 +387,7 @@
       {/if}
       {#if typeof props.dropShadowBlur === "number"}
         <Property label="Blur" hint="Set a shadow blur radius">
-          <NumberField
+          <NumberInput
             value={props.dropShadowBlur}
             min={0}
             step={0.1}
@@ -401,7 +401,7 @@
       {/if}
       {#if typeof props.dropShadowDistance === "number"}
         <Property label="Distance" hint="Set a distance of the drop shadow">
-          <NumberField
+          <NumberInput
             value={props.dropShadowDistance}
             step={0.1}
             min={0}
@@ -425,7 +425,7 @@
           label="Stroke"
           hint="A canvas fillstyle that will be used on the text stroke"
         >
-          <TextField
+          <TextInput
             value={props.stroke}
             setValue={(value) =>
               onchange({
@@ -440,7 +440,7 @@
           label="Thickness"
           hint="A number that represents the thickness of the stroke"
         >
-          <NumberField
+          <NumberInput
             value={props.strokeThickness}
             min={0}
             step={0.1}

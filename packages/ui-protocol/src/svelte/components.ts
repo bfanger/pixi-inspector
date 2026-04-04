@@ -1,12 +1,12 @@
 import Fragment from "./Fragment.svelte";
-import NumberField from "blender-elements/src/NumberField/NumberField.svelte";
+import NumberInput from "blender-elements/src/NumberInput/NumberInput.svelte";
 import Button from "blender-elements/src/Button/Button.svelte";
-import Checkbox from "blender-elements/src/Checkbox/Checkbox.svelte";
+import CheckboxInput from "blender-elements/src/CheckboxInput/CheckboxInput.svelte";
 import Property from "blender-elements/src/Property/Property.svelte";
 import Box from "blender-elements/src/Box/Box.svelte";
 import Panel from "blender-elements/src/Panel/Panel.svelte";
-import TextField from "blender-elements/src/TextField/TextField.svelte";
-import SearchField from "blender-elements/src/SearchField/SearchField.svelte";
+import TextInput from "blender-elements/src/TextInput/TextInput.svelte";
+import SearchInput from "blender-elements/src/SearchInput/SearchInput.svelte";
 import Grid from "blender-elements/src/Grid/Grid.svelte";
 import SplitPanel from "blender-elements/src/SplitPanel/SplitPanel.svelte";
 import SplitPanels from "blender-elements/src/SplitPanel/SplitPanels.svelte";
@@ -18,11 +18,11 @@ const components = {
   Refresh,
   Box,
   Grid,
-  NumberField,
-  TextField,
-  SearchField,
+  NumberInput,
+  TextInput,
+  SearchInput,
   Button,
-  Checkbox,
+  CheckboxInput,
   Panel,
   SplitPanel,
   SplitPanels,

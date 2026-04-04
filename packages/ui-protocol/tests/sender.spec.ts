@@ -79,7 +79,7 @@ describe.sequential("sender", () => {
             "setProps": [Function],
             "setValue": [Function],
             "test": {
-              "component": "NumberField",
+              "component": "NumberInput",
               "events": undefined,
               "props": {
                 "label": "X",
@@ -204,7 +204,7 @@ describe.sequential("sender", () => {
             "setProps": [Function],
             "setValue": [Function],
             "test": {
-              "component": "NumberField",
+              "component": "NumberInput",
               "events": undefined,
               "props": {
                 "label": "X",

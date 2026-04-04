@@ -1,11 +1,11 @@
 <script lang="ts">
-  import Checkbox from "blender-elements/src/Checkbox/Checkbox.svelte";
-  import NumberField from "blender-elements/src/NumberField/NumberField.svelte";
+  import CheckboxInput from "blender-elements/src/CheckboxInput/CheckboxInput.svelte";
+  import NumberInput from "blender-elements/src/NumberInput/NumberInput.svelte";
   import Panel from "blender-elements/src/Panel/Panel.svelte";
   import Property from "blender-elements/src/Property/Property.svelte";
   import Box from "blender-elements/src/Box/Box.svelte";
   import type { NodeProperties } from "./types";
-  import ColorField from "../../blender-elements/src/ColorField/ColorField.svelte";
+  import ColorInput from "../../blender-elements/src/ColorInput/ColorInput.svelte";
 
   type Props = {
     props: NodeProperties;
@@ -26,7 +26,7 @@
     <Box gap={6} padding={8}>
       {#if typeof props.speed === "number"}
         <Property label="Speed" hint="Factor of current deltaTime">
-          <NumberField
+          <NumberInput
             value={props.speed}
             step={0.01}
             setValue={(value) => onchange({ property: "speed", value })}
@@ -35,13 +35,13 @@
       {/if}
       {#if typeof props.started === "boolean"}
         <Property>
-          <Checkbox
+          <CheckboxInput
             value={props.started}
             hint="Whether or not this ticker has been started"
             setValue={(value) => onchange({ property: "started", value })}
           >
             Started
-          </Checkbox>
+          </CheckboxInput>
         </Property>
       {/if}
     </Box>
@@ -56,7 +56,7 @@
           label="Background"
           hint="The background color and alpha of the main view."
         >
-          <ColorField
+          <ColorInput
             value={props.background}
             setValue={(value) => onchange({ property: "background", value })}
           />

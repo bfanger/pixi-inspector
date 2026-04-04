@@ -1,6 +1,6 @@
 <script lang="ts">
-  import Checkbox from "blender-elements/src/Checkbox/Checkbox.svelte";
-  import NumberField from "blender-elements/src/NumberField/NumberField.svelte";
+  import CheckboxInput from "blender-elements/src/CheckboxInput/CheckboxInput.svelte";
+  import NumberInput from "blender-elements/src/NumberInput/NumberInput.svelte";
   import Panel from "blender-elements/src/Panel/Panel.svelte";
   import Property from "blender-elements/src/Property/Property.svelte";
   import SelectMenu from "blender-elements/src/SelectMenu/SelectMenu.svelte";
@@ -63,7 +63,7 @@
     <Box gap={6} padding={8}>
       <Box gap={1}>
         <Property label="Location X">
-          <NumberField
+          <NumberInput
             value={props.x}
             step={1}
             rounded="top"
@@ -71,7 +71,7 @@
           />
         </Property>
         <Property label="Y">
-          <NumberField
+          <NumberInput
             value={props.y}
             step={1}
             rounded="bottom"
@@ -82,7 +82,7 @@
 
       {#if typeof props.angle === "number"}
         <Property label="Angle" hint="The angle of the object in degrees">
-          <NumberField
+          <NumberInput
             value={props.angle}
             step={1}
             suffix="°"
@@ -96,7 +96,7 @@
             label="Scale X"
             hint="The scale factors of this object along the local coordinate axes"
           >
-            <NumberField
+            <NumberInput
               value={props.scaleX}
               step={0.05}
               rounded="top"
@@ -104,7 +104,7 @@
             />
           </Property>
           <Property label="Y">
-            <NumberField
+            <NumberInput
               value={props.scaleY}
               step={0.1}
               rounded="bottom"
@@ -122,7 +122,7 @@
       {#if typeof props.anchorX === "number"}
         <Box gap={1}>
           <Property label="Anchor X">
-            <NumberField
+            <NumberInput
               value={props.anchorX}
               step={0.01}
               min={0}
@@ -132,7 +132,7 @@
             />
           </Property>
           <Property label="Y">
-            <NumberField
+            <NumberInput
               value={props.anchorY}
               step={0.01}
               min={0}
@@ -146,7 +146,7 @@
       {#if typeof props.originX === "number"}
         <Box gap={1}>
           <Property label="Origin X">
-            <NumberField
+            <NumberInput
               value={props.originX}
               step={0.01}
               min={0}
@@ -156,7 +156,7 @@
             />
           </Property>
           <Property label="Y">
-            <NumberField
+            <NumberInput
               value={props.originY}
               step={0.01}
               min={0}
@@ -173,7 +173,7 @@
             label="Pivot X"
             hint="The center of rotation, scaling, and skewing for this display object in its local space"
           >
-            <NumberField
+            <NumberInput
               value={props.pivotX}
               step={0.1}
               rounded="top"
@@ -181,7 +181,7 @@
             />
           </Property>
           <Property label="Y">
-            <NumberField
+            <NumberInput
               value={props.pivotY}
               step={0.1}
               rounded="bottom"
@@ -198,7 +198,7 @@
     <Box gap={6} padding={8}>
       {#if typeof props.alpha === "number"}
         <Property label="Alpha" hint="The opacity of the object">
-          <NumberField
+          <NumberInput
             value={props.alpha}
             step={0.01}
             min={0}
@@ -209,13 +209,13 @@
       {/if}
       {#if typeof props.visible === "boolean"}
         <Property>
-          <Checkbox
+          <CheckboxInput
             value={props.visible}
             hint="The visibility of the object"
             setValue={(value) => onchange({ property: "visible", value })}
           >
             Visible
-          </Checkbox>
+          </CheckboxInput>
         </Property>
       {/if}
     </Box>
@@ -226,7 +226,7 @@
     <Box gap={6} padding={8}>
       {#if typeof props.sortableChildren === "boolean"}
         <Property>
-          <Checkbox
+          <CheckboxInput
             value={props.sortableChildren}
             hint="If set to true, the container will sort its children by zIndex value"
             setValue={(value) =>
@@ -236,12 +236,12 @@
               })}
           >
             Sortable children
-          </Checkbox>
+          </CheckboxInput>
         </Property>
       {/if}
       {#if typeof props.zIndex === "number"}
         <Property label="Z Index">
-          <NumberField
+          <NumberInput
             value={props.zIndex}
             setValue={(value) => onchange({ property: "zIndex", value })}
           />
@@ -249,13 +249,13 @@
       {/if}
       {#if typeof props.cullable === "boolean"}
         <Property>
-          <Checkbox
+          <CheckboxInput
             value={props.cullable}
             hint="Should this object be rendered if the bounds of this object are out of frame?"
             setValue={(value) => onchange({ property: "cullable", value })}
           >
             Cullable
-          </Checkbox>
+          </CheckboxInput>
         </Property>
       {/if}
     </Box>
@@ -271,7 +271,7 @@
             label="Skew X"
             hint="The skew factor for the object in radians"
           >
-            <NumberField
+            <NumberInput
               value={props.skewX}
               step={0.01}
               suffix="r"
@@ -280,7 +280,7 @@
             />
           </Property>
           <Property label="Y">
-            <NumberField
+            <NumberInput
               value={props.skewY}
               step={0.01}
               suffix="r"
@@ -293,7 +293,7 @@
       {#if typeof props.width === "number"}
         <Box gap={1}>
           <Property label="Width">
-            <NumberField
+            <NumberInput
               value={props.width}
               step={1}
               rounded="top"
@@ -301,7 +301,7 @@
             />
           </Property>
           <Property label="Height">
-            <NumberField
+            <NumberInput
               value={props.height}
               step={1}
               rounded="bottom"
@@ -385,30 +385,30 @@
       {/if}
       {#if typeof props.interactive === "boolean"}
         <Property>
-          <Checkbox
+          <CheckboxInput
             value={props.interactive}
             hint="Enable interaction events for the Container. Touch, pointer and mouse"
             setValue={(value) => onchange({ property: "interactive", value })}
           >
             Interactive
-          </Checkbox>
+          </CheckboxInput>
         </Property>
       {/if}
 
       {#if typeof props.buttonMode === "boolean"}
         <Property>
-          <Checkbox
+          <CheckboxInput
             value={props.buttonMode}
             hint="If enabled, the mouse cursor use the pointer behavior when hovered over the Container if it is interactive Setting this changes the 'cursor' property to 'pointer'."
             setValue={(value) => onchange({ property: "buttonMode", value })}
           >
             Button mode
-          </Checkbox>
+          </CheckboxInput>
         </Property>
       {/if}
       {#if typeof props.interactiveChildren === "boolean"}
         <Property>
-          <Checkbox
+          <CheckboxInput
             value={props.interactiveChildren}
             hint="Determines if the children to the Container can be clicked/touched Setting this to false allows PixiJS to bypass a recursive hitTest function"
             setValue={(value) =>
@@ -418,7 +418,7 @@
               })}
           >
             Interactive children
-          </Checkbox>
+          </CheckboxInput>
         </Property>
       {/if}
     </Box>

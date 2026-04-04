@@ -1,7 +1,7 @@
 <script lang="ts">
-  import TextField from "../TextField/TextField.svelte";
+  import TextInput from "../TextInput/TextInput.svelte";
   import Property from "../Property/Property.svelte";
-  import RangeField from "../RangeField/RangeField.svelte";
+  import RangeInput from "../RangeInput/RangeInput.svelte";
   import Toggle from "../Toggle/Toggle.svelte";
   import LightnessRange from "./BrightnessSlider.svelte";
   import { hexToHsv, hexToRgb, hsvToHex, rgbToHex } from "./color-fns";
@@ -160,7 +160,7 @@
       </div>
       <div class="sliders">
         {#if mode === "rgb"}
-          <RangeField
+          <RangeInput
             label="Red"
             from={0}
             till={1}
@@ -168,7 +168,7 @@
             value={r / 255}
             setValue={(red) => setValueRGB(red * 255, g, b)}
           />
-          <RangeField
+          <RangeInput
             label="Green"
             from={0}
             till={1}
@@ -176,7 +176,7 @@
             value={g / 255}
             setValue={(green) => setValueRGB(r, green * 255, b)}
           />
-          <RangeField
+          <RangeInput
             label="Blue"
             from={0}
             till={1}
@@ -185,7 +185,7 @@
             setValue={(blue) => setValueRGB(r, g, blue * 255)}
           />
         {:else}
-          <RangeField
+          <RangeInput
             from={0}
             till={1}
             label="Hue"
@@ -193,7 +193,7 @@
             value={h / 360}
             setValue={(hue) => setValueHSV(hue * 360, s, v, a)}
           />
-          <RangeField
+          <RangeInput
             from={0}
             till={1}
             label="Saturation"
@@ -201,7 +201,7 @@
             value={s / 100}
             setValue={(saturation) => setValueHSV(h, saturation * 100, v, a)}
           />
-          <RangeField
+          <RangeInput
             from={0}
             till={1}
             label="Brightness"
@@ -210,7 +210,7 @@
             setValue={(lightness) => setValueHSV(h, s, lightness * 100, a)}
           />
         {/if}
-        <RangeField
+        <RangeInput
           from={0}
           till={1}
           label="Alpha"
@@ -221,7 +221,7 @@
       </div>
       <div>
         <Property label="Hex">
-          <TextField bind:value={hex} setValue={setHex} />
+          <TextInput bind:value={hex} setValue={setHex} />
         </Property>
       </div>
     </div>

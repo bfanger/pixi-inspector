@@ -22,7 +22,7 @@ pixiDevtoolsClickToSelect(legacy);
 const win = window as any;
 win.__PIXI_DEVTOOLS_LEGACY__ = function legacyInit(): TreeInit {
   const searchField: TreeInit = {
-    component: "SearchField",
+    component: "SearchInput",
     value: outline.query,
     props: { label: "Search" },
     node: {

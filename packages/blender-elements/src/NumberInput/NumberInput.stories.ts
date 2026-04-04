@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/svelte-vite";
 import { faker } from "@faker-js/faker/locale/en";
-import NumberField from "./NumberField.svelte";
+import NumberInput from "./NumberInput.svelte";
 
-const meta: Meta<typeof NumberField> = {
-  title: "Form control / NumberField",
-  component: NumberField,
+const meta: Meta<typeof NumberInput> = {
+  title: "Form control / NumberInput",
+  component: NumberInput,
 };
 export default meta;
 
