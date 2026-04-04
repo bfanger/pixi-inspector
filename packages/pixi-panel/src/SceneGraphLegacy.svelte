@@ -37,7 +37,7 @@
 </script>
 
 <div class="scene-graph-legacy">
-  <div class="search-field">
+  <div class="search-input">
     {@render children()}
   </div>
   <div
@@ -80,7 +80,7 @@
     background: #2d2d2d;
   }
 
-  .search-field {
+  .search-input {
     position: sticky;
     padding: 8px;
   }

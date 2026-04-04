@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Icon } from "../icons";
   import Panel from "../Panel/Panel.svelte";
-  import Toggle from "./Toggle.svelte";
+  import ToggleButton from "./ToggleButton.svelte";
 
   let value = $state(false);
   let icon: Icon = $state("copy");
@@ -10,20 +10,20 @@
 
 <div style="display: flex; flex-direction: column; gap: 2px">
   <Panel title="With value, Without value and transparent">
-    <Toggle {icon} bind:value />
-    <Toggle {icon} />
-    <Toggle {icon} transparent />
+    <ToggleButton {icon} bind:value />
+    <ToggleButton {icon} />
+    <ToggleButton {icon} transparent />
   </Panel>
   <Panel title="Toggles in a group">
-    <div style="display:inline-flex; gap: 1px">
-      <Toggle icon="chevron-left" rounded="left" />
-      <Toggle icon="eye-opened" bind:value rounded="none" />
-      <Toggle icon="chevron-right" rounded="right" />
+    <div style="display: inline-flex">
+      <ToggleButton icon="chevron-left" rounded="left" />
+      <ToggleButton icon="eye-opened" bind:value rounded="none" />
+      <ToggleButton icon="chevron-right" rounded="right" />
     </div>
   </Panel>
   <Panel title="Font styles">
     <div class="font-styles">
-      <Toggle
+      <ToggleButton
         icon="bold"
         rounded="left"
         label="Bold"
@@ -32,7 +32,7 @@
           fontStyle = "bold";
         }}
       />
-      <Toggle
+      <ToggleButton
         icon="italic"
         rounded="none"
         label="Italic"
@@ -41,7 +41,7 @@
           fontStyle = "italic";
         }}
       />
-      <Toggle
+      <ToggleButton
         icon="small-caps"
         rounded="right"
         label="Small Caps"
@@ -58,8 +58,6 @@
   .font-styles {
     display: grid;
     grid-template-columns: repeat(3, minmax(min-content, 1fr));
-    gap: 1px;
-
     width: 220px;
     max-width: 100%;
   }

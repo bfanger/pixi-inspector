@@ -6,12 +6,6 @@ export function hexToRgb(color: string) {
   return rgb;
 }
 
-function toHex(channel: number) {
-  return Math.round(Math.max(0, Math.min(255, channel)))
-    .toString(16)
-    .padStart(2, "0");
-}
-
 export function rgbToHex(r: number, g: number, b: number, a?: number): string {
   if (a === undefined) {
     return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
@@ -128,6 +122,12 @@ export function hexToHsv(
 export function hsvToHex(h: number, s: number, v: number, a?: number): string {
   const [r, g, b] = hsvToRgb(h, s, v);
   return rgbToHex(r, g, b, a);
+}
+
+function toHex(channel: number) {
+  return Math.round(Math.max(0, Math.min(255, channel)))
+    .toString(16)
+    .padStart(2, "0");
 }
 
 function unsafeHexToRgb(hex: string) {

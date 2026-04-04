@@ -1,7 +1,9 @@
 <script lang="ts">
-  import type { ComponentProps } from "svelte";
   import { hexToRgb } from "./color-fns";
-  import ColorPopup from "./ColorPopup.svelte";
+  import ColorPicker, {
+    type ColorPickerLocation,
+    type ColorPickerVariant,
+  } from "./ColorPicker.svelte";
 
   type Props = {
     value: string;
@@ -9,15 +11,14 @@
   };
   let { value, setValue }: Props = $props();
   let [r, g, b] = $derived(hexToRgb(value));
-  let popupVisible = $state(false);
-  type PopupLocation = ComponentProps<typeof ColorPopup>["location"];
-  type PopupVariant = ComponentProps<typeof ColorPopup>["variant"];
-  let location = $state<PopupLocation>("overlap");
-  let variant = $state<PopupVariant>("tall");
+  let pickerVisible = $state(false);
+
+  let location = $state<ColorPickerLocation>("overlap");
+  let variant = $state<ColorPickerVariant>("tall");
   let innerHeight = $state(window.innerHeight);
 
-  function popupLocation(el: HTMLElement) {
-    if (!popupVisible) {
+  function repositionColorPicker(el: HTMLElement) {
+    if (!pickerVisible) {
       return;
     }
     const bounds = el.getBoundingClientRect();
@@ -47,30 +48,30 @@
 
 <button
   aria-label={value}
-  class="color-field"
-  style:anchor-name={popupVisible ? "--color-field" : undefined}
+  class="color-input"
+  style:anchor-name={pickerVisible ? "--color-input" : undefined}
+  {@attach repositionColorPicker}
   onclick={() => {
-    popupVisible = !popupVisible;
+    pickerVisible = !pickerVisible;
   }}
-  {@attach popupLocation}
 >
-  <div class="bg" style:background-color="rgb({r} {g} {b})"></div>
-  <div class="bg" style:background-color={value}></div>
+  <div class="half" style:background-color="rgb({r} {g} {b})"></div>
+  <div class="half" style:background-color={value}></div>
 </button>
-{#if popupVisible}
-  <ColorPopup
+{#if pickerVisible}
+  <ColorPicker
     bind:value
     {setValue}
     {location}
     {variant}
     onclose={() => {
-      popupVisible = false;
+      pickerVisible = false;
     }}
   />
 {/if}
 
 <style>
-  .color-field {
+  .color-input {
     overflow: hidden;
     display: flex;
 
@@ -87,7 +88,7 @@
     box-shadow: 0 1px 3px #0000004d;
   }
 
-  .bg {
+  .half {
     width: 50%;
     height: 100%;
   }

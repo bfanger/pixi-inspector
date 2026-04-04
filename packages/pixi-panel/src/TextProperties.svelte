@@ -5,7 +5,7 @@
   import Property from "blender-elements/src/Property/Property.svelte";
   import SelectMenu from "blender-elements/src/SelectMenu/SelectMenu.svelte";
   import TextInput from "blender-elements/src/TextInput/TextInput.svelte";
-  import Toggle from "blender-elements/src/Toggle/Toggle.svelte";
+  import ToggleButton from "blender-elements/src/ToggleButton/ToggleButton.svelte";
   import Box from "blender-elements/src/Box/Box.svelte";
   import Grid from "blender-elements/src/Grid/Grid.svelte";
   import type { NodeProperties } from "./types";
@@ -80,15 +80,15 @@
       {/if}
       {#if typeof props.fontStyle === "string"}
         <Property label="Style" hint="The font style">
-          <Grid cols={3} gap={1}>
-            <Toggle
+          <Grid cols={3}>
+            <ToggleButton
               label="Normal"
               value={props.fontStyle === "normal"}
               rounded="left"
               setValue={() =>
                 onchange({ property: "fontStyle", value: "normal" })}
             />
-            <Toggle
+            <ToggleButton
               icon="italic"
               label="Italic"
               value={props.fontStyle === "italic"}
@@ -96,7 +96,7 @@
               setValue={() =>
                 onchange({ property: "fontStyle", value: "italic" })}
             />
-            <Toggle
+            <ToggleButton
               label="Oblique"
               value={props.fontStyle === "oblique"}
               rounded="right"
@@ -108,8 +108,8 @@
       {/if}
       {#if typeof props.fontVariant === "string"}
         <Property label="Variant" hint="The font variant">
-          <Grid cols={2} gap={1}>
-            <Toggle
+          <Grid cols={2}>
+            <ToggleButton
               label="Normal"
               value={props.fontVariant === "normal"}
               rounded="left"
@@ -117,7 +117,7 @@
                 onchange({ property: "fontVariant", value: "normal" })}
             />
 
-            <Toggle
+            <ToggleButton
               icon="small-caps"
               label="Small Caps"
               value={props.fontVariant === "small-caps"}
@@ -253,22 +253,22 @@
           label="White Space"
           hint="Determines whether newlines & spaces are collapsed or preserved"
         >
-          <Grid cols={3} gap={1}>
-            <Toggle
+          <Grid cols={3}>
+            <ToggleButton
               label="Normal"
               value={props.whiteSpace === "normal"}
               rounded="left"
               setValue={() =>
                 onchange({ property: "whiteSpace", value: "normal" })}
             />
-            <Toggle
+            <ToggleButton
               label="Pre"
               value={props.whiteSpace === "pre"}
               rounded="none"
               setValue={() =>
                 onchange({ property: "whiteSpace", value: "pre" })}
             />
-            <Toggle
+            <ToggleButton
               label="Pre Line"
               value={props.whiteSpace === "pre-line"}
               rounded="right"

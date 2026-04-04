@@ -35,7 +35,7 @@
   }
 </script>
 
-<div class="search-field">
+<div class="search-input">
   <input
     {id}
     type="text"
@@ -55,7 +55,7 @@
 </div>
 
 <style>
-  .search-field {
+  .search-input {
     position: relative;
   }
 
@@ -69,6 +69,7 @@
     border: 1px solid #3d3d3d;
     border-radius: 4px;
 
+    font: inherit;
     color: #fdfdfd;
 
     background: #1d1d1c;
@@ -86,7 +87,7 @@
     }
   }
 
-  .search-field:hover .input:not(:global(:focus)) {
+  .search-input:hover .input:not(:global(:focus)) {
     border-color: #414141;
     background: #232323;
   }

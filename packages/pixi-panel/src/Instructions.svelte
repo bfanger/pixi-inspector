@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Toggle from "blender-elements/src/Toggle/Toggle.svelte";
+  import ToggleButton from "blender-elements/src/ToggleButton/ToggleButton.svelte";
   import { getBridgeContext } from "./bridge-fns";
 
   const bridge = getBridgeContext();
@@ -18,7 +18,7 @@
       add the line:
       <code class="with-copy">
         <div class="copy">
-          <Toggle
+          <ToggleButton
             icon="copy"
             hint="Copy to clipboard"
             transparent
@@ -41,7 +41,7 @@
       add the line:
       <code class="with-copy"
         ><div class="copy">
-          <Toggle
+          <ToggleButton
             icon="copy"
             hint="Copy to clipboard"
             transparent

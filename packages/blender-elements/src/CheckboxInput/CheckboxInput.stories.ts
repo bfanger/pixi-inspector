@@ -5,7 +5,7 @@ import { expect, fn } from "storybook/test";
 import CheckboxInput from "./CheckboxInput.svelte";
 
 const meta: Meta<typeof CheckboxInput> = {
-  title: "Form control / Checkbox",
+  title: "Form control / CheckboxInput",
   component: CheckboxInput,
   args: { setValue: fn() },
 };

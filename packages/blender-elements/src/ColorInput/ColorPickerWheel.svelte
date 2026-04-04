@@ -106,8 +106,9 @@
   onpointerup={handlePointerUp}
   onpointermove={handlePointerMove}
 />
-<div class="color-wheel">
+<div class="color-picker-wheel">
   <img
+    class="wheel"
     bind:this={el}
     {src}
     draggable="false"
@@ -126,11 +127,11 @@
 </div>
 
 <style>
-  .color-wheel {
+  .color-picker-wheel {
     position: relative;
   }
 
-  img {
+  .wheel {
     user-select: none;
 
     width: 160px;

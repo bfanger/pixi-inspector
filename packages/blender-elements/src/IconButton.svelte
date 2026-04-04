@@ -12,7 +12,7 @@
 </script>
 
 <button
-  class="toggle"
+  class="icon-button"
   class:muted
   style="background-image: var(--icon-{icon})"
   title={hint}
@@ -25,7 +25,7 @@
 ></button>
 
 <style>
-  .toggle {
+  .icon-button {
     cursor: pointer;
 
     flex-shrink: 0;

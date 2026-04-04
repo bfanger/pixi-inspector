@@ -1,6 +1,6 @@
 <script lang="ts">
   import { getContext, onMount } from "svelte";
-  import Toggle from "./IconButton.svelte";
+  import IconButton from "./IconButton.svelte";
 
   type Props = {
     indent: number;
@@ -151,22 +151,22 @@
   tabindex="0"
 >
   {#if expanded === true}
-    <Toggle icon="expanded" onclick={() => oncollapse()} />
+    <IconButton icon="expanded" onclick={() => oncollapse()} />
   {:else if expanded === false}
-    <Toggle icon="collapsed" onclick={() => onexpand()} />
+    <IconButton icon="collapsed" onclick={() => onexpand()} />
   {:else}
     <span class="toggle-spacer"></span>
   {/if}
   <span class="title">{title}</span>
   {#if selectable}
-    <Toggle
+    <IconButton
       icon="selectable"
       hint="Disable right-click selection"
       muted={parentUnselectable}
       onclick={() => onunselectable()}
     />
   {:else}
-    <Toggle
+    <IconButton
       icon="unselectable"
       hint="Enable right-click selection"
       muted={parentUnselectable}
@@ -174,9 +174,9 @@
     />
   {/if}
   {#if visible === true}
-    <Toggle icon="eye-opened" hint="Hide (h)" onclick={() => onhide()} />
+    <IconButton icon="eye-opened" hint="Hide (h)" onclick={() => onhide()} />
   {:else if visible === false}
-    <Toggle icon="eye-closed" hint="Show (h)" onclick={() => onshow()} />
+    <IconButton icon="eye-closed" hint="Show (h)" onclick={() => onshow()} />
   {/if}
 </div>
 

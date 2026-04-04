@@ -66,10 +66,10 @@
     align-items: center;
 
     box-sizing: border-box;
-    min-width: 18px;
-    min-height: 18px;
+    min-width: 20px;
+    min-height: 20px;
     padding: 1px;
-    border: none;
+    border: 1px solid transparent;
 
     font: inherit;
     color: white;
@@ -92,13 +92,19 @@
     }
 
     &[data-rounded="right"] {
+      border-left: 0;
       border-top-right-radius: 2px 3px;
       border-bottom-right-radius: 2px 3px;
     }
 
+    &[data-rounded="none"] {
+      border-left: 0;
+    }
+
     &:not(:global(.transparent)) {
+      border-color: #3d3d3d;
       background-color: #656565;
-      box-shadow: 0 1px 1px #0009;
+      box-shadow: 0 0.5px 0 #323232bf;
     }
 
     &:hover {

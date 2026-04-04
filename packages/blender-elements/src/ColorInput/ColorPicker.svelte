@@ -2,19 +2,21 @@
   import TextInput from "../TextInput/TextInput.svelte";
   import Property from "../Property/Property.svelte";
   import RangeInput from "../RangeInput/RangeInput.svelte";
-  import Toggle from "../Toggle/Toggle.svelte";
-  import LightnessRange from "./BrightnessSlider.svelte";
+  import ToggleButton from "../ToggleButton/ToggleButton.svelte";
+  import LightnessRange from "./ColorPickerBrightnessSlider.svelte";
   import { hexToHsv, hexToRgb, hsvToHex, rgbToHex } from "./color-fns";
-  import ColorWheel from "./ColorWheel.svelte";
+  import ColorWheel from "./ColorPickerWheel.svelte";
+
+  export type ColorPickerLocation = "top" | "bottom" | "overlap";
+  export type ColorPickerVariant = "tall" | "wide";
 
   type Props = {
     value: string;
     setValue?: (value: string) => void;
-    variant: "tall" | "wide";
+    variant: ColorPickerVariant;
     location: "top" | "bottom" | "overlap";
     onclose: () => void;
   };
-
   let {
     value = $bindable(),
     setValue,
@@ -115,10 +117,18 @@
     const brightness = Math.min(100, Math.max(0, v + delta * 10));
     setValueHSV(h, s, brightness, a);
   }
+
+  async function openEyeDropper() {
+    const eyeDropper = new (window as any).EyeDropper();
+    const result = await eyeDropper.open();
+    if (typeof result.sRGBHex === "string") {
+      setHex(result.sRGBHex);
+    }
+  }
 </script>
 
 <dialog
-  class="color-popup"
+  class="color-picker"
   data-location={location}
   closedby="any"
   oncancel={() => onclose()}
@@ -141,7 +151,7 @@
     </div>
     <div>
       <div class="rgb-hsv">
-        <Toggle
+        <ToggleButton
           label="RGB"
           rounded="left"
           value={mode === "rgb"}
@@ -149,7 +159,7 @@
             mode = "rgb";
           }}
         />
-        <Toggle
+        <ToggleButton
           label="HSV"
           rounded="right"
           value={mode === "hsv"}
@@ -221,7 +231,16 @@
       </div>
       <div>
         <Property label="Hex">
-          <TextInput bind:value={hex} setValue={setHex} />
+          <div class="input-and-eye-dropper">
+            <TextInput bind:value={hex} setValue={setHex} />
+            {#if "EyeDropper" in window}
+              <ToggleButton
+                hint="Pick color using a eye dropper"
+                icon="pipette"
+                onclick={openEyeDropper}
+              />
+            {/if}
+          </div>
         </Property>
       </div>
     </div>
@@ -229,10 +248,10 @@
 </dialog>
 
 <style>
-  .color-popup {
+  .color-picker {
     position: absolute;
     inset: auto anchor(right) auto auto;
-    position-anchor: --color-field;
+    position-anchor: --color-input;
     position-try-fallbacks: flip-block;
 
     box-sizing: border-box;
@@ -290,7 +309,6 @@
   .rgb-hsv {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1px;
     margin-bottom: 3px;
   }
 
@@ -302,5 +320,11 @@
     margin-bottom: 8px;
 
     color: #e5e5e5;
+  }
+
+  .input-and-eye-dropper {
+    display: flex;
+    gap: 6px;
+    align-items: center;
   }
 </style>

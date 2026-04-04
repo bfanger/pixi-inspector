@@ -130,7 +130,7 @@
   }
 </script>
 
-<div class="number-field" class:active class:focused data-rounded={rounded}>
+<div class="number-input" class:active class:focused data-rounded={rounded}>
   <input
     class="input"
     {id}
@@ -164,7 +164,7 @@
 </div>
 
 <style>
-  .number-field {
+  .number-input {
     position: relative;
     overflow: hidden;
     background: #545454;
@@ -258,7 +258,7 @@
     }
   }
 
-  .number-field:hover .arrow {
+  .number-input:hover .arrow {
     display: block;
   }
 

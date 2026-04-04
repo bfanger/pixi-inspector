@@ -130,7 +130,7 @@
 </script>
 
 <div
-  class="range-field"
+  class="range-input"
   class:active
   class:focused
   class:with-label={label}
@@ -171,7 +171,7 @@
 </div>
 
 <style>
-  .range-field {
+  .range-input {
     --background: #545454;
 
     user-select: none;
@@ -217,7 +217,7 @@
     top: 2px;
     left: 8px;
 
-    .range-field:focus-within & {
+    .range-input:focus-within & {
       display: none;
     }
   }
