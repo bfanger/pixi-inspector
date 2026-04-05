@@ -1,4 +1,5 @@
 node_modules
+/.svelte-check
 /apps/chrome-extension/build
 /chrome-extension.zip
 /apps/firefox-extension/build

@@ -79,10 +79,15 @@ type TreeEventOptions = {
 
 export type TreeInit = {
   component: string;
-  node?: TreeControllerNode;
   props?: TreeObjectValue;
   value?: TreeValue;
   children?: TreeInit[];
+  sync?: (patch: TreePatch) => void;
+  setValue?: (value: TreeValue) => void;
+  events?: Record<
+    string,
+    TreeEventHandler | [TreeEventHandler, TreeEventOptions]
+  >;
 };
 /**
  * Patch to create a new tree node

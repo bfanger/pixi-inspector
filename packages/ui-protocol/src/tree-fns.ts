@@ -192,11 +192,9 @@ function applyPartial(
     if (!node.children) {
       throw new Error("Can't replace children of a leaf node");
     }
-    target.replacements.push(createInit(replacement, [...path, index]));
-    if (!replacement.node) {
-      throw new Error("createInit didn't create the missing node?");
-    }
-    node.children[index] = replacement.node;
+    const init = createInit(replacement, [...path, index]);
+    target.replacements.push(init.dto);
+    node.children[index] = init.node;
     skip.push(index);
   }
 
@@ -204,11 +202,9 @@ function applyPartial(
     if (!node.children) {
       throw new Error("Can't append children to a leaf node");
     }
-    target.appends.push(createInit(append, [...path, node.children.length]));
-    if (!append.node) {
-      throw new Error("createInit didn't create the missing node?");
-    }
-    node.children.push(append.node);
+    const init = createInit(append, [...path, node.children.length]);
+    target.appends.push(init.dto);
+    node.children.push(init.node);
   }
 
   if (partial.truncate !== undefined) {
@@ -226,37 +222,37 @@ function applyPartial(
 /**
  * From partial init information create a full patch dto.
  */
-function createInit(init: TreeInit, path: TreePath): TreePatchInitDto {
-  init.node = init.node ?? {};
-  init.props = init.props ?? {};
+function createInit(
+  init: TreeInit,
+  path: TreePath,
+): { dto: TreePatchInitDto; node: TreeControllerNode } {
+  const { component, props = {}, value, children, ...rest } = init;
+  const node: TreeControllerNode = rest;
   const dto: TreePatchInitDto = {
     path,
-    component: init.component,
-    props: init.props ?? {},
+    component,
+    props,
     events: undefined,
-    value: init.value,
-    setValue: init.node.setValue ? true : undefined,
+    value,
+    setValue: node.setValue ? true : undefined,
   };
-  if (init.node.events) {
-    dto.events = Object.entries(init.node.events).map(([event, fn]) =>
-      typeof fn === "function" ? { event } : { event, ...fn[1] },
+  if (node.events) {
+    dto.events = Object.entries(node.events).map(([event, fn]) =>
+      typeof fn === "function"
+        ? { event }
+        : { event, debounce: fn[1].debounce, throttle: fn[1].throttle },
     );
   }
-  if (init.children) {
+  if (children) {
     dto.children = [];
-    if (!init.node.children) {
-      init.node.children = [];
-    }
-    for (let i = 0; i < init.children.length; i++) {
-      const childInit = init.children[i];
-      dto.children.push(createInit(childInit, [...path, i]));
-      if (!childInit.node) {
-        throw new Error("createInit didn't create the missing node?");
-      }
-      init.node.children[i] = childInit.node;
+    node.children = [];
+    for (let i = 0; i < children.length; i++) {
+      const child = createInit(children[i], [...path, i]);
+      dto.children.push(child.dto);
+      node.children[i] = child.node;
     }
   }
-  return dto;
+  return { dto, node };
 }
 
 function createPatch(): TreePatchDto {

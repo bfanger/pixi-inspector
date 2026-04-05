@@ -24,45 +24,37 @@ export function createTestControllerTree() {
             component: "NumberInput",
             props: { label: "X", step: 1 },
             value: player.x,
-            node: {
-              sync(patch) {
-                patch.value = player.x;
-              },
-              setValue(value) {
-                player.x = value as number;
-              },
+            sync(patch) {
+              patch.value = player.x;
+            },
+            setValue(value) {
+              player.x = value as number;
             },
           },
           {
             component: "Button",
             props: { label: "Add 10" },
-            node: {
-              sync(patch) {
-                if (player.x >= 100 && !resetLabel) {
-                  patch.props = { label: "Reset" };
-                  resetLabel = true;
-                } else if (player.x < 100 && resetLabel) {
-                  patch.props = { label: "Add 10" };
-                  resetLabel = false;
+            sync(patch) {
+              if (player.x >= 100 && !resetLabel) {
+                patch.props = { label: "Reset" };
+                resetLabel = true;
+              } else if (player.x < 100 && resetLabel) {
+                patch.props = { label: "Add 10" };
+                resetLabel = false;
+              }
+            },
+            events: {
+              onclick() {
+                if (player.x >= 100) {
+                  player.x = 0;
+                } else {
+                  player.x += 10;
                 }
-              },
-              events: {
-                onclick() {
-                  if (player.x >= 100) {
-                    player.x = 0;
-                  } else {
-                    player.x += 10;
-                  }
-                  return 1;
-                },
+                return 1;
               },
             },
           },
-          {
-            component: "Refresh",
-            node: refreshNode(),
-            props: { interval: 500, depth: 1 },
-          },
+          refreshNode({ interval: 500, depth: 1 }),
         );
       }
       if (tree.children?.length !== 0) {

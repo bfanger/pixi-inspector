@@ -37,6 +37,7 @@
     "@types/chrome": "^0.1.39",
     "@types/firefox-webext-browser": "^143.0.0",
     "@types/node": "^25.5.2",
+    "@typescript/native-preview": "7.0.0-dev.20260405.1",
     "concurrently": "^9.2.1",
     "eslint": "^10.2.0",
     "eslint-config-prettier": "^10.1.8",

@@ -1,37 +1,40 @@
-import type { TreeControllerNode, TreePatch, TreeValue } from "./types";
+import type { TreeInit, TreePatch, TreeValue } from "./types";
 
-/**
- * Node that handles the data & events of the Refresh component.
- *
- * Usage in a TreeInit:
- * {
- *   component: "Refresh",
- *   props: { interval: 1_000 },
- *   node: refreshNode(),
- *   children: [
- *     ...
- */
-export default function refreshNode(options?: {
+type RefreshOptions = {
+  interval: number;
+  depth?: number;
+  children?: TreeInit[];
   /** Augment the sync to alter the children and/or the interval/depth properties */
-  sync?: (patch: TreePatch, controller: TreeControllerNode) => void;
+  sync?: (patch: TreePatch) => void;
   /** Alternate refresh event handler */
   refresh?: (depth: TreeValue) => number;
-}) {
+};
+/**
+ * Node that handles the data & events of the Refresh component.
+ */
+export default function refreshNode({
+  children,
+  sync,
+  refresh,
+  ...props
+}: RefreshOptions): TreeInit {
   let tick = false;
-  const node: TreeControllerNode = {
-    sync(patch) {
+  return {
+    component: "Refresh",
+    props,
+    sync(patch: TreePatch) {
       tick = !tick;
       patch.value = tick;
-      return options?.sync?.(patch, node);
+      return sync?.(patch);
     },
-    setValue(update) {
+    setValue(update: TreeValue) {
       tick = update as boolean;
     },
     events: {
-      refresh: options?.refresh ?? refreshHandler,
+      refresh: refresh ?? refreshHandler,
     },
+    children,
   };
-  return node;
 }
 
 function refreshHandler(depth: TreeValue) {

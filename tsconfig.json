@@ -14,7 +14,8 @@
       "pixi-panel/*": ["./node_modules/pixi-panel/*"],
       "ui-protocol/*": ["./node_modules/ui-protocol/*"]
     },
-    "allowArbitraryExtensions": true
+    "allowArbitraryExtensions": true,
+    "types": ["@types/chrome", "@types/firefox-webext-browser"]
   },
   "include": [
     "**/*.d.ts",

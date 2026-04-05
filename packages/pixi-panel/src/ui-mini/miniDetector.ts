@@ -7,25 +7,23 @@ export default function miniDetector() {
   let previous = detectClient();
   let injected = false;
 
-  return {
-    component: "Refresh",
-    props: { interval: 250 },
+  return refreshNode({
+    interval: 250,
     children: [createNode(previous)],
-    node: refreshNode({
-      sync(patch) {
-        const client = detectClient();
-        if (client && win.__PIXI_DEVTOOLS_LEGACY__ && !injected) {
-          injected = true;
-          patch.props = { interval: 2_500 };
-          patch.replacements.push({ index: 0, ...createNode(client) });
-        } else if (previous !== client) {
-          patch.props = { interval: 5_000 };
-          patch.replacements.push({ index: 0, ...createNode(client) });
-        }
-        previous = client;
-      },
-    }),
-  } satisfies TreeInit;
+
+    sync(patch) {
+      const client = detectClient();
+      if (client && win.__PIXI_DEVTOOLS_LEGACY__ && !injected) {
+        injected = true;
+        patch.props = { interval: 2_500 };
+        patch.replacements.push({ index: 0, ...createNode(client) });
+      } else if (previous !== client) {
+        patch.props = { interval: 5_000 };
+        patch.replacements.push({ index: 0, ...createNode(client) });
+      }
+      previous = client;
+    },
+  });
 }
 
 function createNode(client: DetectedClient): TreeInit {
@@ -38,49 +36,45 @@ function createNode(client: DetectedClient): TreeInit {
           component: "Box",
           props: { gap: 5 },
           children: [],
-          node: {
-            sync(patch) {
-              const hasPixi = !!getGlobal("PIXI");
-              if (hasPixi && this.children!.length === 0) {
-                patch.appends.push(
-                  {
-                    component: "Warning",
-                    props: {
-                      message:
-                        '"Patch render engine" is available. This type of Devtools connection is less reliable',
+          sync(patch) {
+            const hasPixi = !!getGlobal("PIXI");
+            if (hasPixi && this.children!.length === 0) {
+              patch.appends.push(
+                {
+                  component: "Warning",
+                  props: {
+                    message:
+                      '"Patch render engine" is available. This type of Devtools connection is less reliable',
+                  },
+                },
+                {
+                  component: "Button",
+                  props: { label: "Patch render engine" },
+                  events: {
+                    onclick() {
+                      const PIXI = getGlobal<any>("PIXI");
+                      if (!PIXI) {
+                        console.error("Patching PIXI failed");
+                        return;
+                      }
+                      for (const prop of ["Renderer", "WebGLRenderer"]) {
+                        const Renderer = PIXI[prop];
+                        if (Renderer) {
+                          const { render } = Renderer.prototype;
+                          Renderer.prototype.render =
+                            function pixiDevtoolsRender(...args: any[]) {
+                              win.__PATCHED_RENDERER__ = this;
+                              win.__PATCHED_RENDERER_STAGE__ = args[0];
+                              return render.call(this, ...args) as unknown;
+                            };
+                        }
+                      }
+                      return 3;
                     },
                   },
-                  {
-                    component: "Button",
-                    props: { label: "Patch render engine" },
-                    node: {
-                      events: {
-                        onclick() {
-                          const PIXI = getGlobal<any>("PIXI");
-                          if (!PIXI) {
-                            console.error("Patching PIXI failed");
-                            return;
-                          }
-                          for (const prop of ["Renderer", "WebGLRenderer"]) {
-                            const Renderer = PIXI[prop];
-                            if (Renderer) {
-                              const { render } = Renderer.prototype;
-                              Renderer.prototype.render =
-                                function pixiDevtoolsRender(...args: any[]) {
-                                  win.__PATCHED_RENDERER__ = this;
-                                  win.__PATCHED_RENDERER_STAGE__ = args[0];
-                                  return render.call(this, ...args) as unknown;
-                                };
-                            }
-                          }
-                          return 3;
-                        },
-                      },
-                    },
-                  },
-                );
-              }
-            },
+                },
+              );
+            }
           },
         },
         { component: "PixiInstructions" },
@@ -94,11 +88,9 @@ function createNode(client: DetectedClient): TreeInit {
   return {
     component: "PixiInject",
     children: [],
-    node: {
-      events: {
-        onload: () => {
-          return Infinity; // Trigger sync after legacy ui controller is injected
-        },
+    events: {
+      onload: () => {
+        return Infinity; // Trigger sync after legacy ui controller is injected
       },
     },
   };
