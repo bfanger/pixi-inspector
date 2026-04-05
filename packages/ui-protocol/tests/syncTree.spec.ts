@@ -17,7 +17,6 @@ describe.sequential("syncTree()", () => {
               0,
             ],
             "props": {
-              "label": "X",
               "step": 1,
             },
             "setValue": true,
@@ -53,8 +52,8 @@ describe.sequential("syncTree()", () => {
               "depth": 1,
               "interval": 500,
             },
-            "setValue": true,
-            "value": undefined,
+            "setValue": undefined,
+            "value": false,
           },
         ],
         "props": [],

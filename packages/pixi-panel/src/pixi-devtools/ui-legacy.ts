@@ -1,4 +1,4 @@
-import type { TreeInit, TreeValue } from "ui-protocol/src/types";
+import type { TreeValue } from "ui-protocol/src/types";
 import type { PixiDevtools, PropertyTab, PropertyTabState } from "../types";
 import pixiDevtools from "./pixiDevtools";
 import pixiDevtoolsOutline from "./pixiDevtoolsOutline";
@@ -8,6 +8,7 @@ import pixiDevtoolsViewport from "./pixiDevtoolsViewport";
 import pixiDevtoolsOverlay from "./pixiDevtoolsOverlay";
 import pixiDevtoolsClickToSelect from "./pixiDevtoolsClickToSelect";
 import refreshNode from "ui-protocol/src/refreshNode";
+import defineUI, { type UIProtocolInit } from "ui-protocol/src/svelte/defineUI";
 
 const legacy = pixiDevtools() as PixiDevtools;
 legacy.selection = pixiDevtoolsSelection();
@@ -20,11 +21,10 @@ legacy.overlay = pixiDevtoolsOverlay(legacy);
 pixiDevtoolsClickToSelect(legacy);
 
 const win = window as any;
-win.__PIXI_DEVTOOLS_LEGACY__ = function legacyInit(): TreeInit {
-  const searchInput: TreeInit = {
+win.__PIXI_DEVTOOLS_LEGACY__ = function legacyInit() {
+  const searchInput = defineUI({
     component: "SearchInput",
     value: outline.query,
-    props: { label: "Search" },
     sync(patch) {
       patch.value = outline.query;
     },
@@ -41,10 +41,10 @@ win.__PIXI_DEVTOOLS_LEGACY__ = function legacyInit(): TreeInit {
         return 2;
       },
     },
-  };
+  });
 
-  let direction = "row";
-  return {
+  let direction: "row" | "column" = "row";
+  return defineUI({
     component: "Fragment",
     children: [
       {
@@ -93,12 +93,12 @@ win.__PIXI_DEVTOOLS_LEGACY__ = function legacyInit(): TreeInit {
         ],
       },
     ],
-  } satisfies TreeInit;
+  });
 };
 
-function initSceneGraph(children: TreeInit[]): TreeInit {
+function initSceneGraph(children: UIProtocolInit[]): UIProtocolInit {
   let previous$pixi: any = undefined;
-  return {
+  return defineUI({
     component: "PixiSceneGraph",
     value: outline.tree(),
     sync(patch) {
@@ -143,10 +143,10 @@ function initSceneGraph(children: TreeInit[]): TreeInit {
         },
       }),
     ],
-  };
+  });
 }
 
-function initProperties(): TreeInit {
+function initProperties(): UIProtocolInit {
   let previous$pixi: any = win.$pixi;
   let propertyTabState: PropertyTabState = properties.values();
   let skipNext = true;
@@ -187,16 +187,12 @@ function initProperties(): TreeInit {
     text: "PixiTextProperties",
   } as const;
 
-  function initPropertyPanel(): TreeInit {
-    return {
-      component: propertyComponents[propertyTabState.active],
+  function initPropertyPanel(): UIProtocolInit {
+    const panel = defineUI({
+      component: "PixiObjectProperties",
       props: { expanded },
       value: propertyTabState.properties,
-      setValue(data) {
-        const { property, value } = data as {
-          property: string;
-          value: number;
-        };
+      setValue({ property, value }) {
         properties.set(property, value);
         return 0;
       },
@@ -213,7 +209,9 @@ function initProperties(): TreeInit {
         }
         out.value = propertyTabState.properties;
       },
-    };
+    });
+    panel.component = propertyComponents[propertyTabState.active] as any;
+    return panel as UIProtocolInit;
   }
 
   return refreshNode({

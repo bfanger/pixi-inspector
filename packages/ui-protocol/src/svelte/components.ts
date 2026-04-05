@@ -31,4 +31,15 @@ const components = {
   Warning,
   Tabs,
 } as const;
+
+type BaseComponents = {
+  [K in keyof typeof components]: (typeof components)[K];
+};
+
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  interface UIComponents extends BaseComponents {}
+}
+
+export type { UIComponents };
 export default components;

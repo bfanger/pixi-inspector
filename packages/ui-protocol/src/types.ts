@@ -64,7 +64,7 @@ export type TreeEventHandler = (...args: TreeValue[]) => number | void;
  */
 export type TreePath = number[];
 
-type TreeEventOptions = {
+export type TreeEventOptions = {
   /**
    * Debounce in milliseconds.
    * Wait calling the handler until X milliseconds have passed, every event resets the timer.
@@ -130,8 +130,8 @@ export type TreePatchTruncateDto = {
 export type TreePatch = {
   props?: TreeObjectValue;
   value?: TreeValue;
-  replacements: Array<TreeInit & { index: number }>;
-  appends: Array<TreeInit>;
+  replacements: (TreeInit & { index: number })[];
+  appends: TreeInit[];
   truncate?: number;
 };
 export type TreePatchDto = {

@@ -57,7 +57,6 @@ describe.sequential("sender", () => {
             "events": {
               "refresh": [Function],
             },
-            "setValue": [Function],
             "sync": [Function],
           },
         ],
@@ -82,7 +81,6 @@ describe.sequential("sender", () => {
               "component": "NumberInput",
               "events": undefined,
               "props": {
-                "label": "X",
                 "step": 1,
               },
               "setValue": true,
@@ -132,8 +130,8 @@ describe.sequential("sender", () => {
                 "depth": 1,
                 "interval": 500,
               },
-              "setValue": true,
-              "value": undefined,
+              "setValue": undefined,
+              "value": false,
             },
             "truncate": [Function],
           },
@@ -182,7 +180,6 @@ describe.sequential("sender", () => {
             "events": {
               "refresh": [Function],
             },
-            "setValue": [Function],
             "sync": [Function],
           },
         ],
@@ -207,7 +204,6 @@ describe.sequential("sender", () => {
               "component": "NumberInput",
               "events": undefined,
               "props": {
-                "label": "X",
                 "step": 1,
               },
               "setValue": true,
@@ -257,7 +253,7 @@ describe.sequential("sender", () => {
                 "depth": 1,
                 "interval": 500,
               },
-              "setValue": true,
+              "setValue": undefined,
               "value": false,
             },
             "truncate": [Function],
@@ -294,7 +290,6 @@ describe.sequential("sender", () => {
             "events": {
               "refresh": [Function],
             },
-            "setValue": [Function],
             "sync": [Function],
           },
         ],
@@ -368,7 +363,7 @@ describe.sequential("sender", () => {
                 "depth": 1,
                 "interval": 500,
               },
-              "setValue": true,
+              "setValue": undefined,
               "value": true,
             },
             "truncate": [Function],

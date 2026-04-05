@@ -1,10 +1,10 @@
 import { evalListen } from "ui-protocol/src/evalBridge";
-import type { TreeControllerNode } from "ui-protocol/src/types";
 import miniDetector from "./miniDetector";
+import { defineRoot } from "ui-protocol/src/svelte/defineRoot";
 
 const win = window as any;
 win.__UI_PROTOCOL__ = win.__UI_PROTOCOL__ ?? {};
-const root = {
+const root = defineRoot({
   children: [],
   sync(patch) {
     if (root.children.length === 0) {
@@ -16,5 +16,5 @@ const root = {
       root.children = [];
     },
   },
-} satisfies TreeControllerNode;
+});
 evalListen(root, "pixi");

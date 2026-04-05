@@ -1,5 +1,5 @@
 import refreshNode from "../src/refreshNode";
-import type { TreeControllerNode } from "../src/types";
+import { defineRoot } from "../src/svelte/defineRoot";
 
 type Player = { x: number; y: number };
 type Game = { player: Player | undefined; replace: number };
@@ -9,7 +9,7 @@ export function createTestControllerTree() {
   let resetLabel = false;
   const previousReplace = game.replace;
 
-  const tree: TreeControllerNode = {
+  const tree = defineRoot({
     children: [],
     events: {
       reset() {
@@ -18,17 +18,17 @@ export function createTestControllerTree() {
     },
     sync(patch) {
       const player = game.player;
-      if (player && tree.children!.length === 0) {
+      if (player && tree.children.length === 0) {
         patch.appends.push(
           {
             component: "NumberInput",
-            props: { label: "X", step: 1 },
+            props: { step: 1 },
             value: player.x,
+            setValue(value) {
+              player.x = value;
+            },
             sync(patch) {
               patch.value = player.x;
-            },
-            setValue(value) {
-              player.x = value as number;
             },
           },
           {
@@ -70,6 +70,6 @@ export function createTestControllerTree() {
       }
       return patch;
     },
-  };
+  });
   return [tree, game] as const;
 }

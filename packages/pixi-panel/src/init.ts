@@ -15,3 +15,14 @@ Object.assign(components, {
   PixiSceneProperties: SceneProperties,
   PixiTextProperties: TextProperties,
 });
+
+declare global {
+  interface UIComponents {
+    PixiInstructions: typeof Instructions;
+    PixiInject: typeof PixiInject;
+    PixiSceneGraph: typeof SceneGraphLegacy;
+    PixiObjectProperties: typeof ObjectProperties;
+    PixiSceneProperties: typeof SceneProperties;
+    PixiTextProperties: typeof TextProperties;
+  }
+}

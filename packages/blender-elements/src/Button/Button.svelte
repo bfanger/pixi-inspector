@@ -1,10 +1,12 @@
 <script lang="ts">
+  import type { Snippet } from "svelte";
+
   type Props = {
     value?: boolean | undefined;
     setValue?: (value: boolean) => void;
     location?: "alone" | "left" | "center" | "right";
     label?: string;
-    children?: import("svelte").Snippet;
+    children?: Snippet;
     onclick?: () => void;
   };
 

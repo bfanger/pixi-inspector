@@ -1,13 +1,19 @@
-import type { TreeInit, TreePatch, TreeValue } from "./types";
+import type { ComponentProps } from "svelte";
+import {
+  type InitOf,
+  type UIProtocolInit,
+  type UIProtocolInitPatch,
+} from "./svelte/defineUI";
+import type Refresh from "./svelte/Refresh.svelte";
 
 type RefreshOptions = {
   interval: number;
   depth?: number;
-  children?: TreeInit[];
+  children?: UIProtocolInit[];
   /** Augment the sync to alter the children and/or the interval/depth properties */
-  sync?: (patch: TreePatch) => void;
+  sync?: (patch: UIProtocolInitPatch<ComponentProps<typeof Refresh>>) => void;
   /** Alternate refresh event handler */
-  refresh?: (depth: TreeValue) => number;
+  refresh?: (depth: number) => number;
 };
 /**
  * Node that handles the data & events of the Refresh component.
@@ -17,18 +23,16 @@ export default function refreshNode({
   sync,
   refresh,
   ...props
-}: RefreshOptions): TreeInit {
+}: RefreshOptions): InitOf<"Refresh", ComponentProps<typeof Refresh>> {
   let tick = false;
   return {
     component: "Refresh",
     props,
-    sync(patch: TreePatch) {
+    value: tick,
+    sync(patch) {
       tick = !tick;
       patch.value = tick;
       return sync?.(patch);
-    },
-    setValue(update: TreeValue) {
-      tick = update as boolean;
     },
     events: {
       refresh: refresh ?? refreshHandler,
@@ -37,6 +41,6 @@ export default function refreshNode({
   };
 }
 
-function refreshHandler(depth: TreeValue) {
-  return depth as number;
+function refreshHandler(depth: number) {
+  return depth;
 }

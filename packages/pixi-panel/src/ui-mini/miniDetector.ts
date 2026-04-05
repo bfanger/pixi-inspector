@@ -1,6 +1,6 @@
 import type { Application, Container } from "pixi.js";
 import refreshNode from "ui-protocol/src/refreshNode";
-import type { TreeInit } from "ui-protocol/src/types";
+import type { UIProtocolInit } from "ui-protocol/src/svelte/defineUI";
 
 const win = window as any;
 export default function miniDetector() {
@@ -26,7 +26,7 @@ export default function miniDetector() {
   });
 }
 
-function createNode(client: DetectedClient): TreeInit {
+function createNode(client: DetectedClient): UIProtocolInit {
   if (!client) {
     return {
       component: "Box",
@@ -38,7 +38,7 @@ function createNode(client: DetectedClient): TreeInit {
           children: [],
           sync(patch) {
             const hasPixi = !!getGlobal("PIXI");
-            if (hasPixi && this.children!.length === 0) {
+            if (hasPixi && this.children?.length === 0) {
               patch.appends.push(
                 {
                   component: "Warning",
@@ -77,17 +77,16 @@ function createNode(client: DetectedClient): TreeInit {
             }
           },
         },
-        { component: "PixiInstructions" },
+        { component: "PixiInstructions", props: {} },
       ],
     };
   }
   const legacyInit: unknown = win.__PIXI_DEVTOOLS_LEGACY__;
   if (typeof legacyInit === "function") {
-    return legacyInit() as TreeInit;
+    return legacyInit() as UIProtocolInit;
   }
   return {
     component: "PixiInject",
-    children: [],
     events: {
       onload: () => {
         return Infinity; // Trigger sync after legacy ui controller is injected
