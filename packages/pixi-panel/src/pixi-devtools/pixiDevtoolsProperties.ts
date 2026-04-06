@@ -4,7 +4,6 @@ import type {
   NodeProperties,
   PixiDevtools,
   PropertyTab,
-  PropertyTabState,
   UniversalNode,
 } from "../types";
 
@@ -269,67 +268,25 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
     >;
   }
 
-  let preferred: PropertyTab | undefined;
-
-  function getActiveDefinition() {
-    const definitions: Record<PropertyTab, PropertyMapping[]> = {
-      object: [],
-      text: [],
-      scene: [],
-    };
-    const app = devtools.app();
-    if (app) {
-      const appDefinitions = getPropDefinition(app);
-      definitions.scene.push(...appDefinitions.scene);
-    }
-    const node = devtools.selection.active();
-    if (node && (!("destroyed" in node) || !node.destroyed)) {
-      const nodeDefinitions = getPropDefinition(node);
-      definitions.object.push(...nodeDefinitions.object);
-      definitions.text.push(...nodeDefinitions.text);
-    }
-    let active = preferred as PropertyTab;
-    // definitions: Record<PropertyTab, PropertyMapping[]>
-    if (!preferred || definitions[preferred].length === 0) {
-      if (definitions.text.length !== 0) {
-        active = "text";
-      } else if (definitions.object.length !== 0) {
-        active = "object";
-      } else {
-        active = "scene";
-      }
-    }
-    return { definitions, active };
-  }
-
   return {
-    activate(group: PropertyTab) {
-      preferred = group;
-    },
-    values(): PropertyTabState {
-      const { definitions, active } = getActiveDefinition();
-      const available: PropertyTab[] = [];
-      for (const tab of Object.keys(definitions)) {
-        if (definitions[tab as PropertyTab].length !== 0) {
-          available.push(tab as PropertyTab);
-        }
+    definitions() {
+      const definitions: Record<PropertyTab, PropertyMapping[]> = {
+        object: [],
+        text: [],
+        scene: [],
+      };
+      const app = devtools.app();
+      if (app) {
+        const appDefinitions = getPropDefinition(app);
+        definitions.scene.push(...appDefinitions.scene);
       }
-      const properties: NodeProperties = {};
-      for (let i = 0; i < definitions[active].length; i += 1) {
-        const { key, get } = definitions[active][i];
-        properties[key] = get();
+      const node = devtools.selection.active();
+      if (node && (!("destroyed" in node) || !node.destroyed)) {
+        const nodeDefinitions = getPropDefinition(node);
+        definitions.object.push(...nodeDefinitions.object);
+        definitions.text.push(...nodeDefinitions.text);
       }
-      return { tabs: available, active, properties };
-    },
-
-    set(property: string, value: number) {
-      const { definitions, active } = getActiveDefinition();
-      const definition = definitions[active].find(
-        (entry) => entry.key === property,
-      );
-      if (definition) {
-        definition.set(value);
-      }
+      return definitions;
     },
   };
 }

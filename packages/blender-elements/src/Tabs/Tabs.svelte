@@ -5,7 +5,7 @@
   export type Tab = { icon: Icon; label: string };
   type Props<T> = {
     tabs: T;
-    active: keyof T;
+    active: keyof T | undefined;
     setActive?: (tab: keyof T) => void;
     children: Snippet;
   };

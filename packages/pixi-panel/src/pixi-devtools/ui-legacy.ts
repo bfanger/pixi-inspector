@@ -1,5 +1,5 @@
 import type { TreeValue } from "ui-protocol/src/types";
-import type { PixiDevtools, PropertyTab, PropertyTabState } from "../types";
+import type { NodeProperties, PixiDevtools, PropertyTab } from "../types";
 import pixiDevtools from "./pixiDevtools";
 import pixiDevtoolsOutline from "./pixiDevtoolsOutline";
 import pixiDevtoolsSelection from "./pixiDevtoolsSelection";
@@ -9,6 +9,8 @@ import pixiDevtoolsOverlay from "./pixiDevtoolsOverlay";
 import pixiDevtoolsClickToSelect from "./pixiDevtoolsClickToSelect";
 import refreshNode from "ui-protocol/src/refreshNode";
 import defineUI, { type UIProtocolInit } from "ui-protocol/src/svelte/defineUI";
+import switchNode from "ui-protocol/src/switchNode";
+import conditionalNode from "ui-protocol/src/conditionalNode";
 
 const legacy = pixiDevtools() as PixiDevtools;
 legacy.selection = pixiDevtoolsSelection();
@@ -88,7 +90,7 @@ win.__PIXI_DEVTOOLS_LEGACY__ = function legacyInit() {
               maxHeight: 680,
               size: 3,
             },
-            children: [initProperties()],
+            children: [initPropertyTabs()],
           },
         ],
       },
@@ -146,22 +148,42 @@ function initSceneGraph(children: UIProtocolInit[]): UIProtocolInit {
   });
 }
 
-function initProperties(): UIProtocolInit {
-  let previous$pixi: any = win.$pixi;
-  let propertyTabState: PropertyTabState = properties.values();
-  let skipNext = true;
-  let previousTab = "";
-
-  const availableTabs = {
+function initPropertyTabs(): UIProtocolInit {
+  const allTabs = {
     scene: { icon: "scene", label: "Scene Properties" },
     object: { icon: "object", label: "Object Properties" },
     text: { icon: "text", label: "Text Properties" },
   } as const;
 
-  function enabledTabs(tabs: PropertyTab[]) {
+  let previous$pixi: any = win.$pixi;
+  let definitions: ReturnType<typeof properties.definitions>;
+  let preferredTab: PropertyTab = "text";
+  let availableTabs: PropertyTab[] = [];
+  let activeTab: PropertyTab | undefined;
+
+  function detect() {
+    definitions = properties.definitions();
+    availableTabs = [];
+    for (const key of Object.keys(allTabs)) {
+      if (
+        definitions[key as PropertyTab] &&
+        definitions[key as PropertyTab].length !== 0
+      ) {
+        availableTabs.push(key as PropertyTab);
+      }
+    }
+    if (availableTabs.includes(preferredTab)) {
+      activeTab = preferredTab;
+    } else {
+      activeTab = availableTabs.at(-1);
+    }
+  }
+  detect();
+
+  function enabledTabs() {
     return Object.fromEntries(
-      Object.entries(availableTabs).filter(([key]) =>
-        tabs.includes(key as PropertyTab),
+      Object.entries(allTabs).filter(([key]) =>
+        availableTabs.includes(key as PropertyTab),
       ),
     );
   }
@@ -181,20 +203,36 @@ function initProperties(): UIProtocolInit {
     dropShadow: true,
     stroke: true,
   };
-  const propertyComponents = {
-    scene: "PixiSceneProperties",
-    object: "PixiObjectProperties",
-    text: "PixiTextProperties",
-  } as const;
 
-  function initPropertyPanel(): UIProtocolInit {
-    const panel = defineUI({
-      component: "PixiObjectProperties",
+  function getValues(tab: PropertyTab) {
+    const properties: NodeProperties = {};
+    for (let i = 0; i < definitions[tab].length; i += 1) {
+      const { key, get } = definitions[tab][i];
+      properties[key] = get();
+    }
+    return properties;
+  }
+
+  type PropertyInit = Extract<
+    UIProtocolInit,
+    {
+      component:
+        | "PixiObjectProperties"
+        | "PixiSceneProperties"
+        | "PixiTextProperties";
+    }
+  >;
+  function panelInit(tab: PropertyTab): Omit<PropertyInit, "component"> {
+    return {
       props: { expanded },
-      value: propertyTabState.properties!,
+      value: getValues(tab),
       setValue({ property, value }) {
-        properties.set(property, value);
-        return 0;
+        const definition = definitions[tab].find(
+          (entry) => entry.key === property,
+        );
+        if (definition) {
+          definition.set(value);
+        }
       },
       events: {
         setExpanded(key, value) {
@@ -202,65 +240,63 @@ function initProperties(): UIProtocolInit {
         },
       },
       sync(patch) {
-        if (skipNext) {
-          skipNext = false;
-        } else {
-          propertyTabState = properties.values();
-        }
-        patch.value = propertyTabState.properties;
+        patch.value = getValues(tab);
       },
-    });
-    panel.component = propertyComponents[propertyTabState.active] as any;
-    return panel as UIProtocolInit;
+    };
   }
-
   return refreshNode({
-    interval: 100,
+    interval: 200,
     children: [
       {
         component: "Tabs",
         props: {
-          tabs: enabledTabs(propertyTabState.tabs),
-          active: propertyTabState.active,
+          tabs: enabledTabs(),
+          active: activeTab,
         },
         children: [
           {
             component: "Box",
             props: { padding: 8, gap: 1 },
-            children: [],
-            sync(patch) {
-              if (propertyTabState && propertyTabState.active !== previousTab) {
-                previousTab = propertyTabState.active;
-                if (propertyTabState.tabs.length === 0) {
-                  patch.truncate = 0;
-                } else if (this.children?.length === 0) {
-                  patch.appends.push(initPropertyPanel());
-                } else {
-                  patch.replacements.push({
-                    index: 0,
-                    ...initPropertyPanel(),
-                  });
-                }
-              }
-            },
+            children: [
+              conditionalNode(
+                () => availableTabs.length > 0,
+                switchNode(() => activeTab, {
+                  scene: () =>
+                    defineUI({
+                      component: "PixiSceneProperties",
+                      ...panelInit("scene"),
+                    }),
+                  object: () =>
+                    defineUI({
+                      component: "PixiObjectProperties",
+                      ...panelInit("object"),
+                    }),
+                  text: () =>
+                    defineUI({
+                      component: "PixiTextProperties",
+                      ...panelInit("text"),
+                    }),
+                }),
+              ),
+            ],
           },
         ],
         events: {
           setActive(tab) {
-            properties.activate(tab as PropertyTab);
+            preferredTab = tab as PropertyTab;
+            detect();
           },
         },
         sync(patch) {
-          if (previous$pixi !== win.$pixi) {
-            propertyTabState = properties.values();
-            skipNext = true;
-            // Detect which tabs are available for the new object
-            previous$pixi = win.pixi;
-            patch.props = {
-              tabs: enabledTabs(propertyTabState.tabs),
-              active: propertyTabState.active,
-            };
+          if (previous$pixi === win.$pixi) {
+            return;
           }
+          previous$pixi = win.$pixi;
+          detect();
+          patch.props = {
+            tabs: enabledTabs(),
+            active: activeTab,
+          };
         },
       },
     ],

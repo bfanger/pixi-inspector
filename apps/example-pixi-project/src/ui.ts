@@ -6,17 +6,22 @@ import {
 } from "../../../packages/ui-protocol/src/evalBridge";
 import "../../../packages/pixi-panel/src/pixi-devtools/ui-legacy";
 import "../../../packages/pixi-panel/src/components";
-import type { TreeControllerNode } from "../../../packages/ui-protocol/src/types";
+import { defineRoot } from "../../../packages/ui-protocol/src/svelte/defineRoot";
 
 const win = window as any;
-const rootController = {
+const rootController = defineRoot({
   children: [],
   sync(patch) {
     if (this.children?.length === 0) {
       patch.appends.push(win.__PIXI_DEVTOOLS_LEGACY__());
     }
   },
-} satisfies TreeControllerNode;
+  events: {
+    reset() {
+      rootController.children = [];
+    },
+  },
+});
 evalListen(rootController, "pixi");
 
 const target = document.querySelector("dev-tools");
