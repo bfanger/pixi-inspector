@@ -1,20 +1,15 @@
-import type { ComponentProps } from "svelte";
-import {
-  type InitOf,
-  type UIProtocolInit,
-  type UIProtocolInitPatch,
-} from "./svelte/defineUI";
-import type Refresh from "./svelte/Refresh.svelte";
+import type { UIProtocolInit } from "./svelte/defineUI";
 
-type RefreshOptions = {
-  interval: number;
-  depth?: number;
-  children?: UIProtocolInit[];
+type RefreshInit = Extract<UIProtocolInit, { component: "Refresh" }>;
+
+type RefreshOptions = RefreshInit["props"] & {
+  children?: RefreshInit["children"];
   /** Augment the sync to alter the children and/or the interval/depth properties */
-  sync?: (patch: UIProtocolInitPatch<ComponentProps<typeof Refresh>>) => void;
+  sync?: RefreshInit["sync"];
   /** Alternate refresh event handler */
-  refresh?: (depth: number) => number;
+  refresh?: NonNullable<RefreshInit["events"]>["refresh"];
 };
+
 /**
  * Node that handles the data & events of the Refresh component.
  */
@@ -23,7 +18,7 @@ export default function refreshNode({
   sync,
   refresh,
   ...props
-}: RefreshOptions): InitOf<"Refresh", ComponentProps<typeof Refresh>> {
+}: RefreshOptions): RefreshInit {
   let tick = false;
   return {
     component: "Refresh",

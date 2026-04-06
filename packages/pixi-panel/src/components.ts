@@ -17,7 +17,7 @@ Object.assign(components, {
 });
 
 declare global {
-  interface UIComponents {
+  interface UIProtocolComponents {
     PixiInstructions: typeof Instructions;
     PixiInject: typeof PixiInject;
     PixiSceneGraph: typeof SceneGraphLegacy;

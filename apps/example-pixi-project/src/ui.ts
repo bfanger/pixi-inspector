@@ -5,7 +5,7 @@ import {
   evalListen,
 } from "../../../packages/ui-protocol/src/evalBridge";
 import "../../../packages/pixi-panel/src/pixi-devtools/ui-legacy";
-import "../../../packages/pixi-panel/src/init";
+import "../../../packages/pixi-panel/src/components";
 import type { TreeControllerNode } from "../../../packages/ui-protocol/src/types";
 
 const win = window as any;

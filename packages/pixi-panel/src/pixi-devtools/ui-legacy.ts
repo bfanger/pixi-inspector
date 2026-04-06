@@ -111,24 +111,24 @@ function initSceneGraph(children: UIProtocolInit[]): UIProtocolInit {
       patch.value = outline.tree();
     },
     events: {
-      onexpand: (path) => outline.expand(path as string[]),
-      oncollapse: (path) => outline.collapse(path as string[]),
+      onexpand: (path) => outline.expand(path),
+      oncollapse: (path) => outline.collapse(path),
       onactivate: (path) => {
-        outline.activate(path as string[]);
+        outline.activate(path);
         return 3;
       },
-      onselectable: (path) => outline.selectable(path as string[]),
-      onunselectable: (path) => outline.unselectable(path as string[]),
+      onselectable: (path) => outline.selectable(path),
+      onunselectable: (path) => outline.unselectable(path),
       onshow: (path) => {
-        outline.show(path as string[]);
+        outline.show(path);
         return 3;
       },
       onhide: (path) => {
-        outline.hide(path as string[]);
+        outline.hide(path);
         return 3;
       },
-      onlog: (path) => outline.log(path as string[]),
-      onmouseenter: (path) => outline.highlight(path as string[]),
+      onlog: (path) => outline.log(path),
+      onmouseenter: (path) => outline.highlight(path),
       onmouseleave: () => outline.highlight([]),
     },
     children: [
@@ -191,23 +191,23 @@ function initProperties(): UIProtocolInit {
     const panel = defineUI({
       component: "PixiObjectProperties",
       props: { expanded },
-      value: propertyTabState.properties,
+      value: propertyTabState.properties!,
       setValue({ property, value }) {
         properties.set(property, value);
         return 0;
       },
       events: {
         setExpanded(key, value) {
-          expanded[key as keyof typeof expanded] = value as boolean;
+          expanded[key as keyof typeof expanded] = value;
         },
       },
-      sync(out) {
+      sync(patch) {
         if (skipNext) {
           skipNext = false;
         } else {
           propertyTabState = properties.values();
         }
-        out.value = propertyTabState.properties;
+        patch.value = propertyTabState.properties;
       },
     });
     panel.component = propertyComponents[propertyTabState.active] as any;
@@ -228,15 +228,15 @@ function initProperties(): UIProtocolInit {
             component: "Box",
             props: { padding: 8, gap: 1 },
             children: [],
-            sync(out) {
+            sync(patch) {
               if (propertyTabState && propertyTabState.active !== previousTab) {
                 previousTab = propertyTabState.active;
                 if (propertyTabState.tabs.length === 0) {
-                  out.truncate = 0;
+                  patch.truncate = 0;
                 } else if (this.children?.length === 0) {
-                  out.appends.push(initPropertyPanel());
+                  patch.appends.push(initPropertyPanel());
                 } else {
-                  out.replacements.push({
+                  patch.replacements.push({
                     index: 0,
                     ...initPropertyPanel(),
                   });
@@ -250,13 +250,13 @@ function initProperties(): UIProtocolInit {
             properties.activate(tab as PropertyTab);
           },
         },
-        sync(out) {
+        sync(patch) {
           if (previous$pixi !== win.$pixi) {
             propertyTabState = properties.values();
             skipNext = true;
             // Detect which tabs are available for the new object
             previous$pixi = win.pixi;
-            out.props = {
+            patch.props = {
               tabs: enabledTabs(propertyTabState.tabs),
               active: propertyTabState.active,
             };

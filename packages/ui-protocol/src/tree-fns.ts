@@ -154,19 +154,19 @@ export function applyEvent(
 export function syncNode(
   node: TreeControllerNode,
   path: TreePath,
-  out: TreePatchDto,
+  patch: TreePatchDto,
 ): void {
   const partial: TreePatch = {
     replacements: [],
     appends: [],
   };
   node.sync?.(partial);
-  const { length, skip } = applyPartial(out, node, path, partial);
+  const { length, skip } = applyPartial(patch, node, path, partial);
   for (let i = 0; i < length; i++) {
     if (skip.includes(i)) {
       continue;
     }
-    syncNode(node.children![i], [...path, i], out);
+    syncNode(node.children![i], [...path, i], patch);
   }
 }
 /**
@@ -176,19 +176,19 @@ function applyPartial(
   target: TreePatchDto,
   node: TreeControllerNode,
   path: TreePath,
-  partial: TreePatch,
+  patch: TreePatch,
 ): { length: number; skip: number[] } {
   let length = node.children?.length ?? 0;
   const skip: number[] = [];
 
-  if ("value" in partial) {
-    target.value.push({ path, value: partial.value });
+  if ("value" in patch) {
+    target.value.push({ path, value: patch.value });
   }
 
-  if (partial.props) {
-    target.props.push({ path, values: partial.props });
+  if (patch.props) {
+    target.props.push({ path, values: patch.props });
   }
-  for (const { index, ...replacement } of partial.replacements) {
+  for (const { index, ...replacement } of patch.replacements) {
     if (!node.children) {
       throw new Error("Can't replace children of a leaf node");
     }
@@ -198,7 +198,7 @@ function applyPartial(
     skip.push(index);
   }
 
-  for (const append of partial.appends) {
+  for (const append of patch.appends) {
     if (!node.children) {
       throw new Error("Can't append children to a leaf node");
     }
@@ -207,13 +207,13 @@ function applyPartial(
     node.children.push(init.node);
   }
 
-  if (partial.truncate !== undefined) {
-    target.truncates.push({ path, length: partial.truncate });
+  if (patch.truncate !== undefined) {
+    target.truncates.push({ path, length: patch.truncate });
     if (!node.children) {
       throw new Error("Can't truncate children of a leaf node");
     }
-    node.children.length = partial.truncate;
-    length = partial.truncate;
+    node.children.length = patch.truncate;
+    length = patch.truncate;
   }
 
   return { length, skip };

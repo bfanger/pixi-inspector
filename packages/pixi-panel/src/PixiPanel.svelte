@@ -9,7 +9,7 @@
   import { fade } from "svelte/transition";
   // @ts-ignore
   import miniUI from "../build/ui-mini.txt?raw";
-  import "./init";
+  import "./components";
 
   import type { Connection } from "ui-protocol/src/types";
 

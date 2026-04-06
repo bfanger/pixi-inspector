@@ -38,8 +38,8 @@ type BaseComponents = {
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  interface UIComponents extends BaseComponents {}
+  interface UIProtocolComponents extends BaseComponents {}
 }
 
-export type { UIComponents };
+export type { UIProtocolComponents };
 export default components;
