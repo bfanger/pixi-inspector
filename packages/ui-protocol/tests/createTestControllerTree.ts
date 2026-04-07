@@ -23,12 +23,9 @@ export function createTestControllerTree() {
           {
             component: "NumberInput",
             props: { step: 1 },
-            value: player.x,
+            getValue: () => player.x,
             setValue(value) {
               player.x = value;
-            },
-            sync(patch) {
-              patch.value = player.x;
             },
           },
           {

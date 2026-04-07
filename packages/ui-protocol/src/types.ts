@@ -81,9 +81,10 @@ export type TreeInit = {
   component: string;
   props?: TreeObjectValue;
   value?: TreeValue;
+  getValue?: () => TreeValue; // when defined, is used to create initial value and is injected into the sync
+  setValue?: (value: TreeValue) => void;
   children?: TreeInit[];
   sync?: (patch: TreePatch) => void;
-  setValue?: (value: TreeValue) => void;
   events?: Record<
     string,
     TreeEventHandler | [TreeEventHandler, TreeEventOptions]

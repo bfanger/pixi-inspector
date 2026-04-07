@@ -1,5 +1,5 @@
 import type { TreeValue } from "ui-protocol/src/types";
-import type { NodeProperties, PixiDevtools, PropertyTab } from "../types";
+import type { NodeProperties, PixiDevtools } from "../types";
 import pixiDevtools from "./pixiDevtools";
 import pixiDevtoolsOutline from "./pixiDevtoolsOutline";
 import pixiDevtoolsSelection from "./pixiDevtoolsSelection";
@@ -11,6 +11,7 @@ import refreshNode from "ui-protocol/src/refreshNode";
 import defineUI, { type UIProtocolInit } from "ui-protocol/src/svelte/defineUI";
 import switchNode from "ui-protocol/src/switchNode";
 import conditionalNode from "ui-protocol/src/conditionalNode";
+import pixiApplicationTab from "./pixiApplicationTab";
 
 const legacy = pixiDevtools() as PixiDevtools;
 legacy.selection = pixiDevtoolsSelection();
@@ -26,10 +27,7 @@ const win = window as any;
 win.__PIXI_DEVTOOLS_LEGACY__ = function legacyInit() {
   const searchInput = defineUI({
     component: "SearchInput",
-    value: outline.query,
-    sync(patch) {
-      patch.value = outline.query;
-    },
+    getValue: () => outline.query,
     events: {
       setValue: [
         (value: TreeValue) => {
@@ -154,22 +152,23 @@ function initPropertyTabs(): UIProtocolInit {
     object: { icon: "object", label: "Object Properties" },
     text: { icon: "text", label: "Text Properties" },
   } as const;
+  type TabKey = keyof typeof allTabs;
 
   let previous$pixi: any = win.$pixi;
   let definitions: ReturnType<typeof properties.definitions>;
-  let preferredTab: PropertyTab = "text";
-  let availableTabs: PropertyTab[] = [];
-  let activeTab: PropertyTab | undefined;
+  let preferredTab: TabKey = "text";
+  let availableTabs: TabKey[] = [];
+  let activeTab: TabKey | undefined;
 
   function detect() {
+    const app = legacy.app();
     definitions = properties.definitions();
-    availableTabs = [];
+    const sceneVisible = app?.ticker || app?.renderer?.background?.color;
+    availableTabs = sceneVisible ? ["scene"] : [];
     for (const key of Object.keys(allTabs)) {
-      if (
-        definitions[key as PropertyTab] &&
-        definitions[key as PropertyTab].length !== 0
-      ) {
-        availableTabs.push(key as PropertyTab);
+      const tab = key as keyof typeof definitions;
+      if (definitions[tab] && definitions[tab].length !== 0) {
+        availableTabs.push(tab);
       }
     }
     if (availableTabs.includes(preferredTab)) {
@@ -183,7 +182,7 @@ function initPropertyTabs(): UIProtocolInit {
   function enabledTabs() {
     return Object.fromEntries(
       Object.entries(allTabs).filter(([key]) =>
-        availableTabs.includes(key as PropertyTab),
+        availableTabs.includes(key as TabKey),
       ),
     );
   }
@@ -204,28 +203,23 @@ function initPropertyTabs(): UIProtocolInit {
     stroke: true,
   };
 
-  function getValues(tab: PropertyTab) {
-    const properties: NodeProperties = {};
-    for (let i = 0; i < definitions[tab].length; i += 1) {
-      const { key, get } = definitions[tab][i];
-      properties[key] = get();
-    }
-    return properties;
-  }
-
   type PropertyInit = Extract<
     UIProtocolInit,
     {
-      component:
-        | "PixiObjectProperties"
-        | "PixiSceneProperties"
-        | "PixiTextProperties";
+      component: "PixiObjectProperties" | "PixiTextProperties";
     }
   >;
-  function panelInit(tab: PropertyTab): Omit<PropertyInit, "component"> {
+  function panelInit(tab: "object" | "text"): Omit<PropertyInit, "component"> {
     return {
       props: { expanded },
-      value: getValues(tab),
+      getValue: () => {
+        const properties: NodeProperties = {};
+        for (let i = 0; i < definitions[tab].length; i += 1) {
+          const { key, get } = definitions[tab][i];
+          properties[key] = get();
+        }
+        return properties;
+      },
       setValue({ property, value }) {
         const definition = definitions[tab].find(
           (entry) => entry.key === property,
@@ -238,9 +232,6 @@ function initPropertyTabs(): UIProtocolInit {
         setExpanded(key, value) {
           expanded[key as keyof typeof expanded] = value;
         },
-      },
-      sync(patch) {
-        patch.value = getValues(tab);
       },
     };
   }
@@ -261,11 +252,7 @@ function initPropertyTabs(): UIProtocolInit {
               conditionalNode(
                 () => availableTabs.length > 0,
                 switchNode(() => activeTab, {
-                  scene: () =>
-                    defineUI({
-                      component: "PixiSceneProperties",
-                      ...panelInit("scene"),
-                    }),
+                  scene: () => pixiApplicationTab(legacy.app()),
                   object: () =>
                     defineUI({
                       component: "PixiObjectProperties",
@@ -283,7 +270,7 @@ function initPropertyTabs(): UIProtocolInit {
         ],
         events: {
           setActive(tab) {
-            preferredTab = tab as PropertyTab;
+            preferredTab = tab as TabKey;
             detect();
           },
         },

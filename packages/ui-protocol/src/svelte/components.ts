@@ -13,6 +13,8 @@ import SplitPanels from "blender-elements/src/SplitPanel/SplitPanels.svelte";
 import Refresh from "./Refresh.svelte";
 import Warning from "blender-elements/src/Warning/Warning.svelte";
 import Tabs from "blender-elements/src/Tabs/Tabs.svelte";
+import ColorInput from "../../../blender-elements/src/ColorInput/ColorInput.svelte";
+import ToggleButton from "../../../blender-elements/src/ToggleButton/ToggleButton.svelte";
 
 const components = {
   Fragment,
@@ -23,7 +25,9 @@ const components = {
   TextInput,
   SearchInput,
   Button,
+  ToggleButton,
   CheckboxInput,
+  ColorInput,
   Panel,
   SplitPanel,
   SplitPanels,

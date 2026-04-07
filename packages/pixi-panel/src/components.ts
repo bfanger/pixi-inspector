@@ -3,7 +3,6 @@ import Instructions from "./Instructions.svelte";
 import PixiInject from "./PixiInject.svelte";
 import SceneGraphLegacy from "./SceneGraphLegacy.svelte";
 import ObjectProperties from "./ObjectProperties.svelte";
-import SceneProperties from "./SceneProperties.svelte";
 import TextProperties from "./TextProperties.svelte";
 
 // Register Pixi components for ui-protocol
@@ -12,7 +11,6 @@ Object.assign(components, {
   PixiInject,
   PixiSceneGraph: SceneGraphLegacy,
   PixiObjectProperties: ObjectProperties,
-  PixiSceneProperties: SceneProperties,
   PixiTextProperties: TextProperties,
 });
 
@@ -22,7 +20,6 @@ declare global {
     PixiInject: typeof PixiInject;
     PixiSceneGraph: typeof SceneGraphLegacy;
     PixiObjectProperties: typeof ObjectProperties;
-    PixiSceneProperties: typeof SceneProperties;
     PixiTextProperties: typeof TextProperties;
   }
 }

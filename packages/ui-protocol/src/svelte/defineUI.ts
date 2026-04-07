@@ -33,7 +33,7 @@ export type Init<TComponent extends string, TProps extends AnyProps> = {
 } & (TProps extends {
   value?: unknown;
 }
-  ? Pick<TProps, "value">
+  ? { value?: TProps["value"]; getValue?: () => TProps["value"] }
   : unknown) &
   (TProps extends {
     setValue?: unknown;

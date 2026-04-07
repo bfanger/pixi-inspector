@@ -226,7 +226,7 @@ function createInit(
   init: TreeInit,
   path: TreePath,
 ): { dto: TreePatchInitDto; node: TreeControllerNode } {
-  const { component, props = {}, value, children, ...rest } = init;
+  const { component, props = {}, value, children, getValue, ...rest } = init;
   const node: TreeControllerNode = rest;
   const dto: TreePatchInitDto = {
     path,
@@ -242,6 +242,22 @@ function createInit(
         ? { event }
         : { event, debounce: fn[1].debounce, throttle: fn[1].throttle },
     );
+  }
+  if (getValue) {
+    if (node.sync) {
+      const initSync = node.sync.bind(node);
+      node.sync = function (patch) {
+        patch.value = getValue();
+        initSync(patch);
+      };
+    } else {
+      node.sync = function (patch) {
+        patch.value = getValue();
+      };
+    }
+    if (!("value" in init)) {
+      dto.value = getValue();
+    }
   }
   if (children) {
     dto.children = [];

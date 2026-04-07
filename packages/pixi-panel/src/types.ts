@@ -46,7 +46,7 @@ export type UniversalNode =
   | Scenes.SceneManager
   | GameObjects.Particles.ParticleEmitter;
 
-export type PropertyTab = "scene" | "object" | "text";
+export type PropertyTab = "object" | "text";
 export type PropertyTabState = {
   tabs: PropertyTab[];
   active: PropertyTab;
@@ -80,10 +80,6 @@ export type NodeProperties = {
   buttonMode?: boolean;
   interactiveChildren?: boolean;
   eventMode?: EventMode;
-  // Scene
-  speed?: number;
-  started?: boolean;
-  background?: string;
   // Text
   text?: string;
   align?: TextStyleAlign;

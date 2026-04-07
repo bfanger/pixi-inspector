@@ -206,60 +206,9 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
         textDefs.push(...nestedProp(node, "style", "padding", "number"));
       }
 
-      // Scene
-      const sceneDefs: PropertyMapping[] = [];
-      sceneDefs.push(...nestedProp(node, "ticker", "speed", "number"));
-      if (
-        "ticker" in node &&
-        "started" in node.ticker &&
-        typeof node.ticker.started === "boolean" &&
-        "start" in node &&
-        typeof node.start === "function"
-      ) {
-        sceneDefs.push({
-          key: "started",
-          get: () => node.ticker.started,
-          set: (value) => {
-            if (value) {
-              node.ticker.start();
-            } else {
-              node.ticker.stop();
-            }
-          },
-        });
-      }
-      if ((node as Application).renderer?.background?.color) {
-        sceneDefs.push({
-          key: "background",
-          get: () => {
-            const bg = (node as Application).renderer.background;
-            const hex = bg.color.toHex();
-            if (bg.alpha >= 1) {
-              return hex;
-            }
-            return (
-              hex +
-              Math.round(bg.alpha * 255)
-                .toString(16)
-                .padStart(2, "0")
-            );
-          },
-          set: (value) => {
-            const bg = (node as Application).renderer.background;
-            if (value.length === 7) {
-              bg.color = value;
-            } else if (value.length === 9) {
-              bg.color = value.substring(0, 7);
-              bg.alpha = parseInt(value.substring(7), 16) / 255;
-            }
-          },
-        });
-      }
-
       (node as any)[metaProperty] = {
         object: objectDefs,
         text: textDefs,
-        scene: sceneDefs,
       };
     }
     return (node as any)[metaProperty] as Record<
@@ -273,13 +222,7 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
       const definitions: Record<PropertyTab, PropertyMapping[]> = {
         object: [],
         text: [],
-        scene: [],
       };
-      const app = devtools.app();
-      if (app) {
-        const appDefinitions = getPropDefinition(app);
-        definitions.scene.push(...appDefinitions.scene);
-      }
       const node = devtools.selection.active();
       if (node && (!("destroyed" in node) || !node.destroyed)) {
         const nodeDefinitions = getPropDefinition(node);
