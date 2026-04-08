@@ -1,20 +1,11 @@
 import type { Readable } from "svelte/store";
-import { getContext, setContext } from "svelte";
+import { createContext } from "svelte";
 import { readable, writable } from "svelte/store";
 import type { BridgeFn } from "./types";
 
-export function setBridgeContext(bridge: BridgeFn) {
-  setContext("bridge", bridge);
-}
+const [getBridgeContext, setBridgeContext] = createContext<BridgeFn>();
 
-export function getBridgeContext(): BridgeFn {
-  const ctx = getContext<BridgeFn>("bridge");
-
-  if (!ctx) {
-    throw new Error("Bridge context not found");
-  }
-  return ctx;
-}
+export { getBridgeContext, setBridgeContext };
 
 type AsyncResult<T> = { data: T | undefined; error: Error | undefined };
 type Pollable<T> = Readable<AsyncResult<T>> & {

@@ -1,8 +1,14 @@
 <script lang="ts">
   import ToggleButton from "blender-elements/src/ToggleButton/ToggleButton.svelte";
   import { getBridgeContext } from "./bridge-fns";
+  import type { BridgeFn } from "./types";
+  import { untrack } from "svelte";
 
-  const bridge = getBridgeContext();
+  type Props = {
+    bridge?: BridgeFn;
+  };
+  let { bridge: bridgeProp }: Props = $props();
+  const bridge = untrack(() => bridgeProp) ?? getBridgeContext();
 
   async function onCopy(text: string) {
     await bridge(`window.copy(${JSON.stringify(text)})`);

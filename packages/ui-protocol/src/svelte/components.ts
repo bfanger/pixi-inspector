@@ -11,14 +11,16 @@ import Grid from "blender-elements/src/Grid/Grid.svelte";
 import SplitPanel from "blender-elements/src/SplitPanel/SplitPanel.svelte";
 import SplitPanels from "blender-elements/src/SplitPanel/SplitPanels.svelte";
 import Refresh from "./Refresh.svelte";
+import Trigger from "./Trigger.svelte";
 import Warning from "blender-elements/src/Warning/Warning.svelte";
 import Tabs from "blender-elements/src/Tabs/Tabs.svelte";
-import ColorInput from "../../../blender-elements/src/ColorInput/ColorInput.svelte";
-import ToggleButton from "../../../blender-elements/src/ToggleButton/ToggleButton.svelte";
+import ColorInput from "blender-elements/src/ColorInput/ColorInput.svelte";
+import ToggleButton from "blender-elements/src/ToggleButton/ToggleButton.svelte";
 
 const components = {
   Fragment,
   Refresh,
+  Trigger,
   Box,
   Grid,
   NumberInput,

@@ -1,12 +1,9 @@
 import { mount, unmount } from "svelte";
-import Display from "../../../packages/ui-protocol/src/svelte/Display.svelte";
-import {
-  evalConnect,
-  evalListen,
-} from "../../../packages/ui-protocol/src/evalBridge";
-import "../../../packages/pixi-panel/src/pixi-devtools/ui-legacy";
-import "../../../packages/pixi-panel/src/components";
-import { defineRoot } from "../../../packages/ui-protocol/src/svelte/defineRoot";
+import Display from "ui-protocol/src/svelte/Display.svelte";
+import { evalConnect, evalListen } from "ui-protocol/src/evalBridge";
+import "pixi-panel/src/pixi-devtools/ui-legacy";
+import "pixi-panel/src/components";
+import { defineRoot } from "ui-protocol/src/svelte/defineRoot";
 
 const win = window as any;
 const rootController = defineRoot({

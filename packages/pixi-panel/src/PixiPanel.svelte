@@ -1,110 +1,108 @@
 <script lang="ts">
-  import Base from "blender-elements/src/Base.svelte";
-  import type { BridgeFn } from "./types";
-  import { setBridgeContext } from "./bridge-fns";
-  import { evalConnect } from "ui-protocol/src/evalBridge";
-  import Warning from "blender-elements/src/Warning/Warning.svelte";
-  import Display from "ui-protocol/src/svelte/Display.svelte";
-  import { onDestroy } from "svelte";
   import { fade } from "svelte/transition";
-  // @ts-ignore
-  import miniUI from "../build/ui-mini.txt?raw";
+  import type { BridgeFn } from "./types";
+  import Base from "blender-elements/src/Base.svelte";
+  import Warning from "blender-elements/src/Warning/Warning.svelte";
+  import Connect from "./Connect.svelte";
+  import TriggerProvider from "ui-protocol/src/svelte/TriggerProvider.svelte";
+  import { SvelteSet } from "svelte/reactivity";
+  import Instructions from "./Instructions.svelte";
   import "./components";
 
-  import type { Connection } from "ui-protocol/src/types";
-
   type Props = {
-    bridge: BridgeFn;
+    listen: (
+      setTargets: (targets: string[]) => void,
+      setRefresh: (fn: () => void) => void,
+    ) => () => void;
+    createBridge: (target: string) => BridgeFn;
   };
-  let { bridge }: Props = $props();
-
-  setBridgeContext((...args) => bridge(...args));
+  let { listen: handleTargets, createBridge }: Props = $props();
+  let targets: string[] = $state([]);
+  let available = new SvelteSet<string>();
+  let refresh = $state<() => void>();
   let errorMessage = $state("");
-  let connectionPromise = $state<Promise<Connection>>();
+  let active = $state<string>();
 
-  const abortController = new AbortController();
-  onDestroy(() => {
-    abortController.abort("PixiPanel unmounted");
-  });
-  const signal = abortController.signal;
+  $effect(() =>
+    handleTargets(
+      (update) => {
+        targets = update;
+      },
+      (fn) => {
+        refresh = fn;
+      },
+    ),
+  );
 
-  // Wait 1s before showing the error, but start reconnecting after 250ms
-  let ignoreErrors = false;
-  function onerror(err: unknown) {
-    if (!ignoreErrors) {
-      ignoreErrors = true;
-      setTimeout(() => {
-        setTimeout(() => {
-          if (ignoreErrors) {
-            if (err instanceof Error) {
-              errorMessage = err.message;
-            }
-            errorMessage ||= "Connection lost. Reconnecting...";
-            ignoreErrors = false;
-          }
-        }, 1000);
-        reconnect();
-      }, 250);
-    }
+  async function uiConnect() {
+    //@ts-ignore
+    const module = await import("../build/ui-connect.txt?raw");
+    return module.default as string;
+  }
+  async function miniUI() {
+    //@ts-ignore
+    const module = await import("../build/ui-mini.txt?raw");
+    return module.default as string;
+  }
+  let timer: number;
+
+  function addConnection(target: string) {
+    available.add(target);
+    active = target;
+    errorMessage = "";
+    clearTimeout(timer);
   }
 
-  function reconnect() {
-    if (signal.aborted) {
-      throw new Error(`reconnected aborted: ${signal.reason}`);
-    }
-    const promise = Promise.all([
-      Promise.try(() => bridge(miniUI)),
-      evalConnect("pixi", bridge, { signal }),
-    ]).then(([, connection]) => {
-      errorMessage = "";
-      ignoreErrors = false;
-      return connection;
-    });
-
-    connectionPromise = promise;
-
-    const timeout = setTimeout(() => {
-      requestAnimationFrame(() => {
-        errorMessage = "Connection timed out, retrying...";
-        if (promise === connectionPromise) {
-          reconnect();
-        }
-      });
-    }, 750);
-    promise.finally(() => {
-      clearTimeout(timeout);
-    });
-    promise.catch((err) => {
-      errorMessage =
-        err instanceof Error ? err.message : "Connection failed, retrying...";
-      setTimeout(() => {
-        requestAnimationFrame(() => {
-          if (promise === connectionPromise) {
-            reconnect();
-          }
-        });
-      }, 500);
-    });
+  function onrestore() {
+    clearTimeout(timer);
   }
 
-  reconnect();
+  function onerror(target: string, err: Error) {
+    console.warn(err);
+    clearTimeout(timer);
+    refresh?.();
+    timer = window.setTimeout(() => {
+      errorMessage = err.message;
+      if (active === target && !targets.includes(target)) {
+        available.delete(target);
+        active = undefined;
+      }
+    }, 1000);
+  }
 </script>
 
 <Base>
+  {#each targets as target (target)}
+    {#if target !== active}
+      <TriggerProvider ontrigger={() => addConnection(target)}>
+        <Connect
+          ui="connect"
+          inject={uiConnect}
+          bridge={createBridge(target)}
+        />
+      </TriggerProvider>
+    {/if}
+  {/each}
+
   {#if errorMessage}
-    <div in:fade={{ delay: 100, duration: 100 }}>
-      <Warning message={errorMessage} />
-    </div>
-  {:else if connectionPromise}
-    {#await connectionPromise}
-      <div in:fade={{ delay: 1000, duration: 100 }}>
-        <Warning message="Connecting taking longer than expected..." />
-      </div>
-    {:then connection}
-      <Display {connection} {onerror} />
-    {:catch err}
-      <Warning message={err.message} />
-    {/await}
+    <Warning message={errorMessage} />
+  {:else if active === undefined}
+    <Instructions bridge={createBridge("")} />
+  {:else}
+    {#key active}
+      {@const target = active}
+      <Connect
+        ui="pixi"
+        inject={miniUI}
+        bridge={createBridge(target)}
+        {onrestore}
+        onerror={(err) => onerror(target, err)}
+      >
+        <div in:fade={{ delay: 1000, duration: 100 }}>
+          <Warning message="Connecting taking longer than expected..." />
+        </div>
+      </Connect>
+    {/key}
   {/if}
 </Base>
 

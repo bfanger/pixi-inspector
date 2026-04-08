@@ -147,6 +147,9 @@ importers:
         specifier: ^8.17.1
         version: 8.17.1
     devDependencies:
+      pixi-panel:
+        specifier: workspace:*
+        version: link:../../packages/pixi-panel
       ui-protocol:
         specifier: workspace:*
         version: link:../../packages/ui-protocol

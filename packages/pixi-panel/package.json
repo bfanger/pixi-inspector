@@ -4,9 +4,10 @@
   "license": "MIT",
   "scripts": {
     "dev": "concurrently --kill-others-on-fail \"npm:dev:*\"",
+    "dev:connect": "esbuild --bundle src/ui-connect/ui-connect.ts --watch --outfile=./build/ui-connect.txt",
     "dev:mini": "esbuild --bundle src/ui-mini/ui-mini.ts --watch --outfile=./build/ui-mini.txt",
     "dev:legacy": "esbuild --bundle src/pixi-devtools/ui-legacy.ts --watch --outfile=./build/ui-legacy.txt",
-    "build": "esbuild --bundle src/ui-mini/ui-mini.ts --outfile=./build/ui-mini.txt && esbuild --bundle src/pixi-devtools/ui-legacy.ts --outfile=./build/ui-legacy.txt"
+    "build": "esbuild --bundle src/ui-connect/ui-connect.ts --outfile=./build/ui-connect.txt && esbuild --bundle src/ui-mini/ui-mini.ts --outfile=./build/ui-mini.txt && esbuild --bundle src/pixi-devtools/ui-legacy.ts --outfile=./build/ui-legacy.txt"
   },
   "devDependencies": {
     "blender-elements": "workspace:*",

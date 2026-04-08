@@ -8,4 +8,5 @@ node_modules
 
 *storybook.log
 /packages/pixi-panel/build/ui-mini.txt
+/packages/pixi-panel/build/ui-connect.txt
 /packages/pixi-panel/build/ui-legacy.txt
