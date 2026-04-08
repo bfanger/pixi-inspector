@@ -1,6 +1,7 @@
 <script lang="ts">
   import { slide } from "svelte/transition";
   import CheckboxInput from "../CheckboxInput/CheckboxInput.svelte";
+  import type { Snippet } from "svelte";
 
   type Props = {
     title: string;
@@ -8,7 +9,7 @@
     value?: boolean | undefined;
     setValue?: (value: boolean) => void;
     setExpanded?: (expanded: boolean) => void;
-    children?: import("svelte").Snippet;
+    children?: Snippet;
   };
 
   let {

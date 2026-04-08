@@ -42,7 +42,7 @@
             errorMessage ||= "Connection lost. Reconnecting...";
             ignoreErrors = false;
           }
-        }, 750);
+        }, 1000);
         reconnect();
       }, 250);
     }
@@ -70,7 +70,7 @@
           reconnect();
         }
       });
-    }, 500);
+    }, 750);
     promise.finally(() => {
       clearTimeout(timeout);
     });

@@ -48,6 +48,7 @@ export default ts.config(
       "@typescript-eslint/no-unsafe-argument": 0,
       "@typescript-eslint/no-misused-promises": 0,
       "@typescript-eslint/no-floating-promises": 0,
+      "@typescript-eslint/consistent-type-imports": "warn",
     },
   },
   {

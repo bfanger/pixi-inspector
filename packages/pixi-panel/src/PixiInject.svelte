@@ -1,18 +1,24 @@
 <script lang="ts">
   import { getBridgeContext } from "./bridge-fns";
-  // @ts-ignore
-  import uiLegacy from "../build/ui-legacy.txt?raw";
   import { fade } from "svelte/transition";
   import Warning from "blender-elements/src/Warning/Warning.svelte";
 
   type Props = {
-    onload?: () => void;
+    onload: () => void;
   };
   let { onload }: Props = $props();
   const bridge = getBridgeContext();
-  let promise = bridge(uiLegacy).then(() => {
-    onload?.();
-  });
+  let promise = load()
+    .then(bridge)
+    .then(() => {
+      onload();
+    });
+
+  async function load() {
+    //@ts-ignore
+    const module = await import("../build/ui-legacy.txt?raw");
+    return module.default as string;
+  }
 </script>
 
 {#await promise}

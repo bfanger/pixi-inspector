@@ -31,7 +31,6 @@
     "**/*.cjs",
     "**/.storybook/*.ts",
     "packages/blender-elements/.storybook/main.ts",
-    "packages/blender-elements/.storybook/preview.ts",
-    "packages/pixi-panel/src/ui-minitjs"
+    "packages/blender-elements/.storybook/preview.ts"
   ]
 }

@@ -1,6 +1,7 @@
-import { Application } from "pixi.js";
+import type { Application } from "pixi.js";
 import conditionalNode from "ui-protocol/src/conditionalNode";
 import defineUI from "ui-protocol/src/svelte/defineUI";
+import session from "./session";
 
 export default function pixiApplicationTab(app: Application | undefined) {
   return defineUI({
@@ -8,13 +9,10 @@ export default function pixiApplicationTab(app: Application | undefined) {
     children: !app
       ? []
       : [
-          conditionalNode(
-            () => !!app?.ticker,
-            () => tickerPanel(app),
-          ),
+          conditionalNode(() => !!app?.ticker, tickerPanel(app)),
           conditionalNode(
             () => !!app?.renderer?.background?.color,
-            () => backgroundPanel(app),
+            backgroundPanel(app),
           ),
         ],
   });
@@ -23,7 +21,13 @@ export default function pixiApplicationTab(app: Application | undefined) {
 function tickerPanel(app: Application) {
   return defineUI({
     component: "Panel",
-    props: { title: "Ticker" },
+    props: {
+      title: "Ticker",
+      expanded: session.get<boolean>("pixi:tickerPanel") ?? true,
+    },
+    events: {
+      setExpanded: (expanded) => session.set("pixi:tickerPanel", expanded),
+    },
     children: [
       {
         component: "Box",
@@ -81,7 +85,13 @@ function tickerPanel(app: Application) {
 function backgroundPanel(app: Application) {
   return defineUI({
     component: "Panel",
-    props: { title: "Renderer" },
+    props: {
+      title: "Background",
+      expanded: session.get<boolean>("pixi:backgroundPanel") ?? true,
+    },
+    events: {
+      setExpanded: (expanded) => session.set("pixi:backgroundPanel", expanded),
+    },
     children: [
       {
         component: "Box",
@@ -90,7 +100,7 @@ function backgroundPanel(app: Application) {
           {
             component: "Property",
             props: {
-              label: "Background",
+              label: "Color",
               hint: "The background color and alpha of the main view",
             },
             children: [
