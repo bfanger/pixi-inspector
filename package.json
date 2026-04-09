@@ -34,10 +34,10 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@sveltejs/vite-plugin-svelte": "^7.0.0",
-    "@types/chrome": "^0.1.39",
+    "@types/chrome": "^0.1.40",
     "@types/firefox-webext-browser": "^143.0.0",
     "@types/node": "^25.5.2",
-    "@typescript/native-preview": "7.0.0-dev.20260408.1",
+    "@typescript/native-preview": "7.0.0-dev.20260409.1",
     "concurrently": "^9.2.1",
     "eslint": "^10.2.0",
     "eslint-config-prettier": "^10.1.8",
