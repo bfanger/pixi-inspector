@@ -27,7 +27,7 @@ export default function refreshNode({
     sync(patch) {
       tick = !tick;
       patch.value = tick;
-      return sync?.(patch);
+      return sync?.call(this, patch);
     },
     events: {
       refresh: refresh ?? refreshHandler,

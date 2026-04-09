@@ -1,48 +1,49 @@
-import type { Application, Container } from "pixi.js";
-import conditionalNode from "ui-protocol/src/conditionalNode";
 import refreshNode from "ui-protocol/src/refreshNode";
 import { evalListen } from "ui-protocol/src/evalBridge";
 import { defineRoot } from "ui-protocol/src/svelte/defineRoot";
+import conditionalNode from "ui-protocol/src/conditionalNode";
 
 const win = window as any;
 win.__UI_PROTOCOL__ = win.__UI_PROTOCOL__ ?? {};
 
-let attempt = 0;
-let detected = "";
 const root = defineRoot({
   children: [],
   sync(patch) {
     if (root.children.length === 0) {
+      let attempt = 0;
+      let detected = detect();
+
       patch.appends.push(
-        conditionalNode(
-          () => {
+        refreshNode({
+          interval: 100,
+          children: [
+            conditionalNode(
+              () => !!detected,
+              () => ({
+                component: "Trigger",
+                props: { event: detected },
+              }),
+            ),
+          ],
+          sync(patch) {
             detected = detect();
-            return !!detected;
+            if (detected) {
+              return;
+            }
+            if (attempt === 100) {
+              // after ~10s, only detect every 5s (when panel is open)
+              patch.props = { interval: 5_000 };
+              attempt = -1;
+            } else if (attempt !== -1) {
+              attempt++;
+            }
           },
-          {
-            component: "Trigger",
-            props: { event: detected },
-          },
-          refreshNode({
-            interval: 100,
-            depth: 1,
-            sync(patch) {
-              if (attempt === 100) {
-                // after ~10s, only detect every 5s (when panel is open)
-                patch.props = { interval: 5_000 };
-                attempt = -1;
-              } else if (attempt !== -1) {
-                attempt++;
-              }
-            },
-          }),
-        ),
+        }),
       );
     }
   },
   events: {
     reset() {
-      attempt = 0;
       root.children = [];
     },
   },
@@ -50,48 +51,26 @@ const root = defineRoot({
 evalListen(root, "connect");
 
 function detect() {
-  const app = getGlobal<Application>("__PIXI_APP__");
-  if (app) {
+  if (win.__UI_PROTOCOL__?.["pixi"]) {
+    return "ui";
+  }
+  if (win.__PIXI_APP__) {
     return "pixi";
   }
-  const stage = getGlobal<Container>("__PIXI_STAGE__");
-  if (stage) {
+  if (win.__PIXI_STAGE__) {
     return "pixi";
   }
-  const game = getGlobal<unknown>("__PHASER_GAME__");
-  if (game) {
+  if (win.__PHASER_GAME__) {
     return "phaser";
   }
-  const renderer = getGlobal<unknown>("__PIXI_RENDERER__");
-  if (renderer) {
+  if (win.__PIXI_RENDERER__) {
     return "pixi";
   }
-  const officialHook = getGlobal<{ stage: unknown } | undefined>(
-    "__PIXI_DEVTOOLS_WRAPPER__",
-  );
-  if (officialHook?.stage) {
+  if (win.__PIXI_DEVTOOLS_WRAPPER__?.stage) {
     return "pixi";
   }
-  if (getGlobal("PIXI")) {
+  if (win.PIXI) {
     return "patchable";
   }
   return "";
-}
-
-function getGlobal<T>(varname: string): T | undefined {
-  if (varname in win) {
-    return win[varname] as T;
-  }
-  if (win.frames) {
-    for (let i = 0; i < win.frames.length; i += 1) {
-      try {
-        if (win.frames[i][varname]) {
-          return win.frames[i][varname] as T;
-        }
-      } catch {
-        // access to iframe was denied
-      }
-    }
-  }
-  return undefined;
 }

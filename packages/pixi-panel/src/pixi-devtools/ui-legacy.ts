@@ -12,6 +12,9 @@ import defineUI, { type UIProtocolInit } from "ui-protocol/src/svelte/defineUI";
 import switchNode from "ui-protocol/src/switchNode";
 import conditionalNode from "ui-protocol/src/conditionalNode";
 import pixiApplicationTab from "./pixiApplicationTab";
+import { evalListen } from "ui-protocol/src/evalBridge";
+import { defineRoot } from "ui-protocol/src/svelte/defineRoot";
+import session from "./session";
 
 const legacy = pixiDevtools() as PixiDevtools;
 legacy.selection = pixiDevtoolsSelection();
@@ -24,7 +27,44 @@ legacy.overlay = pixiDevtoolsOverlay(legacy);
 pixiDevtoolsClickToSelect(legacy);
 
 const win = window as any;
-win.__PIXI_DEVTOOLS_LEGACY__ = function legacyInit() {
+win.__UI_PROTOCOL__ = win.__UI_PROTOCOL__ ?? {};
+const root = defineRoot({
+  children: [],
+  sync(patch) {
+    if (root.children.length === 0) {
+      patch.appends.push(
+        refreshNode({
+          interval: 2_000,
+          children: [
+            conditionalNode(
+              () => {
+                if (!win["PIXI"]) {
+                  return false;
+                }
+                if (win["PIXI"][patched]) {
+                  return false;
+                }
+                return !legacy.renderer() && !legacy.root();
+              },
+              () => initPatchPixi(),
+              () => initLegacyUI(),
+            ),
+          ],
+        }),
+      );
+    }
+  },
+  events: {
+    reset() {
+      root.children = [];
+    },
+  },
+});
+evalListen(root, "pixi");
+
+const patched = Symbol("patched");
+
+function initLegacyUI() {
   const searchInput = defineUI({
     component: "SearchInput",
     getValue: () => outline.query,
@@ -94,7 +134,7 @@ win.__PIXI_DEVTOOLS_LEGACY__ = function legacyInit() {
       },
     ],
   });
-};
+}
 
 function initSceneGraph(children: UIProtocolInit[]): UIProtocolInit {
   let previous$pixi: any = undefined;
@@ -209,7 +249,7 @@ function initPropertyTabs(): UIProtocolInit {
       component: "PixiObjectProperties" | "PixiTextProperties";
     }
   >;
-  function panelInit(tab: "object" | "text"): Omit<PropertyInit, "component"> {
+  function initPanel(tab: "object" | "text"): Omit<PropertyInit, "component"> {
     return {
       props: { expanded },
       getValue: () => {
@@ -256,12 +296,12 @@ function initPropertyTabs(): UIProtocolInit {
                   object: () =>
                     defineUI({
                       component: "PixiObjectProperties",
-                      ...panelInit("object"),
+                      ...initPanel("object"),
                     }),
                   text: () =>
                     defineUI({
                       component: "PixiTextProperties",
-                      ...panelInit("text"),
+                      ...initPanel("text"),
                     }),
                 }),
               ),
@@ -288,4 +328,82 @@ function initPropertyTabs(): UIProtocolInit {
       },
     ],
   });
+}
+
+function initPatchPixi() {
+  if (session.get("pixi:patchRenderer")) {
+    return refreshNode({
+      interval: 250,
+      depth: 1,
+      children: [
+        {
+          component: "Warning",
+          props: { message: "Attempting to patch PIXI..." },
+        },
+      ],
+      sync() {
+        patchPixiRenderer();
+      },
+    });
+  }
+  return defineUI({
+    component: "Fragment",
+    children: [
+      {
+        component: "Warning",
+        props: {
+          message:
+            '"Patch render engine" is available. This type of Devtools connection is less reliable',
+        },
+      },
+      {
+        component: "Box",
+        props: { padding: 8 },
+        children: [
+          {
+            component: "Button",
+            props: { label: "Patch render engine" },
+            events: {
+              onclick() {
+                patchPixiRenderer();
+                session.set("pixi:patchRenderer", true);
+                return Infinity;
+              },
+            },
+          },
+        ],
+      },
+      {
+        component: "PixiInstructions",
+        events: {
+          copy(text) {
+            win.copy(text);
+          },
+        },
+      },
+    ],
+  });
+}
+
+function patchPixiRenderer() {
+  const PIXI = win.PIXI;
+  if (!PIXI) {
+    console.error("Patching PIXI failed");
+    return;
+  }
+  if (PIXI[patched]) {
+    return;
+  }
+  PIXI[patched] = true;
+  for (const prop of ["Renderer", "WebGLRenderer"]) {
+    const Renderer = PIXI[prop];
+    if (Renderer) {
+      const { render } = Renderer.prototype;
+      Renderer.prototype.render = function pixiDevtoolsRender(...args: any[]) {
+        win.__PATCHED_RENDERER__ = this;
+        win.__PATCHED_RENDERER_STAGE__ = args[0];
+        return render.call(this, ...args) as unknown;
+      };
+    }
+  }
 }

@@ -2,7 +2,7 @@
   import { fade } from "svelte/transition";
   import Base from "blender-elements/src/Base.svelte";
   import Warning from "blender-elements/src/Warning/Warning.svelte";
-  import Connect from "./Connect.svelte";
+  import Connect from "ui-protocol/src/svelte/Connect.svelte";
   import type { BridgeFn } from "ui-protocol/src/types";
   import TriggerProvider from "ui-protocol/src/svelte/TriggerProvider.svelte";
   import { SvelteSet } from "svelte/reactivity";
@@ -39,9 +39,9 @@
     const module = await import("../build/ui-connect.txt?raw");
     return module.default as string;
   }
-  async function miniUI() {
+  async function uiLegacy() {
     //@ts-ignore
-    const module = await import("../build/ui-mini.txt?raw");
+    const module = await import("../build/ui-legacy.txt?raw");
     return module.default as string;
   }
   let timer: number;
@@ -98,7 +98,7 @@
       {@const target = active}
       <Connect
         ui="pixi"
-        inject={miniUI}
+        inject={uiLegacy}
         bridge={createBridge(target)}
         {onrestore}
         onerror={(err) => onerror(target, err)}

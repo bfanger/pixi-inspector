@@ -1,7 +1,7 @@
 <script lang="ts">
-  import type { BridgeFn, Connection } from "ui-protocol/src/types";
-  import { evalConnect } from "ui-protocol/src/evalBridge";
-  import Display from "ui-protocol/src/svelte/Display.svelte";
+  import type { BridgeFn, Connection } from "../types";
+  import { evalConnect } from "../evalBridge";
+  import Display from "./Display.svelte";
   import { onDestroy, type Snippet } from "svelte";
 
   type Props = {
@@ -26,21 +26,29 @@
     abortController.abort("unmounted");
   });
 
+  async function prepare() {
+    const injected = await bridge(
+      `typeof window?.__UI_PROTOCOL__?.[${JSON.stringify(ui)}]`,
+    );
+    if (injected === "undefined") {
+      await bridge(code);
+    }
+  }
+
   function reconnect() {
     if (signal.aborted) {
       throw new Error(`reconnected aborted: ${signal.reason}`);
     }
-    const promise = Promise.all([
-      Promise.try(() => bridge(code)),
-      evalConnect(ui, bridge, { signal }),
-    ]).then((result) => {
-      if (signal.aborted) {
-        return;
-      }
-      connection = result[1];
-      skipError = false;
-      onrestore?.();
-    });
+    const promise = prepare()
+      .then(() => evalConnect(ui, bridge, { signal }))
+      .then((result) => {
+        if (signal.aborted) {
+          return;
+        }
+        connection = result;
+        skipError = false;
+        onrestore?.();
+      });
     connectionPromise = promise;
 
     const timeout = setTimeout(() => {
@@ -54,6 +62,7 @@
       clearTimeout(timeout);
     });
     promise.catch((err) => {
+      console.warn(new Error("Connection failed, retrying...", { cause: err }));
       setTimeout(() => {
         requestAnimationFrame(() => {
           if (promise === connectionPromise) {
@@ -73,6 +82,7 @@
       reconnect();
     });
   });
+
   function handleError(err: Error) {
     connection = undefined;
     onerror?.(err);
