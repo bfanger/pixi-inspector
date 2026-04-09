@@ -1,4 +1,3 @@
-import type { BridgeFn } from "pixi-panel/src/types";
 import PixiPanel from "pixi-panel/src/PixiPanel.svelte";
 import { mount } from "svelte";
 
@@ -42,10 +41,10 @@ function listen(
   };
 }
 
-function createBridge(frameURL: string): BridgeFn {
+function createBridge(frameURL: string) {
   return (code: string) =>
-    new Promise((resolve, reject) => {
-      chrome.devtools.inspectedWindow.eval<any>(
+    new Promise<any>((resolve, reject) => {
+      chrome.devtools.inspectedWindow.eval(
         code,
         frameURL ? { frameURL } : {},
         (result, err) => {

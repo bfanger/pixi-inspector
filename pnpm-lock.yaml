@@ -177,6 +177,9 @@ importers:
       svelte:
         specifier: ^5.55.2
         version: 5.55.2
+      ui-protocol:
+        specifier: workspace:*
+        version: link:../../packages/ui-protocol
       web-ext:
         specifier: ^10.1.0
         version: 10.1.0

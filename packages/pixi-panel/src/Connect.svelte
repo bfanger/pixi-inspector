@@ -1,10 +1,8 @@
 <script lang="ts">
-  import type { BridgeFn } from "./types";
-  import type { Connection } from "ui-protocol/src/types";
+  import type { BridgeFn, Connection } from "ui-protocol/src/types";
   import { evalConnect } from "ui-protocol/src/evalBridge";
   import Display from "ui-protocol/src/svelte/Display.svelte";
   import { onDestroy, type Snippet } from "svelte";
-  import { setBridgeContext } from "./bridge-fns";
 
   type Props = {
     ui: string;
@@ -15,7 +13,6 @@
     onrestore?: () => void;
   };
   let { ui, inject, bridge, children, onerror, onrestore }: Props = $props();
-  setBridgeContext((...args) => bridge(...args));
 
   let connection = $state<Connection>();
   let connectionPromise: Promise<void> | undefined;

@@ -1,18 +1,10 @@
 <script lang="ts">
   import ToggleButton from "blender-elements/src/ToggleButton/ToggleButton.svelte";
-  import { getBridgeContext } from "./bridge-fns";
-  import type { BridgeFn } from "./types";
-  import { untrack } from "svelte";
 
   type Props = {
-    bridge?: BridgeFn;
+    copyToClipboard: (text: string) => void;
   };
-  let { bridge: bridgeProp }: Props = $props();
-  const bridge = untrack(() => bridgeProp) ?? getBridgeContext();
-
-  async function onCopy(text: string) {
-    await bridge(`window.copy(${JSON.stringify(text)})`);
-  }
+  let { copyToClipboard }: Props = $props();
 </script>
 
 <div class="instructions">
@@ -28,7 +20,7 @@
             icon="copy"
             hint="Copy to clipboard"
             transparent
-            onclick={() => onCopy("globalThis.__PIXI_APP__ = app;")}
+            onclick={() => copyToClipboard("globalThis.__PIXI_APP__ = app;")}
           />
         </div>
         globalThis.__PIXI_APP__ = app;</code
@@ -51,7 +43,8 @@
             icon="copy"
             hint="Copy to clipboard"
             transparent
-            onclick={() => onCopy("globalThis.__PHASER_GAME__ = game;")}
+            onclick={() =>
+              copyToClipboard("globalThis.__PHASER_GAME__ = game;")}
           />
         </div>
         globalThis.__PHASER_GAME__ = game;</code

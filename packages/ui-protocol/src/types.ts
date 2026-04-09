@@ -145,6 +145,8 @@ export type TreePatchDto = {
 
 export type TreeLocation<T extends TreeNode> = { parent: T; index: number };
 
+export type BridgeFn = <T>(code: string) => Promise<T>;
+
 /**
  * A connection is used by a Sender (DisplayTree) to communicate with a receiver (ControllerTree).
  *

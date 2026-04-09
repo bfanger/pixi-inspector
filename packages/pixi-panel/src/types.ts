@@ -18,8 +18,6 @@ import type pixiDevtoolsProperties from "./pixi-devtools/pixiDevtoolsProperties"
 import type pixiDevtoolsSelection from "./pixi-devtools/pixiDevtoolsSelection";
 import type pixiDevtoolsViewport from "./pixi-devtools/pixiDevtoolsViewport";
 
-export type BridgeFn = <T>(code: string) => Promise<T>;
-
 export type PixiDevtools = ReturnType<typeof pixiDevtools> & {
   selection: ReturnType<typeof pixiDevtoolsSelection>;
   viewport: ReturnType<typeof pixiDevtoolsViewport>;

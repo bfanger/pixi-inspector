@@ -77,7 +77,14 @@ function createNode(client: DetectedClient): UIProtocolInit {
             }
           },
         },
-        { component: "PixiInstructions", props: {} },
+        {
+          component: "PixiInstructions",
+          events: {
+            copyToClipboard(text) {
+              win.copy(text);
+            },
+          },
+        },
       ],
     };
   }
@@ -88,7 +95,8 @@ function createNode(client: DetectedClient): UIProtocolInit {
   return {
     component: "PixiInject",
     events: {
-      onload: () => {
+      onload: (uiLegacy) => {
+        eval(uiLegacy);
         return Infinity; // Trigger sync after legacy ui controller is injected
       },
     },

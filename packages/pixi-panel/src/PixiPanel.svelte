@@ -1,9 +1,9 @@
 <script lang="ts">
   import { fade } from "svelte/transition";
-  import type { BridgeFn } from "./types";
   import Base from "blender-elements/src/Base.svelte";
   import Warning from "blender-elements/src/Warning/Warning.svelte";
   import Connect from "./Connect.svelte";
+  import type { BridgeFn } from "ui-protocol/src/types";
   import TriggerProvider from "ui-protocol/src/svelte/TriggerProvider.svelte";
   import { SvelteSet } from "svelte/reactivity";
   import Instructions from "./Instructions.svelte";
@@ -87,7 +87,10 @@
   {#if errorMessage}
     <Warning message={errorMessage} />
   {:else if active === undefined}
-    <Instructions bridge={createBridge("")} />
+    <Instructions
+      copyToClipboard={(text) =>
+        createBridge("")(`window.copy(${JSON.stringify(text)})`)}
+    />
   {:else}
     {#key active}
       {@const target = active}

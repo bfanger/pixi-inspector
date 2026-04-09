@@ -1,9 +1,8 @@
-import type { BridgeFn } from "pixi-panel/src/types";
 import PixiPanelLegacy from "pixi-panel/src/PixiPanelLegacy.svelte";
 import { mount } from "svelte";
 
-const bridge: BridgeFn = (code: string) =>
-  new Promise((resolve, reject) => {
+const bridge = (code: string) =>
+  new Promise<any>((resolve, reject) => {
     chrome.devtools.inspectedWindow.eval<any>(code, (result, err) => {
       if (err) {
         if (err instanceof Error) {

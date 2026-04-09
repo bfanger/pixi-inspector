@@ -1,8 +1,6 @@
 <script lang="ts">
   import Base from "blender-elements/src/Base.svelte";
-  import type { BridgeFn } from "./types";
-  import type { Connection } from "ui-protocol/src/types";
-  import { setBridgeContext } from "./bridge-fns";
+  import type { BridgeFn, Connection } from "ui-protocol/src/types";
   import { evalConnect } from "ui-protocol/src/evalBridge";
   import Warning from "blender-elements/src/Warning/Warning.svelte";
   import Display from "ui-protocol/src/svelte/Display.svelte";
@@ -17,7 +15,6 @@
   };
   let { bridge }: Props = $props();
 
-  setBridgeContext((...args) => bridge(...args));
   let errorMessage = $state("");
   let connectionPromise = $state<Promise<Connection>>();
 
