@@ -7,7 +7,7 @@ export default function conditionalNode(
 ) {
   let previous = predicate();
   let choice = previous ? whenTrue : whenFalse;
-  let ui = choice instanceof Function ? choice() : choice;
+  let ui = typeof choice === "function" ? choice() : choice;
   return defineUI({
     component: "Fragment",
     children: ui ? [ui] : [],
@@ -18,7 +18,7 @@ export default function conditionalNode(
       }
       previous = current;
       choice = current ? whenTrue : whenFalse;
-      ui = choice instanceof Function ? choice() : choice;
+      ui = typeof choice === "function" ? choice() : choice;
       if (!ui) {
         patch.truncate = 0;
       } else if (this.children.length === 0) {

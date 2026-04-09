@@ -1,13 +1,12 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import { getTriggerContext } from "./TriggerProvider.svelte";
 
-  type Props = { data?: unknown };
-  let { data }: Props = $props();
+  type Props = { event?: unknown };
+  let { event }: Props = $props();
 
   const dispatch = getTriggerContext();
 
-  onMount(() => {
-    dispatch(data);
+  $effect(() => {
+    dispatch(event);
   });
 </script>

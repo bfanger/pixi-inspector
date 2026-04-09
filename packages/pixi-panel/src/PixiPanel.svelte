@@ -10,21 +10,21 @@
   import "./components";
 
   type Props = {
-    listen: (
+    createListener: (
       setTargets: (targets: string[]) => void,
       setRefresh: (fn: () => void) => void,
     ) => () => void;
     createBridge: (target: string) => BridgeFn;
   };
-  let { listen: handleTargets, createBridge }: Props = $props();
-  let targets: string[] = $state([]);
+  let { createListener, createBridge }: Props = $props();
+  let targets: string[] = $state([""]);
   let available = new SvelteSet<string>();
   let refresh = $state<() => void>();
   let errorMessage = $state("");
   let active = $state<string>();
 
   $effect(() =>
-    handleTargets(
+    createListener(
       (update) => {
         targets = update;
       },
@@ -67,6 +67,11 @@
         available.delete(target);
         active = undefined;
       }
+      setTimeout(() => {
+        if ((errorMessage = err.message)) {
+          errorMessage = "";
+        }
+      }, 5_000);
     }, 1000);
   }
 </script>
@@ -87,10 +92,7 @@
   {#if errorMessage}
     <Warning message={errorMessage} />
   {:else if active === undefined}
-    <Instructions
-      copyToClipboard={(text) =>
-        createBridge("")(`window.copy(${JSON.stringify(text)})`)}
-    />
+    <Instructions />
   {:else}
     {#key active}
       {@const target = active}

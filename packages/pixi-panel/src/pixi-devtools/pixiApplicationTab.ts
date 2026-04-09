@@ -11,7 +11,7 @@ export default function pixiApplicationTab(app: Application | undefined) {
       : [
           conditionalNode(() => !!app?.ticker, tickerPanel(app)),
           conditionalNode(
-            () => !!app?.renderer?.background?.color,
+            () => typeof app?.renderer?.background?.color?.toHex === "function",
             backgroundPanel(app),
           ),
         ],

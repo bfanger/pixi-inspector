@@ -7,7 +7,7 @@ export default function switchNode<T extends string>(
   let previous = selected();
   let choice = previous === undefined ? undefined : choices[previous];
   let ui: UIProtocolInit | undefined =
-    choice instanceof Function ? choice() : choice;
+    typeof choice === "function" ? choice() : choice;
 
   return defineUI({
     component: "Fragment",
@@ -20,7 +20,7 @@ export default function switchNode<T extends string>(
       previous = current;
       choice = current === undefined ? undefined : choices[current];
       if (choice) {
-        ui = choice instanceof Function ? choice() : choice;
+        ui = typeof choice === "function" ? choice() : choice;
         if (this.children.length === 0) {
           patch.appends.push(ui);
         } else {

@@ -3,21 +3,20 @@ import { mount } from "svelte";
 
 mount(PixiPanel, {
   target: document.body,
-  props: { listen, createBridge },
+  props: { createListener, createBridge },
 });
 
-function listen(
+function createListener(
   setUrls: (urls: string[]) => void,
   setRefresh: (fn: () => void) => void,
 ) {
   function refresh() {
     chrome.devtools.inspectedWindow.getResources((resources) => {
       let firstDocument = true;
-      const frameUrls = new Set<string>();
+      const frameUrls = new Set([""]);
       for (const resource of resources) {
         if ((resource as any).type === "document") {
           if (firstDocument) {
-            frameUrls.add("");
             firstDocument = false;
           } else {
             frameUrls.add(resource.url);

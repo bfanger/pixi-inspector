@@ -2,9 +2,18 @@
   import ToggleButton from "blender-elements/src/ToggleButton/ToggleButton.svelte";
 
   type Props = {
-    copyToClipboard: (text: string) => void;
+    copy?: (text: string) => void;
   };
-  let { copyToClipboard }: Props = $props();
+  let { copy }: Props = $props();
+
+  async function copyToClipboard(text: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (err) {
+      console.warn(err);
+      copy?.(text);
+    }
+  }
 </script>
 
 <div class="instructions">

@@ -80,7 +80,7 @@ function createNode(client: DetectedClient): UIProtocolInit {
         {
           component: "PixiInstructions",
           events: {
-            copyToClipboard(text) {
+            copy(text) {
               win.copy(text);
             },
           },

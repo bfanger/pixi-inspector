@@ -7,45 +7,47 @@ import { defineRoot } from "ui-protocol/src/svelte/defineRoot";
 const win = window as any;
 win.__UI_PROTOCOL__ = win.__UI_PROTOCOL__ ?? {};
 
+let attempt = 0;
+let detected = "";
 const root = defineRoot({
   children: [],
   sync(patch) {
     if (root.children.length === 0) {
-      patch.appends.push(connectDetector());
+      patch.appends.push(
+        conditionalNode(
+          () => {
+            detected = detect();
+            return !!detected;
+          },
+          {
+            component: "Trigger",
+            props: { event: detected },
+          },
+          refreshNode({
+            interval: 100,
+            depth: 1,
+            sync(patch) {
+              if (attempt === 100) {
+                // after ~10s, only detect every 5s (when panel is open)
+                patch.props = { interval: 5_000 };
+                attempt = -1;
+              } else if (attempt !== -1) {
+                attempt++;
+              }
+            },
+          }),
+        ),
+      );
     }
   },
   events: {
     reset() {
+      attempt = 0;
       root.children = [];
     },
   },
 });
 evalListen(root, "connect");
-
-function connectDetector() {
-  let detected = detect();
-  let attempt = 0;
-
-  return refreshNode({
-    interval: 250,
-    children: [
-      conditionalNode(
-        () => !!detected,
-        () => ({
-          component: "Trigger",
-          props: { data: detected },
-        }),
-      ),
-    ],
-    sync(patch) {
-      detected = detect();
-      attempt++;
-      if (attempt === 40) {
-        patch.props = { interval: 5_000 };
-      }
-    },
-  });
-}
 
 function detect() {
   const app = getGlobal<Application>("__PIXI_APP__");
@@ -73,12 +75,23 @@ function detect() {
   if (getGlobal("PIXI")) {
     return "patchable";
   }
-  return undefined;
+  return "";
 }
 
 function getGlobal<T>(varname: string): T | undefined {
   if (varname in win) {
     return win[varname] as T;
+  }
+  if (win.frames) {
+    for (let i = 0; i < win.frames.length; i += 1) {
+      try {
+        if (win.frames[i][varname]) {
+          return win.frames[i][varname] as T;
+        }
+      } catch {
+        // access to iframe was denied
+      }
+    }
   }
   return undefined;
 }
