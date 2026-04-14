@@ -4,13 +4,20 @@ import { evalConnect, evalListen } from "ui-protocol/src/evalBridge";
 import "pixi-panel/src/pixi-devtools/ui-legacy";
 import "pixi-panel/src/components";
 import { defineRoot } from "ui-protocol/src/svelte/defineRoot";
+import { initLegacyUI } from "pixi-panel/src/pixi-devtools/ui-legacy";
 
-const win = window as any;
+const eventTarget = new EventTarget();
+let first = true;
 const rootController = defineRoot({
   children: [],
   sync(patch) {
     if (this.children?.length === 0) {
-      patch.appends.push(win.__PIXI_DEVTOOLS_LEGACY__());
+      if (!first) {
+        // controller was reset, connection from real DevTools?
+        eventTarget.dispatchEvent(new CustomEvent("recreated"));
+      }
+      first = false;
+      patch.appends.push(initLegacyUI());
     }
   },
   events: {
@@ -34,13 +41,15 @@ if (target) {
           return eval(code);
         },
       ),
-      onerror: () => {
-        unmount(devtools);
-        target.remove();
-      },
+      onerror: cleanup,
     },
     target,
   });
+  function cleanup() {
+    unmount(devtools);
+    target?.remove();
+  }
+  eventTarget.addEventListener("recreated", cleanup);
 } else {
   console.warn("No <dev-tools> element found");
 }

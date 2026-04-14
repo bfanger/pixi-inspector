@@ -1,0 +1,9 @@
+{
+  "name": "excalibur-devtools",
+  "description": "",
+  "version": "0.0.0",
+  "devDependencies": {
+    "excalibur": "0.32.0",
+    "ui-protocol": "workspace:*"
+  }
+}

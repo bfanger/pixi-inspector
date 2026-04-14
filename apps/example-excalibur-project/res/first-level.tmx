@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="10" height="10" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="5">
+ <tileset firstgid="1" source="tileset.tsx"/>
+ <layer id="1" name="Ground" width="10" height="10">
+  <data encoding="csv">
+175,174,175,175,174,175,175,175,174,175,
+174,169,170,170,170,170,170,170,171,174,
+174,197,7,34,35,6,7,7,199,175,
+175,197,7,35,34,34,35,6,199,175,
+175,197,34,7,35,34,7,35,199,174,
+174,197,34,6,6,7,6,7,199,175,
+174,197,6,34,35,35,35,35,199,174,
+175,197,6,35,35,6,35,34,199,174,
+175,225,226,226,226,226,226,226,227,174,
+174,174,175,174,174,175,174,175,174,174
+</data>
+ </layer>
+ <layer id="3" name="Solid" width="10" height="10">
+  <properties>
+   <property name="solid" type="bool" value="true"/>
+  </properties>
+  <data encoding="csv">
+406,406,406,406,406,406,406,406,406,406,
+406,0,0,0,0,0,0,0,0,406,
+406,0,0,0,0,0,0,0,0,406,
+406,0,0,0,0,0,0,0,0,406,
+406,0,0,0,0,0,0,0,0,406,
+406,0,0,62,0,0,0,0,0,406,
+406,0,0,62,0,0,0,92,0,406,
+406,0,0,0,0,0,0,120,0,406,
+406,0,0,0,0,0,0,0,0,406,
+406,406,406,406,406,406,406,406,406,406
+</data>
+ </layer>
+ <objectgroup id="2" name="Objects">
+  <properties>
+   <property name="excalibur" type="bool" value="true"/>
+  </properties>
+  <object id="1" name="Chest" gid="231" x="79.794" y="80.863" width="16" height="16">
+   <properties>
+    <property name="CollisionType" value="Fixed"/>
+   </properties>
+  </object>
+  <object id="2" name="Camera" type="Camera" x="80.0299" y="72.2658">
+   <properties>
+    <property name="camera" type="bool" value="true"/>
+    <property name="zoom" type="float" value="4"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="3" name="Player" type="player" x="37.0287" y="27.4729">
+   <point/>
+  </object>
+ </objectgroup>
+</map>

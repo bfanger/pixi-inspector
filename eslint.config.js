@@ -1,16 +1,29 @@
+// @ts-check
 import "eslint-plugin-only-warn";
-// @ts-ignore
+import { defineConfig } from "eslint/config";
 import js from "@eslint/js";
 import ts from "typescript-eslint";
-// @ts-ignore
 import prettier from "eslint-config-prettier";
 import svelte from "eslint-plugin-svelte";
 import globals from "globals";
 
-export default ts.config(
+export default defineConfig(
+  {
+    ignores: [
+      ".svelte-kit",
+      ".vercel",
+      "build",
+      "node_modules",
+      "package",
+      "vite.config.ts.timestamp-*.mjs",
+      "apps/chrome-extension/build",
+      "apps/firefox-extension/build",
+      "apps/example-excalibur-project/res",
+      "apps/example-excalibur-project/dist",
+    ],
+  },
   js.configs.recommended,
   ...ts.configs.recommendedTypeChecked,
-  // @ts-ignore
   ...svelte.configs["flat/recommended"],
   prettier,
   ...svelte.configs["flat/prettier"],
@@ -65,18 +78,5 @@ export default ts.config(
       // Allow require() in CommonJS modules.
       "@typescript-eslint/no-require-imports": "off",
     },
-  },
-  {
-    ignores: [
-      ".svelte-kit",
-      ".vercel",
-      "build",
-      "node_modules",
-      "package",
-      "vite.config.ts.timestamp-*.mjs",
-      "apps/chrome-extension/build",
-      "apps/firefox-extension/build",
-      "packages/blender-elements/.histoire/dist",
-    ],
   },
 );

@@ -1,0 +1,41 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "",
+    "expandedProjectPaths": [
+    ],
+    "file.lastUsedOpenFilter": "All Files (*)",
+    "fileStates": {
+        "first-level.tmx": {
+            "scale": 3.82375,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 80.15691402419091,
+                "y": 79.5031055900621
+            }
+        },
+        "first-level.tmx#Base2": {
+            "scaleInDock": 1
+        }
+    },
+    "last.imagePath": "C:/projects/zelda-stream/img/Solaria Demo Pack Update 03/Solaria Demo Pack Update 03/16x16/Tilesets",
+    "map.height": 10,
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 16,
+    "map.tileWidth": 16,
+    "map.width": 10,
+    "openFiles": [
+    ],
+    "project": "zelda.tiled-project",
+    "recentFiles": [
+        "first-level.tmx"
+    ],
+    "tileset.embedInMap": true,
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 16,
+        "width": 16
+    }
+}

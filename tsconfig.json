@@ -12,7 +12,8 @@
     "verbatimModuleSyntax": true,
     "paths": {
       "pixi-panel/*": ["./node_modules/pixi-panel/*"],
-      "ui-protocol/*": ["./node_modules/ui-protocol/*"]
+      "ui-protocol/*": ["./node_modules/ui-protocol/*"],
+      "excalibur-devtools/*": ["./node_modules/excalibur-devtools/*"]
     },
     "allowArbitraryExtensions": true,
     "types": ["@types/chrome", "@types/firefox-webext-browser"]
@@ -32,5 +33,9 @@
     "**/.storybook/*.ts",
     "packages/blender-elements/.storybook/main.ts",
     "packages/blender-elements/.storybook/preview.ts"
+  ],
+  "exclude": [
+    "apps/example-excalibur-project/res/*.tsx",
+    "apps/example-excalibur-project/dist/**"
   ]
 }

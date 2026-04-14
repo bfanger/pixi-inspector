@@ -35,7 +35,7 @@ export function createChild(
       {
         ...init,
         component: "Warning",
-        props: { message: `Component "${init.component}" was not registered}` },
+        props: { message: `Component "${init.component}" was not registered` },
       },
       sender,
     );

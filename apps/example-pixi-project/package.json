@@ -8,8 +8,8 @@
     "pixi.js": "^8.17.1"
   },
   "devDependencies": {
-    "ui-protocol": "workspace:*",
     "pixi-panel": "workspace:*",
-    "vite": "^8.0.7"
+    "ui-protocol": "workspace:*",
+    "vite": "^8.0.8"
   }
 }

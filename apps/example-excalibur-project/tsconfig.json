@@ -1,0 +1,4 @@
+{
+  "extends": "../../tsconfig.json",
+  "exclude": ["apps/example-excalibur-project/res/tileset.tsx"]
+}

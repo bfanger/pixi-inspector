@@ -64,7 +64,7 @@ evalListen(root, "pixi");
 
 const patched = Symbol("patched");
 
-function initLegacyUI() {
+export function initLegacyUI() {
   const searchInput = defineUI({
     component: "SearchInput",
     getValue: () => outline.query,

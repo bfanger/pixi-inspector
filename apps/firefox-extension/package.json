@@ -14,9 +14,9 @@
     "esbuild": "^0.28.0",
     "esbuild-svelte": "^0.9.4",
     "pixi-panel": "workspace:*",
-    "ui-protocol": "workspace:*",
     "rimraf": "^6.1.3",
-    "svelte": "^5.55.2",
+    "svelte": "^5.55.3",
+    "ui-protocol": "workspace:*",
     "web-ext": "^10.1.0"
   }
 }

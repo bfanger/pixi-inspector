@@ -16,6 +16,8 @@ import Warning from "blender-elements/src/Warning/Warning.svelte";
 import Tabs from "blender-elements/src/Tabs/Tabs.svelte";
 import ColorInput from "blender-elements/src/ColorInput/ColorInput.svelte";
 import ToggleButton from "blender-elements/src/ToggleButton/ToggleButton.svelte";
+import TreeViewRow from "blender-elements/src/TreeView/TreeViewRow.svelte";
+import TreeView from "blender-elements/src/TreeView/TreeView.svelte";
 
 const components = {
   Fragment,
@@ -36,6 +38,8 @@ const components = {
   Property,
   Warning,
   Tabs,
+  TreeView,
+  TreeViewRow,
 } as const;
 
 type BaseComponents = {
