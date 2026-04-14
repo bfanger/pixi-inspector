@@ -18,7 +18,10 @@ export function createTestControllerTree() {
     },
     sync(patch) {
       const player = game.player;
-      if (player && tree.children.length === 0) {
+      if (tree.children.length === 0) {
+        patch.appends.push(refreshNode({ interval: 500, depth: 1 }));
+      }
+      if (player && tree.children.length <= 1) {
         patch.appends.push(
           {
             component: "NumberInput",
@@ -51,15 +54,14 @@ export function createTestControllerTree() {
               },
             },
           },
-          refreshNode({ interval: 500, depth: 1 }),
         );
       }
-      if (tree.children?.length !== 0) {
+      if (tree.children?.length > 1) {
         if (!player) {
-          patch.truncate = 0;
+          patch.truncate = 1;
         } else if (game.replace !== previousReplace) {
           patch.replacements.push({
-            index: 0,
+            index: 1,
             component: "Button",
             props: { label: `Replaced ${game.replace}` },
           });

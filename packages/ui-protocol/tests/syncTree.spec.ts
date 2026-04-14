@@ -11,10 +11,27 @@ describe.sequential("syncTree()", () => {
       {
         "appends": [
           {
+            "component": "Refresh",
+            "events": [
+              {
+                "event": "refresh",
+              },
+            ],
+            "path": [
+              0,
+            ],
+            "props": {
+              "depth": 1,
+              "interval": 500,
+            },
+            "setValue": undefined,
+            "value": false,
+          },
+          {
             "component": "NumberInput",
             "events": undefined,
             "path": [
-              0,
+              1,
             ],
             "props": {
               "step": 1,
@@ -30,30 +47,13 @@ describe.sequential("syncTree()", () => {
               },
             ],
             "path": [
-              1,
+              2,
             ],
             "props": {
               "label": "Add 10",
             },
             "setValue": undefined,
             "value": undefined,
-          },
-          {
-            "component": "Refresh",
-            "events": [
-              {
-                "event": "refresh",
-              },
-            ],
-            "path": [
-              2,
-            ],
-            "props": {
-              "depth": 1,
-              "interval": 500,
-            },
-            "setValue": undefined,
-            "value": false,
           },
         ],
         "errors": [],
@@ -68,107 +68,114 @@ describe.sequential("syncTree()", () => {
   it("should report the current x value", () => {
     expect(syncTree(controllerTree, [], applyValues(controllerTree, [])))
       .toMatchInlineSnapshot(`
-      {
-        "appends": [],
-        "errors": [],
-        "props": [],
-        "replacements": [],
-        "truncates": [],
-        "value": [
-          {
-            "path": [
-              0,
-            ],
-            "value": 10,
-          },
-          {
-            "path": [
-              2,
-            ],
-            "value": true,
-          },
-        ],
-      }
-    `);
+        {
+          "appends": [],
+          "errors": [],
+          "props": [],
+          "replacements": [],
+          "truncates": [],
+          "value": [
+            {
+              "path": [
+                0,
+              ],
+              "value": true,
+            },
+            {
+              "path": [
+                1,
+              ],
+              "value": 10,
+            },
+          ],
+        }
+      `);
     game.player!.x += 5;
     expect(syncTree(controllerTree, [], applyValues(controllerTree, [])))
       .toMatchInlineSnapshot(`
-      {
-        "appends": [],
-        "errors": [],
-        "props": [],
-        "replacements": [],
-        "truncates": [],
-        "value": [
-          {
-            "path": [
-              0,
-            ],
-            "value": 15,
-          },
-          {
-            "path": [
-              2,
-            ],
-            "value": false,
-          },
-        ],
-      }
-    `);
+        {
+          "appends": [],
+          "errors": [],
+          "props": [],
+          "replacements": [],
+          "truncates": [],
+          "value": [
+            {
+              "path": [
+                0,
+              ],
+              "value": false,
+            },
+            {
+              "path": [
+                1,
+              ],
+              "value": 15,
+            },
+          ],
+        }
+      `);
   });
 
   it("should replace the input with a button", () => {
     game.replace++;
     expect(syncTree(controllerTree, [], applyValues(controllerTree, [])))
       .toMatchInlineSnapshot(`
-      {
-        "appends": [],
-        "errors": [],
-        "props": [],
-        "replacements": [
-          {
-            "component": "Button",
-            "events": undefined,
-            "path": [
-              0,
-            ],
-            "props": {
-              "label": "Replaced 1",
+        {
+          "appends": [],
+          "errors": [],
+          "props": [],
+          "replacements": [
+            {
+              "component": "Button",
+              "events": undefined,
+              "path": [
+                1,
+              ],
+              "props": {
+                "label": "Replaced 1",
+              },
+              "setValue": undefined,
+              "value": undefined,
             },
-            "setValue": undefined,
-            "value": undefined,
-          },
-        ],
-        "truncates": [],
-        "value": [
-          {
-            "path": [
-              2,
-            ],
-            "value": true,
-          },
-        ],
-      }
-    `);
+          ],
+          "truncates": [],
+          "value": [
+            {
+              "path": [
+                0,
+              ],
+              "value": true,
+            },
+          ],
+        }
+      `);
   });
 
   it("should truncate the tree", () => {
     game.player = undefined;
     expect(syncTree(controllerTree, [], applyValues(controllerTree, [])))
       .toMatchInlineSnapshot(`
-      {
-        "appends": [],
-        "errors": [],
-        "props": [],
-        "replacements": [],
-        "truncates": [
-          {
-            "length": 0,
-            "path": [],
-          },
-        ],
-        "value": [],
-      }
-    `);
+        {
+          "appends": [],
+          "errors": [],
+          "props": [],
+          "replacements": [],
+          "truncates": [
+            {
+              "length": 1,
+              "path": [],
+            },
+          ],
+          "value": [
+            {
+              "path": [
+                0,
+              ],
+              "value": false,
+            },
+          ],
+        }
+      `);
   });
 });
