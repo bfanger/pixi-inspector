@@ -39,12 +39,12 @@ const root = defineRoot({
             conditionalNode(
               () => {
                 if (!win["PIXI"]) {
-                  return false;
+                  return undefined;
                 }
                 if (win["PIXI"][patched]) {
-                  return false;
+                  return undefined;
                 }
-                return !legacy.renderer() && !legacy.root();
+                return legacy.renderer() ?? legacy.root();
               },
               () => initPatchPixi(),
               () => initLegacyUI(),
@@ -187,6 +187,7 @@ function initSceneGraph(children: UIProtocolInit[]): UIProtocolInit {
 }
 
 function initPropertyTabs(): UIProtocolInit {
+  const appRef = { value: legacy.app() };
   const allTabs = {
     scene: { icon: "scene", label: "Scene Properties" },
     object: { icon: "object", label: "Object Properties" },
@@ -201,9 +202,9 @@ function initPropertyTabs(): UIProtocolInit {
   let activeTab: TabKey | undefined;
 
   function detect() {
-    const app = legacy.app();
     definitions = properties.definitions();
-    const sceneVisible = app?.ticker || app?.renderer?.background?.color;
+    const sceneVisible =
+      appRef.value?.ticker || appRef.value?.renderer?.background?.color;
     availableTabs = sceneVisible ? ["scene"] : [];
     for (const key of Object.keys(allTabs)) {
       const tab = key as keyof typeof definitions;
@@ -290,20 +291,21 @@ function initPropertyTabs(): UIProtocolInit {
             props: { padding: 8, gap: 1 },
             children: [
               conditionalNode(
-                () => availableTabs.length > 0,
-                switchNode(() => activeTab, {
-                  scene: () => pixiApplicationTab(legacy.app()),
-                  object: () =>
-                    defineUI({
-                      component: "PixiObjectProperties",
-                      ...initPanel("object"),
-                    }),
-                  text: () =>
-                    defineUI({
-                      component: "PixiTextProperties",
-                      ...initPanel("text"),
-                    }),
-                }),
+                () => activeTab,
+                (activeTabRef) =>
+                  switchNode(() => activeTabRef.value, {
+                    scene: () => pixiApplicationTab(appRef),
+                    object: () =>
+                      defineUI({
+                        component: "PixiObjectProperties",
+                        ...initPanel("object"),
+                      }),
+                    text: () =>
+                      defineUI({
+                        component: "PixiTextProperties",
+                        ...initPanel("text"),
+                      }),
+                  }),
               ),
             ],
           },
@@ -315,9 +317,11 @@ function initPropertyTabs(): UIProtocolInit {
           },
         },
         sync(patch) {
-          if (previous$pixi === win.$pixi) {
+          const nextApp = legacy.app();
+          if (previous$pixi === win.$pixi && appRef.value === nextApp) {
             return;
           }
+          appRef.value = nextApp;
           previous$pixi = win.$pixi;
           detect();
           patch.props = {

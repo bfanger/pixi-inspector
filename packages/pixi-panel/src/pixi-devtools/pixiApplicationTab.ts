@@ -1,25 +1,25 @@
-import type { Application } from "pixi.js";
+import type { Application, BackgroundSystem, Ticker } from "pixi.js";
 import conditionalNode from "ui-protocol/src/conditionalNode";
 import defineUI from "ui-protocol/src/svelte/defineUI";
 import session from "./session";
 import errorBoundaryNode from "ui-protocol/src/errorBoundaryNode";
 
-export default function pixiApplicationTab(app: Application | undefined) {
+export default function pixiApplicationTab(appRef: {
+  value: Application | undefined;
+}) {
   return defineUI({
     component: "Fragment",
-    children: !app
-      ? []
-      : [
-          conditionalNode(() => !!app?.ticker, tickerPanel(app)),
-          conditionalNode(
-            () => typeof app?.renderer?.background?.color?.toHex === "function",
-            backgroundPanel(app),
-          ),
-        ],
+    children: [
+      conditionalNode(() => appRef.value?.ticker, tickerPanel),
+      conditionalNode(
+        () => appRef.value?.renderer?.background,
+        backgroundPanel,
+      ),
+    ],
   });
 }
 
-function tickerPanel(app: Application) {
+function tickerPanel(tickerRef: { value: Ticker }) {
   return errorBoundaryNode(() => ({
     component: "Panel",
     props: {
@@ -41,9 +41,9 @@ function tickerPanel(app: Application) {
               {
                 component: "NumberInput",
                 props: { step: 0.01 },
-                getValue: () => app.ticker.speed,
+                getValue: () => tickerRef.value.speed,
                 setValue(speed) {
-                  app.ticker.speed = speed;
+                  tickerRef.value.speed = speed;
                 },
               },
             ],
@@ -55,13 +55,13 @@ function tickerPanel(app: Application) {
             },
             children: [
               conditionalNode(
-                () => app.ticker.started,
+                () => tickerRef.value.started,
                 {
                   component: "ToggleButton",
                   props: { icon: "pause" },
                   events: {
                     onclick() {
-                      app.ticker.stop();
+                      tickerRef.value.stop();
                     },
                   },
                 },
@@ -70,7 +70,7 @@ function tickerPanel(app: Application) {
                   props: { icon: "play" },
                   events: {
                     onclick() {
-                      app.ticker.start();
+                      tickerRef.value.start();
                     },
                   },
                 },
@@ -83,7 +83,7 @@ function tickerPanel(app: Application) {
   }));
 }
 
-function backgroundPanel(app: Application) {
+function backgroundPanel(backgroundRef: { value: BackgroundSystem }) {
   return errorBoundaryNode(() => ({
     component: "Panel",
     props: {
@@ -108,25 +108,29 @@ function backgroundPanel(app: Application) {
               {
                 component: "ColorInput",
                 getValue() {
-                  const bg = app.renderer.background;
-                  const hex = bg.color.toHex();
-                  if (bg.alpha >= 1) {
+                  const color = backgroundRef.value.color;
+                  const hex =
+                    typeof color.toHex === "function" ? color.toHex() : color; // v8 Color object, v7 string
+                  if (typeof hex !== "string") {
+                    return "";
+                  }
+                  if (backgroundRef.value.alpha >= 1) {
                     return hex;
                   }
                   return (
                     hex +
-                    Math.round(bg.alpha * 255)
+                    Math.round(backgroundRef.value.alpha * 255)
                       .toString(16)
                       .padStart(2, "0")
                   );
                 },
                 setValue(color) {
-                  const bg = app.renderer.background;
                   if (color.length === 7) {
-                    bg.color = color;
+                    backgroundRef.value.color = color;
                   } else if (color.length === 9) {
-                    bg.color = color.substring(0, 7);
-                    bg.alpha = parseInt(color.substring(7), 16) / 255;
+                    backgroundRef.value.color = color.substring(0, 7);
+                    backgroundRef.value.alpha =
+                      parseInt(color.substring(7), 16) / 255;
                   }
                 },
               },

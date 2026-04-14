@@ -18,10 +18,10 @@ const root = defineRoot({
           interval: 100,
           children: [
             conditionalNode(
-              () => !!detected,
-              () => ({
+              () => detected,
+              (detectedRef) => ({
                 component: "Trigger",
-                props: { event: detected },
+                props: { event: detectedRef.value },
               }),
             ),
           ],
@@ -72,5 +72,5 @@ function detect() {
   if (win.PIXI) {
     return "patchable";
   }
-  return "";
+  return undefined;
 }
