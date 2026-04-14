@@ -1,8 +1,8 @@
 import { Color, type Engine } from "excalibur";
 import conditionalNode from "ui-protocol/src/conditionalNode";
 import refreshNode from "ui-protocol/src/refreshNode";
-import defineUI from "ui-protocol/src/svelte/defineUI";
 import excaliburTreeView from "./excaliburTreeView";
+import errorBoundaryNode from "ui-protocol/src/errorBoundaryNode";
 
 export default function excaliburPanel(engine: Engine) {
   return refreshNode({
@@ -35,7 +35,7 @@ export default function excaliburPanel(engine: Engine) {
 }
 
 function backgroundPanel(engine: Engine) {
-  return defineUI({
+  return errorBoundaryNode(() => ({
     component: "Panel",
     props: { title: "Engine" },
     children: [
@@ -60,5 +60,5 @@ function backgroundPanel(engine: Engine) {
         ],
       },
     ],
-  });
+  }));
 }

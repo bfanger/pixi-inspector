@@ -42,7 +42,8 @@ export default function createSender(
       data.length > 0
     ) {
       // Data only
-      return await connection.set(flushData());
+      applyPatch(tree, await connection.set(flushData()));
+      return;
     }
     if (processing.events.length !== 0) {
       // Events

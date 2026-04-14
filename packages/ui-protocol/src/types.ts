@@ -28,6 +28,7 @@ export type TreeDisplayContainerNode = {
   children: TreeDisplayNode[];
   setChild(index: number, init: TreePatchInitDto): TreeDisplayNode;
   truncate(length: number): void;
+  setError?: (message?: string) => void;
 };
 
 export type TreeEvent = { path: TreePath; type: string; args: TreeValue[] };
@@ -113,19 +114,21 @@ export type TreePatchValueDto = {
 /**
  * Patch props for updating an existing tree node
  */
-export type TreePatchPropsDto = {
+type TreePatchPropsDto = {
   path: TreePath;
   values: TreeObjectValue;
 };
 /**
  * Patch data for truncating the nested tree nodes.
  */
-export type TreePatchTruncate = {
-  length: number;
-};
-export type TreePatchTruncateDto = {
+type TreePatchTruncateDto = {
   path: TreePath;
   length: number;
+};
+
+type TreePatchErrorDto = {
+  path: TreePath;
+  message?: string;
 };
 
 export type TreePatch = {
@@ -141,6 +144,7 @@ export type TreePatchDto = {
   replacements: TreePatchInitDto[];
   appends: TreePatchInitDto[];
   truncates: TreePatchTruncateDto[];
+  errors: TreePatchErrorDto[];
 };
 
 export type TreeLocation<T extends TreeNode> = { parent: T; index: number };
@@ -159,7 +163,7 @@ export type Connection = {
   /**
    * Send values to existing nodes.
    */
-  set: (values: TreePatchValueDto[]) => Promise<void>;
+  set: (values: TreePatchValueDto[]) => Promise<TreePatchDto>;
 
   /**
    * Send values to existing nodes, dispatch an event to a node and update the tree based on the event response.

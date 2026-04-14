@@ -64,6 +64,7 @@ export function createChild(
       }
     }
   }
+
   const leaf: TreeDisplayLeafNode & { vdom: VDOM; sender: Sender } = {
     vdom,
     sender,
@@ -116,6 +117,12 @@ export function createChild(
   container.children = init.children.map((childInit) =>
     createChild(childInit, container.sender),
   );
+
+  if (init.component === "ErrorBoundary") {
+    vdom.props.createTrigger = (setError: (message?: string) => void) => {
+      container.setError = setError;
+    };
+  }
   vdom.children = container.children.map((child) => (child as SvelteNode).vdom);
   node = container;
   return container;

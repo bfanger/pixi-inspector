@@ -54,7 +54,7 @@ export function applyPatch(tree: TreeDisplayNode, patch: TreePatchDto) {
     const node = lookupNode(tree, path);
     node.setProps(props);
   }
-  applyValues(tree, patch.value);
+  applyDisplayValues(tree, patch.value);
   for (const replacement of patch.replacements) {
     const { parent, index } = lookupParent(tree, replacement.path);
     if ("setChild" in parent) {
@@ -92,6 +92,23 @@ export function applyPatch(tree: TreeDisplayNode, patch: TreePatchDto) {
       );
     }
   }
+
+  for (const error of patch.errors) {
+    let parentPath = error.path;
+    while (true) {
+      parentPath = parentPath.slice(0, -1);
+      if (parentPath.length === 0) {
+        throw new Error("Error occurred outside ErrorBoundary", {
+          cause: error.message,
+        });
+      }
+      const parent = lookupNode(tree, parentPath);
+      if ("setError" in parent && parent.setError) {
+        parent.setError(error.message);
+        break;
+      }
+    }
+  }
 }
 
 /**
@@ -99,9 +116,9 @@ export function applyPatch(tree: TreeDisplayNode, patch: TreePatchDto) {
  */
 export function syncTree(
   tree: TreeControllerNode,
-  path: TreePath = [],
+  path: TreePath,
+  patch: TreePatchDto,
 ): TreePatchDto {
-  const patch = createPatch();
   let node = tree;
   if (path.length > 0) {
     node = lookupNode(tree, path);
@@ -113,7 +130,35 @@ export function syncTree(
 /**
  * Update values for specific nodes.
  */
-export function applyValues(tree: TreeNode, values: TreePatchValueDto[]): void {
+export function applyValues(
+  tree: TreeControllerNode,
+  values: TreePatchValueDto[],
+): TreePatchDto {
+  const patch = createPatch();
+  for (const { path, value } of values) {
+    const node = lookupNode(tree, path);
+    try {
+      if (!node.setValue) {
+        throw new Error(
+          `Applying values failed: Node "/${path.join("/")}" didn't implement setValue()`,
+        );
+      }
+      node.setValue(value);
+    } catch (err) {
+      console.warn(err);
+      patch.errors.push({
+        path,
+        message: err instanceof Error ? err.message : undefined,
+      });
+    }
+  }
+  return patch;
+}
+
+export function applyDisplayValues(
+  tree: TreeDisplayNode,
+  values: TreePatchValueDto[],
+) {
   for (const { path, value } of values) {
     const node = lookupNode(tree, path);
     if (!node.setValue) {
@@ -124,28 +169,37 @@ export function applyValues(tree: TreeNode, values: TreePatchValueDto[]): void {
     node.setValue(value);
   }
 }
-
 /**
  * Dispatch an event and return the effects it had on the tree.
  */
 export function applyEvent(
   tree: TreeControllerNode,
   event: TreeEvent,
+  patch: TreePatchDto,
 ): TreePatchDto {
   const node = lookupNode(tree, event.path);
-  const handler = node.events?.[event.type];
-  let syncParents: number | void = undefined;
-  if (handler) {
-    const listener = typeof handler === "function" ? handler : handler[0];
-    syncParents = listener(...event.args);
+  try {
+    const handler = node.events?.[event.type];
+    let syncParents: number | void = undefined;
+    if (handler) {
+      const listener = typeof handler === "function" ? handler : handler[0];
+      syncParents = listener(...event.args);
+    }
+    if (syncParents === undefined) {
+      syncParents = 0;
+    } else if (syncParents === Infinity) {
+      syncParents = event.path.length;
+    }
+    const path = event.path.slice(0, event.path.length - syncParents);
+    return syncTree(tree, path, patch);
+  } catch (err) {
+    console.warn(err);
+    patch.errors.push({
+      path: event.path,
+      message: `${event.type} failed: ${err instanceof Error ? err.message : ""}`,
+    });
+    return patch;
   }
-  if (syncParents === undefined) {
-    syncParents = 0;
-  } else if (syncParents === Infinity) {
-    syncParents = event.path.length;
-  }
-  const path = event.path.slice(0, event.path.length - syncParents);
-  return syncTree(tree, path);
 }
 
 /**
@@ -160,7 +214,15 @@ export function syncNode(
     replacements: [],
     appends: [],
   };
-  node.sync?.(partial);
+  try {
+    node.sync?.(partial);
+  } catch (err) {
+    console.warn(err);
+    patch.errors.push({
+      path,
+      message: `sync failed: ${err instanceof Error ? err.message : ""}`,
+    });
+  }
   const { length, skip } = applyPartial(patch, node, path, partial);
   for (let i = 0; i < length; i++) {
     if (skip.includes(i)) {
@@ -227,7 +289,7 @@ function createInit(
   path: TreePath,
 ): { dto: TreePatchInitDto; node: TreeControllerNode } {
   const { component, props = {}, value, children, getValue, ...rest } = init;
-  const node: TreeControllerNode = rest;
+  const node: TreeControllerNode = { ...rest };
   const dto: TreePatchInitDto = {
     path,
     component,
@@ -278,5 +340,6 @@ function createPatch(): TreePatchDto {
     replacements: [],
     appends: [],
     truncates: [],
+    errors: [],
   };
 }

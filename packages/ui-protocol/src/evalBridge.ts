@@ -13,15 +13,13 @@ export function evalListen(tree: TreeControllerNode, id: string) {
 
   const receiver = {
     set: (values: TreePatchValueDto[]) => {
-      applyValues(tree, values);
+      return applyValues(tree, values);
     },
     dispatchEvent: (values: TreePatchValueDto[], event: TreeEvent) => {
-      applyValues(tree, values);
-      return applyEvent(tree, event);
+      return applyEvent(tree, event, applyValues(tree, values));
     },
     sync: (values: TreePatchValueDto[], path: TreePath) => {
-      applyValues(tree, values);
-      return syncTree(tree, path);
+      return syncTree(tree, path, applyValues(tree, values));
     },
   };
 

@@ -1,4 +1,7 @@
 import Fragment from "./Fragment.svelte";
+import ErrorBoundary from "./ErrorBoundary.svelte";
+import Refresh from "./Refresh.svelte";
+import Trigger from "./Trigger.svelte";
 import NumberInput from "blender-elements/src/NumberInput/NumberInput.svelte";
 import Button from "blender-elements/src/Button/Button.svelte";
 import CheckboxInput from "blender-elements/src/CheckboxInput/CheckboxInput.svelte";
@@ -10,8 +13,6 @@ import SearchInput from "blender-elements/src/SearchInput/SearchInput.svelte";
 import Grid from "blender-elements/src/Grid/Grid.svelte";
 import SplitPanel from "blender-elements/src/SplitPanel/SplitPanel.svelte";
 import SplitPanels from "blender-elements/src/SplitPanel/SplitPanels.svelte";
-import Refresh from "./Refresh.svelte";
-import Trigger from "./Trigger.svelte";
 import Warning from "blender-elements/src/Warning/Warning.svelte";
 import Tabs from "blender-elements/src/Tabs/Tabs.svelte";
 import ColorInput from "blender-elements/src/ColorInput/ColorInput.svelte";
@@ -21,6 +22,7 @@ import TreeView from "blender-elements/src/TreeView/TreeView.svelte";
 
 const components = {
   Fragment,
+  ErrorBoundary,
   Refresh,
   Trigger,
   Box,

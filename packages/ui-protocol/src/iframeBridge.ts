@@ -29,19 +29,16 @@ export function iframeListen(
       }
       e.source.postMessage({ type: responseType, connect: true });
     } else if (e.data?.type === type) {
-      let patch: TreePatchDto | undefined;
-      applyValues(tree, e.data.values);
+      const patch = applyValues(tree, e.data.values);
       if (e.data.event) {
-        patch = applyEvent(tree, e.data.event);
+        applyEvent(tree, e.data.event, patch);
       } else if (e.data.sync) {
-        patch = syncTree(tree, e.data.sync);
+        syncTree(tree, e.data.sync, patch);
       }
-      if (patch) {
-        if (!e.source) {
-          throw new Error("Can't respond to the message, no source");
-        }
-        e.source.postMessage({ type: responseType, ref: e.data.ref, patch });
+      if (!e.source) {
+        throw new Error("Can't respond to the message, no source");
       }
+      e.source.postMessage({ type: responseType, ref: e.data.ref, patch });
     }
   }
   target.addEventListener("message", listener, { signal });
@@ -96,10 +93,7 @@ export async function iframeConnect(
     return promise;
   }
   return {
-    set(values) {
-      target.postMessage({ type, values });
-      return Promise.resolve();
-    },
+    set: (values) => send({ values }),
     dispatchEvent: (values, event) => send({ values, event }),
     sync: (values, path) => send({ values, sync: path }),
   };

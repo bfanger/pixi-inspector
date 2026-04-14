@@ -2,6 +2,7 @@ import type { Application } from "pixi.js";
 import conditionalNode from "ui-protocol/src/conditionalNode";
 import defineUI from "ui-protocol/src/svelte/defineUI";
 import session from "./session";
+import errorBoundaryNode from "ui-protocol/src/errorBoundaryNode";
 
 export default function pixiApplicationTab(app: Application | undefined) {
   return defineUI({
@@ -19,7 +20,7 @@ export default function pixiApplicationTab(app: Application | undefined) {
 }
 
 function tickerPanel(app: Application) {
-  return defineUI({
+  return errorBoundaryNode(() => ({
     component: "Panel",
     props: {
       title: "Ticker",
@@ -79,11 +80,11 @@ function tickerPanel(app: Application) {
         ],
       },
     ],
-  });
+  }));
 }
 
 function backgroundPanel(app: Application) {
-  return defineUI({
+  return errorBoundaryNode(() => ({
     component: "Panel",
     props: {
       title: "Background",
@@ -134,5 +135,5 @@ function backgroundPanel(app: Application) {
         ],
       },
     ],
-  });
+  }));
 }

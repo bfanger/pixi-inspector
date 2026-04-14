@@ -7,15 +7,13 @@ export default function createTestConnection(
 ): Connection {
   return {
     set: async (values) => {
-      applyValues(tree, values);
+      return applyValues(tree, values);
     },
     dispatchEvent: async (values, event) => {
-      applyValues(tree, values);
-      return applyEvent(tree, event);
+      return applyEvent(tree, event, applyValues(tree, values));
     },
     sync: async (values, path) => {
-      applyValues(tree, values);
-      return syncTree(tree, path);
+      return syncTree(tree, path, applyValues(tree, values));
     },
   };
 }

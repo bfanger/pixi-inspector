@@ -20,6 +20,7 @@ describe.sequential("applyPatch()", () => {
           events: [{ event: "oninput" }],
         },
       ],
+      errors: [],
     });
     expect(displayTree).toMatchInlineSnapshot(`
       {
@@ -88,6 +89,7 @@ describe.sequential("applyPatch()", () => {
         },
       ],
       truncates: [],
+      errors: [],
     });
     expect(displayTree).toMatchInlineSnapshot(`
       {
@@ -176,6 +178,7 @@ describe.sequential("applyPatch()", () => {
       replacements: [],
       appends: [],
       truncates: [{ path: [], length: 1 }],
+      errors: [],
     });
     expect(displayTree).toMatchInlineSnapshot(`
       {

@@ -1,4 +1,5 @@
 import type { Entity, Scene } from "excalibur";
+import errorBoundaryNode from "ui-protocol/src/errorBoundaryNode";
 import forEachNode from "ui-protocol/src/forEachNode";
 import defineUI from "ui-protocol/src/svelte/defineUI";
 const win = window as any;
@@ -6,7 +7,7 @@ const win = window as any;
 export default function excaliburTreeView(scene: Scene) {
   let expanded = true;
   const previous = { expanded, active: win.$entity === undefined };
-  return defineUI({
+  return errorBoundaryNode(() => ({
     component: "TreeView",
     children: [
       {
@@ -40,7 +41,7 @@ export default function excaliburTreeView(scene: Scene) {
         (entity) => row(entity, 1),
       ),
     ],
-  });
+  }));
 }
 
 function row(entity: Entity, indent: number) {
