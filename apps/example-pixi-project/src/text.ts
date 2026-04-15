@@ -90,5 +90,7 @@ import {
   skewText.y = 480;
 
   app.stage.addChild(skewText);
-  (globalThis as any).__PIXI_APP__ = app;
+  (window as any).__PIXI_DEVTOOLS__ = {
+    renderer: app.renderer, // Use the official DevTools convention, with only a renderer to test scene/stage detection
+  };
 })();

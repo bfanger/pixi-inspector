@@ -8,90 +8,111 @@ export default function pixiDevtools() {
 
   let mode: "PIXI" | "PHASER" | undefined;
 
-  function getGlobal(varname: string): any {
-    if (win[varname]) {
-      return win[varname];
-    }
-    if (win.frames) {
-      for (let i = 0; i < win.frames.length; i += 1) {
-        try {
-          if (win.frames[i][varname]) {
-            return win.frames[i][varname];
-          }
-        } catch {
-          // access to iframe was denied
-        }
-      }
-    }
-    return undefined;
+  function getGlobal<T>(varname: string): T | undefined {
+    return win[varname] as T;
   }
 
   return {
     app(): Application | undefined {
-      return getGlobal("__PIXI_APP__") as Application | undefined;
+      return (
+        getGlobal<Application>("__PIXI_APP__") ??
+        getGlobal<{ app: Application }>("__PIXI_DEVTOOLS__")?.app
+      );
     },
+
     root(): Container | Scene | undefined {
-      const stage = getGlobal("__PIXI_STAGE__");
+      const stage = getGlobal<Container>("__PIXI_STAGE__");
       if (stage) {
-        return stage as Container;
+        return stage;
       }
-      const app = getGlobal("__PIXI_APP__") as Application | undefined;
+      const app = this.app();
       if (app) {
         return app.stage;
       }
-      const game = getGlobal("__PHASER_GAME__") as Game | undefined;
+      const game = getGlobal<Game>("__PHASER_GAME__");
       if (game) {
         if (game.scene.scenes.length === 1) {
           return game.scene.scenes[0];
         }
         return game.scene as any as Scene;
       }
-      const renderer = getGlobal("__PIXI_RENDERER__");
-      if (renderer) {
-        return (renderer.lastObjectRendered ??
-          renderer._lastObjectRendered) as Container;
+      const gameDebug = getGlobal<Game>("PHASER_GAME");
+      if (gameDebug) {
+        if (gameDebug.scene.scenes.length === 1) {
+          return gameDebug.scene.scenes[0];
+        }
+        return gameDebug.scene as any as Scene;
       }
-
-      const patched = getGlobal("__PATCHED_RENDERER__");
-      if (patched) {
-        return (patched.lastObjectRendered ??
-          patched._lastObjectRendered) as Container;
-      }
-      const stageFromPatched = getGlobal("__PATCHED_RENDERER_STAGE__");
+      const stageFromPatched = getGlobal<Container>(
+        "__PATCHED_RENDERER_STAGE__",
+      );
       if (stageFromPatched) {
-        return stageFromPatched as Container;
+        return stageFromPatched;
       }
-      const officialHook = getGlobal("__PIXI_DEVTOOLS_WRAPPER__");
+      const officialHook = getGlobal<{ stage?: Container }>(
+        "__PIXI_DEVTOOLS_WRAPPER__",
+      );
       if (officialHook?.stage) {
-        return officialHook.stage as Container;
+        return officialHook.stage;
+      }
+      const officialDevtools = getGlobal<{ stage?: Container }>(
+        "__PIXI_DEVTOOLS__",
+      );
+      if (officialDevtools?.stage) {
+        return officialDevtools.stage;
+      }
+      const renderer = this.renderer() as {
+        lastObjectRendered?: Container;
+        _lastObjectRendered?: Container;
+      };
+      if (renderer?.lastObjectRendered) {
+        return renderer.lastObjectRendered;
+      }
+      if (renderer?._lastObjectRendered) {
+        return renderer._lastObjectRendered;
       }
       return undefined;
     },
+
     renderer(): Renderer<ICanvas> | Game | undefined {
-      const renderer = getGlobal("__PIXI_RENDERER__");
+      const renderer = getGlobal<Renderer<ICanvas>>("__PIXI_RENDERER__");
       if (renderer) {
-        return renderer as Renderer<ICanvas>;
+        return renderer;
       }
-      const app = getGlobal("__PIXI_APP__");
+      const app = this.app();
       if (app) {
         mode = "PIXI";
         return app.renderer as Renderer<ICanvas>;
       }
-      const game = getGlobal("__PHASER_GAME__");
+      const game = getGlobal<Game>("__PHASER_GAME__");
       if (game) {
         mode = "PHASER";
-        return game as Game;
+        return game;
+      }
+      const gameDebug = getGlobal<Game>("PHASER_GAME");
+      if (gameDebug) {
+        mode = "PHASER";
+        return gameDebug;
       }
       const patched = getGlobal("__PATCHED_RENDERER__");
       if (patched) {
         return patched as Renderer<ICanvas>;
       }
-      const officialHook = getGlobal("__PIXI_DEVTOOLS_WRAPPER__");
+      const officialHook = getGlobal<{ renderer?: Renderer<ICanvas> }>(
+        "__PIXI_DEVTOOLS_WRAPPER__",
+      );
       if (officialHook?.renderer) {
-        return officialHook.renderer as Renderer<ICanvas>;
+        return officialHook.renderer;
+      }
+      const officialDevtools = getGlobal<{ renderer?: Renderer<ICanvas> }>(
+        "__PIXI_DEVTOOLS__",
+      );
+      if (officialDevtools?.renderer) {
+        return officialDevtools.renderer;
       }
       return undefined;
     },
+
     canvas(): ICanvas | HTMLCanvasElement | undefined {
       const renderer = this.renderer();
       if (renderer) {

@@ -1,4 +1,4 @@
-import Phaser from "phaser";
+import * as Phaser from "phaser";
 
 const game = new Phaser.Game({
   type: Phaser.AUTO,

@@ -18,7 +18,7 @@
     "@vitest/coverage-v8": "^4.1.4",
     "playwright": "^1.59.1",
     "storybook": "^10.3.5",
-    "svelte": "^5.55.3",
+    "svelte": "^5.55.4",
     "vite": "^8.0.8",
     "vitest": "^4.1.4"
   },

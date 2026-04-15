@@ -38,15 +38,15 @@ const root = defineRoot({
           children: [
             conditionalNode(
               () => {
-                if (!win["PIXI"]) {
-                  return undefined;
+                if (legacy.renderer() ?? legacy.root()) {
+                  return false; // no patch needed
                 }
-                if (win["PIXI"][patched]) {
-                  return undefined;
+                if (win.PIXI?.[patched]) {
+                  return false; // already patched
                 }
-                return legacy.renderer() ?? legacy.root();
+                return !!win.PIXI; // show patch option when PIXI is available
               },
-              () => initPatchPixi(),
+              () => initPatchEngine(),
               () => initLegacyUI(),
             ),
           ],
@@ -128,7 +128,7 @@ export function initLegacyUI() {
               maxHeight: 680,
               size: 3,
             },
-            children: [initPropertyTabs()],
+            children: [instructionsFallback(initPropertyTabs())],
           },
         ],
       },
@@ -334,7 +334,7 @@ function initPropertyTabs(): UIProtocolInit {
   });
 }
 
-function initPatchPixi() {
+function initPatchEngine() {
   if (session.get("pixi:patchRenderer")) {
     return refreshNode({
       interval: 250,
@@ -342,11 +342,11 @@ function initPatchPixi() {
       children: [
         {
           component: "Warning",
-          props: { message: "Attempting to patch PIXI..." },
+          props: { message: "Attempting to patch..." },
         },
       ],
       sync() {
-        patchPixiRenderer();
+        patchRenderEngine();
       },
     });
   }
@@ -369,7 +369,7 @@ function initPatchPixi() {
             props: { label: "Patch render engine" },
             events: {
               onclick() {
-                patchPixiRenderer();
+                patchRenderEngine();
                 session.set("pixi:patchRenderer", true);
                 return Infinity;
               },
@@ -389,12 +389,14 @@ function initPatchPixi() {
   });
 }
 
-function patchPixiRenderer() {
-  const PIXI = win.PIXI;
-  if (!PIXI) {
-    console.error("Patching PIXI failed");
-    return;
+function patchRenderEngine() {
+  if (win.PIXI) {
+    patchPixi(win.PIXI);
+  } else {
+    console.error("Patching failed");
   }
+}
+function patchPixi(PIXI: any) {
   if (PIXI[patched]) {
     return;
   }
@@ -410,4 +412,35 @@ function patchPixiRenderer() {
       };
     }
   }
+}
+
+function instructionsFallback(child: UIProtocolInit) {
+  let timer: number | undefined;
+  let instructions = false;
+
+  return conditionalNode(
+    () => {
+      if (legacy.root()) {
+        instructions = false;
+        clearTimeout(timer);
+        timer = undefined;
+        return false;
+      }
+      if (!timer) {
+        timer = window.setTimeout(() => {
+          instructions = true;
+        }, 2_000);
+      }
+      return instructions;
+    },
+    {
+      component: "PixiInstructions",
+      events: {
+        copy(text) {
+          win.copy(text);
+        },
+      },
+    },
+    child,
+  );
 }

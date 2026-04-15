@@ -37,7 +37,7 @@
     "@types/chrome": "^0.1.40",
     "@types/firefox-webext-browser": "^143.0.0",
     "@types/node": "^25.6.0",
-    "@typescript/native-preview": "7.0.0-dev.20260412.1",
+    "@typescript/native-preview": "7.0.0-dev.20260414.1",
     "concurrently": "^9.2.1",
     "eslint": "^10.2.0",
     "eslint-config-prettier": "^10.1.8",
@@ -49,16 +49,16 @@
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
     "postcss-html": "^1.8.1",
-    "prettier": "^3.8.2",
+    "prettier": "^3.8.3",
     "prettier-plugin-svelte": "^3.5.1",
     "stylelint": "^17.7.0",
     "stylelint-config-clean-order": "^8.0.1",
     "stylelint-config-standard": "^40.0.0",
     "stylelint-prettier": "^5.0.3",
-    "svelte": "^5.55.3",
+    "svelte": "^5.55.4",
     "svelte-check": "^4.4.6",
     "svelte-eslint-parser": "^1.6.0",
     "typescript": "^6.0.2",
-    "typescript-eslint": "^8.58.1"
+    "typescript-eslint": "^8.58.2"
   }
 }

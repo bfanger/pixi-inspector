@@ -5,7 +5,7 @@
     "dev": "vite dev"
   },
   "dependencies": {
-    "pixi.js": "^8.17.1"
+    "pixi.js": "^8.18.1"
   },
   "devDependencies": {
     "pixi-panel": "workspace:*",

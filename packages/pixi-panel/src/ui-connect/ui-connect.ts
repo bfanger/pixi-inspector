@@ -57,20 +57,27 @@ function detect() {
   if (win.__PIXI_APP__) {
     return "pixi";
   }
-  if (win.__PIXI_STAGE__) {
-    return "pixi";
-  }
   if (win.__PHASER_GAME__) {
     return "phaser";
   }
+  if (win.PHASER_GAME) {
+    return "phaser";
+  }
   if (win.__PIXI_RENDERER__) {
+    return "pixi";
+  }
+  if (win.__PIXI_STAGE__) {
+    return "pixi";
+  }
+  if (win.__PIXI_DEVTOOLS__) {
     return "pixi";
   }
   if (win.__PIXI_DEVTOOLS_WRAPPER__?.stage) {
     return "pixi";
   }
   if (win.PIXI) {
-    return "patchable";
+    return "patchable_pixi";
   }
+
   return undefined;
 }
