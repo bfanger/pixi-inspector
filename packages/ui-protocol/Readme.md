@@ -59,20 +59,26 @@ During this process the actual UI is also created and updated.
 {
   "values": [
     {
-      "path": [0, 1],
+      "path": [
+        { "slot": "children", "index": 0 },
+        { "slot": "children", "index": 1 }
+      ],
       "value": 123
     }
   ],
   "replacements": [],
   "appends": [
     {
-      "path": [0, 2],
+      "path": [
+        { "slot": "children", "index": 0 },
+        { "slot": "children", "index": 2 }
+      ],
       "component": "NumberInput",
       "props": { "label": "Speed" },
       "value": 1
     }
   ],
-  "truncates": [{ "path": [1], "length": 1 }]
+  "truncates": [{ "path": [{ "slot": "children", "index": 1 }], "length": 1 }]
 }
 ```
 

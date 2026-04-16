@@ -4,8 +4,8 @@ import type { TreeDisplayNode, TreePatchInitDto } from "../src/types";
  * Instead of updating a visual component, update the values inside the test property
  */
 type TestNode = TreeDisplayNode & {
-  test: Omit<TreePatchInitDto, "children" | "path">;
-  children?: TestNode[];
+  test: Omit<TreePatchInitDto, "slots" | "path">;
+  slots?: { children?: TestNode[] };
 };
 export default function createTestDisplayTree() {
   return createTestDisplayNode({
@@ -13,12 +13,12 @@ export default function createTestDisplayTree() {
     component: "Fragment",
     props: {},
     value: null,
-    children: [],
+    slots: { children: [] },
   });
 }
 
 function createTestDisplayNode({
-  children,
+  slots,
   path,
   ...init
 }: TreePatchInitDto): TestNode {
@@ -27,8 +27,7 @@ function createTestDisplayNode({
       ...init,
     },
     path,
-    children: children?.map(createTestDisplayNode) as TestNode[],
-    setChild(_, init) {
+    createNode(_slot, _index, init) {
       return createTestDisplayNode(init);
     },
     setProps(props) {
@@ -38,5 +37,12 @@ function createTestDisplayNode({
       this.test.value = data;
     },
     truncate() {},
+    ...(!slots?.children
+      ? {}
+      : {
+          slots: {
+            children: slots?.children?.map(createTestDisplayNode),
+          },
+        }),
   };
 }

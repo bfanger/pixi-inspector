@@ -18,15 +18,19 @@ import type {
  * @throws {Error} when the node is not found
  */
 export function lookupNode<T extends TreeNode>(root: T, path: TreePath): T {
-  let node = root as { children?: T[] };
-  for (const index of path) {
-    const child = node.children?.[index];
+  let node = root as { slots?: Record<string, T[]> };
+  for (const { slot, index } of path) {
+    const child = node.slots?.[slot][index];
     if (!child) {
-      throw new Error(`lookupNode() failed: "/${path.join("/")}" not found`);
+      throw new Error(`lookupNode() failed: "${formatPath(path)}" not found`);
     }
-    node = child as T & { children?: T[] };
+    node = child as T & { slots?: Record<string, T[]> };
   }
   return node as T;
+}
+
+function formatPath(path: TreePath) {
+  return `/${path.map((part) => `${part.slot}[${part.index}]`).join("/")}`;
 }
 
 /**
@@ -39,11 +43,11 @@ export function lookupParent<T extends TreeNode>(
   if (path.length === 0) {
     throw new Error("lookupParent failed: Path is empty");
   }
-  const index = path[path.length - 1];
+  const { slot, index } = path[path.length - 1];
   if (path.length === 1) {
-    return { parent: root, index };
+    return { parent: root, slot, index };
   }
-  return { parent: lookupNode<T>(root, path.slice(0, -1)), index };
+  return { parent: lookupNode<T>(root, path.slice(0, -1)), slot, index };
 }
 
 /**
@@ -56,41 +60,41 @@ export function applyPatch(tree: TreeDisplayNode, patch: TreePatchDto) {
   }
   applyDisplayValues(tree, patch.value);
   for (const replacement of patch.replacements) {
-    const { parent, index } = lookupParent(tree, replacement.path);
-    if ("setChild" in parent) {
-      const node = parent.setChild(index, replacement);
-      parent.children[index] = node;
+    const { parent, index, slot } = lookupParent(tree, replacement.path);
+    if ("createNode" in parent && parent.slots[slot]) {
+      const node = parent.createNode(slot, index, replacement);
+      parent.slots[slot][index] = node;
     } else {
-      throw new Error("replace failed: Can't replace children of a leaf node");
+      throw new Error(`replace failed: Can't replace subnodes of a leaf node`);
     }
   }
 
   for (const append of patch.appends) {
-    const { parent, index } = lookupParent(tree, append.path);
-    if ("setChild" in parent) {
-      const node = parent.setChild(index, append);
-      const length = parent.children.push(node);
+    const { parent, index, slot } = lookupParent(tree, append.path);
+    if ("createNode" in parent && parent.slots[slot]) {
+      const node = parent.createNode(slot, index, append);
+      const length = parent.slots[slot].push(node);
       if (length !== index + 1) {
         throw new Error(`append failed: index mismatch`);
       }
     } else {
-      throw new Error("append failed: Can't append children into a leaf node");
+      throw new Error("append failed: Can't append to a leaf node");
     }
   }
 
-  for (const truncate of patch.truncates) {
-    const parent = lookupNode(tree, truncate.path);
-    if ("truncate" in parent) {
-      parent.truncate(truncate.length);
-      if (truncate.length >= parent.children.length) {
-        throw new Error(`truncate failed: No nodes were removed`);
-      }
-      parent.children.length = truncate.length;
-    } else {
-      throw new Error(
-        "truncate failed: Can't truncate children of a leaf node",
-      );
+  for (const path of patch.truncates) {
+    const { parent, slot, index: length } = lookupParent(tree, path);
+    if (!("truncate" in parent)) {
+      throw new Error("truncate failed: Can't truncate a leaf node");
     }
+    parent.truncate(slot, length);
+    if (Array.isArray(parent.slots[slot]) === false) {
+      throw new Error(`truncate failed: slot '${slot}'`);
+    }
+    if (length >= parent.slots[slot].length) {
+      throw new Error(`truncate failed: No nodes were removed`);
+    }
+    parent.slots[slot].length = length;
   }
 
   for (const error of patch.errors) {
@@ -140,7 +144,7 @@ export function applyValues(
     try {
       if (!node.setValue) {
         throw new Error(
-          `Applying values failed: Node "/${path.join("/")}" didn't implement setValue()`,
+          `Applying values failed: Node "${formatPath(path)}" didn't implement setValue()`,
         );
       }
       node.setValue(value);
@@ -163,7 +167,7 @@ export function applyDisplayValues(
     const node = lookupNode(tree, path);
     if (!node.setValue) {
       throw new Error(
-        `Applying values failed: Node "/${path.join("/")}" didn't implement setValue()`,
+        `Applying values failed: Node "${formatPath(path)}" didn't implement setValue()`,
       );
     }
     node.setValue(value);
@@ -213,6 +217,7 @@ export function syncNode(
   const partial: TreePatch = {
     replacements: [],
     appends: [],
+    truncate: {},
   };
   try {
     node.sync?.(partial);
@@ -223,14 +228,17 @@ export function syncNode(
       message: `sync failed: ${err instanceof Error ? err.message : ""}`,
     });
   }
-  const { length, skip } = applyPartial(patch, node, path, partial);
-  for (let i = 0; i < length; i++) {
-    if (skip.includes(i)) {
-      continue;
+  const nested = applyPartial(patch, node, path, partial);
+  for (const [slot, { skip, length }] of Object.entries(nested)) {
+    for (let i = 0; i < length; i++) {
+      if (skip?.includes(i)) {
+        continue;
+      }
+      syncNode(node.slots![slot][i], [...path, { slot, index: i }], patch);
     }
-    syncNode(node.children![i], [...path, i], patch);
   }
 }
+
 /**
  * Based on the partial patch information add changes to the target TreePatchDto.
  */
@@ -239,46 +247,62 @@ function applyPartial(
   node: TreeControllerNode,
   path: TreePath,
   patch: TreePatch,
-): { length: number; skip: number[] } {
-  let length = node.children?.length ?? 0;
-  const skip: number[] = [];
-
+): Record<string, { length: number; skip: number[] }> {
   if ("value" in patch) {
     target.value.push({ path, value: patch.value });
   }
-
   if (patch.props) {
     target.props.push({ path, values: patch.props });
   }
-  for (const { index, ...replacement } of patch.replacements) {
-    if (!node.children) {
-      throw new Error("Can't replace children of a leaf node");
+  const slots: Record<string, { length: number; skip: number[] }> = {};
+  if (node.slots) {
+    for (const slot of Object.keys(node.slots)) {
+      slots[slot] = { skip: [], length: node.slots[slot].length };
     }
-    const init = createInit(replacement, [...path, index]);
+  }
+  for (const {
+    index,
+    slot = "children",
+    ...replacement
+  } of patch.replacements) {
+    if (!node.slots?.[slot]) {
+      throw new Error(`Can't replace node. Slot "${slot}" not defined in node`);
+    }
+    const init = createInit(replacement, [...path, { slot, index }]);
     target.replacements.push(init.dto);
-    node.children[index] = init.node;
-    skip.push(index);
+    node.slots[slot][index] = init.node;
+    slots[slot].skip.push(index);
   }
 
-  for (const append of patch.appends) {
-    if (!node.children) {
-      throw new Error("Can't append children to a leaf node");
+  for (const { slot = "children", ...append } of patch.appends) {
+    if (!node.slots?.[slot]) {
+      if (!node.slots) {
+        throw new Error("Can't append to a leaf node");
+      }
+      throw new Error(`Can't append node. Slot "${slot}" not defined in node`);
     }
-    const init = createInit(append, [...path, node.children.length]);
+
+    const init = createInit(append, [
+      ...path,
+      { slot, index: node.slots.children.length },
+    ]);
     target.appends.push(init.dto);
-    node.children.push(init.node);
+    node.slots.children.push(init.node);
   }
 
-  if (patch.truncate !== undefined) {
-    target.truncates.push({ path, length: patch.truncate });
-    if (!node.children) {
-      throw new Error("Can't truncate children of a leaf node");
+  for (const [slot, length] of Object.entries(patch.truncate)) {
+    target.truncates.push([...path, { slot, index: length }]);
+    if (!node.slots?.[slot]) {
+      if (!node.slots) {
+        throw new Error("Can't truncate a leaf node");
+      }
+      throw new Error(`Can't truncate, slot "${slot}", not defined in node`);
     }
-    node.children.length = patch.truncate;
-    length = patch.truncate;
+    node.slots[slot].length = length;
+    slots[slot].length = length;
   }
 
-  return { length, skip };
+  return slots;
 }
 
 /**
@@ -288,7 +312,22 @@ function createInit(
   init: TreeInit,
   path: TreePath,
 ): { dto: TreePatchInitDto; node: TreeControllerNode } {
-  const { component, props = {}, value, children, getValue, ...rest } = init;
+  if (init.children) {
+    if (init.slots) {
+      throw new Error("Move the children into the slots");
+    }
+    init.slots = { children: init.children };
+    delete init.children;
+  }
+  const {
+    component,
+    props = {},
+    value,
+    slots,
+    children,
+    getValue,
+    ...rest
+  } = init;
   const node: TreeControllerNode = { ...rest };
   const dto: TreePatchInitDto = {
     path,
@@ -321,15 +360,20 @@ function createInit(
       dto.value = getValue();
     }
   }
-  if (children) {
-    dto.children = [];
-    node.children = [];
-    for (let i = 0; i < children.length; i++) {
-      const child = createInit(children[i], [...path, i]);
-      dto.children.push(child.dto);
-      node.children[i] = child.node;
+  if (slots) {
+    dto.slots = {};
+    node.slots = {};
+    for (const [slot, inits] of Object.entries(slots)) {
+      dto.slots[slot] = [];
+      node.slots[slot] = [];
+      for (let i = 0; i < inits.length; i++) {
+        const child = createInit(inits[i], [...path, { slot, index: i }]);
+        dto.slots[slot].push(child.dto);
+        node.slots[slot][i] = child.node;
+      }
     }
   }
+
   return { dto, node };
 }
 

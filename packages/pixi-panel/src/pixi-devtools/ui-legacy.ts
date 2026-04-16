@@ -29,9 +29,9 @@ pixiDevtoolsClickToSelect(legacy);
 const win = window as any;
 win.__UI_PROTOCOL__ = win.__UI_PROTOCOL__ ?? {};
 const root = defineRoot({
-  children: [],
+  slots: { children: [] },
   sync(patch) {
-    if (root.children.length === 0) {
+    if (root.slots.children.length === 0) {
       patch.appends.push(
         refreshNode({
           interval: 2_000,
@@ -56,7 +56,7 @@ const root = defineRoot({
   },
   events: {
     reset() {
-      root.children = [];
+      root.slots.children = [];
     },
   },
 });

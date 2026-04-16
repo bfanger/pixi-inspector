@@ -10,15 +10,15 @@ export default function excaliburDevtools(engine: Engine) {
   win.$engine = engine;
 
   const rootController = defineRoot({
-    children: [],
+    slots: { children: [] },
     sync(patch) {
-      if (this.children?.length === 0) {
+      if (this.slots.children?.length === 0) {
         patch.appends.push(excaliburPanel(engine));
       }
     },
     events: {
       reset() {
-        rootController.children = [];
+        rootController.slots.children = [];
       },
     },
   });

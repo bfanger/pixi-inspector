@@ -40,8 +40,8 @@ export default function conditionalNode<T>(
       previous = next;
       ui = createChild(next);
       if (!ui) {
-        patch.truncate = 0;
-      } else if (this.children.length === 0) {
+        patch.truncate.children = 0;
+      } else if (this.slots?.children.length === 0) {
         patch.appends.push(ui);
       } else {
         patch.replacements.push({ ...ui, index: 0 });

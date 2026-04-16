@@ -2,7 +2,7 @@ import type { TreeControllerNode } from "../types";
 import type { UIProtocolInit, UIProtocolPatch } from "./defineUI";
 
 type UIProtocolRoot = {
-  children: UIProtocolInit[];
+  slots: { children: UIProtocolInit[] };
   events: {
     reset: () => void;
   };
@@ -11,7 +11,7 @@ type UIProtocolRoot = {
   ) => void;
 };
 export function defineRoot<T extends UIProtocolRoot>(root: T) {
-  return root as Omit<TreeControllerNode, "children"> & {
-    children: TreeControllerNode[];
+  return root as Omit<TreeControllerNode, "slots"> & {
+    slots: { children: TreeControllerNode[] };
   };
 }

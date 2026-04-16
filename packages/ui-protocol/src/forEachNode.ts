@@ -26,7 +26,7 @@ export default function forEachNode<T>(
           patch.appends.push(createChild(next[i], i));
         }
       } else if (next.length < previous.length) {
-        patch.truncate = next.length;
+        patch.truncate.children = next.length;
       }
       previous = next;
     },

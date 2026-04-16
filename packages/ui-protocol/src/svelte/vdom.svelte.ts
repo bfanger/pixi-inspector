@@ -1,4 +1,4 @@
-import type { Component } from "svelte";
+import type { Component, Snippet } from "svelte";
 import type {
   Sender,
   TreeDisplayContainerNode,
@@ -11,18 +11,19 @@ import type {
 import components from "./components";
 import throttle from "../throttle";
 import debounce from "../debounce";
+import { snippet } from "./VDOMNode.svelte";
 
 export class VDOM {
   Component: Component<any> = $state(undefined as any as Component<any>);
-  children?: VDOM[] = $state();
   props: Record<string, any> = $state({});
+  slots: Record<string, VDOM[]> = $state({});
 }
 
 export type SvelteNode = TreeDisplayNode & {
   vdom: VDOM;
   sender: Sender;
 };
-export function createChild(
+export function createSvelteNode(
   init: TreePatchInitDto,
   sender: Sender,
 ): SvelteNode {
@@ -31,7 +32,7 @@ export function createChild(
     if (!components["Warning"]) {
       throw new Error(`Component "${init.component}" is not registered`);
     }
-    return createChild(
+    return createSvelteNode(
       {
         ...init,
         component: "Warning",
@@ -93,37 +94,50 @@ export function createChild(
 
   leaf.setProps(init.props);
 
-  if (init.children === undefined) {
+  if (init.slots === undefined) {
     return leaf;
   }
 
   const container: TreeDisplayContainerNode & {
-    vdom: VDOM & { children: VDOM[] };
+    vdom: VDOM;
     sender: Sender;
   } = {
     ...leaf,
-    vdom: vdom as VDOM & { children: VDOM[] },
-    children: [],
-    setChild(index, childInit) {
-      const child = createChild(childInit, container.sender);
-      container.vdom.children[index] = child.vdom;
-      return child;
+    vdom,
+    slots: {},
+    createNode(slot, index, nestedInit) {
+      const subnode = createSvelteNode(nestedInit, container.sender);
+      container.vdom.slots[slot][index] = subnode.vdom;
+      return subnode;
     },
-    truncate(length: number) {
-      container.vdom.children.length = length;
+    truncate(slot, length) {
+      container.vdom.slots[slot].length = length;
     },
     sender,
   };
-  container.children = init.children.map((childInit) =>
-    createChild(childInit, container.sender),
-  );
+
+  for (const [slot, nestedInits] of Object.entries(init.slots)) {
+    container.vdom.slots[slot] = [];
+    container.slots[slot] = nestedInits.map((nestedInit, index) => {
+      const subnode = createSvelteNode(nestedInit, container.sender);
+      container.vdom.slots[slot][index] = subnode.vdom;
+      return subnode;
+    });
+
+    vdom.props[slot] = (node: HTMLElement) =>
+      (
+        snippet as any as (
+          node: HTMLElement,
+          getter: () => Parameters<typeof snippet>[0],
+        ) => ReturnType<Snippet>
+      )(node, () => vdom.slots[slot]);
+  }
 
   if (init.component === "ErrorBoundary") {
     vdom.props.createTrigger = (setError: (message?: string) => void) => {
       container.setError = setError;
     };
   }
-  vdom.children = container.children.map((child) => (child as SvelteNode).vdom);
   node = container;
   return container;
 }

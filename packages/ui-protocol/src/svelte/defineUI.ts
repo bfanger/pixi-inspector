@@ -1,5 +1,5 @@
-import type { ComponentProps } from "svelte";
-import type { TreeEventOptions } from "../types";
+import type { ComponentProps, Snippet } from "svelte";
+import type { TreeControllerNode, TreeEventOptions } from "../types";
 import type { UIProtocolComponents } from "./components";
 
 export default function defineUI<T extends UIProtocolInit>(init: T): T {
@@ -17,19 +17,22 @@ type InitProps<T extends AnyProps> = {
 };
 
 type InitEvents<T extends AnyProps> = {
-  [K in keyof T as K extends "children" | "setValue"
+  [K in keyof T as K extends "setValue"
     ? never
-    : T[K] extends ((...args: any[]) => any) | undefined
-      ? K
-      : never]: T[K] | [T[K], TreeEventOptions];
+    : T[K] extends Snippet
+      ? never
+      : T[K] extends ((...args: any[]) => any) | undefined
+        ? K
+        : never]: T[K] | [T[K], TreeEventOptions];
 };
 
 export type Init<TComponent extends string, TProps extends AnyProps> = {
   component: TComponent;
   props?: InitProps<TProps>;
   events?: InitEvents<TProps>;
-  children?: UIProtocolInit[];
-  sync?: (patch: UIProtocolPatch<TProps>) => void;
+  children?: TProps extends { children?: Snippet } ? UIProtocolInit[] : never;
+  slots?: Record<string, UIProtocolInit[]>;
+  sync?: (this: TreeControllerNode, patch: UIProtocolPatch<TProps>) => void;
 } & (TProps extends {
   value?: unknown;
 }
@@ -46,9 +49,9 @@ export type UIProtocolPatch<T extends AnyProps> = {
 } & (T extends { value?: unknown } ? { value?: T["value"] } : unknown) &
   (T extends { children?: unknown }
     ? {
-        replacements: (UIProtocolInit & { index: number })[];
-        appends: UIProtocolInit[];
-        truncate?: number;
+        replacements: (UIProtocolInit & { slot?: string; index: number })[];
+        appends: (UIProtocolInit & { slot?: string })[];
+        truncate: Record<string, number>;
       }
     : unknown);
 

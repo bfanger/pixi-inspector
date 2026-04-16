@@ -4,13 +4,13 @@ export type TreeNode = TreeControllerNode | TreeDisplayNode;
  * TreeNode inside the inspected page, connected to an game entity or a property of an entity
  */
 export type TreeControllerNode = {
-  children?: TreeControllerNode[];
   sync?: (patch: TreePatch) => void;
   setValue?: (value: TreeValue) => void;
   events?: Record<
     string,
     TreeEventHandler | [TreeEventHandler, TreeEventOptions]
   >;
+  slots?: Record<string, TreeControllerNode[]>;
 };
 /**
  * TreeNode inside DevTools, connected to a (Svelte) Component
@@ -25,9 +25,13 @@ export type TreeDisplayContainerNode = {
   readonly path: TreePath;
   setProps(props: TreeObjectValue): void;
   setValue?: (value: TreeValue) => void;
-  children: TreeDisplayNode[];
-  setChild(index: number, init: TreePatchInitDto): TreeDisplayNode;
-  truncate(length: number): void;
+  slots: Record<string, TreeDisplayNode[]>;
+  createNode(
+    slot: string,
+    index: number,
+    init: TreePatchInitDto,
+  ): TreeDisplayNode;
+  truncate(slot: string, length: number): void;
   setError?: (message?: string) => void;
 };
 
@@ -59,11 +63,11 @@ export type TreeEventHandler = (...args: TreeValue[]) => number | void;
  *  |  |- child2
  *  |- container2
  *
- * []    = root
- * [0,2] = child2
- * [1]   = container2
+ * root       = []
+ * child2     = [{ slot: "children", index: 0 }, { slot: "children", index: 2 }]
+ * container2 = [{ slot: "children", index: 1 }]
  */
-export type TreePath = number[];
+export type TreePath = { slot: string; index: number }[];
 
 export type TreeEventOptions = {
   /**
@@ -84,7 +88,8 @@ export type TreeInit = {
   value?: TreeValue;
   getValue?: () => TreeValue; // when defined, is used to create initial value and is injected into the sync
   setValue?: (value: TreeValue) => void;
-  children?: TreeInit[];
+  slots?: Record<string, TreeInit[]>;
+  children?: TreeInit[]; // alias for slots.children
   sync?: (patch: TreePatch) => void;
   events?: Record<
     string,
@@ -101,7 +106,7 @@ export type TreePatchInitDto = {
   value?: TreeValue;
   setValue?: true;
   events?: ({ event: string } & TreeEventOptions)[];
-  children?: TreePatchInitDto[];
+  slots?: Record<string, TreePatchInitDto[]>;
 };
 
 /**
@@ -118,13 +123,6 @@ type TreePatchPropsDto = {
   path: TreePath;
   values: TreeObjectValue;
 };
-/**
- * Patch data for truncating the nested tree nodes.
- */
-type TreePatchTruncateDto = {
-  path: TreePath;
-  length: number;
-};
 
 type TreePatchErrorDto = {
   path: TreePath;
@@ -134,20 +132,24 @@ type TreePatchErrorDto = {
 export type TreePatch = {
   props?: TreeObjectValue;
   value?: TreeValue;
-  replacements: (TreeInit & { index: number })[];
-  appends: TreeInit[];
-  truncate?: number;
+  replacements: (TreeInit & { slot?: string; index: number })[];
+  appends: (TreeInit & { slot?: string })[];
+  truncate: Record<string, number>;
 };
 export type TreePatchDto = {
   props: TreePatchPropsDto[];
   value: TreePatchValueDto[];
   replacements: TreePatchInitDto[];
   appends: TreePatchInitDto[];
-  truncates: TreePatchTruncateDto[];
+  truncates: TreePath[];
   errors: TreePatchErrorDto[];
 };
 
-export type TreeLocation<T extends TreeNode> = { parent: T; index: number };
+export type TreeLocation<T extends TreeNode> = {
+  parent: T;
+  slot: string;
+  index: number;
+};
 
 export type BridgeFn = <T>(code: string) => Promise<T>;
 

@@ -10,18 +10,18 @@ export function createTestControllerTree() {
   const previousReplace = game.replace;
 
   const tree = defineRoot({
-    children: [],
+    slots: { children: [] },
     events: {
       reset() {
-        tree.children = [];
+        tree.slots.children = [];
       },
     },
     sync(patch) {
       const player = game.player;
-      if (tree.children.length === 0) {
+      if (tree.slots.children.length === 0) {
         patch.appends.push(refreshNode({ interval: 500, depth: 1 }));
       }
-      if (player && tree.children.length <= 1) {
+      if (player && tree.slots.children.length <= 1) {
         patch.appends.push(
           {
             component: "NumberInput",
@@ -56,9 +56,9 @@ export function createTestControllerTree() {
           },
         );
       }
-      if (tree.children?.length > 1) {
+      if (tree.slots?.children?.length > 1) {
         if (!player) {
-          patch.truncate = 1;
+          patch.truncate.children = 1;
         } else if (game.replace !== previousReplace) {
           patch.replacements.push({
             index: 1,

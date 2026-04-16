@@ -7,9 +7,9 @@ const win = window as any;
 win.__UI_PROTOCOL__ = win.__UI_PROTOCOL__ ?? {};
 
 const root = defineRoot({
-  children: [],
+  slots: { children: [] },
   sync(patch) {
-    if (root.children.length === 0) {
+    if (root.slots.children.length === 0) {
       let attempt = 0;
       let detected = detect();
 
@@ -44,7 +44,7 @@ const root = defineRoot({
   },
   events: {
     reset() {
-      root.children = [];
+      root.slots.children = [];
     },
   },
 });

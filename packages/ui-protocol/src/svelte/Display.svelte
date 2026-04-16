@@ -3,7 +3,7 @@
   import createSender from "../createSender";
   import VDOMNode from "./VDOMNode.svelte";
   import { onMount } from "svelte";
-  import { createChild } from "./vdom.svelte";
+  import { createSvelteNode } from "./vdom.svelte";
   import Base from "blender-elements/src/Base.svelte";
 
   type Props = {
@@ -15,12 +15,12 @@
   let { connection, base = false, onerror }: Props = $props();
 
   let tree = $derived.by(() => {
-    let tree = createChild(
+    let tree = createSvelteNode(
       {
         path: [],
         component: "Fragment",
         props: {},
-        children: [],
+        slots: { children: [] },
       },
       {
         dispatchEvent: senderError,

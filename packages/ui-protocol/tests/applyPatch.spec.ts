@@ -13,7 +13,7 @@ describe.sequential("applyPatch()", () => {
       truncates: [],
       appends: [
         {
-          path: [0],
+          path: [{ slot: "children", index: 0 }],
           component: "TextInput",
           props: {},
           value: "Hello world",
@@ -24,32 +24,36 @@ describe.sequential("applyPatch()", () => {
     });
     expect(displayTree).toMatchInlineSnapshot(`
       {
-        "children": [
-          {
-            "children": undefined,
-            "path": [
-              0,
-            ],
-            "setChild": [Function],
-            "setProps": [Function],
-            "setValue": [Function],
-            "test": {
-              "component": "TextInput",
-              "events": [
-                {
-                  "event": "oninput",
-                },
-              ],
-              "props": {},
-              "value": "Hello world",
-            },
-            "truncate": [Function],
-          },
-        ],
+        "createNode": [Function],
         "path": [],
-        "setChild": [Function],
         "setProps": [Function],
         "setValue": [Function],
+        "slots": {
+          "children": [
+            {
+              "createNode": [Function],
+              "path": [
+                {
+                  "index": 0,
+                  "slot": "children",
+                },
+              ],
+              "setProps": [Function],
+              "setValue": [Function],
+              "test": {
+                "component": "TextInput",
+                "events": [
+                  {
+                    "event": "oninput",
+                  },
+                ],
+                "props": {},
+                "value": "Hello world",
+              },
+              "truncate": [Function],
+            },
+          ],
+        },
         "test": {
           "component": "Fragment",
           "props": {},
@@ -64,28 +68,41 @@ describe.sequential("applyPatch()", () => {
       value: [],
       props: [],
       replacements: [
-        { path: [0], component: "NumberInput", props: {}, value: 0 },
+        {
+          path: [{ slot: "children", index: 0 }],
+          component: "NumberInput",
+          props: {},
+          value: 0,
+        },
       ],
       appends: [
         {
-          path: [1],
+          path: [{ slot: "children", index: 1 }],
           component: "Fragment",
           props: {},
           value: null,
-          children: [
-            {
-              path: [1, 0],
-              component: "TextInput",
-              props: {},
-              value: "input 1",
-            },
-            {
-              path: [1, 1],
-              component: "TextInput",
-              props: {},
-              value: "input 2",
-            },
-          ],
+          slots: {
+            children: [
+              {
+                path: [
+                  { slot: "children", index: 1 },
+                  { slot: "children", index: 0 },
+                ],
+                component: "TextInput",
+                props: {},
+                value: "input 1",
+              },
+              {
+                path: [
+                  { slot: "children", index: 1 },
+                  { slot: "children", index: 1 },
+                ],
+                component: "TextInput",
+                props: {},
+                value: "input 2",
+              },
+            ],
+          },
         },
       ],
       truncates: [],
@@ -93,75 +110,94 @@ describe.sequential("applyPatch()", () => {
     });
     expect(displayTree).toMatchInlineSnapshot(`
       {
-        "children": [
-          {
-            "children": undefined,
-            "path": [
-              0,
-            ],
-            "setChild": [Function],
-            "setProps": [Function],
-            "setValue": [Function],
-            "test": {
-              "component": "NumberInput",
-              "props": {},
-              "value": 0,
-            },
-            "truncate": [Function],
-          },
-          {
-            "children": [
-              {
-                "children": undefined,
-                "path": [
-                  1,
-                  0,
-                ],
-                "setChild": [Function],
-                "setProps": [Function],
-                "setValue": [Function],
-                "test": {
-                  "component": "TextInput",
-                  "props": {},
-                  "value": "input 1",
-                },
-                "truncate": [Function],
-              },
-              {
-                "children": undefined,
-                "path": [
-                  1,
-                  1,
-                ],
-                "setChild": [Function],
-                "setProps": [Function],
-                "setValue": [Function],
-                "test": {
-                  "component": "TextInput",
-                  "props": {},
-                  "value": "input 2",
-                },
-                "truncate": [Function],
-              },
-            ],
-            "path": [
-              1,
-            ],
-            "setChild": [Function],
-            "setProps": [Function],
-            "setValue": [Function],
-            "test": {
-              "component": "Fragment",
-              "props": {},
-              "value": null,
-            },
-            "truncate": [Function],
-          },
-        ],
+        "createNode": [Function],
         "path": [],
-        "setChild": [Function],
         "setProps": [Function],
         "setValue": [Function],
+        "slots": {
+          "children": [
+            {
+              "createNode": [Function],
+              "path": [
+                {
+                  "index": 0,
+                  "slot": "children",
+                },
+              ],
+              "setProps": [Function],
+              "setValue": [Function],
+              "test": {
+                "component": "NumberInput",
+                "props": {},
+                "value": 0,
+              },
+              "truncate": [Function],
+            },
+            {
+              "createNode": [Function],
+              "path": [
+                {
+                  "index": 1,
+                  "slot": "children",
+                },
+              ],
+              "setProps": [Function],
+              "setValue": [Function],
+              "slots": {
+                "children": [
+                  {
+                    "createNode": [Function],
+                    "path": [
+                      {
+                        "index": 1,
+                        "slot": "children",
+                      },
+                      {
+                        "index": 0,
+                        "slot": "children",
+                      },
+                    ],
+                    "setProps": [Function],
+                    "setValue": [Function],
+                    "test": {
+                      "component": "TextInput",
+                      "props": {},
+                      "value": "input 1",
+                    },
+                    "truncate": [Function],
+                  },
+                  {
+                    "createNode": [Function],
+                    "path": [
+                      {
+                        "index": 1,
+                        "slot": "children",
+                      },
+                      {
+                        "index": 1,
+                        "slot": "children",
+                      },
+                    ],
+                    "setProps": [Function],
+                    "setValue": [Function],
+                    "test": {
+                      "component": "TextInput",
+                      "props": {},
+                      "value": "input 2",
+                    },
+                    "truncate": [Function],
+                  },
+                ],
+              },
+              "test": {
+                "component": "Fragment",
+                "props": {},
+                "value": null,
+              },
+              "truncate": [Function],
+            },
+          ],
+        },
         "test": {
           "component": "Fragment",
           "props": {},
@@ -173,38 +209,42 @@ describe.sequential("applyPatch()", () => {
   });
   it("should update props & data and truncate", () => {
     applyPatch(displayTree, {
-      props: [{ path: [0], values: { step: 10 } }],
-      value: [{ path: [0], value: 50 }],
+      props: [{ path: [{ slot: "children", index: 0 }], values: { step: 10 } }],
+      value: [{ path: [{ slot: "children", index: 0 }], value: 50 }],
       replacements: [],
       appends: [],
-      truncates: [{ path: [], length: 1 }],
+      truncates: [[{ slot: "children", index: 1 }]],
       errors: [],
     });
     expect(displayTree).toMatchInlineSnapshot(`
       {
-        "children": [
-          {
-            "children": undefined,
-            "path": [
-              0,
-            ],
-            "setChild": [Function],
-            "setProps": [Function],
-            "setValue": [Function],
-            "test": {
-              "component": "NumberInput",
-              "props": {
-                "step": 10,
-              },
-              "value": 50,
-            },
-            "truncate": [Function],
-          },
-        ],
+        "createNode": [Function],
         "path": [],
-        "setChild": [Function],
         "setProps": [Function],
         "setValue": [Function],
+        "slots": {
+          "children": [
+            {
+              "createNode": [Function],
+              "path": [
+                {
+                  "index": 0,
+                  "slot": "children",
+                },
+              ],
+              "setProps": [Function],
+              "setValue": [Function],
+              "test": {
+                "component": "NumberInput",
+                "props": {
+                  "step": 10,
+                },
+                "value": 50,
+              },
+              "truncate": [Function],
+            },
+          ],
+        },
         "test": {
           "component": "Fragment",
           "props": {},

@@ -114,8 +114,8 @@ export default function createSender(
       resetting = true;
       promise = undefined;
       try {
-        if ("children" in tree) {
-          tree.children = [];
+        if ("slots" in tree) {
+          tree.slots.children = [];
         }
         const init = await connection.dispatchEvent([], {
           path: [],
@@ -145,8 +145,10 @@ function isNodeValid(
       console.warn(`${prefix}node was replaced`);
       return false;
     }
-  } catch {
-    console.warn(`${prefix}node was no longer available`);
+  } catch (err) {
+    console.warn(
+      new Error(`${prefix}node was no longer available`, { cause: err }),
+    );
     return false;
   }
 }

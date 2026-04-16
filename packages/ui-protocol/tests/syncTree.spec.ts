@@ -18,7 +18,10 @@ describe.sequential("syncTree()", () => {
               },
             ],
             "path": [
-              0,
+              {
+                "index": 0,
+                "slot": "children",
+              },
             ],
             "props": {
               "depth": 1,
@@ -31,7 +34,10 @@ describe.sequential("syncTree()", () => {
             "component": "NumberInput",
             "events": undefined,
             "path": [
-              1,
+              {
+                "index": 1,
+                "slot": "children",
+              },
             ],
             "props": {
               "step": 1,
@@ -47,7 +53,10 @@ describe.sequential("syncTree()", () => {
               },
             ],
             "path": [
-              2,
+              {
+                "index": 2,
+                "slot": "children",
+              },
             ],
             "props": {
               "label": "Add 10",
@@ -77,13 +86,19 @@ describe.sequential("syncTree()", () => {
           "value": [
             {
               "path": [
-                0,
+                {
+                  "index": 0,
+                  "slot": "children",
+                },
               ],
               "value": true,
             },
             {
               "path": [
-                1,
+                {
+                  "index": 1,
+                  "slot": "children",
+                },
               ],
               "value": 10,
             },
@@ -102,13 +117,19 @@ describe.sequential("syncTree()", () => {
           "value": [
             {
               "path": [
-                0,
+                {
+                  "index": 0,
+                  "slot": "children",
+                },
               ],
               "value": false,
             },
             {
               "path": [
-                1,
+                {
+                  "index": 1,
+                  "slot": "children",
+                },
               ],
               "value": 15,
             },
@@ -130,7 +151,10 @@ describe.sequential("syncTree()", () => {
               "component": "Button",
               "events": undefined,
               "path": [
-                1,
+                {
+                  "index": 1,
+                  "slot": "children",
+                },
               ],
               "props": {
                 "label": "Replaced 1",
@@ -143,7 +167,10 @@ describe.sequential("syncTree()", () => {
           "value": [
             {
               "path": [
-                0,
+                {
+                  "index": 0,
+                  "slot": "children",
+                },
               ],
               "value": true,
             },
@@ -162,15 +189,20 @@ describe.sequential("syncTree()", () => {
           "props": [],
           "replacements": [],
           "truncates": [
-            {
-              "length": 1,
-              "path": [],
-            },
+            [
+              {
+                "index": 1,
+                "slot": "children",
+              },
+            ],
           ],
           "value": [
             {
               "path": [
-                0,
+                {
+                  "index": 0,
+                  "slot": "children",
+                },
               ],
               "value": false,
             },

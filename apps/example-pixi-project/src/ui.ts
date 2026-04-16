@@ -9,9 +9,9 @@ import { initLegacyUI } from "pixi-panel/src/pixi-devtools/ui-legacy";
 const eventTarget = new EventTarget();
 let first = true;
 const rootController = defineRoot({
-  children: [],
+  slots: { children: [] },
   sync(patch) {
-    if (this.children?.length === 0) {
+    if (this.slots.children?.length === 0) {
       if (!first) {
         // controller was reset, connection from real DevTools?
         eventTarget.dispatchEvent(new CustomEvent("recreated"));
@@ -22,7 +22,7 @@ const rootController = defineRoot({
   },
   events: {
     reset() {
-      rootController.children = [];
+      rootController.slots.children = [];
     },
   },
 });

@@ -21,7 +21,7 @@ export default function switchNode<T extends string>(
       choice = current === undefined ? undefined : choices[current];
       if (choice) {
         ui = typeof choice === "function" ? choice() : choice;
-        if (this.children.length === 0) {
+        if (this.slots?.children.length === 0) {
           patch.appends.push(ui);
         } else {
           patch.replacements.push({
@@ -29,8 +29,8 @@ export default function switchNode<T extends string>(
             index: 0,
           });
         }
-      } else if (this.children.length === 1) {
-        patch.truncate = 0;
+      } else if (this.slots?.children.length === 1) {
+        patch.truncate.children = 0;
       }
     },
   });

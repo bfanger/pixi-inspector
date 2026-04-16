@@ -16,7 +16,7 @@ export default function errorBoundaryNode(child: () => UIProtocolInit) {
     children: [child()],
     sync(patch) {
       if (remove) {
-        patch.truncate = 0;
+        patch.truncate.children = 0;
         remove = false;
       } else if (restored) {
         patch.appends.push(child());
