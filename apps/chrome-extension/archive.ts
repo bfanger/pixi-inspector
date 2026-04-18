@@ -1,13 +1,8 @@
-import { execSync } from "node:child_process";
+import fs from "node:fs/promises";
+import zip from "zip-dir";
 
 const filename = "../../chrome-extension.zip";
-if (process.platform === "win32") {
-  execSync(
-    `powershell -Command "Compress-Archive -Path build\\* -DestinationPath '${filename}'"`,
-    { cwd: import.meta.dirname },
-  );
-} else {
-  execSync(`zip -r "${filename}" build/ -x "*.DS_Store"`, {
-    cwd: import.meta.dirname,
-  });
-}
+await fs.rm(filename, { force: true });
+
+const buffer = await zip("build");
+await fs.writeFile(filename, buffer, { encoding: "binary" });

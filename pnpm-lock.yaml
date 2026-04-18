@@ -131,6 +131,9 @@ importers:
       svelte:
         specifier: ^5.55.4
         version: 5.55.4(@typescript-eslint/types@8.58.2)
+      zip-dir:
+        specifier: ^2.0.0
+        version: 2.0.0
 
   apps/example-excalibur-project:
     devDependencies:
