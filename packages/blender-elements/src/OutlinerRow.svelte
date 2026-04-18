@@ -229,9 +229,12 @@
 
   .title {
     user-select: none;
+
     overflow: hidden;
     flex: 1;
+
     text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .muted .title {

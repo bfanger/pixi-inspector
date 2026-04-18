@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { fade } from "svelte/transition";
   import Base from "blender-elements/src/Base.svelte";
   import Warning from "blender-elements/src/Warning/Warning.svelte";
   import Connect from "ui-protocol/src/svelte/Connect.svelte";
@@ -22,6 +21,10 @@
   let refresh = $state<() => void>();
   let errorMessage = $state("");
   let active = $state<string>();
+  let lines = $state<string[]>([]);
+  let restoreTimer: number;
+  let countdown = $state(0);
+  let countdownTimer: number;
 
   $effect(() =>
     createListener(
@@ -44,36 +47,52 @@
     const module = await import("../build/ui-legacy.txt?raw");
     return module.default as string;
   }
-  let timer: number;
 
   function addConnection(target: string) {
     available.add(target);
     active = target;
     errorMessage = "";
-    clearTimeout(timer);
+    clearTimeout(restoreTimer);
   }
 
   function onrestore() {
-    clearTimeout(timer);
+    clearTimeout(restoreTimer);
+    lines = [];
   }
 
   function onerror(target: string, err: Error) {
     console.warn(err);
-    clearTimeout(timer);
+    clearTimeout(restoreTimer);
     refresh?.();
-    timer = window.setTimeout(() => {
+    restoreTimer = window.setTimeout(() => {
       errorMessage = err.message;
       if (active === target && !targets.includes(target)) {
         available.delete(target);
         active = undefined;
       }
+      countdown = 5;
       setTimeout(() => {
         if ((errorMessage = err.message)) {
           errorMessage = "";
+          lines = [];
         }
       }, 5_000);
     }, 1000);
   }
+
+  function onlog(line: string) {
+    lines.push(line);
+  }
+
+  $effect(() => {
+    if (countdown <= 0) {
+      return;
+    }
+    countdownTimer = window.setTimeout(() => {
+      countdown -= 1;
+    }, 1_000);
+    return () => clearTimeout(countdownTimer);
+  });
 </script>
 
 <Base>
@@ -90,7 +109,10 @@
   {/each}
 
   {#if errorMessage}
-    <Warning message={errorMessage} />
+    <Warning
+      icon="error"
+      message={`${errorMessage} (Retrying in ${countdown} sec)`}
+    />
   {:else if active === undefined}
     <Instructions />
   {:else}
@@ -100,14 +122,19 @@
         ui="pixi"
         inject={uiLegacy}
         bridge={createBridge(target)}
+        {onlog}
         {onrestore}
         onerror={(err) => onerror(target, err)}
-      >
-        <div in:fade={{ delay: 1000, duration: 100 }}>
-          <Warning message="Connecting taking longer than expected..." />
-        </div>
-      </Connect>
+      />
     {/key}
+  {/if}
+  {#if lines.length > 0}
+    <div class="log">
+      <!-- eslint-disable-next-line svelte/require-each-key -->
+      {#each lines as line}
+        <div class="log-line">{line}</div>
+      {/each}
+    </div>
   {/if}
 </Base>
 
@@ -119,5 +146,19 @@
   :global(body) {
     height: 100%;
     margin: 0;
+  }
+
+  .log {
+    margin-top: 6px;
+  }
+
+  .log-line {
+    padding: 3px 6px;
+    color: #626262;
+    background-color: #161616;
+
+    &:nth-child(odd) {
+      background-color: #1b1b1b;
+    }
   }
 </style>
