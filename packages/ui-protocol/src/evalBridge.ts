@@ -3,6 +3,7 @@ import type {
   Connection,
   TreeControllerNode,
   TreeEvent,
+  TreePatchDto,
   TreePatchValueDto,
   TreePath,
 } from "./types";
@@ -25,9 +26,7 @@ export function evalListen(tree: TreeControllerNode, id: string) {
 
   if (receivers[id]) {
     console.debug(`[devtools] receiver "${id}" was overwritten`); // eslint-disable-line no-console
-    // @TODO send reset/truncate, before overwriting
   }
-
   receivers[id] = receiver;
 }
 
@@ -46,9 +45,7 @@ export async function evalConnect(
   let timer: ReturnType<typeof setTimeout> | undefined = undefined;
 
   async function check() {
-    const result = await evalFn(
-      `typeof window.__UI_PROTOCOL__ === "object" && typeof ${target} === "object"`,
-    );
+    const result = await evalFn(`typeof ${target} === "object"`);
     if (result) {
       connected.resolve();
     } else {
@@ -63,17 +60,27 @@ export async function evalConnect(
   await connected.promise;
   clearTimeout(timer);
 
+  async function guardedEval(code: string) {
+    const result = await evalFn(
+      `typeof ${target} === "object" ? ${code} : '💣'`,
+    );
+    if (result === "💣") {
+      throw new Error("[ui-protocol] Disconnected");
+    }
+    return result as TreePatchDto;
+  }
+
   return {
     set(values) {
-      return evalFn(`${target}.set(${JSON.stringify(values)})`);
+      return guardedEval(`${target}.set(${JSON.stringify(values)})`);
     },
     dispatchEvent: (values, event) => {
-      return evalFn(
+      return guardedEval(
         `${target}.dispatchEvent(${JSON.stringify(values)}, ${JSON.stringify(event)})`,
       );
     },
     sync: (values, path) => {
-      return evalFn(
+      return guardedEval(
         `${target}.sync(${JSON.stringify(values)}, ${JSON.stringify(path)})`,
       );
     },
