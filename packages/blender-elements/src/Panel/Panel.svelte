@@ -6,20 +6,37 @@
   type Props = {
     title: string;
     expanded?: boolean;
+    setExpanded?: (expanded: boolean) => void;
     value?: boolean | undefined;
     setValue?: (value: boolean) => void;
-    setExpanded?: (expanded: boolean) => void;
+    /** Called with `true` to request content for the slide-in animation, or `false` when the slide-out animation completes and content is no longer needed */
+    setContent?: (content: boolean) => void;
+    /** Delay the slide-in animation until true */
+    content?: boolean;
     children?: Snippet;
   };
 
   let {
     title,
     expanded = $bindable(true),
+    content = true,
     value = $bindable(undefined),
     setValue,
     setExpanded,
+    setContent,
     children,
   }: Props = $props();
+
+  let wanted = $state(expanded);
+
+  $effect(() => {
+    if (content) {
+      if (wanted && !expanded) {
+        expanded = true;
+        setExpanded?.(true);
+      }
+    }
+  });
 </script>
 
 <section class="panel">
@@ -27,8 +44,13 @@
     class="title"
     class:expanded
     onclick={() => {
-      expanded = !expanded;
-      setExpanded?.(expanded);
+      wanted = !expanded;
+      if (wanted && !content) {
+        setContent?.(true);
+      } else {
+        expanded = wanted;
+        setExpanded?.(expanded);
+      }
     }}
   >
     {#if typeof value === "boolean"}
@@ -41,6 +63,9 @@
       class="content"
       class:unused={value === false}
       transition:slide={{ duration: 150 }}
+      onoutroend={() => {
+        setContent?.(false);
+      }}
     >
       {@render children?.()}
     </div>

@@ -3,6 +3,7 @@ import conditionalNode from "ui-protocol/src/conditionalNode";
 import defineUI from "ui-protocol/src/svelte/defineUI";
 import session from "./session";
 import errorBoundaryNode from "ui-protocol/src/errorBoundaryNode";
+import panelNode from "ui-protocol/src/panelNode";
 
 export default function pixiApplicationTab(appRef: {
   value: Application | undefined;
@@ -20,17 +21,14 @@ export default function pixiApplicationTab(appRef: {
 }
 
 function tickerPanel(tickerRef: { value: Ticker }) {
-  return errorBoundaryNode(() => ({
-    component: "Panel",
-    props: {
-      title: "Ticker",
-      expanded: session.get<boolean>("pixi:tickerPanel") ?? true,
-    },
-    events: {
-      setExpanded: (expanded) => session.set("pixi:tickerPanel", expanded),
-    },
-    children: [
+  return errorBoundaryNode(() =>
+    panelNode(
       {
+        title: "Ticker",
+        expanded: session.get<boolean>("pixi:tickerPanel") ?? true,
+        setExpanded: (expanded) => session.set("pixi:tickerPanel", expanded),
+      },
+      () => ({
         component: "Box",
         props: { gap: 6, padding: 8 },
         children: [
@@ -78,23 +76,21 @@ function tickerPanel(tickerRef: { value: Ticker }) {
             ],
           },
         ],
-      },
-    ],
-  }));
+      }),
+    ),
+  );
 }
 
 function backgroundPanel(backgroundRef: { value: BackgroundSystem }) {
-  return errorBoundaryNode(() => ({
-    component: "Panel",
-    props: {
-      title: "Background",
-      expanded: session.get<boolean>("pixi:backgroundPanel") ?? true,
-    },
-    events: {
-      setExpanded: (expanded) => session.set("pixi:backgroundPanel", expanded),
-    },
-    children: [
+  return errorBoundaryNode(() =>
+    panelNode(
       {
+        title: "Background",
+        expanded: session.get<boolean>("pixi:backgroundPanel") ?? true,
+        setExpanded: (expanded) =>
+          session.set("pixi:backgroundPanel", expanded),
+      },
+      () => ({
         component: "Box",
         props: { gap: 6, padding: 8 },
         children: [
@@ -137,7 +133,7 @@ function backgroundPanel(backgroundRef: { value: BackgroundSystem }) {
             ],
           },
         ],
-      },
-    ],
-  }));
+      }),
+    ),
+  );
 }

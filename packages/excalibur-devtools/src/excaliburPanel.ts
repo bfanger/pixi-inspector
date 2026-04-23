@@ -3,6 +3,7 @@ import conditionalNode from "ui-protocol/src/conditionalNode";
 import refreshNode from "ui-protocol/src/refreshNode";
 import excaliburTreeView from "./excaliburTreeView";
 import errorBoundaryNode from "ui-protocol/src/errorBoundaryNode";
+import panelNode from "ui-protocol/src/panelNode";
 
 export default function excaliburPanel(engine: Engine) {
   return refreshNode({
@@ -35,30 +36,26 @@ export default function excaliburPanel(engine: Engine) {
 }
 
 function backgroundPanel(engine: Engine) {
-  return errorBoundaryNode(() => ({
-    component: "Panel",
-    props: { title: "Engine" },
-    children: [
-      {
-        component: "Box",
-        props: { gap: 6, padding: 8 },
-        children: [
-          {
-            component: "Property",
-            props: { label: "Background" },
-            children: [
-              {
-                component: "ColorInput",
-                props: { label: "Background" },
-                getValue: () => engine.backgroundColor.toHex(),
-                setValue: (hex) => {
-                  engine.backgroundColor = Color.fromHex(hex);
-                },
+  return errorBoundaryNode(() =>
+    panelNode({ title: "Engine" }, () => ({
+      component: "Box",
+      props: { gap: 6, padding: 8 },
+      children: [
+        {
+          component: "Property",
+          props: { label: "Background" },
+          children: [
+            {
+              component: "ColorInput",
+              props: { label: "Background" },
+              getValue: () => engine.backgroundColor.toHex(),
+              setValue: (hex) => {
+                engine.backgroundColor = Color.fromHex(hex);
               },
-            ],
-          },
-        ],
-      },
-    ],
-  }));
+            },
+          ],
+        },
+      ],
+    })),
+  );
 }
