@@ -1,13 +1,13 @@
 import type { Entity, Scene } from "excalibur";
-import errorBoundaryNode from "ui-protocol/src/errorBoundaryNode";
-import forEachNode from "ui-protocol/src/forEachNode";
+import errorBoundaryController from "ui-protocol/src/controllers/errorBoundaryController";
+import forEachController from "ui-protocol/src/controllers/forEachController";
 import defineUI from "ui-protocol/src/svelte/defineUI";
 const win = window as any;
 
 export default function excaliburTreeView(scene: Scene) {
   let expanded = true;
   const previous = { expanded, active: win.$entity === undefined };
-  return errorBoundaryNode(() => ({
+  return errorBoundaryController(() => ({
     component: "TreeView",
     children: [
       {
@@ -36,7 +36,7 @@ export default function excaliburTreeView(scene: Scene) {
           };
         },
       },
-      forEachNode(
+      forEachController(
         () => (expanded ? scene.entities : []),
         (entity) => row(entity, 1),
       ),

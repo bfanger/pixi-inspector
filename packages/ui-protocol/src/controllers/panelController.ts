@@ -1,9 +1,9 @@
-import type { UIProtocolInit } from "./svelte/defineUI";
-import defineUI from "./svelte/defineUI";
+import type { UIProtocolInit } from "../svelte/defineUI";
+import defineUI from "../svelte/defineUI";
 
 type PanelInit = Extract<UIProtocolInit, { component: "Panel" }>;
 
-export default function collapsiblePanelNode(
+export default function panelController(
   options: Omit<NonNullable<PanelInit["props"]>, "expanded" | "content"> & {
     expanded?: boolean;
     setExpanded?: (expanded: boolean) => void;

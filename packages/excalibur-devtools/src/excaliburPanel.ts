@@ -1,12 +1,12 @@
 import { Color, type Engine } from "excalibur";
-import conditionalNode from "ui-protocol/src/conditionalNode";
-import refreshNode from "ui-protocol/src/refreshNode";
+import ifController from "ui-protocol/src/controllers/ifController";
+import refreshController from "ui-protocol/src/controllers/refreshController";
 import excaliburTreeView from "./excaliburTreeView";
-import errorBoundaryNode from "ui-protocol/src/errorBoundaryNode";
-import panelNode from "ui-protocol/src/panelNode";
+import errorBoundaryController from "ui-protocol/src/controllers/errorBoundaryController";
+import panelController from "ui-protocol/src/controllers/panelController";
 
 export default function excaliburPanel(engine: Engine) {
-  return refreshNode({
+  return refreshController({
     interval: 1000,
     children: [
       {
@@ -17,7 +17,7 @@ export default function excaliburPanel(engine: Engine) {
             component: "SplitPanel",
             props: { minHeight: 100 },
             children: [
-              conditionalNode(() => Object.keys(engine.scenes).length > 1, {
+              ifController(() => Object.keys(engine.scenes).length > 1, {
                 component: "Button",
                 props: { label: "TODO: Select scene" },
               }),
@@ -36,8 +36,8 @@ export default function excaliburPanel(engine: Engine) {
 }
 
 function backgroundPanel(engine: Engine) {
-  return errorBoundaryNode(() =>
-    panelNode({ title: "Engine" }, () => ({
+  return errorBoundaryController(() =>
+    panelController({ title: "Engine" }, () => ({
       component: "Box",
       props: { gap: 6, padding: 8 },
       children: [

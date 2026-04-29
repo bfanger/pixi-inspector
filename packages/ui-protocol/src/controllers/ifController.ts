@@ -1,11 +1,11 @@
-import defineUI, { type UIProtocolInit } from "./svelte/defineUI";
+import defineUI, { type UIProtocolInit } from "../svelte/defineUI";
 
 type Falsy = undefined | null | false;
 /**
  * Checks if the value is truthy and then use the whenTruthy block else use the whenFalsy block.
  * The whenTruthy block receives a ref object where the value property is the latest truthy value.
  */
-export default function conditionalNode<T>(
+export default function ifController<T>(
   getValue: () => T | Falsy,
   whenTruthy: UIProtocolInit | ((ref: { value: T }) => UIProtocolInit),
   whenFalsy?: UIProtocolInit | (() => UIProtocolInit),

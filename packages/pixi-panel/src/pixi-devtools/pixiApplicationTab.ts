@@ -1,9 +1,9 @@
 import type { Application, BackgroundSystem, Ticker } from "pixi.js";
-import conditionalNode from "ui-protocol/src/conditionalNode";
+import ifController from "ui-protocol/src/controllers/ifController";
 import defineUI from "ui-protocol/src/svelte/defineUI";
 import session from "./session";
-import errorBoundaryNode from "ui-protocol/src/errorBoundaryNode";
-import panelNode from "ui-protocol/src/panelNode";
+import errorBoundaryController from "ui-protocol/src/controllers/errorBoundaryController";
+import panelController from "ui-protocol/src/controllers/panelController";
 
 export default function pixiApplicationTab(appRef: {
   value: Application | undefined;
@@ -11,18 +11,15 @@ export default function pixiApplicationTab(appRef: {
   return defineUI({
     component: "Fragment",
     children: [
-      conditionalNode(() => appRef.value?.ticker, tickerPanel),
-      conditionalNode(
-        () => appRef.value?.renderer?.background,
-        backgroundPanel,
-      ),
+      ifController(() => appRef.value?.ticker, tickerPanel),
+      ifController(() => appRef.value?.renderer?.background, backgroundPanel),
     ],
   });
 }
 
 function tickerPanel(tickerRef: { value: Ticker }) {
-  return errorBoundaryNode(() =>
-    panelNode(
+  return errorBoundaryController(() =>
+    panelController(
       {
         title: "Ticker",
         expanded: session.get<boolean>("pixi:tickerPanel") ?? true,
@@ -52,7 +49,7 @@ function tickerPanel(tickerRef: { value: Ticker }) {
               hint: "Whether or not this ticker has been started",
             },
             children: [
-              conditionalNode(
+              ifController(
                 () => tickerRef.value.started,
                 {
                   component: "ToggleButton",
@@ -82,8 +79,8 @@ function tickerPanel(tickerRef: { value: Ticker }) {
 }
 
 function backgroundPanel(backgroundRef: { value: BackgroundSystem }) {
-  return errorBoundaryNode(() =>
-    panelNode(
+  return errorBoundaryController(() =>
+    panelController(
       {
         title: "Background",
         expanded: session.get<boolean>("pixi:backgroundPanel") ?? true,

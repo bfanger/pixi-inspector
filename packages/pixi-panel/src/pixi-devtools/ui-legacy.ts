@@ -7,10 +7,10 @@ import pixiDevtoolsProperties from "./pixiDevtoolsProperties";
 import pixiDevtoolsViewport from "./pixiDevtoolsViewport";
 import pixiDevtoolsOverlay from "./pixiDevtoolsOverlay";
 import pixiDevtoolsClickToSelect from "./pixiDevtoolsClickToSelect";
-import refreshNode from "ui-protocol/src/refreshNode";
+import refreshController from "ui-protocol/src/controllers/refreshController";
 import defineUI, { type UIProtocolInit } from "ui-protocol/src/svelte/defineUI";
-import switchNode from "ui-protocol/src/switchNode";
-import conditionalNode from "ui-protocol/src/conditionalNode";
+import switchController from "ui-protocol/src/controllers/switchController";
+import ifController from "ui-protocol/src/controllers/ifController";
 import pixiApplicationTab from "./pixiApplicationTab";
 import { evalListen } from "ui-protocol/src/evalBridge";
 import { defineRoot } from "ui-protocol/src/svelte/defineRoot";
@@ -33,10 +33,10 @@ const root = defineRoot({
   sync(patch) {
     if (root.slots.children.length === 0) {
       patch.appends.push(
-        refreshNode({
+        refreshController({
           interval: 2_000,
           children: [
-            conditionalNode(
+            ifController(
               () => {
                 if (legacy.renderer() ?? legacy.root()) {
                   return false; // no patch needed
@@ -107,7 +107,7 @@ export function initLegacyUI() {
             component: "SplitPanel",
             props: { minWidth: 200, minHeight: 100, size: 2 },
             children: [
-              refreshNode({
+              refreshController({
                 interval: 1_000,
                 children: [initSceneGraph([searchInput])],
                 sync(patch) {
@@ -173,7 +173,7 @@ function initSceneGraph(children: UIProtocolInit[]): UIProtocolInit {
     },
     children: [
       ...children,
-      refreshNode({
+      refreshController({
         interval: 100,
         refresh() {
           if (previous$pixi !== win.$pixi) {
@@ -276,7 +276,7 @@ function initPropertyTabs(): UIProtocolInit {
       },
     };
   }
-  return refreshNode({
+  return refreshController({
     interval: 200,
     children: [
       {
@@ -290,10 +290,10 @@ function initPropertyTabs(): UIProtocolInit {
             component: "Box",
             props: { padding: 8, gap: 1 },
             children: [
-              conditionalNode(
+              ifController(
                 () => activeTab,
                 (activeTabRef) =>
-                  switchNode(() => activeTabRef.value, {
+                  switchController(() => activeTabRef.value, {
                     scene: () => pixiApplicationTab(appRef),
                     object: () =>
                       defineUI({
@@ -336,7 +336,7 @@ function initPropertyTabs(): UIProtocolInit {
 
 function initPatchEngine() {
   if (session.get("pixi:patchRenderer")) {
-    return refreshNode({
+    return refreshController({
       interval: 250,
       depth: 1,
       children: [
@@ -418,7 +418,7 @@ function instructionsFallback(child: UIProtocolInit) {
   let timer: number | undefined;
   let instructions = false;
 
-  return conditionalNode(
+  return ifController(
     () => {
       if (legacy.root()) {
         instructions = false;

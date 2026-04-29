@@ -1,4 +1,4 @@
-import refreshNode from "../src/refreshNode";
+import refreshController from "../src/controllers/refreshController";
 import { defineRoot } from "../src/svelte/defineRoot";
 
 type Player = { x: number; y: number };
@@ -19,7 +19,7 @@ export function createTestControllerTree() {
     sync(patch) {
       const player = game.player;
       if (tree.slots.children.length === 0) {
-        patch.appends.push(refreshNode({ interval: 500, depth: 1 }));
+        patch.appends.push(refreshController({ interval: 500, depth: 1 }));
       }
       if (player && tree.slots.children.length <= 1) {
         patch.appends.push(

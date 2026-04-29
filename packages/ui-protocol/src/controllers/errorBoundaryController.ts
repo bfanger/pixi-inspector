@@ -1,6 +1,6 @@
-import defineUI, { type UIProtocolInit } from "./svelte/defineUI";
+import defineUI, { type UIProtocolInit } from "../svelte/defineUI";
 
-export default function errorBoundaryNode(child: () => UIProtocolInit) {
+export default function errorBoundaryController(child: () => UIProtocolInit) {
   let remove = false;
   let restored = 0;
   return defineUI({

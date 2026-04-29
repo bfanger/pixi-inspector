@@ -1,7 +1,7 @@
-import refreshNode from "ui-protocol/src/refreshNode";
+import refreshController from "ui-protocol/src/controllers/refreshController";
 import { evalListen } from "ui-protocol/src/evalBridge";
 import { defineRoot } from "ui-protocol/src/svelte/defineRoot";
-import conditionalNode from "ui-protocol/src/conditionalNode";
+import ifController from "ui-protocol/src/controllers/ifController";
 
 const win = window as any;
 win.__UI_PROTOCOL__ = win.__UI_PROTOCOL__ ?? {};
@@ -14,10 +14,10 @@ const root = defineRoot({
       let detected = detect();
 
       patch.appends.push(
-        refreshNode({
+        refreshController({
           interval: 100,
           children: [
-            conditionalNode(
+            ifController(
               () => detected,
               (detectedRef) => ({
                 component: "Trigger",

@@ -1,10 +1,10 @@
-import defineUI, { type UIProtocolInit } from "./svelte/defineUI";
+import defineUI, { type UIProtocolInit } from "../svelte/defineUI";
 
 /**
  * Create components for all entries in the array.
  * Will recreate the component if the entry on the index !== the previous value.
  */
-export default function forEachNode<T>(
+export default function forEachController<T>(
   all: () => readonly T[],
   createChild: (entry: T, index: number) => UIProtocolInit,
 ) {

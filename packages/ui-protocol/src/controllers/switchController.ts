@@ -1,6 +1,6 @@
-import defineUI, { type UIProtocolInit } from "./svelte/defineUI";
+import defineUI, { type UIProtocolInit } from "../svelte/defineUI";
 
-export default function switchNode<T extends string>(
+export default function switchController<T extends string>(
   selected: () => T | undefined,
   choices: Record<T, UIProtocolInit | (() => UIProtocolInit)>,
 ) {

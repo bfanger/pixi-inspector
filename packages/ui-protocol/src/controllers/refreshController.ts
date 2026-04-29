@@ -1,4 +1,4 @@
-import type { UIProtocolInit } from "./svelte/defineUI";
+import type { UIProtocolInit } from "../svelte/defineUI";
 
 type RefreshInit = Extract<UIProtocolInit, { component: "Refresh" }>;
 
@@ -11,9 +11,9 @@ type RefreshOptions = RefreshInit["props"] & {
 };
 
 /**
- * Node that handles the data & events of the Refresh component.
+ * Controller that handles the data & events of the Refresh component.
  */
-export default function refreshNode({
+export default function refreshController({
   children,
   sync,
   refresh,
