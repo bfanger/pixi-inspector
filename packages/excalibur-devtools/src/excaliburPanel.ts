@@ -1,35 +1,30 @@
 import { Color, type Engine } from "excalibur";
 import ifController from "ui-protocol/src/controllers/ifController";
-import refreshController from "ui-protocol/src/controllers/refreshController";
 import excaliburTreeView from "./excaliburTreeView";
 import errorBoundaryController from "ui-protocol/src/controllers/errorBoundaryController";
 import panelController from "ui-protocol/src/controllers/panelController";
+import defineUI from "ui-protocol/src/svelte/defineUI";
 
 export default function excaliburPanel(engine: Engine) {
-  return refreshController({
-    interval: 1000,
+  return defineUI({
+    component: "SplitPanels",
+    props: { direction: "column" },
     children: [
       {
-        component: "SplitPanels",
-        props: { direction: "column" },
+        component: "SplitPanel",
+        props: { minHeight: 100 },
         children: [
-          {
-            component: "SplitPanel",
-            props: { minHeight: 100 },
-            children: [
-              ifController(() => Object.keys(engine.scenes).length > 1, {
-                component: "Button",
-                props: { label: "TODO: Select scene" },
-              }),
-              excaliburTreeView(engine.rootScene),
-            ],
-          },
-          {
-            component: "SplitPanel",
-            props: { minHeight: 100 },
-            children: [backgroundPanel(engine)],
-          },
+          ifController(() => Object.keys(engine.scenes).length > 1, {
+            component: "Button",
+            props: { label: "TODO: Select scene" },
+          }),
+          excaliburTreeView(engine.rootScene),
         ],
+      },
+      {
+        component: "SplitPanel",
+        props: { minHeight: 100 },
+        children: [backgroundPanel(engine)],
       },
     ],
   });

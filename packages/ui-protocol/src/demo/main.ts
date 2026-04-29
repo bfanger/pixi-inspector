@@ -32,7 +32,7 @@ if (target && iframe?.contentWindow) {
 if (insideIframe) {
   const [tree, game] = createTestControllerTree();
   const abortController = new AbortController();
-  iframeListen(tree, window, "demo", abortController.signal);
+  iframeListen("demo", window, abortController.signal, tree);
 
   const gui = new GUI();
   const folder = gui.addFolder("Player");

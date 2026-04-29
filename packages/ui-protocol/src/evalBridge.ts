@@ -8,7 +8,7 @@ import type {
   TreePath,
 } from "./types";
 
-export function evalListen(tree: TreeControllerNode, id: string) {
+export function evalListen(id: string, tree: TreeControllerNode) {
   const receivers = ((globalThis as any).__UI_PROTOCOL__ =
     (globalThis as any).__UI_PROTOCOL__ ?? {});
 

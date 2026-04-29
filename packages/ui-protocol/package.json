@@ -4,7 +4,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "vite dev --port 8080",
+    "dev": "vite dev --port 8082",
     "test": "vitest run"
   },
   "devDependencies": {

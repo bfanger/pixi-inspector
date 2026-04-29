@@ -51,7 +51,10 @@ export type TreeObjectValue = {
 };
 type TreeArrayValue = TreeValue[];
 
-export type TreeEventHandler = (...args: TreeValue[]) => number | void;
+export type TreeEventHandler = (
+  this: TreeControllerNode,
+  ...args: TreeValue[]
+) => number | void;
 
 /**
  * A path into the tree structure bases on depth & index.

@@ -187,7 +187,7 @@ export function applyEvent(
     let syncParents: number | void = undefined;
     if (handler) {
       const listener = typeof handler === "function" ? handler : handler[0];
-      syncParents = listener(...event.args);
+      syncParents = listener.apply(node, event.args);
     }
     if (syncParents === undefined) {
       syncParents = 0;

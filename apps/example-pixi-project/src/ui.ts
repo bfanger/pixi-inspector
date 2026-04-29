@@ -3,30 +3,24 @@ import Display from "ui-protocol/src/svelte/Display.svelte";
 import { evalConnect, evalListen } from "ui-protocol/src/evalBridge";
 import "pixi-panel/src/pixi-devtools/ui-legacy";
 import "pixi-panel/src/components";
-import { defineRoot } from "ui-protocol/src/svelte/defineRoot";
+import rootController from "ui-protocol/src/controllers/rootController";
 import { initLegacyUI } from "pixi-panel/src/pixi-devtools/ui-legacy";
 
 const eventTarget = new EventTarget();
 let first = true;
-const rootController = defineRoot({
-  slots: { children: [] },
-  sync(patch) {
-    if (this.slots.children?.length === 0) {
+evalListen(
+  "pixi",
+  rootController(() => [initLegacyUI()], {
+    reset: () => {
       if (!first) {
-        // controller was reset, connection from real DevTools?
+        // controller was reset again? Assume connection from the browser's DevTools panel.
         eventTarget.dispatchEvent(new CustomEvent("recreated"));
       }
       first = false;
-      patch.appends.push(initLegacyUI());
-    }
-  },
-  events: {
-    reset() {
-      rootController.slots.children = [];
+      return;
     },
-  },
-});
-evalListen(rootController, "pixi");
+  }),
+);
 
 const target = document.querySelector("dev-tools");
 if (target) {

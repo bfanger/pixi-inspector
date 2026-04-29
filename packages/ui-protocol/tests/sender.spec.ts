@@ -418,14 +418,14 @@ describe.sequential("sender", () => {
   });
 
   it("reset() removes all child nodes from both trees & resyncs", async () => {
-    const controllerBefore = controllerTree.slots.children?.[0];
+    const controllerBefore = controllerTree.slots!.children[0];
     const displayBefore = displayTree.slots?.children?.[0];
     expect(controllerBefore).toBeDefined();
     expect(displayBefore).toBeDefined();
 
     await sender.reset();
 
-    const controllerAfter = controllerTree.slots.children?.[0];
+    const controllerAfter = controllerTree.slots!.children[0];
     const displayAfter = displayTree.slots?.children?.[0];
     expect(controllerAfter).toBeDefined();
     expect(displayAfter).toBeDefined();

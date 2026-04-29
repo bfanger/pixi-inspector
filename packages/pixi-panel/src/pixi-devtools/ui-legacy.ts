@@ -13,7 +13,7 @@ import switchController from "ui-protocol/src/controllers/switchController";
 import ifController from "ui-protocol/src/controllers/ifController";
 import pixiApplicationTab from "./pixiApplicationTab";
 import { evalListen } from "ui-protocol/src/evalBridge";
-import { defineRoot } from "ui-protocol/src/svelte/defineRoot";
+import rootController from "ui-protocol/src/controllers/rootController";
 import session from "./session";
 
 const legacy = pixiDevtools() as PixiDevtools;
@@ -28,39 +28,29 @@ pixiDevtoolsClickToSelect(legacy);
 
 const win = window as any;
 win.__UI_PROTOCOL__ = win.__UI_PROTOCOL__ ?? {};
-const root = defineRoot({
-  slots: { children: [] },
-  sync(patch) {
-    if (root.slots.children.length === 0) {
-      patch.appends.push(
-        refreshController({
-          interval: 2_000,
-          children: [
-            ifController(
-              () => {
-                if (legacy.renderer() ?? legacy.root()) {
-                  return false; // no patch needed
-                }
-                if (win.PIXI?.[patched]) {
-                  return false; // already patched
-                }
-                return !!win.PIXI; // show patch option when PIXI is available
-              },
-              () => initPatchEngine(),
-              () => initLegacyUI(),
-            ),
-          ],
-        }),
-      );
-    }
-  },
-  events: {
-    reset() {
-      root.slots.children = [];
-    },
-  },
-});
-evalListen(root, "pixi");
+evalListen(
+  "pixi",
+  rootController(() => [
+    refreshController({
+      interval: 2_000,
+      children: [
+        ifController(
+          () => {
+            if (legacy.renderer() ?? legacy.root()) {
+              return false; // no patch needed
+            }
+            if (win.PIXI?.[patched]) {
+              return false; // already patched
+            }
+            return !!win.PIXI; // show patch option when PIXI is available
+          },
+          () => initPatchEngine(),
+          () => initLegacyUI(),
+        ),
+      ],
+    }),
+  ]),
+);
 
 const patched = Symbol("patched");
 

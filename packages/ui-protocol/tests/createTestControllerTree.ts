@@ -1,5 +1,5 @@
 import refreshController from "../src/controllers/refreshController";
-import { defineRoot } from "../src/svelte/defineRoot";
+import rootController from "../src/controllers/rootController";
 
 type Player = { x: number; y: number };
 type Game = { player: Player | undefined; replace: number };
@@ -9,19 +9,13 @@ export function createTestControllerTree() {
   let resetLabel = false;
   const previousReplace = game.replace;
 
-  const tree = defineRoot({
-    slots: { children: [] },
-    events: {
-      reset() {
-        tree.slots.children = [];
-      },
-    },
+  const tree = rootController(() => [], {
     sync(patch) {
       const player = game.player;
-      if (tree.slots.children.length === 0) {
+      if (this.slots!.children.length === 0) {
         patch.appends.push(refreshController({ interval: 500, depth: 1 }));
       }
-      if (player && tree.slots.children.length <= 1) {
+      if (player && this.slots!.children.length <= 1) {
         patch.appends.push(
           {
             component: "NumberInput",
@@ -56,7 +50,7 @@ export function createTestControllerTree() {
           },
         );
       }
-      if (tree.slots?.children?.length > 1) {
+      if (this.slots!.children?.length > 1) {
         if (!player) {
           patch.truncate.children = 1;
         } else if (game.replace !== previousReplace) {

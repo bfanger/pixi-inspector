@@ -1,54 +1,46 @@
 import refreshController from "ui-protocol/src/controllers/refreshController";
 import { evalListen } from "ui-protocol/src/evalBridge";
-import { defineRoot } from "ui-protocol/src/svelte/defineRoot";
+import rootController from "ui-protocol/src/controllers/rootController";
 import ifController from "ui-protocol/src/controllers/ifController";
 
 const win = window as any;
 win.__UI_PROTOCOL__ = win.__UI_PROTOCOL__ ?? {};
 
-const root = defineRoot({
-  slots: { children: [] },
-  sync(patch) {
-    if (root.slots.children.length === 0) {
-      let attempt = 0;
-      let detected = detect();
+evalListen(
+  "connect",
+  rootController(() => {
+    let attempt = 0;
+    let detected = detect();
 
-      patch.appends.push(
-        refreshController({
-          interval: 100,
-          children: [
-            ifController(
-              () => detected,
-              (detectedRef) => ({
-                component: "Trigger",
-                props: { event: detectedRef.value },
-              }),
-            ),
-          ],
-          sync(patch) {
-            detected = detect();
-            if (detected) {
-              return;
-            }
-            if (attempt === 100) {
-              // after ~10s, only detect every 5s (when panel is open)
-              patch.props = { interval: 5_000 };
-              attempt = -1;
-            } else if (attempt !== -1) {
-              attempt++;
-            }
-          },
-        }),
-      );
-    }
-  },
-  events: {
-    reset() {
-      root.slots.children = [];
-    },
-  },
-});
-evalListen(root, "connect");
+    return [
+      refreshController({
+        interval: 100,
+        children: [
+          ifController(
+            () => detected,
+            (detectedRef) => ({
+              component: "Trigger",
+              props: { event: detectedRef.value },
+            }),
+          ),
+        ],
+        sync(patch) {
+          detected = detect();
+          if (detected) {
+            return;
+          }
+          if (attempt === 100) {
+            // after ~10s, only detect every 5s (when panel is open)
+            patch.props = { interval: 5_000 };
+            attempt = -1;
+          } else if (attempt !== -1) {
+            attempt++;
+          }
+        },
+      }),
+    ];
+  }),
+);
 
 function detect() {
   if (win.__UI_PROTOCOL__?.["pixi"]) {
