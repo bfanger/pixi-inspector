@@ -11,7 +11,7 @@ export default meta;
 export const Random: StoryObj = {
   args: {
     total: faker.number.int({ min: 5, max: 25_000 }),
-    size: faker.number.int({ min: 16, max: 96 }),
+    itemSize: faker.number.int({ min: 16, max: 96 }),
     buffer: faker.number.int({ min: 0, max: 200 }),
   },
 };

@@ -213,7 +213,7 @@ describe.sequential("applyPatch()", () => {
       value: [{ path: [{ slot: "children", index: 0 }], value: 50 }],
       replacements: [],
       appends: [],
-      truncates: [[{ slot: "children", index: 1 }]],
+      truncates: [{ path: [], slot: "children", length: 1 }],
       errors: [],
     });
     expect(displayTree).toMatchInlineSnapshot(`
@@ -253,5 +253,39 @@ describe.sequential("applyPatch()", () => {
         "truncate": [Function],
       }
     `);
+  });
+  it("should truncate with null should remove the slot", () => {
+    applyPatch(displayTree, {
+      props: [],
+      value: [],
+      replacements: [],
+      appends: [],
+      truncates: [{ path: [], slot: "children", length: null }],
+      errors: [],
+    });
+    expect((displayTree as any).slots.children).toBeUndefined();
+  });
+  it("should append to create a slot when it doesn't exist", () => {
+    // After the previous test, the "children" slot is removed.
+    // Appending should create a new slot.
+    applyPatch(displayTree, {
+      value: [],
+      props: [],
+      replacements: [],
+      truncates: [],
+      appends: [
+        {
+          path: [{ slot: "newSlot", index: 0 }],
+          component: "TextInput",
+          props: {},
+          value: "created",
+        },
+      ],
+      errors: [],
+    });
+    expect(displayTree.slots!.newSlot).toBeDefined();
+    expect(displayTree.slots!.newSlot.length).toBe(1);
+    expect(displayTree.slots!.newSlot[0].test.component).toBe("TextInput");
+    expect(displayTree.slots!.newSlot[0].test.value).toBe("created");
   });
 });

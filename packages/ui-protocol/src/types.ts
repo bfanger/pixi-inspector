@@ -31,7 +31,7 @@ export type TreeDisplayContainerNode = {
     index: number,
     init: TreePatchInitDto,
   ): TreeDisplayNode;
-  truncate(slot: string, length: number): void;
+  truncate(slot: string, length: number | null): void;
   setError?: (message?: string) => void;
 };
 
@@ -132,19 +132,25 @@ type TreePatchErrorDto = {
   message?: string;
 };
 
+type TreePatchTruncateDto = {
+  path: TreePath;
+  slot: string;
+  length: number | null;
+};
+
 export type TreePatch = {
   props?: TreeObjectValue;
   value?: TreeValue;
   replacements: (TreeInit & { slot?: string; index: number })[];
   appends: (TreeInit & { slot?: string })[];
-  truncate: Record<string, number>;
+  truncate: Record<string, number | null>;
 };
 export type TreePatchDto = {
   props: TreePatchPropsDto[];
   value: TreePatchValueDto[];
   replacements: TreePatchInitDto[];
   appends: TreePatchInitDto[];
-  truncates: TreePath[];
+  truncates: TreePatchTruncateDto[];
   errors: TreePatchErrorDto[];
 };
 

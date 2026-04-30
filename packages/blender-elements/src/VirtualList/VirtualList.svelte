@@ -4,8 +4,8 @@
   type Props = {
     /** Total number of items in the list */
     total: number;
-    /** Height in pixels of a single item  */
-    size: number;
+    /** Height in pixels of a single item */
+    itemSize: number;
     /** The parent component provides all items as a single children snippet. */
     children: Snippet;
     /** Starting index of the currently rendered items (used for positioning) */
@@ -18,7 +18,7 @@
     render: (offset: number, count: number) => void;
   };
 
-  let { total, size, value, variant, buffer, render, children }: Props =
+  let { total, itemSize, value, variant, buffer, render, children }: Props =
     $props();
 
   let previousOffset = 0;
@@ -27,10 +27,10 @@
   function recalculate(el: HTMLDivElement) {
     const offset = Math.max(
       0,
-      Math.min(Math.floor((el.scrollTop - buffer) / size), total - 1),
+      Math.min(Math.floor((el.scrollTop - buffer) / itemSize), total - 1),
     );
     const count = Math.min(
-      Math.ceil((el.clientHeight + buffer * 2) / size) + 1,
+      Math.ceil((el.clientHeight + buffer * 2) / itemSize) + 1,
       total - offset,
     );
     if (offset !== previousOffset || count !== previousCount) {
@@ -60,12 +60,12 @@
   <div
     class="container"
     data-variant={variant}
-    style:height="{size * total}px"
+    style:height="{itemSize * total}px"
     style:background-size={variant === "striped"
-      ? `100% ${size * 2}px`
+      ? `100% ${itemSize * 2}px`
       : undefined}
   >
-    <div class="rendered-items" style:top="{value * size}px">
+    <div class="rendered-items" style:top="{value * itemSize}px">
       {@render children()}
     </div>
   </div>

@@ -107,11 +107,26 @@ export function createSvelteNode(
     slots: {},
     createNode(slot, index, nestedInit) {
       const subnode = createSvelteNode(nestedInit, container.sender);
-      container.vdom.slots[slot][index] = subnode.vdom;
+      if (container.vdom.slots[slot]) {
+        container.vdom.slots[slot][index] = subnode.vdom;
+      } else {
+        if (index !== 0) {
+          throw new Error(
+            `Failed to create node at index ${index} slot "${slot}" doen't exist yet`,
+          );
+        }
+        container.vdom.slots[slot] = [subnode.vdom];
+        vdom.props[slot] = createSlotSnippet(node.vdom, slot);
+      }
       return subnode;
     },
     truncate(slot, length) {
-      container.vdom.slots[slot].length = length;
+      if (length === null) {
+        delete container.vdom.slots[slot];
+        delete container.vdom.props[slot];
+      } else {
+        container.vdom.slots[slot].length = length;
+      }
     },
     sender,
   };
@@ -123,14 +138,7 @@ export function createSvelteNode(
       container.vdom.slots[slot][index] = subnode.vdom;
       return subnode;
     });
-
-    vdom.props[slot] = (node: HTMLElement) =>
-      (
-        snippet as any as (
-          node: HTMLElement,
-          getter: () => Parameters<typeof snippet>[0],
-        ) => ReturnType<Snippet>
-      )(node, () => vdom.slots[slot]);
+    vdom.props[slot] = createSlotSnippet(node.vdom, slot);
   }
 
   if (init.component === "ErrorBoundary") {
@@ -140,4 +148,14 @@ export function createSvelteNode(
   }
   node = container;
   return container;
+}
+
+function createSlotSnippet(vdom: VDOM, slot: string) {
+  return (node: HTMLElement) =>
+    (
+      snippet as any as (
+        node: HTMLElement,
+        getter: () => Parameters<typeof snippet>[0],
+      ) => ReturnType<Snippet>
+    )(node, () => vdom.slots[slot]);
 }

@@ -189,12 +189,11 @@ describe.sequential("syncTree()", () => {
           "props": [],
           "replacements": [],
           "truncates": [
-            [
-              {
-                "index": 1,
-                "slot": "children",
-              },
-            ],
+            {
+              "length": 1,
+              "path": [],
+              "slot": "children",
+            },
           ],
           "value": [
             {

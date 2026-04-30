@@ -61,40 +61,51 @@ export function applyPatch(tree: TreeDisplayNode, patch: TreePatchDto) {
   applyDisplayValues(tree, patch.value);
   for (const replacement of patch.replacements) {
     const { parent, index, slot } = lookupParent(tree, replacement.path);
-    if ("createNode" in parent && parent.slots[slot]) {
-      const node = parent.createNode(slot, index, replacement);
-      parent.slots[slot][index] = node;
-    } else {
+    if (!("createNode" in parent)) {
       throw new Error(`replace failed: Can't replace subnodes of a leaf node`);
+    } else if (!parent.slots[slot]) {
+      throw new Error(
+        `replace failed: Slot "${slot}" doesn't exist in ${formatPath(replacement.path)}`,
+      );
     }
+    const node = parent.createNode(slot, index, replacement);
+    parent.slots[slot][index] = node;
   }
 
   for (const append of patch.appends) {
     const { parent, index, slot } = lookupParent(tree, append.path);
-    if ("createNode" in parent && parent.slots[slot]) {
-      const node = parent.createNode(slot, index, append);
-      const length = parent.slots[slot].push(node);
-      if (length !== index + 1) {
-        throw new Error(`append failed: index mismatch`);
-      }
-    } else {
+    if (!("createNode" in parent)) {
       throw new Error("append failed: Can't append to a leaf node");
+    }
+    if (!parent.slots[slot]) {
+      parent.slots[slot] = [];
+    }
+    const node = parent.createNode(slot, index, append);
+    const length = parent.slots[slot].push(node);
+    if (length !== index + 1) {
+      throw new Error(`append failed: index mismatch`);
     }
   }
 
-  for (const path of patch.truncates) {
-    const { parent, slot, index: length } = lookupParent(tree, path);
-    if (!("truncate" in parent)) {
+  for (const truncate of patch.truncates) {
+    const container = lookupNode(tree, truncate.path);
+    if (!("truncate" in container)) {
       throw new Error("truncate failed: Can't truncate a leaf node");
     }
-    parent.truncate(slot, length);
-    if (Array.isArray(parent.slots[slot]) === false) {
-      throw new Error(`truncate failed: slot '${slot}'`);
+    container.truncate(truncate.slot, truncate.length);
+    if (Array.isArray(container.slots[truncate.slot]) === false) {
+      throw new Error(
+        `truncate failed: slot '${truncate.slot}' not defined at ${formatPath(truncate.path)}`,
+      );
     }
-    if (length >= parent.slots[slot].length) {
-      throw new Error(`truncate failed: No nodes were removed`);
+    if (truncate.length === null) {
+      delete container.slots[truncate.slot];
+    } else {
+      if (truncate.length >= container.slots[truncate.slot].length) {
+        throw new Error(`truncate failed: No nodes were removed`);
+      }
+      container.slots[truncate.slot].length = truncate.length;
     }
-    parent.slots[slot].length = length;
   }
 
   for (const error of patch.errors) {
@@ -275,31 +286,36 @@ function applyPartial(
   }
 
   for (const { slot = "children", ...append } of patch.appends) {
-    if (!node.slots?.[slot]) {
-      if (!node.slots) {
-        throw new Error("Can't append to a leaf node");
-      }
-      throw new Error(`Can't append node. Slot "${slot}" not defined in node`);
+    if (!node.slots) {
+      throw new Error("Can't append to a leaf node");
+    }
+    if (!node.slots[slot]) {
+      node.slots[slot] = [];
     }
 
     const init = createInit(append, [
       ...path,
-      { slot, index: node.slots.children.length },
+      { slot, index: node.slots[slot].length },
     ]);
     target.appends.push(init.dto);
-    node.slots.children.push(init.node);
+    node.slots[slot].push(init.node);
   }
 
   for (const [slot, length] of Object.entries(patch.truncate)) {
-    target.truncates.push([...path, { slot, index: length }]);
+    target.truncates.push({ path, slot, length });
     if (!node.slots?.[slot]) {
       if (!node.slots) {
         throw new Error("Can't truncate a leaf node");
       }
       throw new Error(`Can't truncate, slot "${slot}", not defined in node`);
     }
-    node.slots[slot].length = length;
-    slots[slot].length = length;
+    if (length === null) {
+      delete node.slots[slot];
+      slots[slot].length = 0;
+    } else {
+      node.slots[slot].length = length;
+      slots[slot].length = length;
+    }
   }
 
   return slots;

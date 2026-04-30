@@ -5,7 +5,7 @@ import type { TreeDisplayNode, TreePatchInitDto } from "../src/types";
  */
 type TestNode = TreeDisplayNode & {
   test: Omit<TreePatchInitDto, "slots" | "path">;
-  slots?: { children?: TestNode[] };
+  slots?: Record<string, TestNode[]>;
 };
 export default function createTestDisplayTree() {
   return createTestDisplayNode({

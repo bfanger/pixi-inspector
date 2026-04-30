@@ -165,7 +165,7 @@ describe.sequential("sender", () => {
   });
 
   it("setValue() updates the value on the receiver", async () => {
-    await sender.setValue(displayTree.slots!.children![1], 20);
+    await sender.setValue(displayTree.slots!.children[1], 20);
     expect(game.player?.x).toBe(20);
   });
 
@@ -176,7 +176,7 @@ describe.sequential("sender", () => {
   });
 
   it("dispatchEvent(onclick) adds 10 and returns patch with updated value", async () => {
-    await sender.dispatchEvent(displayTree.slots!.children![1], "onclick");
+    await sender.dispatchEvent(displayTree.slots!.children[1], "onclick");
     expect(controllerTree).toMatchInlineSnapshot(`
       {
         "events": {

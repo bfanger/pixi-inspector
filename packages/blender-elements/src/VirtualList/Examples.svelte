@@ -3,10 +3,10 @@
 
   type Props = {
     total: number;
-    size: number;
+    itemSize: number;
     buffer: number;
   };
-  let { total, size, buffer }: Props = $props();
+  let { total, itemSize, buffer }: Props = $props();
 
   const visible = $state({ offset: 0, count: 10 });
 
@@ -28,13 +28,13 @@
   <VirtualList
     variant="striped"
     {total}
-    {size}
+    {itemSize}
     value={visible.offset}
     {buffer}
     {render}
   >
     {#each items() as id, i (i)}
-      <div style:height="{size}px;">
+      <div style:height="{itemSize}px;">
         Item {id}
       </div>
     {/each}
