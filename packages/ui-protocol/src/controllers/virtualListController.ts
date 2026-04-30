@@ -3,7 +3,7 @@ import defineUI, { type UIProtocolInit } from "../svelte/defineUI";
 /**
  * Controller that manages a VirtualList with dynamic item rendering.
  *
- * Only renders items visible in the viewport plus a buffer region.
+ * Only renders items visible in the viewport region.
  * Use `slice(offset, count)` to return the total count and children for the visible range.
  */
 export default function virtualListController<T>(options: {
@@ -36,6 +36,7 @@ export default function virtualListController<T>(options: {
     sync(patch) {
       const exists = new Set<T>();
       const slice = getKeys(offset, count);
+
       slice.keys.forEach((item) => exists.add(item));
       const remove: T[] = [];
       const offsets: { slot: `slot${number}`; offset: number }[] = [];

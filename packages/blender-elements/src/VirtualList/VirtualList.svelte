@@ -6,7 +6,7 @@
     total: number;
     /** Height in pixels of a single item */
     itemSize: number;
-    /** Buffer in pixels for additional rendering outside the visible area */
+    /** Number of items to render outside the visible area */
     buffer: number;
     /** Determines the background pattern */
     variant: "striped";
@@ -25,12 +25,13 @@
   let previousCount = 0;
 
   function recalculate(el: HTMLDivElement) {
+    const bufferSize = buffer * itemSize;
     const offset = Math.max(
       0,
-      Math.min(Math.floor((el.scrollTop - buffer) / itemSize), total - 1),
+      Math.min(Math.floor((el.scrollTop - bufferSize) / itemSize), total - 1),
     );
     const count = Math.min(
-      Math.ceil((el.clientHeight + buffer * 2) / itemSize),
+      Math.ceil((el.clientHeight + bufferSize * 2) / itemSize),
       total - offset,
     );
     if (offset !== previousOffset || count !== previousCount) {

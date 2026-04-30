@@ -12,6 +12,6 @@ export const Random: StoryObj = {
   args: {
     total: faker.number.int({ min: 5, max: 25_000 }),
     itemSize: faker.number.int({ min: 16, max: 96 }),
-    buffer: faker.number.int({ min: 0, max: 200 }),
+    buffer: faker.number.int({ min: 1, max: 25 }),
   },
 };

@@ -70,8 +70,11 @@
         let cursor: any = el;
 
         while (true) {
-          cursor = cursor?.previousElementSibling;
+          cursor =
+            cursor?.previousElementSibling ??
+            cursor?.parentElement?.previousElementSibling?.lastElementChild;
           const props: PartialProps = cursor?.[symbol];
+
           if (!props) {
             break;
           }
@@ -88,7 +91,9 @@
         e.preventDefault();
         setExpanded?.(true);
       } else if (expanded === true) {
-        const sibling: any = el?.nextElementSibling;
+        const sibling: any =
+          el?.nextElementSibling ??
+          el?.parentElement?.nextElementSibling?.firstElementChild;
         const props: PartialProps = sibling?.[symbol];
         if (props.indent === indent + 1) {
           e.preventDefault();
@@ -147,12 +152,7 @@
 
     color: #c2c2c2;
 
-    background: #282828;
     outline: none;
-
-    &:nth-child(even) {
-      background-color: #2b2b2b;
-    }
 
     &:hover {
       background-color: #444;

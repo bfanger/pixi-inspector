@@ -1,5 +1,11 @@
+import type { Container, DisplayObject } from "pixi.js";
 import PIXI from "pixi.js";
 import Stats from "stats.js";
+import rootController from "../../../packages/ui-protocol/src/controllers/rootController";
+import { evalListen } from "../../../packages/ui-protocol/src/evalBridge";
+import refreshController from "../../../packages/ui-protocol/src/controllers/refreshController";
+import treeViewController from "../../../packages/ui-protocol/src/controllers/treeViewController";
+import defineUI from "../../../packages/ui-protocol/src/svelte/defineUI";
 
 const width = 480;
 const height = 320;
@@ -221,5 +227,71 @@ function update() {
   requestAnimationFrame(update);
   stats.end();
 }
+const testTreeViewController = true as boolean;
+if (testTreeViewController === false) {
+  (globalThis as any).__PIXI_STAGE__ = stage;
+} else {
+  evalListen(
+    "pixi",
+    rootController(() => [
+      refreshController({ interval: 1000, depth: 1 }),
+      treeViewController<DisplayObject | Container>({
+        itemSize: 20,
+        buffer: 10,
+        variant: "striped",
+        getRoots: () => [stage],
+        getChildrenCount: (node) => {
+          if ("children" in node) {
+            return node.children.length;
+          }
+          return 0;
+        },
+        getChild(node, index) {
+          const child = (node as Container).children[index];
+          if (!child) {
+            throw new Error(`Index ${index} is out of bounds`);
+          }
+          return child;
+        },
+        render: (key, indent, api) => {
+          let expanded = api.getExpanded(key, indent);
+          return defineUI({
+            component: "TreeViewRow",
+            props: {
+              indent,
+              label: buildName(key),
+              expanded,
+            },
+            events: {
+              setExpanded(value) {
+                api.setExpanded(key, value);
+                return 1;
+              },
+            },
+            sync(patch) {
+              const nextExpanded = api.getExpanded(key, indent);
+              if (expanded !== nextExpanded) {
+                expanded = nextExpanded;
+                patch.props = {
+                  indent,
+                  expanded,
+                  label: buildName(key),
+                };
+              }
+            },
+          });
+        },
+      }),
+    ]),
+  );
 
-(globalThis as any).__PIXI_STAGE__ = stage;
+  function buildName(node: DisplayObject) {
+    if ("name" in node && node.name) {
+      if (node.constructor.name) {
+        return `${node.constructor.name} "${node.name}"`;
+      }
+      return `"${node.name}"`;
+    }
+    return node.constructor.name ?? "anonymous";
+  }
+}
