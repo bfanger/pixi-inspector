@@ -1,5 +1,6 @@
 <script lang="ts">
   import VirtualList from "./VirtualList.svelte";
+  import { createRawSnippet, type Snippet } from "svelte";
 
   type Props = {
     total: number;
@@ -7,20 +8,30 @@
     buffer: number;
   };
   let { total, itemSize, buffer }: Props = $props();
+  let rest = $state<{
+    value: { slot: `slot${number}`; offset: number }[];
+    [slot: `slot${number}`]: Snippet;
+  }>({
+    value: [],
+  });
 
-  const visible = $state({ offset: 0, count: 10 });
-
-  function render(offset: number, count: number): void {
+  function render(offset: number, count: number) {
     console.info("render", offset + 1, "-", offset + count);
-    visible.offset = offset;
-    visible.count = count;
-  }
+    const indexes = Array.from({ length: count }, (_, i) => i);
 
-  function items() {
-    return Array.from(
-      { length: visible.count },
-      (_, i) => visible.offset + i + 1,
-    );
+    rest = {
+      value: indexes.map((i) => ({ slot: `slot${i}`, offset: i + offset })),
+      ...Object.fromEntries(
+        indexes.map((i) => [
+          `slot${i}`,
+          createRawSnippet(() => ({
+            render() {
+              return `slot ${i + offset + 1}`;
+            },
+          })),
+        ]),
+      ),
+    };
   }
 </script>
 
@@ -29,14 +40,8 @@
     variant="striped"
     {total}
     {itemSize}
-    value={visible.offset}
     {buffer}
     {render}
-  >
-    {#each items() as id, i (i)}
-      <div style:height="{itemSize}px;">
-        Item {id}
-      </div>
-    {/each}
-  </VirtualList>
+    {...rest}
+  />
 </div>

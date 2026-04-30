@@ -46,14 +46,10 @@ export type Init<TComponent extends string, TProps extends AnyProps> = {
 
 export type UIProtocolPatch<T extends AnyProps> = {
   props?: InitProps<T>;
-} & (T extends { value?: unknown } ? { value?: T["value"] } : unknown) &
-  (T extends { children?: unknown }
-    ? {
-        replacements: (UIProtocolInit & { slot?: string; index: number })[];
-        appends: (UIProtocolInit & { slot?: string })[];
-        truncate: Record<string, number>;
-      }
-    : unknown);
+  replacements: (UIProtocolInit & { slot?: string; index: number })[];
+  appends: (UIProtocolInit & { slot?: string })[];
+  truncate: Record<string, number | null>;
+} & (T extends { value?: unknown } ? { value?: T["value"] } : unknown);
 
 export type UIProtocolInit = {
   [TComponent in keyof UIProtocolComponents]: Init<

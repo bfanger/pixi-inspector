@@ -6,19 +6,19 @@
     total: number;
     /** Height in pixels of a single item */
     itemSize: number;
-    /** The parent component provides all items as a single children snippet. */
-    children: Snippet;
-    /** Starting index of the currently rendered items (used for positioning) */
-    value: number;
     /** Buffer in pixels for additional rendering outside the visible area */
     buffer: number;
     /** Determines the background pattern */
     variant: "striped";
     /** Callback to request items based on the visible viewport */
     render: (offset: number, count: number) => void;
+    /** The visible items + buffer */
+    [slot: `slot${number}`]: Snippet;
+    /** Slot and position for the items, in DOM order */
+    value: { slot: `slot${number}`; offset: number }[];
   };
 
-  let { total, itemSize, value, variant, buffer, render, children }: Props =
+  let { total, itemSize, value, variant, buffer, render, ...rest }: Props =
     $props();
 
   let previousOffset = 0;
@@ -30,7 +30,7 @@
       Math.min(Math.floor((el.scrollTop - buffer) / itemSize), total - 1),
     );
     const count = Math.min(
-      Math.ceil((el.clientHeight + buffer * 2) / itemSize) + 1,
+      Math.ceil((el.clientHeight + buffer * 2) / itemSize),
       total - offset,
     );
     if (offset !== previousOffset || count !== previousCount) {
@@ -65,9 +65,11 @@
       ? `100% ${itemSize * 2}px`
       : undefined}
   >
-    <div class="rendered-items" style:top="{value * itemSize}px">
-      {@render children()}
-    </div>
+    {#each value as { slot, offset } (slot)}
+      <div class="rendered-items" style:top="{offset * itemSize}px">
+        {@render rest[slot]()}
+      </div>
+    {/each}
   </div>
 </div>
 

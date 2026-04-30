@@ -43,15 +43,19 @@
 
   function onKeyDown(e: KeyboardEvent) {
     if (e.key === "ArrowUp") {
-      const sibling: any = el?.previousElementSibling;
-      const props: PartialProps = sibling?.[symbol];
+      let sibling: any =
+        el?.previousElementSibling ??
+        el?.parentElement?.previousElementSibling?.lastElementChild;
+      let props: PartialProps = sibling?.[symbol];
       if (props) {
         e.preventDefault();
         sibling.focus();
         props.onactivate?.();
       }
     } else if (e.key === "ArrowDown") {
-      const sibling: any = el?.nextElementSibling;
+      const sibling: any =
+        el?.nextElementSibling ??
+        el?.parentElement?.nextElementSibling?.firstElementChild;
       const props: PartialProps = sibling?.[symbol];
       if (props) {
         e.preventDefault();

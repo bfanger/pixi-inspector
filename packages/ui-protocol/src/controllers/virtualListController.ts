@@ -1,13 +1,4 @@
-import defineUI, {
-  type UIProtocolInit,
-  type UIProtocolPatch,
-} from "../svelte/defineUI";
-import type {
-  TreeControllerNode,
-  TreeEventHandler,
-  TreePatch,
-  TreeValue,
-} from "../types";
+import defineUI, { type UIProtocolInit } from "../svelte/defineUI";
 
 /**
  * Controller that manages a VirtualList with dynamic item rendering.
@@ -15,36 +6,24 @@ import type {
  * Only renders items visible in the viewport plus a buffer region.
  * Use `slice(offset, count)` to return the total count and children for the visible range.
  */
-export default function virtualListController<
-  TItem,
-  TComponent extends UIProtocolInit["component"],
-  TInit extends UIProtocolInit = Extract<
-    UIProtocolInit,
-    { component: TComponent }
-  >,
->(options: {
-  component: TComponent;
+export default function virtualListController<T>(options: {
   itemSize: number;
   buffer: number;
-  getItems: (
-    offset: number,
-    count: number,
-  ) => { total: number; items: TItem[] };
-  itemSync: (
-    patch: UIProtocolPatch<NonNullable<TInit["props"]>>,
-    item: TItem,
-  ) => void;
-  events: TInit["events"];
+  variant: "striped";
+  getKeys: (offset: number, count: number) => { total: number; keys: T[] };
+  render: (key: T) => UIProtocolInit;
 }) {
+  const { getKeys, render, ...props } = options;
+  const itemToSlotMap = new Map<T, `slot${number}`>();
   let offset = 0;
   let count = 0;
-  const { component, getItems, itemSync, events = {}, ...props } = options;
-  let slice = getItems(0, 0);
+  let total = getKeys(offset, count).total;
 
   return defineUI({
     component: "VirtualList",
-    props: { ...props, total: slice.total, variant: "striped" },
-    value: 0,
+    props: { ...props, total },
+    value: [],
+    slots: {},
     events: {
       render: [
         (newOffset, newCount) => {
@@ -54,48 +33,61 @@ export default function virtualListController<
         { throttle: 50 },
       ],
     },
-    children: [],
     sync(patch) {
-      slice = getItems(offset, count);
-      if (this.slots!.children.length < slice.items.length) {
-        for (let i = this.slots!.children.length; i < slice.items.length; i++) {
-          const itemPatch: any = {
-            appends: [],
-            replacements: [],
-            truncate: {},
-          } satisfies TreePatch;
-          itemSync(itemPatch, slice.items[i]);
+      const exists = new Set<T>();
+      const slice = getKeys(offset, count);
+      slice.keys.forEach((item) => exists.add(item));
+      const remove: T[] = [];
+      const offsets: { slot: `slot${number}`; offset: number }[] = [];
 
-          patch.appends.push({
-            component,
-            props: itemPatch.props,
-            value: itemPatch.value,
-            sync(patch: TreePatch) {
-              itemSync(patch as any, slice.items[i]);
-            },
-            events: Object.fromEntries(
-              Object.entries(events).map(([event, entry]) => {
-                let handler = entry as TreeEventHandler;
-                const wrapped = function (
-                  this: TreeControllerNode,
-                  ...args: TreeValue[]
-                ) {
-                  handler.call(this, slice.items[i] as any, ...args);
-                };
-                if (Array.isArray(entry)) {
-                  handler = entry[0];
-                  return [event, [wrapped, entry[1]]];
-                }
-                return [event, wrapped];
-              }),
-            ),
-          } as UIProtocolInit);
+      itemToSlotMap.forEach((_, item) => {
+        if (!exists.has(item)) {
+          remove.push(item);
+        }
+      });
+      for (const item of remove) {
+        itemToSlotMap.delete(item);
+      }
+      const occupied = new Set(itemToSlotMap.values());
+
+      let start = 0;
+      slice.keys.forEach((item, i) => {
+        const slot = itemToSlotMap.get(item);
+        if (slot) {
+          offsets.push({ slot, offset: offset + i });
+          return; // Reuse existing
+        }
+        for (
+          let slotIndex = start;
+          slotIndex < slice.keys.length;
+          slotIndex++
+        ) {
+          const slot = `slot${slotIndex}` as const;
+          if (occupied.has(slot)) {
+            continue;
+          }
+          start = slotIndex + 1;
+          if (!this.slots![slot]) {
+            patch.appends.push({ slot, ...render(item) });
+          } else {
+            patch.replacements.push({ slot, index: 0, ...render(item) });
+          }
+          occupied.add(slot);
+          offsets.push({ slot, offset: i + offset });
+          itemToSlotMap.set(item, slot);
+          return;
+        }
+      });
+      if (slice.total !== total) {
+        total = slice.total;
+        patch.props = { ...props, total };
+      }
+      for (const slot of Object.keys(this.slots!)) {
+        if (!occupied.has(slot as `slot${number}`)) {
+          patch.truncate[slot] = null;
         }
       }
-      if (this.slots!.children.length > slice.items.length) {
-        patch.truncate.children = slice.items.length;
-      }
-      patch.value = offset;
+      patch.value = offsets;
     },
   });
 }
