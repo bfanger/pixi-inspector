@@ -12,8 +12,9 @@ export default function virtualListController<T>(options: {
   variant: "striped";
   getKeys: (offset: number, count: number) => { total: number; keys: T[] };
   render: (key: T) => UIProtocolInit;
+  jumpToRef?: { index: number | undefined };
 }) {
-  const { getKeys, render, ...props } = options;
+  const { getKeys, render, jumpToRef, ...props } = options;
   const itemToSlotMap = new Map<T, `slot${number}`>();
   let offset = 0;
   let count = 0;
@@ -71,7 +72,11 @@ export default function virtualListController<T>(options: {
           if (!this.slots![slot]) {
             patch.appends.push({ slot, ...render(item) });
           } else {
-            patch.replacements.push({ slot, index: 0, ...render(item) });
+            patch.replacements.push({
+              slot,
+              index: 0,
+              ...render(item),
+            });
           }
           occupied.add(slot);
           offsets.push({ slot, offset: i + offset });
@@ -79,9 +84,12 @@ export default function virtualListController<T>(options: {
           return;
         }
       });
-      if (slice.total !== total) {
+      if (slice.total !== total || jumpToRef?.index !== undefined) {
         total = slice.total;
-        patch.props = { ...props, total };
+        patch.props = { ...props, jumpTo: jumpToRef?.index, total };
+        if (jumpToRef) {
+          jumpToRef.index = undefined;
+        }
       }
       for (const slot of Object.keys(this.slots!)) {
         if (!occupied.has(slot as `slot${number}`)) {

@@ -1,85 +1,51 @@
 import type { Entity, Scene } from "excalibur";
 import errorBoundaryController from "ui-protocol/src/controllers/errorBoundaryController";
-import forEachController from "ui-protocol/src/controllers/forEachController";
-import defineUI from "ui-protocol/src/svelte/defineUI";
+import treeViewController from "ui-protocol/src/controllers/treeViewController";
 const win = window as any;
 
 export default function excaliburTreeView(scene: Scene) {
-  let expanded = true;
-  const previous = { expanded, active: win.$entity === undefined };
-  return errorBoundaryController(() => ({
-    component: "TreeView",
-    children: [
-      {
-        component: "TreeViewRow",
-        props: { indent: 0, label: "Scene", ...previous },
-        events: {
-          onactivate() {
-            win.$entity = undefined;
-            return 2;
-          },
-          setExpanded(val) {
-            expanded = val;
-            return 2;
-          },
-          ondblclick() {
-            // eslint-disable-next-line no-console
-            console.log(scene);
-          },
-        },
-        sync(patch) {
-          patch.props = {
-            indent: 0,
-            label: "Scene",
-            expanded,
-            active: win.$entity === undefined,
+  return errorBoundaryController(() =>
+    treeViewController<Scene | Entity>({
+      buffer: 3,
+
+      getActive: (node) => node === win.$entity,
+      getRoot: () => scene,
+      getChild(node, index) {
+        return (node as Scene).entities[index];
+      },
+      getChildrenCount(node) {
+        if ("entities" in node) {
+          return node.entities.length;
+        }
+        return 0;
+      },
+      getLabel(node) {
+        if ("name" in node && node.name) {
+          if (node.name === "Sprite") {
+            return node.name;
+          }
+          if (node.constructor.name) {
+            return `${node.constructor.name} "${node.name}"`;
+          }
+          return `"${node.name}"`;
+        }
+        return node.constructor?.name ?? "anonymous";
+      },
+      activate(node) {
+        win.$entity = node;
+      },
+      lookup(key) {
+        if ("scene" in key && key.scene) {
+          return {
+            parent: key.scene,
+            index: key.scene.entities.indexOf(key),
           };
-        },
+        }
       },
-      forEachController(
-        () => (expanded ? scene.entities : []),
-        (entity) => row(entity, 1),
-      ),
-    ],
-  }));
-}
-
-function row(entity: Entity, indent: number) {
-  const label = buildName(entity);
-  let previous = { active: entity === win.$entity };
-
-  return defineUI({
-    component: "TreeViewRow",
-    props: { indent, label, ...previous },
-    events: {
-      onactivate() {
-        win.$entity = entity;
-        return Infinity;
-      },
-      ondblclick() {
+      ondblclick(node) {
         // eslint-disable-next-line no-console
-        console.log(entity);
+        console.log(node);
       },
-    },
-    sync(patch) {
-      const next = { active: entity === win.$entity };
-      if (previous.active !== next.active) {
-        patch.props = { indent, label, ...next };
-        previous = next;
-      }
-    },
-  });
-}
-
-function buildName(node: Entity): string {
-  if ("name" in node && node.name) {
-    if (node.name === "Sprite") {
-      return node.name;
-    }
-    if (node.constructor.name) {
-      return `${node.constructor.name} "${node.name}"`;
-    }
-    return `"${node.name}"`;
-  }
-  return node.constructor?.name ?? "anonymous";
+    }),
+  );
 }

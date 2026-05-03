@@ -1,80 +1,211 @@
-import { type UIProtocolInit } from "../svelte/defineUI";
+import defineUI, { type UIProtocolInit } from "../svelte/defineUI";
 import virtualListController from "./virtualListController";
 
-type Trunk = typeof trunk;
-const trunk = Symbol("trunk");
+type TreeViewRowInit = Extract<UIProtocolInit, { component: "TreeViewRow" }>;
+type TreeViewRowProps = NonNullable<TreeViewRowInit["props"]>;
 
-type TreeViewApi<T> = {
-  getExpanded: (key: T, indent: number) => boolean | undefined;
-  setExpanded: (key: T, expanded: boolean) => void;
-};
-type Options<T> = {
+type Options<T extends WeakKey> = {
   buffer: number;
-  itemSize: number;
-  variant: "striped";
-  getRoots: () => T[];
-  getChildrenCount: (node: T) => number;
-  getChild: (node: T, index: number) => T;
-  render: (key: T, indent: number, api: TreeViewApi<T>) => UIProtocolInit;
+  jumpToRef?: { key: T | undefined };
+  focusRef?: { key: T | undefined };
+  getRoot: () => T;
+  getChildrenCount: (key: T) => number;
+  getChild: (key: T, index: number) => T;
+  getLabel: (key: T) => string;
+  getActive: (key: T) => boolean | undefined;
+  lookup?: (key: T) => { parent: T; index: number } | undefined;
+  activate?: (key: T) => void;
+  ondblclick?: (key: T) => number | undefined;
 };
 export default function treeViewController<T extends WeakKey>(
   options: Options<T>,
 ) {
-  const { getRoots, getChildrenCount, getChild, render, ...props } = options;
-  const expanded = new WeakMap<T, boolean>();
-  const indents = new WeakMap<T, number>();
+  const {
+    getRoot,
+    getChildrenCount,
+    getChild,
+    getLabel,
+    getActive,
+    lookup,
+    jumpToRef: jumpToRefProp,
+    focusRef: focusRefProp,
+    activate,
+    ondblclick,
+    ...props
+  } = options;
+  const depths = new WeakMap<T, number>();
+  const jumpToIndexRef = { index: undefined as number | undefined };
   type Slice = { total: number; keys: T[] };
-  const api: TreeViewApi<T> = {
-    getExpanded(key: T, indent: number) {
-      const value = expanded.get(key);
-      if (value !== undefined) {
-        return value;
-      }
-      if (getChildrenCount(key) === 0) {
-        return undefined;
-      }
-      return indent < 2; // auto expand the first 2 levels
-    },
-    setExpanded(key, value) {
-      expanded.set(key, value);
-      return 1;
-    },
-  };
+  const jumpToRef = jumpToRefProp ?? { key: undefined };
+  const focusRef = focusRefProp ?? { key: undefined };
+  const expanded = new WeakMap<T, boolean>();
 
+  function getExpanded(key: T, depth: number) {
+    const value = expanded.get(key);
+    if (value !== undefined) {
+      return value;
+    }
+    if (getChildrenCount(key) === 0) {
+      return undefined;
+    }
+    return depth <= 1; // auto expand the first level
+  }
+
+  /**
+   * Executes the fn on the children and its expanded children until fn() returns true
+   * When no fn returned true, will return the total length
+   */
   function walk(
-    node: T | Trunk,
-    indent: number,
-    collect: { from: number; till: number },
-    out: Slice,
-  ) {
-    if (node === trunk) {
-      for (const root of getRoots()) {
-        walk(root, 0, collect, out);
-      }
-      return;
-    }
-    if (out.total >= collect.from && out.total < collect.till) {
-      indents.set(node, indent);
-      out.keys.push(node);
-    }
-    out.total += 1;
-    if (api.getExpanded(node, indent) === true) {
-      const count = getChildrenCount(node);
+    key: T,
+    fn: (key: T, depth: number, position: number) => false,
+    depth?: number,
+    position?: number,
+  ): number;
+  function walk(
+    key: T,
+    fn: (key: T, depth: number, position: number) => boolean,
+    depth?: number,
+    position?: number,
+  ): number | undefined;
+  function walk(
+    key: T,
+    fn: (key: T, depth: number, position: number) => boolean,
+    depth = 0,
+    position = 0,
+  ): number | undefined {
+    if (getExpanded(key, depth) === true) {
+      const count = getChildrenCount(key);
       for (let i = 0; i < count; i++) {
-        walk(getChild(node, i), indent + 1, collect, out);
+        const child = getChild(key, i);
+        if (fn(child, depth + 1, position)) {
+          return undefined;
+        }
+        position += 1;
+        const result = walk(child, fn, depth + 1, position);
+        if (result === undefined) {
+          return;
+        }
+        position = result;
       }
     }
+    return position;
+  }
+
+  function getKeys(offset: number, count: number): Slice {
+    const keys: T[] = [];
+    const total = walk(getRoot(), (key: T, depth: number, position: number) => {
+      if (position >= offset && position < offset + count) {
+        depths.set(key, depth);
+        keys.push(key);
+      }
+      if (jumpToRef.key === key) {
+        jumpToIndexRef.index = position;
+        jumpToRef.key = undefined;
+      }
+      return false;
+    });
+    return { total, keys };
   }
 
   return virtualListController({
     ...props,
-    getKeys(offset, count) {
-      const slice: Slice = { total: 0, keys: [] };
-      walk(trunk, 0, { from: offset, till: count + offset }, slice);
-      return slice;
-    },
+    itemSize: 20,
+    variant: "striped",
+    jumpToRef: jumpToIndexRef,
+    getKeys,
     render(key) {
-      return render(key, indents.get(key) ?? 0, api);
+      const depth = depths.get(key) ?? 0;
+      const props: TreeViewRowProps = {
+        indent: depth - 1,
+        label: getLabel(key),
+        active: getActive(key),
+        expanded: getExpanded(key, depth),
+      };
+      return defineUI({
+        component: "TreeViewRow",
+        props,
+        events: {
+          onclick() {
+            if (activate) {
+              activate(key);
+              return 1;
+            }
+          },
+          ondblclick: () => ondblclick?.(key),
+          setExpanded(value) {
+            expanded.set(key, value);
+            return 1;
+          },
+          onkeydown(event) {
+            const found = lookup?.(key);
+            if (!found) {
+              return;
+            }
+            let targetKey: T | undefined;
+            if (event.key === "ArrowUp") {
+              if (found.index === 0) {
+                targetKey = found.parent;
+              } else {
+                targetKey = getChild(found.parent, found.index - 1);
+              }
+            } else if (event.key === "ArrowDown") {
+              const count = getChildrenCount(found.parent);
+              if (found.index < count - 1) {
+                targetKey = getChild(found.parent, found.index + 1);
+              } else {
+                let next = false;
+                walk(getRoot(), (branch) => {
+                  if (next) {
+                    targetKey = branch;
+                    return true;
+                  }
+                  if (branch === key) {
+                    next = true;
+                  }
+                  return false;
+                });
+              }
+            } else if (event.key === "ArrowLeft") {
+              const depth = depths.get(key);
+              if (depth !== undefined && getExpanded(key, depth)) {
+                expanded.set(key, false);
+                return 1;
+              } else {
+                targetKey = found.parent;
+              }
+            } else if (event.key === "ArrowRight") {
+              const depth = depths.get(key);
+              if (depth !== undefined && getExpanded(key, depth) === false) {
+                expanded.set(key, true);
+                return 1;
+              } else if (getChildrenCount(key) > 0) {
+                targetKey = getChild(key, 0);
+              }
+            }
+            if (targetKey && targetKey !== getRoot()) {
+              focusRef.key = targetKey;
+              jumpToRef.key = targetKey;
+              activate?.(targetKey);
+              return 1;
+            }
+          },
+        },
+        sync(patch) {
+          props.expanded = getExpanded(key, depth);
+          props.active = getActive(key);
+          props.label = getLabel(key);
+
+          if (key === focusRef.key) {
+            patch.props = {
+              ...props,
+              autofocus: true,
+            };
+            focusRef.key = undefined;
+          } else {
+            patch.props = props;
+          }
+        },
+      });
     },
   });
 }

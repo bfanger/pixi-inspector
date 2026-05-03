@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Snippet } from "svelte";
+  import { untrack, type Snippet } from "svelte";
 
   type Props = {
     /** Total number of items in the list */
@@ -10,6 +10,8 @@
     buffer: number;
     /** Determines the background pattern */
     variant: "striped";
+    /** Index of the items to scroll to */
+    jumpTo?: number;
     /** Callback to request items based on the visible viewport */
     render: (offset: number, count: number) => void;
     /** The visible items + buffer */
@@ -18,22 +20,23 @@
     value: { slot: `slot${number}`; offset: number }[];
   };
 
-  let { total, itemSize, value, variant, buffer, render, ...rest }: Props =
-    $props();
+  let {
+    total,
+    itemSize,
+    value,
+    variant,
+    buffer,
+    jumpTo,
+    render,
+    ...rest
+  }: Props = $props();
 
   let previousOffset = 0;
   let previousCount = 0;
-
-  function recalculate(el: HTMLDivElement) {
-    const bufferSize = buffer * itemSize;
-    const offset = Math.max(
-      0,
-      Math.min(Math.floor((el.scrollTop - bufferSize) / itemSize), total - 1),
-    );
-    const count = Math.min(
-      Math.ceil((el.clientHeight + bufferSize * 2) / itemSize),
-      total - offset,
-    );
+  function rerender(el: HTMLDivElement) {
+    const viewport = calculateViewport(el);
+    const offset = Math.max(0, viewport.offset - buffer);
+    const count = Math.min(viewport.count + buffer * 2, total - offset);
     if (offset !== previousOffset || count !== previousCount) {
       previousOffset = offset;
       previousCount = count;
@@ -41,22 +44,60 @@
     }
   }
 
-  function mount(el: HTMLDivElement) {
-    recalculate(el);
+  function calculateViewport(el: HTMLDivElement) {
+    const offset = Math.max(0, Math.floor(el.scrollTop / itemSize));
+    const count = Math.ceil(el.clientHeight / itemSize);
+    return { offset, count };
+  }
+
+  function resizer(el: HTMLDivElement) {
+    rerender(el);
     const observer = new ResizeObserver(() => {
-      recalculate(el);
+      rerender(el);
     });
     observer.observe(el);
     return () => {
       observer.disconnect();
     };
   }
+
+  function jumper(el: HTMLDivElement) {
+    if (jumpTo === undefined) {
+      return;
+    }
+    const viewport = untrack(() => calculateViewport(el));
+    if (
+      jumpTo > viewport.offset + 2 &&
+      jumpTo < viewport.offset + viewport.count - 2
+    ) {
+      jumpTo = undefined;
+      return;
+    }
+    let target = jumpTo - viewport.count / 2;
+    let behavior: ScrollBehavior = "instant";
+    if (viewport.count > 4) {
+      if (jumpTo > viewport.offset - 1 && jumpTo <= viewport.offset + 2) {
+        behavior = "smooth";
+        target = jumpTo - 2;
+      }
+      if (
+        jumpTo > viewport.offset + viewport.count - 3 &&
+        jumpTo <= viewport.offset + viewport.count
+      ) {
+        behavior = "smooth";
+        target = jumpTo - viewport.count + 3;
+      }
+    }
+    el.scrollTo({ top: target * itemSize, behavior });
+    jumpTo = undefined;
+  }
 </script>
 
 <div
   class="virtual-list"
-  onscroll={(e) => recalculate(e.currentTarget)}
-  {@attach mount}
+  onscroll={(e) => rerender(e.currentTarget)}
+  {@attach resizer}
+  {@attach jumper}
 >
   <div
     class="container"

@@ -1,7 +1,3 @@
-<script lang="ts" module>
-  let symbol = Symbol("TreeViewRow");
-</script>
-
 <script lang="ts">
   import type { Snippet } from "svelte";
   import IconButton from "../IconButton.svelte";
@@ -12,7 +8,8 @@
     expanded?: boolean | undefined;
     setExpanded?: (expanded: boolean) => void;
     active?: boolean;
-    onactivate?: () => void;
+    autofocus?: boolean;
+    onclick?: () => void;
     ondblclick?: () => void;
     onkeydown?: (event: { key: string }) => void;
     onmouseenter?: () => void;
@@ -26,7 +23,8 @@
     expanded,
     setExpanded,
     active,
-    onactivate,
+    autofocus,
+    onclick,
     ondblclick,
     onkeydown,
     children,
@@ -36,81 +34,19 @@
 
   let el: HTMLDivElement | undefined = $state();
 
-  type PartialProps = {
-    indent: number;
-    onactivate?: () => void;
-  };
-
-  function onKeyDown(e: KeyboardEvent) {
-    if (e.key === "ArrowUp") {
-      let sibling: any =
-        el?.previousElementSibling ??
-        el?.parentElement?.previousElementSibling?.lastElementChild;
-      let props: PartialProps = sibling?.[symbol];
-      if (props) {
-        e.preventDefault();
-        sibling.focus();
-        props.onactivate?.();
-      }
-    } else if (e.key === "ArrowDown") {
-      const sibling: any =
-        el?.nextElementSibling ??
-        el?.parentElement?.nextElementSibling?.firstElementChild;
-      const props: PartialProps = sibling?.[symbol];
-      if (props) {
-        e.preventDefault();
-        sibling.focus();
-        props.onactivate?.();
-      }
-    } else if (e.key === "ArrowLeft") {
-      if (expanded === true) {
-        setExpanded?.(false);
-        e.preventDefault();
-      } else {
-        let cursor: any = el;
-
-        while (true) {
-          cursor =
-            cursor?.previousElementSibling ??
-            cursor?.parentElement?.previousElementSibling?.lastElementChild;
-          const props: PartialProps = cursor?.[symbol];
-
-          if (!props) {
-            break;
-          }
-          if (props.indent === indent - 1) {
-            e.preventDefault();
-            cursor.focus();
-            props.onactivate?.();
-            break;
-          }
-        }
-      }
-    } else if (e.key === "ArrowRight") {
-      if (expanded === false) {
-        e.preventDefault();
-        setExpanded?.(true);
-      } else if (expanded === true) {
-        const sibling: any =
-          el?.nextElementSibling ??
-          el?.parentElement?.nextElementSibling?.firstElementChild;
-        const props: PartialProps = sibling?.[symbol];
-        if (props.indent === indent + 1) {
-          e.preventDefault();
-          sibling.focus();
-          props.onactivate?.();
-        }
-      }
-    } else {
-      onkeydown?.({ key: e.key });
+  $effect(() => {
+    if (el && autofocus) {
+      el.focus();
+      autofocus = undefined;
     }
-  }
+  });
 
-  function exposeProps(el: HTMLElement) {
-    (el as any as { [symbol]: PartialProps })[symbol] = {
-      indent,
-      onactivate,
-    };
+  const keys = ["ArrowUp", "ArrowRight", "ArrowDown", "ArrowLeft"];
+  function onKeyDown(e: KeyboardEvent) {
+    if (keys.includes(e.key)) {
+      e.preventDefault();
+    }
+    onkeydown?.({ key: e.key });
   }
 </script>
 
@@ -122,12 +58,11 @@
   class:active
   style:--indent={indent}
   tabindex="0"
-  onclick={() => onactivate?.()}
+  onclick={() => onclick?.()}
   ondblclick={() => ondblclick?.()}
   onmouseenter={() => onmouseenter?.()}
   onmouseleave={() => onmouseleave?.()}
   onkeydown={onKeyDown}
-  {@attach exposeProps}
 >
   {#if expanded === true}
     <IconButton icon="expanded" onclick={() => setExpanded?.(false)} />

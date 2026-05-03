@@ -5,7 +5,6 @@ import rootController from "../../../packages/ui-protocol/src/controllers/rootCo
 import { evalListen } from "../../../packages/ui-protocol/src/evalBridge";
 import refreshController from "../../../packages/ui-protocol/src/controllers/refreshController";
 import treeViewController from "../../../packages/ui-protocol/src/controllers/treeViewController";
-import defineUI from "../../../packages/ui-protocol/src/svelte/defineUI";
 
 const width = 480;
 const height = 320;
@@ -231,15 +230,17 @@ const testTreeViewController = true as boolean;
 if (testTreeViewController === false) {
   (globalThis as any).__PIXI_STAGE__ = stage;
 } else {
+  const win = window as any;
+
+  type Node = Container | DisplayObject;
+
   evalListen(
     "pixi",
     rootController(() => [
       refreshController({ interval: 1000, depth: 1 }),
-      treeViewController<DisplayObject | Container>({
-        itemSize: 20,
+      treeViewController<Node>({
         buffer: 10,
-        variant: "striped",
-        getRoots: () => [stage],
+        getRoot: () => stage,
         getChildrenCount: (node) => {
           if ("children" in node) {
             return node.children.length;
@@ -253,45 +254,31 @@ if (testTreeViewController === false) {
           }
           return child;
         },
-        render: (key, indent, api) => {
-          let expanded = api.getExpanded(key, indent);
-          return defineUI({
-            component: "TreeViewRow",
-            props: {
-              indent,
-              label: buildName(key),
-              expanded,
-            },
-            events: {
-              setExpanded(value) {
-                api.setExpanded(key, value);
-                return 1;
-              },
-            },
-            sync(patch) {
-              const nextExpanded = api.getExpanded(key, indent);
-              if (expanded !== nextExpanded) {
-                expanded = nextExpanded;
-                patch.props = {
-                  indent,
-                  expanded,
-                  label: buildName(key),
-                };
-              }
-            },
-          });
+        getActive: (node) => node === win.$pixi,
+        getLabel: (node: Node) => {
+          if ("name" in node && node.name) {
+            if (node.constructor.name) {
+              return `${node.constructor.name} "${node.name}"`;
+            }
+            return `"${node.name}"`;
+          }
+          return node.constructor.name ?? "anonymous";
+        },
+        lookup(node) {
+          const parent = node.parent;
+          if (!parent) {
+            return undefined;
+          }
+          return { parent, index: parent.children.indexOf(node) };
+        },
+        activate(node) {
+          win.$pixi = node;
+        },
+        ondblclick(node) {
+          // eslint-disable-next-line no-console
+          console.log(node);
         },
       }),
     ]),
   );
-
-  function buildName(node: DisplayObject) {
-    if ("name" in node && node.name) {
-      if (node.constructor.name) {
-        return `${node.constructor.name} "${node.name}"`;
-      }
-      return `"${node.name}"`;
-    }
-    return node.constructor.name ?? "anonymous";
-  }
 }
