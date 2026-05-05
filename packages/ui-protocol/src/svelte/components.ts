@@ -17,8 +17,7 @@ import Warning from "blender-elements/src/Warning/Warning.svelte";
 import Tabs from "blender-elements/src/Tabs/Tabs.svelte";
 import ColorInput from "blender-elements/src/ColorInput/ColorInput.svelte";
 import ToggleButton from "blender-elements/src/ToggleButton/ToggleButton.svelte";
-import TreeViewRow from "blender-elements/src/TreeView/TreeViewRow.svelte";
-import TreeView from "blender-elements/src/TreeView/TreeView.svelte";
+import TreeViewRow from "blender-elements/src/TreeViewRow/TreeViewRow.svelte";
 import VirtualList from "blender-elements/src/VirtualList/VirtualList.svelte";
 
 const components = {
@@ -41,7 +40,6 @@ const components = {
   Property,
   Warning,
   Tabs,
-  TreeView,
   TreeViewRow,
   VirtualList,
 } as const;

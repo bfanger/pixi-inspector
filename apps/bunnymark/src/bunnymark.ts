@@ -226,19 +226,19 @@ function update() {
   requestAnimationFrame(update);
   stats.end();
 }
+type OutlineNode = Container | DisplayObject;
+
 const testTreeViewController = true as boolean;
 if (testTreeViewController === false) {
   (globalThis as any).__PIXI_STAGE__ = stage;
 } else {
   const win = window as any;
 
-  type Node = Container | DisplayObject;
-
   evalListen(
     "pixi",
     rootController(() => [
       refreshController({ interval: 1000, depth: 1 }),
-      treeViewController<Node>({
+      treeViewController<OutlineNode>({
         buffer: 10,
         getRoot: () => stage,
         getNestedCount: (node) => {
@@ -254,37 +254,43 @@ if (testTreeViewController === false) {
           }
           return child;
         },
-        getActive: (node) => node === win.$pixi,
-        getLabel: (node: Node) => {
+        syncProps(node, props, parents) {
+          props.active = node === win.$pixi;
+          props.muted = node.visible ? parents.some((p) => !p.visible) : true;
           if ("name" in node && node.name) {
             if (node.constructor.name) {
-              return `${node.constructor.name} "${node.name}"`;
+              props.label = `${node.constructor.name} "${node.name}"`;
+            } else {
+              props.label = `"${node.name}"`;
             }
-            return `"${node.name}"`;
+          } else {
+            props.label = node.constructor.name ?? "anonymous";
           }
-          return node.constructor.name ?? "anonymous";
         },
-        lookup(node) {
-          const parent = node.parent;
-          if (!parent) {
-            return undefined;
-          }
-          return { parent, index: parent.children.indexOf(node) };
+        getIndex(parent, key) {
+          return (parent as Container).children.indexOf(key);
         },
         activate(node) {
           win.$pixi = node;
+          return 1;
         },
         ondblclick(node) {
           // eslint-disable-next-line no-console
           console.log(node);
         },
-        initSlots(node) {
+        onkeydown(node, event) {
+          if (event.key === "h") {
+            node.visible = !node.visible;
+            return 1;
+          }
+        },
+        initSlots(node, parents) {
           const props = {
             icon: node.visible
               ? ("eye-opened" as const)
               : ("eye-closed" as const),
             transparent: true,
-            muted: false,
+            muted: parents.some((p) => !p.visible),
             hint: "",
           };
           return {
@@ -295,12 +301,13 @@ if (testTreeViewController === false) {
                 events: {
                   onclick() {
                     node.visible = !node.visible;
+                    return 2;
                   },
                 },
                 sync(patch) {
                   props.icon = node.visible ? "eye-opened" : "eye-closed";
                   props.hint = node.visible ? "Hide (h)" : "Show (h)";
-
+                  props.muted = parents.some((p) => !p.visible);
                   patch.props = props;
                 },
               },

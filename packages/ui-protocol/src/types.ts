@@ -50,7 +50,10 @@ export type TreeObjectValue = {
   [key: string]: TreeValue;
 };
 type TreeArrayValue = TreeValue[];
-
+/**
+ * By default, an event syncs the node it fired on.
+ * Return a number from the handler to expands the scope: 1 = parent, 2 = grandparent, etc.
+ */
 export type TreeEventHandler = (
   this: TreeControllerNode,
   ...args: TreeValue[]

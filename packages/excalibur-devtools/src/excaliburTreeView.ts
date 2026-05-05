@@ -8,7 +8,6 @@ export default function excaliburTreeView(scene: Scene) {
     treeViewController<Scene | Entity>({
       buffer: 3,
 
-      getActive: (node) => node === win.$entity,
       getRoot: () => scene,
       getNestedKey(node, index) {
         return (node as Scene).entities[index];
@@ -19,28 +18,26 @@ export default function excaliburTreeView(scene: Scene) {
         }
         return 0;
       },
-      getLabel(node) {
+      syncProps(node, props) {
+        props.active = node === win.$entity;
         if ("name" in node && node.name) {
           if (node.name === "Sprite") {
-            return node.name;
+            props.label = node.name;
+          } else if (node.constructor.name) {
+            props.label = `${node.constructor.name} "${node.name}"`;
+          } else {
+            props.label = `"${node.name}"`;
           }
-          if (node.constructor.name) {
-            return `${node.constructor.name} "${node.name}"`;
-          }
-          return `"${node.name}"`;
+        } else {
+          props.label = node.constructor?.name ?? "anonymous";
         }
-        return node.constructor?.name ?? "anonymous";
       },
       activate(node) {
         win.$entity = node;
+        return 1;
       },
-      lookup(key) {
-        if ("scene" in key && key.scene) {
-          return {
-            parent: key.scene,
-            index: key.scene.entities.indexOf(key),
-          };
-        }
+      getIndex(parent, key) {
+        return (parent as Scene).entities.indexOf(key as Entity);
       },
       ondblclick(node) {
         // eslint-disable-next-line no-console

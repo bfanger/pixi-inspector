@@ -11,12 +11,15 @@ type Options<T extends WeakKey> = {
   getRoot: () => T;
   getNestedCount: (key: T) => number;
   getNestedKey: (key: T, index: number) => T;
-  lookup: (key: T) => { parent: T; index: number } | undefined;
-  getLabel: (key: T) => string;
-  getActive: (key: T) => boolean | undefined;
-  activate?: (key: T) => void;
+  getIndex: (parent: T, key: T) => number;
+  syncProps: (key: T, props: TreeViewRowProps, parents: T[]) => void;
+  activate?: (key: T) => number | undefined;
   ondblclick?: (key: T) => number | undefined;
-  initSlots?: (key: T) => Record<string, UIProtocolInit[]> | undefined;
+  onkeydown?: (key: T, event: { key: string }) => number | undefined;
+  initSlots?: (
+    key: T,
+    parents: T[],
+  ) => Record<string, UIProtocolInit[]> | undefined;
 };
 export default function treeViewController<T extends WeakKey>(
   options: Options<T>,
@@ -25,24 +28,24 @@ export default function treeViewController<T extends WeakKey>(
     getRoot,
     getNestedCount,
     getNestedKey,
-    lookup,
-    getLabel,
-    getActive,
+    getIndex,
+    syncProps,
     jumpToRef: jumpToRefProp,
     focusRef: focusRefProp,
     activate,
     ondblclick,
+    onkeydown,
     initSlots,
     ...props
   } = options;
-  const depths = new WeakMap<T, number>();
+  const parentsStore = new Map<T, T[]>();
   const jumpToIndexRef = { index: undefined as number | undefined };
   type Slice = { total: number; keys: T[] };
   const jumpToRef = jumpToRefProp ?? { key: undefined };
   const focusRef = focusRefProp ?? { key: undefined };
   const expanded = new WeakMap<T, boolean>();
 
-  function getExpanded(key: T, depth: number) {
+  function getExpanded(key: T, parents: T[]) {
     const value = expanded.get(key);
     if (value !== undefined) {
       return value;
@@ -50,7 +53,7 @@ export default function treeViewController<T extends WeakKey>(
     if (getNestedCount(key) === 0) {
       return undefined;
     }
-    return depth <= 1; // auto expand the first level
+    return parents.length <= 1; // auto expand the first level
   }
 
   /**
@@ -59,31 +62,32 @@ export default function treeViewController<T extends WeakKey>(
    */
   function walk(
     key: T,
-    fn: (key: T, depth: number, position: number) => false,
-    depth?: number,
+    fn: (key: T, parents: T[], position: number) => false,
+    parents?: T[],
     position?: number,
   ): number;
   function walk(
     key: T,
-    fn: (key: T, depth: number, position: number) => boolean,
-    depth?: number,
+    fn: (key: T, parents: T[], position: number) => boolean,
+    parents?: T[],
     position?: number,
   ): number | undefined;
   function walk(
     key: T,
-    fn: (key: T, depth: number, position: number) => boolean,
-    depth = 0,
+    fn: (key: T, parents: T[], position: number) => boolean,
+    parents: T[] = [],
     position = 0,
   ): number | undefined {
-    if (getExpanded(key, depth) === true) {
+    if (getExpanded(key, parents) === true) {
       const count = getNestedCount(key);
       for (let i = 0; i < count; i++) {
         const nestedKey = getNestedKey(key, i);
-        if (fn(nestedKey, depth + 1, position)) {
+        const nestedParents = [key, ...parents];
+        if (fn(nestedKey, nestedParents, position)) {
           return undefined;
         }
         position += 1;
-        const result = walk(nestedKey, fn, depth + 1, position);
+        const result = walk(nestedKey, fn, nestedParents, position);
         if (result === undefined) {
           return;
         }
@@ -95,9 +99,10 @@ export default function treeViewController<T extends WeakKey>(
 
   function getKeys(offset: number, count: number): Slice {
     const keys: T[] = [];
-    const total = walk(getRoot(), (key: T, depth: number, position: number) => {
+    parentsStore.clear();
+    const total = walk(getRoot(), (key: T, parents: T[], position: number) => {
       if (position >= offset && position < offset + count) {
-        depths.set(key, depth);
+        parentsStore.set(key, parents);
         keys.push(key);
       }
       if (jumpToRef.key === key) {
@@ -116,45 +121,45 @@ export default function treeViewController<T extends WeakKey>(
     jumpToRef: jumpToIndexRef,
     getKeys,
     render(key) {
-      const depth = depths.get(key) ?? 0;
+      const parents = parentsStore.get(key) ?? [];
+      const depth = parents.length;
       const props: TreeViewRowProps = {
         indent: depth - 1,
-        label: getLabel(key),
-        active: getActive(key),
-        expanded: getExpanded(key, depth),
+        label: "",
+        active: false,
+        expanded: getExpanded(key, parents),
       };
+      syncProps(key, props, parents);
       return defineUI({
         component: "TreeViewRow",
         props,
-        slots: initSlots?.(key),
+        slots: initSlots?.(key, parents),
         events: {
-          onclick() {
-            if (activate) {
-              activate(key);
-              return 1;
-            }
-          },
+          onclick: () => activate?.(key),
           ondblclick: () => ondblclick?.(key),
           setExpanded(value) {
             expanded.set(key, value);
             return 1;
           },
           onkeydown(event) {
-            const found = lookup(key);
-            if (!found) {
+            let updateDepth = onkeydown?.(key, event);
+            const parents = parentsStore.get(key);
+            if (!parents) {
               return;
             }
+            const parent = parents[0];
+            const index = getIndex(parent, key);
             let targetKey: T | undefined;
             if (event.key === "ArrowUp") {
-              if (found.index === 0) {
-                targetKey = found.parent;
+              if (index === 0) {
+                targetKey = parent;
               } else {
-                targetKey = getNestedKey(found.parent, found.index - 1);
+                targetKey = getNestedKey(parent, index - 1);
               }
             } else if (event.key === "ArrowDown") {
-              const count = getNestedCount(found.parent);
-              if (found.index < count - 1) {
-                targetKey = getNestedKey(found.parent, found.index + 1);
+              const count = getNestedCount(parent);
+              if (index < count - 1) {
+                targetKey = getNestedKey(parent, index + 1);
               } else {
                 let next = false;
                 walk(getRoot(), (branch) => {
@@ -169,16 +174,18 @@ export default function treeViewController<T extends WeakKey>(
                 });
               }
             } else if (event.key === "ArrowLeft") {
-              const depth = depths.get(key);
-              if (depth !== undefined && getExpanded(key, depth)) {
+              if (parents !== undefined && getExpanded(key, parents)) {
                 expanded.set(key, false);
                 return 1;
               } else {
-                targetKey = found.parent;
+                targetKey = parent;
               }
             } else if (event.key === "ArrowRight") {
-              const depth = depths.get(key);
-              if (depth !== undefined && getExpanded(key, depth) === false) {
+              const parents = parentsStore.get(key);
+              if (
+                parents !== undefined &&
+                getExpanded(key, parents) === false
+              ) {
                 expanded.set(key, true);
                 return 1;
               } else if (getNestedCount(key) > 0) {
@@ -189,14 +196,15 @@ export default function treeViewController<T extends WeakKey>(
               focusRef.key = targetKey;
               jumpToRef.key = targetKey;
               activate?.(targetKey);
-              return 1;
+              updateDepth ??= 1;
             }
+            return updateDepth;
           },
         },
         sync(patch) {
-          props.expanded = getExpanded(key, depth);
-          props.active = getActive(key);
-          props.label = getLabel(key);
+          const parents = parentsStore.get(key) ?? [];
+          props.expanded = getExpanded(key, parents);
+          syncProps(key, props, parents);
 
           if (key === focusRef.key) {
             patch.props = {

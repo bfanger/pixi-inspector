@@ -8,6 +8,7 @@
     expanded?: boolean | undefined;
     setExpanded?: (expanded: boolean) => void;
     active?: boolean;
+    muted?: boolean;
     autofocus?: boolean;
     onclick?: () => void;
     ondblclick?: () => void;
@@ -23,6 +24,7 @@
     expanded,
     setExpanded,
     active,
+    muted,
     autofocus,
     onclick,
     ondblclick,
@@ -56,6 +58,7 @@
   bind:this={el}
   class="treeview-row"
   class:active
+  class:muted
   style:--indent={indent}
   tabindex="0"
   onclick={() => onclick?.()}
@@ -123,5 +126,9 @@
     overflow: hidden;
     flex: 1;
     text-overflow: ellipsis;
+
+    .muted & {
+      opacity: 0.5;
+    }
   }
 </style>
