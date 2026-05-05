@@ -1,6 +1,6 @@
 <script lang="ts">
   import { getContext, onMount } from "svelte";
-  import IconButton from "./IconButton.svelte";
+  import ToggleButton from "./ToggleButton/ToggleButton.svelte";
 
   type Props = {
     indent: number;
@@ -151,22 +151,24 @@
   tabindex="0"
 >
   {#if expanded === true}
-    <IconButton icon="expanded" onclick={() => oncollapse()} />
+    <ToggleButton transparent icon="expanded" onclick={() => oncollapse()} />
   {:else if expanded === false}
-    <IconButton icon="collapsed" onclick={() => onexpand()} />
+    <ToggleButton transparent icon="collapsed" onclick={() => onexpand()} />
   {:else}
     <span class="toggle-spacer"></span>
   {/if}
   <span class="title">{title}</span>
   {#if selectable}
-    <IconButton
+    <ToggleButton
+      transparent
       icon="selectable"
       hint="Disable right-click selection"
       muted={parentUnselectable}
       onclick={() => onunselectable()}
     />
   {:else}
-    <IconButton
+    <ToggleButton
+      transparent
       icon="unselectable"
       hint="Enable right-click selection"
       muted={parentUnselectable}
@@ -174,9 +176,19 @@
     />
   {/if}
   {#if visible === true}
-    <IconButton icon="eye-opened" hint="Hide (h)" onclick={() => onhide()} />
+    <ToggleButton
+      transparent
+      icon="eye-opened"
+      hint="Hide (h)"
+      onclick={() => onhide()}
+    />
   {:else if visible === false}
-    <IconButton icon="eye-closed" hint="Show (h)" onclick={() => onshow()} />
+    <ToggleButton
+      transparent
+      icon="eye-closed"
+      hint="Show (h)"
+      onclick={() => onshow()}
+    />
   {/if}
 </div>
 

@@ -10,10 +10,10 @@ export default function excaliburTreeView(scene: Scene) {
 
       getActive: (node) => node === win.$entity,
       getRoot: () => scene,
-      getChild(node, index) {
+      getNestedKey(node, index) {
         return (node as Scene).entities[index];
       },
-      getChildrenCount(node) {
+      getNestedCount(node) {
         if ("entities" in node) {
           return node.entities.length;
         }

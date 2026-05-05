@@ -241,13 +241,13 @@ if (testTreeViewController === false) {
       treeViewController<Node>({
         buffer: 10,
         getRoot: () => stage,
-        getChildrenCount: (node) => {
+        getNestedCount: (node) => {
           if ("children" in node) {
             return node.children.length;
           }
           return 0;
         },
-        getChild(node, index) {
+        getNestedKey(node, index) {
           const child = (node as Container).children[index];
           if (!child) {
             throw new Error(`Index ${index} is out of bounds`);
@@ -277,6 +277,35 @@ if (testTreeViewController === false) {
         ondblclick(node) {
           // eslint-disable-next-line no-console
           console.log(node);
+        },
+        initSlots(node) {
+          const props = {
+            icon: node.visible
+              ? ("eye-opened" as const)
+              : ("eye-closed" as const),
+            transparent: true,
+            muted: false,
+            hint: "",
+          };
+          return {
+            children: [
+              {
+                component: "ToggleButton",
+                props,
+                events: {
+                  onclick() {
+                    node.visible = !node.visible;
+                  },
+                },
+                sync(patch) {
+                  props.icon = node.visible ? "eye-opened" : "eye-closed";
+                  props.hint = node.visible ? "Hide (h)" : "Show (h)";
+
+                  patch.props = props;
+                },
+              },
+            ],
+          };
         },
       }),
     ]),

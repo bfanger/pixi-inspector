@@ -9,28 +9,30 @@ type Options<T extends WeakKey> = {
   jumpToRef?: { key: T | undefined };
   focusRef?: { key: T | undefined };
   getRoot: () => T;
-  getChildrenCount: (key: T) => number;
-  getChild: (key: T, index: number) => T;
+  getNestedCount: (key: T) => number;
+  getNestedKey: (key: T, index: number) => T;
+  lookup: (key: T) => { parent: T; index: number } | undefined;
   getLabel: (key: T) => string;
   getActive: (key: T) => boolean | undefined;
-  lookup?: (key: T) => { parent: T; index: number } | undefined;
   activate?: (key: T) => void;
   ondblclick?: (key: T) => number | undefined;
+  initSlots?: (key: T) => Record<string, UIProtocolInit[]> | undefined;
 };
 export default function treeViewController<T extends WeakKey>(
   options: Options<T>,
 ) {
   const {
     getRoot,
-    getChildrenCount,
-    getChild,
+    getNestedCount,
+    getNestedKey,
+    lookup,
     getLabel,
     getActive,
-    lookup,
     jumpToRef: jumpToRefProp,
     focusRef: focusRefProp,
     activate,
     ondblclick,
+    initSlots,
     ...props
   } = options;
   const depths = new WeakMap<T, number>();
@@ -45,14 +47,14 @@ export default function treeViewController<T extends WeakKey>(
     if (value !== undefined) {
       return value;
     }
-    if (getChildrenCount(key) === 0) {
+    if (getNestedCount(key) === 0) {
       return undefined;
     }
     return depth <= 1; // auto expand the first level
   }
 
   /**
-   * Executes the fn on the children and its expanded children until fn() returns true
+   * Executes the fn on the nested keys and when expanded it's nested keys too until a fn() returns true
    * When no fn returned true, will return the total length
    */
   function walk(
@@ -74,14 +76,14 @@ export default function treeViewController<T extends WeakKey>(
     position = 0,
   ): number | undefined {
     if (getExpanded(key, depth) === true) {
-      const count = getChildrenCount(key);
+      const count = getNestedCount(key);
       for (let i = 0; i < count; i++) {
-        const child = getChild(key, i);
-        if (fn(child, depth + 1, position)) {
+        const nestedKey = getNestedKey(key, i);
+        if (fn(nestedKey, depth + 1, position)) {
           return undefined;
         }
         position += 1;
-        const result = walk(child, fn, depth + 1, position);
+        const result = walk(nestedKey, fn, depth + 1, position);
         if (result === undefined) {
           return;
         }
@@ -124,6 +126,7 @@ export default function treeViewController<T extends WeakKey>(
       return defineUI({
         component: "TreeViewRow",
         props,
+        slots: initSlots?.(key),
         events: {
           onclick() {
             if (activate) {
@@ -137,7 +140,7 @@ export default function treeViewController<T extends WeakKey>(
             return 1;
           },
           onkeydown(event) {
-            const found = lookup?.(key);
+            const found = lookup(key);
             if (!found) {
               return;
             }
@@ -146,12 +149,12 @@ export default function treeViewController<T extends WeakKey>(
               if (found.index === 0) {
                 targetKey = found.parent;
               } else {
-                targetKey = getChild(found.parent, found.index - 1);
+                targetKey = getNestedKey(found.parent, found.index - 1);
               }
             } else if (event.key === "ArrowDown") {
-              const count = getChildrenCount(found.parent);
+              const count = getNestedCount(found.parent);
               if (found.index < count - 1) {
-                targetKey = getChild(found.parent, found.index + 1);
+                targetKey = getNestedKey(found.parent, found.index + 1);
               } else {
                 let next = false;
                 walk(getRoot(), (branch) => {
@@ -178,8 +181,8 @@ export default function treeViewController<T extends WeakKey>(
               if (depth !== undefined && getExpanded(key, depth) === false) {
                 expanded.set(key, true);
                 return 1;
-              } else if (getChildrenCount(key) > 0) {
-                targetKey = getChild(key, 0);
+              } else if (getNestedCount(key) > 0) {
+                targetKey = getNestedKey(key, 0);
               }
             }
             if (targetKey && targetKey !== getRoot()) {

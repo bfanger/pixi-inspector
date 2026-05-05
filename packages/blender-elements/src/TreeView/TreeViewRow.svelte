@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Snippet } from "svelte";
-  import IconButton from "../IconButton.svelte";
+  import ToggleButton from "../ToggleButton/ToggleButton.svelte";
 
   type Props = {
     indent: number;
@@ -65,9 +65,17 @@
   onkeydown={onKeyDown}
 >
   {#if expanded === true}
-    <IconButton icon="expanded" onclick={() => setExpanded?.(false)} />
+    <ToggleButton
+      icon="expanded"
+      transparent
+      onclick={() => setExpanded?.(false)}
+    />
   {:else if expanded === false}
-    <IconButton icon="collapsed" onclick={() => setExpanded?.(true)} />
+    <ToggleButton
+      icon="collapsed"
+      transparent
+      onclick={() => setExpanded?.(true)}
+    />
   {:else}
     <div class="toggle-spacer"></div>
   {/if}

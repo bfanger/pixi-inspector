@@ -8,6 +8,7 @@
     transparent?: boolean;
     hint?: string | undefined;
     rounded?: "all" | "left" | "right" | "none";
+    muted?: boolean;
     setValue?: (value: boolean) => void;
     onclick?: () => void;
   };
@@ -19,6 +20,7 @@
     transparent = false,
     hint = undefined,
     rounded = "all",
+    muted = false,
     setValue,
     onclick,
   }: Props = $props();
@@ -35,6 +37,7 @@
   class="toggle"
   class:pressed={value}
   class:transparent
+  class:muted
   class:with-label={label}
   data-rounded={rounded}
   title={hint}
@@ -115,6 +118,10 @@
     &:active {
       opacity: 1;
       background-color: #4772b3;
+    }
+
+    &.muted {
+      opacity: 0.3;
     }
   }
 
