@@ -18,6 +18,7 @@ export default defineConfig(
       "vite.config.ts.timestamp-*.mjs",
       "apps/chrome-extension/build",
       "apps/firefox-extension/build",
+      "apps/firefox-extension/profile",
       "apps/example-excalibur-project/res",
       "apps/example-excalibur-project/dist",
     ],

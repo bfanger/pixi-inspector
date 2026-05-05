@@ -1,5 +1,6 @@
 /apps/chrome-extension/build
 /apps/firefox-extension/build
+/apps/firefox-extension/profile
 /apps/example-excalibur-project/res/tileset.tsx
 /apps/example-excalibur-project/dist
 /pnpm-lock.yaml

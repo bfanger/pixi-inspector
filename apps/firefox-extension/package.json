@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node build.js && concurrently --kill-others \"npm:dev:*\"",
-    "dev:web-ext": "web-ext run --source-dir build --url http://localhost:5173/ --devtools",
+    "dev:web-ext": "web-ext run --source-dir build --url http://localhost:5173/ --devtools --firefox-profile ./profile --keep-profile-changes",
     "dev:esbuild": "node build.js --watch",
     "build": "node build.js && web-ext lint --source-dir build && web-ext build --source-dir build --overwrite-dest && git archive main --format zip > web-ext-artifacts/source.zip"
   },
