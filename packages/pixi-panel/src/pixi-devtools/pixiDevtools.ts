@@ -82,7 +82,7 @@ export default function pixiDevtools() {
       const app = this.app();
       if (app) {
         mode = "PIXI";
-        return app.renderer as Renderer<ICanvas>;
+        return app.renderer;
       }
       const game = getGlobal<Game>("__PHASER_GAME__");
       if (game) {
@@ -152,13 +152,13 @@ export default function pixiDevtools() {
     },
     parentOf(node: UniversalNode) {
       if ("parent" in node) {
-        return (node as Container).parent;
+        return node.parent;
       }
       if ("parentContainer" in node) {
-        const container = (node as GameObjects.GameObject).parentContainer;
+        const container = node.parentContainer;
 
         if (container === null) {
-          return (node as GameObjects.GameObject).scene;
+          return node.scene;
         }
         return container;
       }

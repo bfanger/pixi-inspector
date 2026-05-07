@@ -10,6 +10,6 @@
   "devDependencies": {
     "pixi-panel": "workspace:*",
     "ui-protocol": "workspace:*",
-    "vite": "^8.0.8"
+    "vite": "^8.0.12"
   }
 }

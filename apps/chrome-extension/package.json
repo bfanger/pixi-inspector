@@ -8,10 +8,10 @@
   },
   "devDependencies": {
     "esbuild": "^0.28.0",
-    "esbuild-svelte": "^0.9.4",
+    "esbuild-svelte": "^0.9.5",
     "pixi-panel": "workspace:*",
     "rimraf": "^6.1.3",
-    "svelte": "^5.55.4",
+    "svelte": "^5.55.5",
     "zip-dir": "^2.0.0"
   }
 }

@@ -1,6 +1,7 @@
 packages:
   - apps/*
   - packages/*
-
-onlyBuiltDependencies:
-  - esbuild
+allowBuilds:
+  esbuild: true
+  spawn-sync: false
+  unrs-resolver: false

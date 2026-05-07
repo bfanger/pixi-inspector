@@ -10,8 +10,8 @@
   "devDependencies": {
     "@excaliburjs/plugin-tiled": "0.32.0",
     "excalibur": "0.32.0",
-    "typescript": "6.0.2",
-    "vite": "8.0.8",
-    "excalibur-devtools": "workspace:*"
+    "excalibur-devtools": "workspace:*",
+    "typescript": "6.0.3",
+    "vite": "8.0.12"
   }
 }
