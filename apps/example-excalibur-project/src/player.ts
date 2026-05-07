@@ -12,6 +12,7 @@ import {
   Vector,
 } from "excalibur";
 import { Resources } from "./resources";
+import { Weapon } from "./weapon";
 
 const walkSpeed = 32; // pixels/sec
 const frameMs = 200;
@@ -212,6 +213,7 @@ export class Player extends Actor {
       ],
     });
     this.graphics.add("down-walk", downWalk);
+    this.addChild(new Weapon());
   }
 
   onPreUpdate(engine: Engine): void {

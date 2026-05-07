@@ -3,21 +3,25 @@ import errorBoundaryController from "ui-protocol/src/controllers/errorBoundaryCo
 import treeViewController from "ui-protocol/src/controllers/treeViewController";
 const win = window as any;
 
-export default function excaliburTreeView(scene: Scene) {
-  return errorBoundaryController(() =>
-    treeViewController<Scene | Entity>({
-      buffer: 3,
+type OutlinerNode = Scene | Entity;
 
+export default function excaliburTreeView(scene: Scene) {
+  function getChildren(node: OutlinerNode) {
+    if (node === scene) {
+      return node.entities.filter((a) => !a.parent);
+    }
+    if ("children" in node) {
+      return node.children;
+    }
+    return [];
+  }
+
+  return errorBoundaryController(() =>
+    treeViewController<OutlinerNode>({
+      buffer: 3,
       getRoot: () => scene,
-      getNestedKey(node, index) {
-        return (node as Scene).entities[index];
-      },
-      getNestedCount(node) {
-        if ("entities" in node) {
-          return node.entities.length;
-        }
-        return 0;
-      },
+      getNestedKey: (node, index) => getChildren(node)[index],
+      getNestedCount: (node) => getChildren(node).length,
       syncProps(node, props) {
         props.active = node === win.$entity;
         if ("name" in node && node.name) {
@@ -36,9 +40,7 @@ export default function excaliburTreeView(scene: Scene) {
         win.$entity = node;
         return 1;
       },
-      getIndex(parent, key) {
-        return (parent as Scene).entities.indexOf(key as Entity);
-      },
+      getIndex: (parent, key) => getChildren(parent).indexOf(key as Entity),
       ondblclick(node) {
         // eslint-disable-next-line no-console
         console.log(node);

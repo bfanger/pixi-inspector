@@ -24,13 +24,14 @@ export default function excaliburPanel(engine: Engine) {
       {
         component: "SplitPanel",
         props: { minHeight: 100 },
-        children: [backgroundPanel(engine)],
+        children: [enginePanel(engine)],
       },
     ],
   });
 }
+const win = window as any;
 
-function backgroundPanel(engine: Engine) {
+function enginePanel(engine: Engine) {
   return errorBoundaryController(() =>
     panelController({ title: "Engine" }, () => ({
       component: "Box",
@@ -46,6 +47,19 @@ function backgroundPanel(engine: Engine) {
               getValue: () => engine.backgroundColor.toHex(),
               setValue: (hex) => {
                 engine.backgroundColor = Color.fromHex(hex);
+              },
+            },
+          ],
+        },
+        {
+          component: "Property",
+          children: [
+            {
+              component: "CheckboxInput",
+              props: { label: "Draw debug" },
+              getValue: () => win.___EXCALIBUR_DEVTOOL._isDebug as boolean,
+              setValue(enabled) {
+                win.___EXCALIBUR_DEVTOOL.showDebug(enabled);
               },
             },
           ],
