@@ -5,9 +5,9 @@ const win = window as any;
 
 type OutlinerNode = Scene | Entity;
 
-export default function excaliburTreeView(scene: Scene) {
+export default function excaliburTreeView(rootRef: { value: Scene }) {
   function getChildren(node: OutlinerNode) {
-    if (node === scene) {
+    if (node === rootRef.value) {
       return node.entities.filter((a) => !a.parent);
     }
     if ("children" in node) {
@@ -19,7 +19,7 @@ export default function excaliburTreeView(scene: Scene) {
   return errorBoundaryController(() =>
     treeViewController<OutlinerNode>({
       buffer: 3,
-      getRoot: () => scene,
+      rootRef,
       getNestedKey: (node, index) => getChildren(node)[index],
       getNestedCount: (node) => getChildren(node).length,
       syncProps(node, props) {

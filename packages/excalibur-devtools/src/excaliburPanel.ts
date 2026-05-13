@@ -18,7 +18,10 @@ export default function excaliburPanel(engine: Engine) {
             component: "Button",
             props: { label: "TODO: Select scene" },
           }),
-          excaliburTreeView(engine.rootScene),
+          ifController(
+            () => engine.rootScene,
+            (ref) => excaliburTreeView(ref),
+          ),
         ],
       },
       {

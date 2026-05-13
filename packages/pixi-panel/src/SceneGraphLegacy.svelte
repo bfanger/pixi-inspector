@@ -2,10 +2,9 @@
   import { setContext, type Snippet } from "svelte";
   import Tree from "./Tree.svelte";
   import type { OutlinerNode } from "./types";
-  import Warning from "blender-elements/src/Warning/Warning.svelte";
 
   type Props = {
-    value: OutlinerNode;
+    value: OutlinerNode | false;
     onexpand: (path: string[]) => void;
     oncollapse: (path: string[]) => void;
     onactivate: (path: string[]) => void;
@@ -16,7 +15,8 @@
     onlog: (path: string[]) => void;
     onmouseenter: (path: string[]) => void;
     onmouseleave: (path: string[]) => void;
-    children: Snippet;
+    search: Snippet;
+    tree: Snippet;
   };
   let {
     value,
@@ -30,7 +30,8 @@
     onlog,
     onmouseenter,
     onmouseleave,
-    children,
+    search,
+    tree,
   }: Props = $props();
 
   const ctx = setContext("scene-graph", { focused: false });
@@ -38,7 +39,7 @@
 
 <div class="scene-graph-legacy">
   <div class="search-input">
-    {@render children()}
+    {@render search()}
   </div>
   <div
     class="tree"
@@ -67,7 +68,7 @@
         {onmouseleave}
       />
     {:else}
-      <Warning>No scene detected.</Warning>
+      {@render tree?.()}
     {/if}
   </div>
 </div>

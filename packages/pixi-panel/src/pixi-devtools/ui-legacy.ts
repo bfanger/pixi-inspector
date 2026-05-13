@@ -1,4 +1,3 @@
-import type { TreeValue } from "ui-protocol/src/types";
 import type { NodeProperties, PixiDevtools } from "../types";
 import pixiDevtools from "./pixiDevtools";
 import pixiDevtoolsOutline from "./pixiDevtoolsOutline";
@@ -15,6 +14,7 @@ import pixiApplicationTab from "./pixiApplicationTab";
 import { evalListen } from "ui-protocol/src/evalBridge";
 import rootController from "ui-protocol/src/controllers/rootController";
 import session from "./session";
+import pixiTreeView from "./pixiTreeView";
 
 const legacy = pixiDevtools() as PixiDevtools;
 legacy.selection = pixiDevtoolsSelection();
@@ -55,24 +55,6 @@ evalListen(
 const patched = Symbol("patched");
 
 export function initLegacyUI() {
-  const searchInput = defineUI({
-    component: "SearchInput",
-    getValue: () => outline.query,
-    events: {
-      setValue: [
-        (value: TreeValue) => {
-          outline.query = value as string;
-          return 2;
-        },
-        { debounce: 300 },
-      ],
-      onclear() {
-        outline.query = "";
-        return 2;
-      },
-    },
-  });
-
   let direction: "row" | "column" = "row";
   return defineUI({
     component: "Fragment",
@@ -98,16 +80,16 @@ export function initLegacyUI() {
             props: { minWidth: 200, minHeight: 100, size: 2 },
             children: [
               refreshController({
+                depth: 1,
                 interval: 1_000,
-                children: [initSceneGraph([searchInput])],
                 sync(patch) {
-                  if (outline.query.length === 0) {
-                    patch.props = { interval: 1_000 };
-                  } else {
-                    patch.props = { interval: 5_000 };
-                  }
+                  patch.props = {
+                    depth: 1,
+                    interval: outline.query.length === 0 ? 1_000 : 5_000,
+                  };
                 },
               }),
+              initSceneGraph(),
             ],
           },
           {
@@ -126,11 +108,11 @@ export function initLegacyUI() {
   });
 }
 
-function initSceneGraph(children: UIProtocolInit[]): UIProtocolInit {
+function initSceneGraph(): UIProtocolInit {
   let previous$pixi: any = undefined;
   return defineUI({
     component: "PixiSceneGraph",
-    value: outline.tree(),
+    value: false,
     sync(patch) {
       if (previous$pixi !== win.$pixi) {
         if (win.$pixi) {
@@ -138,7 +120,11 @@ function initSceneGraph(children: UIProtocolInit[]): UIProtocolInit {
         }
         previous$pixi = win.$pixi;
       }
-      patch.value = outline.tree();
+      if (outline.query) {
+        patch.value = outline.tree();
+      } else {
+        patch.value = false;
+      }
     },
     events: {
       onexpand: (path) => outline.expand(path),
@@ -161,18 +147,37 @@ function initSceneGraph(children: UIProtocolInit[]): UIProtocolInit {
       onmouseenter: (path) => outline.highlight(path),
       onmouseleave: () => outline.highlight([]),
     },
-    children: [
-      ...children,
-      refreshController({
-        interval: 100,
-        refresh() {
-          if (previous$pixi !== win.$pixi) {
-            return 3;
-          }
-          return 0;
+    slots: {
+      search: [
+        {
+          component: "SearchInput",
+          getValue: () => outline.query,
+          events: {
+            setValue: [
+              (value) => {
+                outline.query = value;
+                return 2;
+              },
+              { debounce: 300 },
+            ],
+            onclear() {
+              outline.query = "";
+              return 2;
+            },
+          },
         },
-      }),
-    ],
+        refreshController({
+          interval: 100,
+          refresh() {
+            if (previous$pixi !== win.$pixi) {
+              return 3;
+            }
+            return 0;
+          },
+        }),
+      ],
+      tree: [pixiTreeView(legacy)],
+    },
   });
 }
 

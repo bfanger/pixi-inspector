@@ -24,6 +24,10 @@ type InitEvents<T extends AnyProps> = {
       : T[K] extends ((...args: any[]) => any) | undefined
         ? K
         : never]: T[K] | [T[K], TreeEventOptions];
+} & {
+  setValue?: T extends { setValue?: infer TSetValue }
+    ? TSetValue | [TSetValue, TreeEventOptions]
+    : never;
 };
 
 export type Init<TComponent extends string, TProps extends AnyProps> = {
@@ -33,16 +37,12 @@ export type Init<TComponent extends string, TProps extends AnyProps> = {
   children?: TProps extends { children?: Snippet } ? UIProtocolInit[] : never;
   slots?: Record<string, UIProtocolInit[]>;
   sync?: (this: TreeControllerNode, patch: UIProtocolPatch<TProps>) => void;
+  setValue?: TProps extends { setValue?: infer TSetValue } ? TSetValue : never;
 } & (TProps extends {
-  value?: unknown;
+  value?: infer TValue;
 }
-  ? { value?: TProps["value"]; getValue?: () => TProps["value"] }
-  : unknown) &
-  (TProps extends {
-    setValue?: unknown;
-  }
-    ? Pick<TProps, "setValue">
-    : unknown);
+  ? { value?: TValue; getValue?: () => TValue }
+  : unknown);
 
 export type UIProtocolPatch<T extends AnyProps> = {
   props?: InitProps<T>;

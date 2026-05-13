@@ -1,10 +1,5 @@
-import type { Container, DisplayObject } from "pixi.js";
 import PIXI from "pixi.js";
 import Stats from "stats.js";
-import rootController from "../../../packages/ui-protocol/src/controllers/rootController";
-import { evalListen } from "../../../packages/ui-protocol/src/evalBridge";
-import refreshController from "../../../packages/ui-protocol/src/controllers/refreshController";
-import treeViewController from "../../../packages/ui-protocol/src/controllers/treeViewController";
 
 const width = 480;
 const height = 320;
@@ -226,95 +221,5 @@ function update() {
   requestAnimationFrame(update);
   stats.end();
 }
-type OutlineNode = Container | DisplayObject;
 
-const testTreeViewController = true as boolean;
-if (testTreeViewController === false) {
-  (globalThis as any).__PIXI_STAGE__ = stage;
-} else {
-  const win = window as any;
-
-  evalListen(
-    "pixi",
-    rootController(() => [
-      refreshController({ interval: 1000, depth: 1 }),
-      treeViewController<OutlineNode>({
-        buffer: 10,
-        getRoot: () => stage,
-        getNestedCount: (node) => {
-          if ("children" in node) {
-            return node.children.length;
-          }
-          return 0;
-        },
-        getNestedKey(node, index) {
-          const child = (node as Container).children[index];
-          if (!child) {
-            throw new Error(`Index ${index} is out of bounds`);
-          }
-          return child;
-        },
-        syncProps(node, props, parents) {
-          props.active = node === win.$pixi;
-          props.muted = node.visible ? parents.some((p) => !p.visible) : true;
-          if ("name" in node && node.name) {
-            if (node.constructor.name) {
-              props.label = `${node.constructor.name} "${node.name}"`;
-            } else {
-              props.label = `"${node.name}"`;
-            }
-          } else {
-            props.label = node.constructor.name ?? "anonymous";
-          }
-        },
-        getIndex(parent, key) {
-          return (parent as Container).children.indexOf(key);
-        },
-        activate(node) {
-          win.$pixi = node;
-          return 1;
-        },
-        ondblclick(node) {
-          // eslint-disable-next-line no-console
-          console.log(node);
-        },
-        onkeydown(node, event) {
-          if (event.key === "h") {
-            node.visible = !node.visible;
-            return 1;
-          }
-        },
-        initSlots(node, parents) {
-          const props = {
-            icon: node.visible
-              ? ("eye-opened" as const)
-              : ("eye-closed" as const),
-            transparent: true,
-            muted: parents.some((p) => !p.visible),
-            hint: "",
-          };
-          return {
-            children: [
-              {
-                component: "ToggleButton",
-                props,
-                events: {
-                  onclick() {
-                    node.visible = !node.visible;
-                    return 2;
-                  },
-                },
-                sync(patch) {
-                  props.icon = node.visible ? "eye-opened" : "eye-closed";
-                  props.hint = node.visible ? "Hide (h)" : "Show (h)";
-                  props.muted = parents.some((p) => !p.visible);
-                  patch.props = props;
-                },
-              },
-            ],
-          };
-        },
-      }),
-    ]),
-  );
-}
+(globalThis as any).__PIXI_STAGE__ = stage;

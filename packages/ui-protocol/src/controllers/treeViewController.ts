@@ -8,13 +8,15 @@ type Options<T extends WeakKey> = {
   buffer: number;
   jumpToRef?: { key: T | undefined };
   focusRef?: { key: T | undefined };
-  getRoot: () => T;
+  rootRef: { value: T };
   getNestedCount: (key: T) => number;
   getNestedKey: (key: T, index: number) => T;
   getIndex: (parent: T, key: T) => number;
   syncProps: (key: T, props: TreeViewRowProps, parents: T[]) => void;
   activate?: (key: T) => number | undefined;
   ondblclick?: (key: T) => number | undefined;
+  onmouseenter?: (key: T) => number | undefined;
+  onmouseleave?: (key: T) => number | undefined;
   onkeydown?: (key: T, event: { key: string }) => number | undefined;
   initSlots?: (
     key: T,
@@ -25,7 +27,7 @@ export default function treeViewController<T extends WeakKey>(
   options: Options<T>,
 ) {
   const {
-    getRoot,
+    rootRef,
     getNestedCount,
     getNestedKey,
     getIndex,
@@ -35,6 +37,8 @@ export default function treeViewController<T extends WeakKey>(
     activate,
     ondblclick,
     onkeydown,
+    onmouseenter,
+    onmouseleave,
     initSlots,
     ...props
   } = options;
@@ -58,7 +62,7 @@ export default function treeViewController<T extends WeakKey>(
 
   /**
    * Executes the fn on the nested keys and when expanded it's nested keys too until a fn() returns true
-   * When no fn returned true, will return the total length
+   * When none of the fn's returned true, walk will return the total length instead of undefined
    */
   function walk(
     key: T,
@@ -97,20 +101,49 @@ export default function treeViewController<T extends WeakKey>(
     return position;
   }
 
+  function getParentsFor(
+    key: T,
+    branch = rootRef.value,
+    parents: T[] = [],
+  ): T[] | undefined {
+    if (branch === key) {
+      return parents;
+    }
+    const count = getNestedCount(branch);
+    for (let i = 0; i < count; i++) {
+      const nestedKey = getNestedKey(branch, i);
+      const result = getParentsFor(key, nestedKey, [branch, ...parents]);
+      if (result) {
+        return result;
+      }
+    }
+    return undefined;
+  }
+
   function getKeys(offset: number, count: number): Slice {
+    if (jumpToRef.key !== undefined) {
+      const parents = getParentsFor(jumpToRef.key) ?? [];
+      for (const parent of parents) {
+        expanded.set(parent, true);
+      }
+    }
+
     const keys: T[] = [];
     parentsStore.clear();
-    const total = walk(getRoot(), (key: T, parents: T[], position: number) => {
-      if (position >= offset && position < offset + count) {
-        parentsStore.set(key, parents);
-        keys.push(key);
-      }
-      if (jumpToRef.key === key) {
-        jumpToIndexRef.index = position;
-        jumpToRef.key = undefined;
-      }
-      return false;
-    });
+    const total = walk(
+      rootRef.value,
+      (key: T, parents: T[], position: number) => {
+        if (position >= offset && position < offset + count) {
+          parentsStore.set(key, parents);
+          keys.push(key);
+        }
+        if (jumpToRef.key === key) {
+          jumpToIndexRef.index = position;
+        }
+        return false;
+      },
+    );
+    jumpToRef.key = undefined;
     return { total, keys };
   }
 
@@ -137,6 +170,8 @@ export default function treeViewController<T extends WeakKey>(
         events: {
           onclick: () => activate?.(key),
           ondblclick: () => ondblclick?.(key),
+          onmouseenter: () => onmouseenter?.(key),
+          onmouseleave: () => onmouseleave?.(key),
           setExpanded(value) {
             expanded.set(key, value);
             return 1;
@@ -162,7 +197,7 @@ export default function treeViewController<T extends WeakKey>(
                 targetKey = getNestedKey(parent, index + 1);
               } else {
                 let next = false;
-                walk(getRoot(), (branch) => {
+                walk(rootRef.value, (branch) => {
                   if (next) {
                     targetKey = branch;
                     return true;
@@ -192,7 +227,7 @@ export default function treeViewController<T extends WeakKey>(
                 targetKey = getNestedKey(key, 0);
               }
             }
-            if (targetKey && targetKey !== getRoot()) {
+            if (targetKey && targetKey !== rootRef.value) {
               focusRef.key = targetKey;
               jumpToRef.key = targetKey;
               activate?.(targetKey);
