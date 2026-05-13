@@ -1,4 +1,4 @@
-import type { Game, GameObjects, Scene } from "phaser";
+import type { Game, Scene } from "phaser";
 import type { Application, Container, ICanvas, Renderer } from "pixi.js";
 import type { UniversalNode } from "../types";
 
@@ -20,7 +20,7 @@ export default function pixiDevtools() {
       );
     },
 
-    root(): Container | Scene | undefined {
+    root(): Container | Scene | Phaser.Scenes.SceneManager | undefined {
       const stage = getGlobal<Container>("__PIXI_STAGE__");
       if (stage) {
         return stage;
@@ -34,14 +34,14 @@ export default function pixiDevtools() {
         if (game.scene.scenes.length === 1) {
           return game.scene.scenes[0];
         }
-        return game.scene as any as Scene;
+        return game.scene;
       }
       const gameDebug = getGlobal<Game>("PHASER_GAME");
       if (gameDebug) {
         if (gameDebug.scene.scenes.length === 1) {
           return gameDebug.scene.scenes[0];
         }
-        return gameDebug.scene as any as Scene;
+        return gameDebug.scene;
       }
       const stageFromPatched = getGlobal<Container>(
         "__PATCHED_RENDERER_STAGE__",
@@ -135,7 +135,7 @@ export default function pixiDevtools() {
         return (node as Scene).children.list;
       }
       if ("list" in node) {
-        return (node as GameObjects.Container).list;
+        return node.list;
       }
       if ("scenes" in node) {
         return node.scenes;

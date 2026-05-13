@@ -39,23 +39,42 @@ export default function pixiTreeView(legacy: PixiDevtools) {
               return node.constructor.name ?? "anonymous";
             };
 
+      function getNested(node: UniversalNode) {
+        if ("children" in node) {
+          if ("list" in node.children) {
+            return node.children.list;
+          }
+          return node.children;
+        }
+        if ("list" in node && Array.isArray(node.list)) {
+          return node.list;
+        }
+        if (node === rootRef.value && "scenes" in node) {
+          return node.scenes;
+        }
+        if ("emitters" in node) {
+          // node is GameObjects.Particles.ParticleEmitterManager (Removed in Phaser 3.60)
+          return (node as any).emitters.list as UniversalNode[];
+        }
+        if ("alive" in node) {
+          // node is GameObjects.Particles.ParticleEmitter
+          return (node as any).alive as UniversalNode[];
+        }
+      }
+
       return treeViewController<UniversalNode>({
         buffer: 10,
         rootRef,
         jumpToRef,
         getNestedCount: (node: UniversalNode) => {
-          if ("children" in node) {
-            return node.children.length;
-          }
-          return 0;
+          return getNested(node)?.length ?? 0;
         },
         getNestedKey(node: UniversalNode, index: number): UniversalNode {
-          if (!("children" in node)) {
+          const nested = getNested(node);
+          if (!nested) {
             throw new Error("Can't call getNestedKey() on a leaf node");
           }
-          const child = Array.isArray(node.children)
-            ? node.children[index]
-            : node.children.list[index];
+          const child = nested[index];
           if (!child) {
             throw new Error(`Index ${index} is out of bounds`);
           }
@@ -72,6 +91,9 @@ export default function pixiTreeView(legacy: PixiDevtools) {
         },
         getIndex(parent: UniversalNode, key: UniversalNode): number {
           if (!("children" in parent)) {
+            if (parent === rootRef.value && "scenes" in parent) {
+              return parent.scenes.indexOf(key as any);
+            }
             throw new Error("Can't call getIndex() on a leaf node");
           }
           return "getIndex" in parent.children

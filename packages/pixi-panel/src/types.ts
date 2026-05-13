@@ -42,6 +42,7 @@ export type UniversalNode =
   | Scene
   | GameObjects.GameObject
   | Scenes.SceneManager
+  | GameObjects.Container
   | GameObjects.Particles.ParticleEmitter;
 
 export type PropertyTab = "object" | "text";

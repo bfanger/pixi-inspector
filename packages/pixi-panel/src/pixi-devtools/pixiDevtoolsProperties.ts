@@ -1,4 +1,3 @@
-import type { GameObjects } from "phaser";
 import type { Application, Container } from "pixi.js";
 import type {
   NodeProperties,
@@ -123,23 +122,20 @@ export default function pixiDevtoolsProperties(devtools: PixiDevtools) {
         "setOrigin" in node &&
         typeof node.setOrigin === "function"
       ) {
+        const typedNode = node as UniversalNode & {
+          originX: number;
+          originY: number;
+          setOrigin: (x?: number, y?: number) => unknown;
+        };
         objectDefs.push({
           key: "originX",
           get: () => node.originX,
-          set: (value) =>
-            (node as GameObjects.Image).setOrigin(
-              value,
-              (node as GameObjects.Image).originY,
-            ),
+          set: (value) => typedNode.setOrigin(value, typedNode.originY),
         });
         objectDefs.push({
           key: "originY",
-          get: () => (node as GameObjects.Image).originY,
-          set: (value) =>
-            (node as GameObjects.Image).setOrigin(
-              (node as GameObjects.Image).originX,
-              value,
-            ),
+          get: () => typedNode.originY,
+          set: (value) => typedNode.setOrigin(typedNode.originX, value),
         });
       }
       if (devtools.isPixi(node as UniversalNode)) {
