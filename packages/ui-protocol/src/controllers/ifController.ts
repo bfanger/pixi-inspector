@@ -7,28 +7,18 @@ type Falsy = undefined | null | false;
  */
 export default function ifController<T>(
   getValue: () => T | Falsy,
-  whenTruthy: UIProtocolInit | ((ref: { value: T }) => UIProtocolInit),
-  whenFalsy?: UIProtocolInit | (() => UIProtocolInit),
+  whenTruthy: (ref: { value: T }) => UIProtocolInit[],
+  whenFalsy: () => UIProtocolInit[] = () => [],
 ) {
   const ref = { value: getValue() };
-  function createChild(value: T | Falsy): UIProtocolInit | undefined {
-    if (value) {
-      if (typeof whenTruthy === "function") {
-        return whenTruthy(ref as { value: T });
-      }
-      return whenTruthy;
-    }
-    if (typeof whenFalsy === "function") {
-      return whenFalsy();
-    }
-    return whenFalsy;
-  }
-  let ui = createChild(ref.value);
+
   let previous = ref.value;
 
   return defineUI({
     component: "Fragment",
-    children: ui ? [ui] : [],
+    slots: {
+      children: ref.value ? whenTruthy(ref as { value: T }) : whenFalsy(),
+    },
     sync(patch) {
       const next = getValue();
       if (next) {
@@ -38,13 +28,18 @@ export default function ifController<T>(
         return;
       }
       previous = next;
-      ui = createChild(next);
-      if (!ui) {
-        patch.truncate.children = 0;
-      } else if (this.slots?.children.length === 0) {
-        patch.appends.push(ui);
+      const children = next ? whenTruthy(ref as { value: T }) : whenFalsy();
+      const previousLength = this.slots!.children.length;
+
+      for (let i = 0; i < Math.min(children.length, previousLength); i++) {
+        patch.replacements.push({ ...children[i], index: i });
+      }
+      if (children.length < previousLength) {
+        patch.truncate.children = children.length;
       } else {
-        patch.replacements.push({ ...ui, index: 0 });
+        for (let i = previousLength; i < children.length; i++) {
+          patch.appends.push(children[i]);
+        }
       }
     },
   });

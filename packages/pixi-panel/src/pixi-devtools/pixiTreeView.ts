@@ -62,144 +62,152 @@ export default function pixiTreeView(legacy: PixiDevtools) {
         }
       }
 
-      return treeViewController<UniversalNode>({
-        buffer: 10,
-        rootRef,
-        jumpToRef,
-        getNestedCount: (node: UniversalNode) => {
-          return getNested(node)?.length ?? 0;
-        },
-        getNestedKey(node: UniversalNode, index: number): UniversalNode {
-          const nested = getNested(node);
-          if (!nested) {
-            throw new Error("Can't call getNestedKey() on a leaf node");
-          }
-          const child = nested[index];
-          if (!child) {
-            throw new Error(`Index ${index} is out of bounds`);
-          }
-          return child;
-        },
-        syncProps(node: UniversalNode, props: any, parents: UniversalNode[]) {
-          props.label = getLabel(node);
-          props.active = node === win.$pixi;
-          if ("visible" in node) {
-            props.muted = node.visible
-              ? parents.some((p) => "visible" in p && !p.visible)
-              : true;
-          }
-        },
-        getIndex(parent: UniversalNode, key: UniversalNode): number {
-          if (!("children" in parent)) {
-            if (parent === rootRef.value && "scenes" in parent) {
-              return parent.scenes.indexOf(key as any);
+      return [
+        treeViewController<UniversalNode>({
+          buffer: 10,
+          rootRef,
+          jumpToRef,
+          getNestedCount: (node: UniversalNode) => {
+            return getNested(node)?.length ?? 0;
+          },
+          getNestedKey(node: UniversalNode, index: number): UniversalNode {
+            const nested = getNested(node);
+            if (!nested) {
+              throw new Error("Can't call getNestedKey() on a leaf node");
             }
-            throw new Error("Can't call getIndex() on a leaf node");
-          }
-          return "getIndex" in parent.children
-            ? parent.children.getIndex(key as any)
-            : parent.children.indexOf(key as any);
-        },
-        activate(node: UniversalNode) {
-          win.$pixi = node;
-          previous$pixi = node;
-          return 1;
-        },
-        ondblclick(node: UniversalNode) {
-          // eslint-disable-next-line no-console
-          console.log(node);
-        },
-        onmouseenter(key) {
-          legacy.selection.highlight(key);
-        },
-        onmouseleave() {
-          legacy.selection.highlight(undefined);
-        },
-        onkeydown(node: UniversalNode, event: { key: string }) {
-          if (event.key === "h" && "visible" in node) {
-            node.visible = !node.visible;
+            const child = nested[index];
+            if (!child) {
+              throw new Error(`Index ${index} is out of bounds`);
+            }
+            return child;
+          },
+          syncProps(node: UniversalNode, props: any, parents: UniversalNode[]) {
+            props.label = getLabel(node);
+            props.active = node === win.$pixi;
+            if ("visible" in node) {
+              props.muted = node.visible
+                ? parents.some((p) => "visible" in p && !p.visible)
+                : true;
+            }
+          },
+          getIndex(parent: UniversalNode, key: UniversalNode): number {
+            if (!("children" in parent)) {
+              if (parent === rootRef.value && "scenes" in parent) {
+                return parent.scenes.indexOf(key as any);
+              }
+              throw new Error("Can't call getIndex() on a leaf node");
+            }
+            return "getIndex" in parent.children
+              ? parent.children.getIndex(key as any)
+              : parent.children.indexOf(key as any);
+          },
+          activate(node: UniversalNode) {
+            win.$pixi = node;
+            previous$pixi = node;
             return 1;
-          }
-        },
-        initSlots(node: UniversalNode, parents: UniversalNode[]) {
-          const selectableProps = {
-            transparent: true,
-            hint: "Disable right-click selection",
-            muted: getSelectableMuted(),
-            icon: legacy.selection.selectable(node)
-              ? ("selectable" as const)
-              : ("unselectable" as const),
-          };
-          function getSelectableMuted() {
-            return parents.some(
-              (parent) => !legacy.selection.selectable(parent),
-            );
-          }
-          function getVisibleMuted() {
-            return parents.some((p) => "visible" in p && !p.visible);
-          }
-          return {
-            children: [
-              {
-                component: "ToggleButton",
-                props: selectableProps,
-                events: {
-                  onclick() {
-                    if (legacy.selection.selectable(node)) {
-                      legacy.selection.disable(node);
-                    } else {
-                      legacy.selection.enable(node);
-                    }
-                    return 2;
+          },
+          ondblclick(node: UniversalNode) {
+            // eslint-disable-next-line no-console
+            console.log(node);
+          },
+          onmouseenter(key) {
+            legacy.selection.highlight(key);
+          },
+          onmouseleave() {
+            legacy.selection.highlight(undefined);
+          },
+          onkeydown(node: UniversalNode, event: { key: string }) {
+            if (event.key === "h" && "visible" in node) {
+              node.visible = !node.visible;
+              return 1;
+            }
+          },
+          initSlots(node: UniversalNode, parents: UniversalNode[]) {
+            const selectableProps = {
+              transparent: true,
+              hint: "Disable right-click selection",
+              muted: getSelectableMuted(),
+              icon: legacy.selection.selectable(node)
+                ? ("selectable" as const)
+                : ("unselectable" as const),
+            };
+            function getSelectableMuted() {
+              return parents.some(
+                (parent) => !legacy.selection.selectable(parent),
+              );
+            }
+            function getVisibleMuted() {
+              return parents.some((p) => "visible" in p && !p.visible);
+            }
+            return {
+              children: [
+                {
+                  component: "ToggleButton",
+                  props: selectableProps,
+                  events: {
+                    onclick() {
+                      if (legacy.selection.selectable(node)) {
+                        legacy.selection.disable(node);
+                      } else {
+                        legacy.selection.enable(node);
+                      }
+                      return 2;
+                    },
+                  },
+                  sync(patch) {
+                    selectableProps.icon = legacy.selection.selectable(node)
+                      ? "selectable"
+                      : "unselectable";
+                    selectableProps.muted = getSelectableMuted();
+                    patch.props = selectableProps;
                   },
                 },
-                sync(patch) {
-                  selectableProps.icon = legacy.selection.selectable(node)
-                    ? "selectable"
-                    : "unselectable";
-                  selectableProps.muted = getSelectableMuted();
-                  patch.props = selectableProps;
-                },
-              },
-              ifController(
-                () => ("visible" in node ? node : false),
-                (ref) => {
-                  const props = {
-                    icon: ref.value.visible
-                      ? ("eye-opened" as const)
-                      : ("eye-closed" as const),
-                    transparent: true,
-                    muted: getVisibleMuted(),
-                    hint: "",
-                  };
-                  return {
-                    component: "ToggleButton",
-                    props,
-                    events: {
-                      onclick() {
-                        ref.value.visible = !ref.value.visible;
-                        return 3;
+                ifController(
+                  () => ("visible" in node ? node : false),
+                  (ref) => {
+                    const props = {
+                      icon: ref.value.visible
+                        ? ("eye-opened" as const)
+                        : ("eye-closed" as const),
+                      transparent: true,
+                      muted: getVisibleMuted(),
+                      hint: "",
+                    };
+                    return [
+                      {
+                        component: "ToggleButton",
+                        props,
+                        events: {
+                          onclick() {
+                            ref.value.visible = !ref.value.visible;
+                            return 3;
+                          },
+                        },
+                        sync(patch: any) {
+                          props.icon = ref.value.visible
+                            ? "eye-opened"
+                            : "eye-closed";
+                          props.hint = ref.value.visible
+                            ? "Hide (h)"
+                            : "Show (h)";
+                          props.muted = getVisibleMuted();
+                          patch.props = props;
+                        },
                       },
-                    },
-                    sync(patch: any) {
-                      props.icon = ref.value.visible
-                        ? "eye-opened"
-                        : "eye-closed";
-                      props.hint = ref.value.visible ? "Hide (h)" : "Show (h)";
-                      props.muted = getVisibleMuted();
-                      patch.props = props;
-                    },
-                  };
-                },
-              ),
-            ],
-          };
-        },
-      });
+                    ];
+                  },
+                ),
+              ],
+            };
+          },
+        }),
+      ];
     },
-    {
-      component: "Warning",
-      props: { icon: "warning", message: "No scene detected." },
-    },
+    () => [
+      {
+        component: "Warning",
+        props: { icon: "warning", message: "No scene detected." },
+      },
+    ],
   );
 }

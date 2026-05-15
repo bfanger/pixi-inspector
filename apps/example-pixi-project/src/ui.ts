@@ -10,7 +10,7 @@ const eventTarget = new EventTarget();
 let first = true;
 evalListen(
   "pixi",
-  rootController(() => [initLegacyUI()], {
+  rootController(initLegacyUI, {
     reset: () => {
       if (!first) {
         // controller was reset again? Assume connection from the browser's DevTools panel.

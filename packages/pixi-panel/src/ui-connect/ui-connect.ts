@@ -18,10 +18,12 @@ evalListen(
         children: [
           ifController(
             () => detected,
-            (detectedRef) => ({
-              component: "Trigger",
-              props: { event: detectedRef.value },
-            }),
+            (detectedRef) => [
+              {
+                component: "Trigger",
+                props: { event: detectedRef.value },
+              },
+            ],
           ),
         ],
         sync(patch) {

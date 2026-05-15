@@ -14,13 +14,18 @@ export default function excaliburPanel(engine: Engine) {
         component: "SplitPanel",
         props: { minHeight: 100 },
         children: [
-          ifController(() => Object.keys(engine.scenes).length > 1, {
-            component: "Button",
-            props: { label: "TODO: Select scene" },
-          }),
+          ifController(
+            () => Object.keys(engine.scenes).length > 1,
+            () => [
+              {
+                component: "Button",
+                props: { label: "TODO: Select scene" },
+              },
+            ],
+          ),
           ifController(
             () => engine.rootScene,
-            (ref) => excaliburTreeView(ref),
+            (ref) => [excaliburTreeView(ref)],
           ),
         ],
       },

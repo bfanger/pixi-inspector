@@ -18,6 +18,10 @@ This is a mono repo containing Svelte & Typescript projects & packages used for 
 ├── docs/                   # Documentation
 ```
 
+## Formatting
+
+When writing or editing code try to follow Prettier formatting rules using the default prettier settings.
+
 ## Linting
 
 Before running lint run `npm run format` in the mono-repo root and fix these issues first.

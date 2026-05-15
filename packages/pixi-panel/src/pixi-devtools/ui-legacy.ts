@@ -44,8 +44,8 @@ evalListen(
             }
             return !!win.PIXI; // show patch option when PIXI is available
           },
-          () => initPatchEngine(),
-          () => initLegacyUI(),
+          initPatchEngine,
+          initLegacyUI,
         ),
       ],
     }),
@@ -54,58 +54,55 @@ evalListen(
 
 const patched = Symbol("patched");
 
-export function initLegacyUI() {
+export function initLegacyUI(): UIProtocolInit[] {
   let direction: "row" | "column" = "row";
-  return defineUI({
-    component: "Fragment",
-    children: [
-      {
-        component: "SplitPanels",
-        props: { direction: "column" },
-        sync(patch) {
-          patch.props = { direction };
-        },
-        events: {
-          onresize: [
-            (details) => {
-              const size = details as { width: number; height: number };
-              direction = size.width > 500 ? "row" : "column";
-            },
-            { throttle: 100 },
-          ],
-        },
-        children: [
-          {
-            component: "SplitPanel",
-            props: { minWidth: 200, minHeight: 100, size: 2 },
-            children: [
-              refreshController({
-                depth: 1,
-                interval: 1_000,
-                sync(patch) {
-                  patch.props = {
-                    depth: 1,
-                    interval: outline.query.length === 0 ? 1_000 : 5_000,
-                  };
-                },
-              }),
-              initSceneGraph(),
-            ],
+  return [
+    {
+      component: "SplitPanels",
+      props: { direction: "column" },
+      sync(patch) {
+        patch.props = { direction };
+      },
+      events: {
+        onresize: [
+          (details) => {
+            const size = details as { width: number; height: number };
+            direction = size.width > 500 ? "row" : "column";
           },
-          {
-            component: "SplitPanel",
-            props: {
-              minWidth: 200,
-              minHeight: 200,
-              maxHeight: 680,
-              size: 3,
-            },
-            children: [instructionsFallback(initPropertyTabs())],
-          },
+          { throttle: 100 },
         ],
       },
-    ],
-  });
+      children: [
+        {
+          component: "SplitPanel",
+          props: { minWidth: 200, minHeight: 100, size: 2 },
+          children: [
+            refreshController({
+              depth: 1,
+              interval: 1_000,
+              sync(patch) {
+                patch.props = {
+                  depth: 1,
+                  interval: outline.query.length === 0 ? 1_000 : 5_000,
+                };
+              },
+            }),
+            initSceneGraph(),
+          ],
+        },
+        {
+          component: "SplitPanel",
+          props: {
+            minWidth: 200,
+            minHeight: 200,
+            maxHeight: 680,
+            size: 3,
+          },
+          children: [instructionsFallback(propertyTabs)],
+        },
+      ],
+    },
+  ];
 }
 
 function initSceneGraph(): UIProtocolInit {
@@ -181,7 +178,7 @@ function initSceneGraph(): UIProtocolInit {
   });
 }
 
-function initPropertyTabs(): UIProtocolInit {
+function propertyTabs(): UIProtocolInit[] {
   const appRef = { value: legacy.app() };
   const allTabs = {
     scene: { icon: "scene", label: "Scene Properties" },
@@ -271,117 +268,118 @@ function initPropertyTabs(): UIProtocolInit {
       },
     };
   }
-  return refreshController({
-    interval: 200,
-    children: [
-      {
-        component: "Tabs",
-        props: {
-          tabs: enabledTabs(),
-          active: activeTab,
-        },
-        children: [
-          {
-            component: "Box",
-            props: { padding: 8, gap: 1 },
-            children: [
-              ifController(
-                () => activeTab,
-                (activeTabRef) =>
-                  switchController(() => activeTabRef.value, {
-                    scene: () => pixiApplicationTab(appRef),
-                    object: () =>
-                      defineUI({
-                        component: "PixiObjectProperties",
-                        ...initPanel("object"),
-                      }),
-                    text: () =>
-                      defineUI({
-                        component: "PixiTextProperties",
-                        ...initPanel("text"),
-                      }),
-                  }),
-              ),
-            ],
-          },
-        ],
-        events: {
-          setActive(tab) {
-            preferredTab = tab as TabKey;
-            detect();
-          },
-        },
-        sync(patch) {
-          const nextApp = legacy.app();
-          if (previous$pixi === win.$pixi && appRef.value === nextApp) {
-            return;
-          }
-          appRef.value = nextApp;
-          previous$pixi = win.$pixi;
-          detect();
-          patch.props = {
-            tabs: enabledTabs(),
-            active: activeTab,
-          };
-        },
-      },
-    ],
-  });
-}
-
-function initPatchEngine() {
-  if (session.get("pixi:patchRenderer")) {
-    return refreshController({
-      interval: 250,
+  return [
+    refreshController({
+      interval: 200,
       depth: 1,
+    }),
+    {
+      component: "Tabs",
+      props: {
+        tabs: enabledTabs(),
+        active: activeTab,
+      },
       children: [
         {
-          component: "Warning",
-          props: { message: "Attempting to patch..." },
+          component: "Box",
+          props: { padding: 8, gap: 1 },
+          children: [
+            ifController(
+              () => activeTab,
+              (activeTabRef) => [
+                switchController(() => activeTabRef.value, {
+                  scene: () => pixiApplicationTab(appRef),
+                  object: () =>
+                    defineUI({
+                      component: "PixiObjectProperties",
+                      ...initPanel("object"),
+                    }),
+                  text: () =>
+                    defineUI({
+                      component: "PixiTextProperties",
+                      ...initPanel("text"),
+                    }),
+                }),
+              ],
+            ),
+          ],
         },
       ],
-      sync() {
-        patchRenderEngine();
-      },
-    });
-  }
-  return defineUI({
-    component: "Fragment",
-    children: [
-      {
-        component: "Warning",
-        props: {
-          message:
-            '"Patch render engine" is available. This type of Devtools connection is less reliable',
+      events: {
+        setActive(tab) {
+          preferredTab = tab as TabKey;
+          detect();
         },
       },
-      {
-        component: "Box",
-        props: { padding: 8 },
+      sync(patch) {
+        const nextApp = legacy.app();
+        if (previous$pixi === win.$pixi && appRef.value === nextApp) {
+          return;
+        }
+        appRef.value = nextApp;
+        previous$pixi = win.$pixi;
+        detect();
+        patch.props = {
+          tabs: enabledTabs(),
+          active: activeTab,
+        };
+      },
+    },
+  ];
+}
+
+function initPatchEngine(): UIProtocolInit[] {
+  if (session.get("pixi:patchRenderer")) {
+    return [
+      refreshController({
+        interval: 250,
+        depth: 1,
         children: [
           {
-            component: "Button",
-            props: { label: "Patch render engine" },
-            events: {
-              onclick() {
-                patchRenderEngine();
-                session.set("pixi:patchRenderer", true);
-                return Infinity;
-              },
-            },
+            component: "Warning",
+            props: { message: "Attempting to patch..." },
           },
         ],
+        sync() {
+          patchRenderEngine();
+        },
+      }),
+    ];
+  }
+  return [
+    {
+      component: "Warning",
+      props: {
+        message:
+          '"Patch render engine" is available. This type of Devtools connection is less reliable',
       },
-      {
-        component: "PixiInstructions",
-        events: {
-          copy(text) {
-            win.copy(text);
+    },
+    {
+      component: "Box",
+      props: { padding: 8 },
+      children: [
+        {
+          component: "Button",
+          props: { label: "Patch render engine" },
+          events: {
+            onclick() {
+              patchRenderEngine();
+              session.set("pixi:patchRenderer", true);
+              return Infinity;
+            },
           },
         },
+      ],
+    },
+    {
+      component: "PixiInstructions",
+      events: {
+        copy(text) {
+          win.copy(text);
+        },
       },
-    ],
-  });
+    },
+  ];
 }
 
 function patchRenderEngine() {
@@ -409,7 +407,7 @@ function patchPixi(PIXI: any) {
   }
 }
 
-function instructionsFallback(child: UIProtocolInit) {
+function instructionsFallback(normal: () => UIProtocolInit[]) {
   let timer: number | undefined;
   let instructions = false;
 
@@ -428,14 +426,16 @@ function instructionsFallback(child: UIProtocolInit) {
       }
       return instructions;
     },
-    {
-      component: "PixiInstructions",
-      events: {
-        copy(text) {
-          win.copy(text);
+    () => [
+      {
+        component: "PixiInstructions",
+        events: {
+          copy(text) {
+            win.copy(text);
+          },
         },
       },
-    },
-    child,
+    ],
+    normal,
   );
 }
