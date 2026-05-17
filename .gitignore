@@ -9,3 +9,4 @@ node_modules
 *storybook.log
 /packages/pixi-panel/build/ui-connect.txt
 /packages/pixi-panel/build/ui-legacy.txt
+/.pnpm-store

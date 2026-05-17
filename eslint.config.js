@@ -21,6 +21,7 @@ export default defineConfig(
       "apps/firefox-extension/profile",
       "apps/example-excalibur-project/res",
       "apps/example-excalibur-project/dist",
+      ".pnpm-store",
     ],
   },
   js.configs.recommended,
