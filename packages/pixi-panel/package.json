@@ -10,7 +10,7 @@
   },
   "devDependencies": {
     "blender-elements": "workspace:*",
-    "concurrently": "^9.2.1",
+    "concurrently": "^10.0.1",
     "esbuild": "^0.28.0",
     "phaser": "^4.1.0",
     "pixi.js": "^8.18.1",
