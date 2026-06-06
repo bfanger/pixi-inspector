@@ -7,8 +7,8 @@
   ],
   "type": "module",
   "scripts": {
-    "dev": "pnpm --parallel dev",
-    "build": "pnpm --parallel build",
+    "dev": "pnpm --parallel prebuild && pnpm --parallel dev",
+    "build": "pnpm --parallel prebuild && pnpm --parallel build",
     "test": "pnpm --parallel test",
     "lint": "concurrently -c \"#c596c7\",\"#4b32c3\",\"#676778\",\"#fafafa\" --kill-others-on-fail \"npm:lint:*\"",
     "lint:prettier": "prettier --check --log-level=warn .",

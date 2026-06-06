@@ -1,10 +1,7 @@
 import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 
 /**
- * @type {{
- *   preprocess: import("svelte/compiler").PreprocessorGroup,
- *   compilerOptions: import("svelte/compiler").CompileOptions,
- * }}
+ * @type {import("@sveltejs/vite-plugin-svelte").SvelteConfig}
  */
 const svelteConfig = {
   preprocess: [vitePreprocess()],

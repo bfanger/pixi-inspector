@@ -3,7 +3,6 @@ import esbuild from "esbuild";
 import sveltePlugin from "esbuild-svelte";
 import fs from "fs";
 import path from "path";
-import { rimrafSync } from "rimraf";
 import { fileURLToPath } from "url";
 import svelteConfig from "../../svelte.config.js";
 
@@ -12,10 +11,7 @@ const WATCH = process.argv.indexOf("--watch") !== -1;
 const cwd = path.dirname(fileURLToPath(import.meta.url));
 const outdir = path.resolve(cwd, "build");
 const srcDir = path.resolve(cwd, "src");
-if (!WATCH) {
-  rimrafSync(outdir);
-}
-
+fs.rmSync(outdir, { recursive: true, force: true });
 fs.mkdirSync(outdir, { recursive: true });
 for (const file of [
   "manifest.json",

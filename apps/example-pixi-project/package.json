@@ -2,7 +2,7 @@
   "name": "example-pixi-project",
   "license": "MIT",
   "scripts": {
-    "dev": "vite dev"
+    "dev": "vite dev --host"
   },
   "dependencies": {
     "pixi.js": "^8.18.1"

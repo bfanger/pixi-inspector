@@ -2,11 +2,12 @@
   "name": "pixi-panel",
   "description": "Browser agnostic DevTools for PixiJS",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "dev": "concurrently --kill-others-on-fail \"npm:dev:*\"",
     "dev:connect": "esbuild --bundle src/ui-connect/ui-connect.ts --watch --outfile=./build/ui-connect.txt",
     "dev:legacy": "esbuild --bundle src/pixi-devtools/ui-legacy.ts --watch --outfile=./build/ui-legacy.txt",
-    "build": "esbuild --bundle src/ui-connect/ui-connect.ts --outfile=./build/ui-connect.txt && esbuild --bundle src/pixi-devtools/ui-legacy.ts --outfile=./build/ui-legacy.txt"
+    "prebuild": "esbuild --bundle src/ui-connect/ui-connect.ts --outfile=./build/ui-connect.txt && esbuild --bundle src/pixi-devtools/ui-legacy.ts --outfile=./build/ui-legacy.txt"
   },
   "devDependencies": {
     "blender-elements": "workspace:*",
