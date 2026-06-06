@@ -1,6 +1,7 @@
 import type { GameObjects } from "phaser";
 import type { ICanvas, Matrix } from "pixi.js";
 import type { PixiDevtools, UniversalNode } from "../types";
+import { gizmoMove } from "../pixi-gizmos";
 
 export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
   function position(
@@ -120,6 +121,11 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
       transformOrigin: "top left",
     });
     clipEl.appendChild(overlayEl);
+
+    if (devtools.version() === 8) {
+      gizmoMove.style.pointerEvents = "auto";
+      overlayEl.appendChild(gizmoMove);
+    }
 
     const highlight = document.createElement("div");
     highlight.dataset.pixiDevtools = "highlight";

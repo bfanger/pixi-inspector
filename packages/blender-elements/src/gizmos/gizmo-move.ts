@@ -2,6 +2,7 @@ import { html } from "../html";
 
 export default class GizmoMoveElement extends HTMLElement {
   #shadow: ShadowRoot;
+  #gizmo: HTMLElement;
   #arrowX: HTMLElement;
   #arrowY: HTMLElement;
   #ring: HTMLElement;
@@ -13,14 +14,11 @@ export default class GizmoMoveElement extends HTMLElement {
     this.#arrowX = createArrow("#ff3752", 0);
     this.#arrowY = createArrow("#7fcc1c", -90);
     this.#ring = html`<div class="ring"></div>`;
+    this.#gizmo = html`<div></div>`;
+    this.#gizmo.append(this.#ring, this.#arrowX, this.#arrowY);
 
     this.#shadow = this.attachShadow({ mode: "open" });
-    this.#shadow.append(
-      createStylesheet(),
-      this.#ring,
-      this.#arrowX,
-      this.#arrowY,
-    );
+    this.#shadow.append(createStylesheet(), this.#gizmo);
 
     this.#arrowX.addEventListener("mousedown", (e) => this.#dragStart(e, "x"));
     this.#arrowY.addEventListener("mousedown", (e) => this.#dragStart(e, "y"));
@@ -48,6 +46,14 @@ export default class GizmoMoveElement extends HTMLElement {
     this.style.top = `${y}px`;
   }
 
+  getAngle(): number {
+    return parseFloat(this.style.rotate) || 0;
+  }
+
+  setAngle(rad: number) {
+    this.style.rotate = `${rad}rad`;
+  }
+
   #dragStart(event: MouseEvent, axis?: "x" | "y") {
     event.preventDefault();
     const start = {
@@ -57,6 +63,8 @@ export default class GizmoMoveElement extends HTMLElement {
     };
     let x = start.x;
     let y = start.y;
+    let angle = this.getAngle();
+
     this.#dragging = true;
     const ghost = createGhost(axis);
     this.#shadow.append(ghost);
@@ -76,23 +84,25 @@ export default class GizmoMoveElement extends HTMLElement {
     }
 
     const drag = (e: MouseEvent) => {
-      let deltaX = e.clientX - start.clientX;
-      let deltaY = e.clientY - start.clientY;
-      x = start.x + deltaX;
-      y = start.y + deltaY;
+      angle = this.getAngle();
+      const cos = Math.cos(angle);
+      const sin = Math.sin(angle);
+      const clientDeltaX = e.clientX - start.clientX;
+      const clientDeltaY = e.clientY - start.clientY;
+
+      let deltaX = clientDeltaX * cos + clientDeltaY * sin;
+      let deltaY = -clientDeltaX * sin + clientDeltaY * cos;
       if (axis === "x") {
-        y = start.y;
         deltaY = 0;
       } else if (axis === "y") {
-        x = start.x;
         deltaX = 0;
       }
-      this.style.left = `${x}px`;
-      this.style.top = `${y}px`;
-      ghost.style.left = `${-deltaX}px`;
-      ghost.style.top = `${-deltaY}px`;
-
-      this.dispatchEvent(new CustomEvent("gizmo-drag", { detail: { x, y } }));
+      x = start.x + deltaX;
+      y = start.y + deltaY;
+      this.#gizmo.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+      this.dispatchEvent(
+        new CustomEvent("gizmo-drag", { detail: { x, y, angle } }),
+      );
     };
 
     const dragEnd = () => {
@@ -100,11 +110,15 @@ export default class GizmoMoveElement extends HTMLElement {
       window.removeEventListener("mousemove", drag);
       window.removeEventListener("mouseup", dragEnd);
       ghost.remove();
+      this.#gizmo.style.transform = "";
       this.#ring.classList.remove("hidden", "dragging");
       this.#arrowY.classList.remove("hidden", "dragging");
       this.#arrowX.classList.remove("hidden", "dragging");
+
+      this.style.left = `${x}px`;
+      this.style.top = `${y}px`;
       this.dispatchEvent(
-        new CustomEvent("gizmo-dragend", { detail: { x, y } }),
+        new CustomEvent("gizmo-dragend", { detail: { x, y, angle } }),
       );
     };
 
@@ -112,7 +126,7 @@ export default class GizmoMoveElement extends HTMLElement {
     window.addEventListener("mouseup", dragEnd);
 
     this.dispatchEvent(
-      new CustomEvent("gizmo-dragstart", { detail: { x, y } }),
+      new CustomEvent("gizmo-dragstart", { detail: { x, y, angle } }),
     );
   }
 }
