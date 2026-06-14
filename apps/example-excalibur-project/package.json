@@ -12,6 +12,6 @@
     "excalibur": "0.32.0",
     "excalibur-devtools": "workspace:*",
     "typescript": "6.0.3",
-    "vite": "8.0.15"
+    "vite": "8.0.16"
   }
 }
