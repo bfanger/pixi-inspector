@@ -2,5 +2,7 @@ packages:
   - apps/*
   - packages/*
 
-onlyBuiltDependencies:
-  - esbuild
+allowBuilds:
+  esbuild: false
+  spawn-sync: false
+  unrs-resolver: false

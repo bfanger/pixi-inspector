@@ -25,11 +25,39 @@
   let restoreTimer: number;
   let countdown = $state(0);
   let countdownTimer: number;
+  let updateController = new AbortController();
 
   $effect(() =>
     createListener(
-      (update) => {
-        targets = update;
+      async (update) => {
+        updateController.abort();
+        updateController = new AbortController();
+        let uniqueTargets = [""];
+        const variable = `window[${JSON.stringify(`__pixi_connect_${Math.random().toString(16).substring(2, 8)}`)}]`;
+        createBridge("")(`${variable} = ""`);
+        const signal = updateController.signal;
+        for (const target of update) {
+          if (target === "") {
+            continue;
+          }
+          try {
+            const value = await createBridge(target)<string>(
+              `${variable} = ${variable} ?? ${JSON.stringify(target)};`,
+            );
+            if (value === target) {
+              uniqueTargets.push(target);
+            }
+          } catch (err) {
+            console.warn(`Error connecting to ${target}:`, err);
+          }
+          if (signal.aborted) {
+            return;
+          }
+        }
+        targets = uniqueTargets;
+        for (const target of uniqueTargets) {
+          createBridge(target)<string>(`delete ${variable}`);
+        }
       },
       (fn) => {
         refresh = fn;
