@@ -91,15 +91,11 @@ export default function pixiTreeView(legacy: PixiDevtools) {
             }
           },
           getIndex(parent: UniversalNode, key: UniversalNode): number {
-            if (!("children" in parent)) {
-              if (parent === rootRef.value && "scenes" in parent) {
-                return parent.scenes.indexOf(key as any);
-              }
+            const children = legacy.childrenOf(parent);
+            if (!children) {
               throw new Error("Can't call getIndex() on a leaf node");
             }
-            return "getIndex" in parent.children
-              ? parent.children.getIndex(key as any)
-              : parent.children.indexOf(key as any);
+            return children.indexOf(key);
           },
           activate(node: UniversalNode) {
             win.$pixi = node;

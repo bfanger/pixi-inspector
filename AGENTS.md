@@ -27,3 +27,7 @@ When writing or editing code try to follow Prettier formatting rules using the d
 Before running lint run `npm run format` in the mono-repo root and fix these issues first.
 
 The projects and packages are linted by the `npm run lint` command in the mono-repo root (typically the pixi-inspector folder)
+
+## Rules
+
+- Do NOT use the read tool for packages/blender-elements/src/icons.ts it doen;t fit into context.

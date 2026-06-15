@@ -128,9 +128,8 @@ export default function pixiDevtools() {
 
     childrenOf(node: UniversalNode | Scene): UniversalNode[] | undefined {
       if ("children" in node) {
-        const { children } = node;
-        if (Array.isArray(children)) {
-          return children;
+        if (Array.isArray(node.children)) {
+          return node.children;
         }
         return (node as Scene).children.list;
       }

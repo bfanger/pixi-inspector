@@ -49,15 +49,31 @@ export default function treeViewController<T extends WeakKey>(
   const focusRef = focusRefProp ?? { key: undefined };
   const expanded = new WeakMap<T, boolean>();
 
+  /**
+   * Returns:
+   * - undefined: when there is nothing to expand
+   * - false: when the node is explicitly collapsed, or when the node is not at the first depth level
+   * - number: The number of nested nodes (1 or more) when the auto or explicitly expanded
+   */
   function getExpanded(key: T, parents: T[]) {
-    const value = expanded.get(key);
-    if (value !== undefined) {
-      return value;
-    }
-    if (getNestedCount(key) === 0) {
+    const count = getNestedCount(key);
+    if (count === 0) {
       return undefined;
     }
-    return parents.length <= 1; // auto expand the first level
+    let toggled = expanded.get(key);
+    if (toggled === undefined) {
+      toggled = parents.length <= 1; // auto expand the first level
+    }
+    return toggled && count;
+  }
+
+  function getLastVisibleLeaf(branch: T, parents: T[]): T {
+    const count = getExpanded(branch, parents);
+    if (count) {
+      const lastChild = getNestedKey(branch, count - 1);
+      return getLastVisibleLeaf(lastChild, [branch, ...parents]);
+    }
+    return branch;
   }
 
   /**
@@ -82,8 +98,8 @@ export default function treeViewController<T extends WeakKey>(
     parents: T[] = [],
     position = 0,
   ): number | undefined {
-    if (getExpanded(key, parents) === true) {
-      const count = getNestedCount(key);
+    const count = getExpanded(key, parents);
+    if (count) {
       for (let i = 0; i < count; i++) {
         const nestedKey = getNestedKey(key, i);
         const nestedParents = [key, ...parents];
@@ -156,11 +172,12 @@ export default function treeViewController<T extends WeakKey>(
     render(key) {
       const parents = parentsStore.get(key) ?? [];
       const depth = parents.length;
+      const count = getExpanded(key, parents);
       const props: TreeViewRowProps = {
         indent: depth - 1,
         label: "",
         active: false,
-        expanded: getExpanded(key, parents),
+        expanded: typeof count === "number" ? true : count,
       };
       syncProps(key, props, parents);
       return defineUI({
@@ -189,25 +206,21 @@ export default function treeViewController<T extends WeakKey>(
               if (index === 0) {
                 targetKey = parent;
               } else {
-                targetKey = getNestedKey(parent, index - 1);
+                const sibling = getNestedKey(parent, index - 1);
+                targetKey = getLastVisibleLeaf(sibling, parents);
               }
             } else if (event.key === "ArrowDown") {
-              const count = getNestedCount(parent);
-              if (index < count - 1) {
-                targetKey = getNestedKey(parent, index + 1);
-              } else {
-                let next = false;
-                walk(rootRef.value, (branch) => {
-                  if (next) {
-                    targetKey = branch;
-                    return true;
-                  }
-                  if (branch === key) {
-                    next = true;
-                  }
-                  return false;
-                });
-              }
+              let next = false;
+              walk(rootRef.value, (branch) => {
+                if (next) {
+                  targetKey = branch;
+                  return true;
+                }
+                if (branch === key) {
+                  next = true;
+                }
+                return false;
+              });
             } else if (event.key === "ArrowLeft") {
               if (parents !== undefined && getExpanded(key, parents)) {
                 expanded.set(key, false);
@@ -238,7 +251,8 @@ export default function treeViewController<T extends WeakKey>(
         },
         sync(patch) {
           const parents = parentsStore.get(key) ?? [];
-          props.expanded = getExpanded(key, parents);
+          const count = getExpanded(key, parents);
+          props.expanded = typeof count === "number" ? true : count;
           syncProps(key, props, parents);
 
           if (key === focusRef.key) {
