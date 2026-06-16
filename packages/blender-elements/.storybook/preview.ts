@@ -1,5 +1,8 @@
 import { css } from "../src/icons";
 import type { Preview } from "@storybook/svelte-vite";
+import defineElements from "../src/gizmos/defineElements";
+
+defineElements();
 
 const preview: Preview = {};
 export default preview;
