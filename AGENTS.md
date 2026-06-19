@@ -30,4 +30,5 @@ The projects and packages are linted by the `npm run lint` command in the mono-r
 
 ## Rules
 
-- Do NOT use the read tool for packages/blender-elements/src/icons.ts it doen;t fit into context.
+- Do NOT use the read tool for packages/blender-elements/src/icons.json
+  To list the available icons use `jq keys`
