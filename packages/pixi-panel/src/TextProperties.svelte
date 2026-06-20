@@ -33,10 +33,10 @@
   let strokePanel = $derived(typeof value.stroke === "string");
 
   const alignOptions = [
-    { value: "left", label: "Left", icon: "text-left" },
-    { value: "center", label: "Center", icon: "text-center" },
-    { value: "right", label: "Right", icon: "text-right" },
-    { value: "justify", label: "Justify", icon: "text-justify" },
+    { value: "left", label: "Left", icon: "align_left" as const },
+    { value: "center", label: "Center", icon: "align_center" as const },
+    { value: "right", label: "Right", icon: "align_right" as const },
+    { value: "justify", label: "Justify", icon: "align_justify" as const },
   ];
 </script>
 
@@ -123,7 +123,7 @@
             />
 
             <ToggleButton
-              icon="small-caps"
+              icon="small_caps"
               label="Small Caps"
               value={value.fontVariant === "small-caps"}
               rounded="right"

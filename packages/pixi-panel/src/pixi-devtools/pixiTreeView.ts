@@ -123,9 +123,11 @@ export default function pixiTreeView(legacy: PixiDevtools) {
               transparent: true,
               hint: "Disable right-click selection",
               muted: getSelectableMuted(),
+              width: 13,
+              height: 14,
               icon: legacy.selection.selectable(node)
-                ? ("selectable" as const)
-                : ("unselectable" as const),
+                ? ("restrict_select_off" as const)
+                : ("restrict_select_on" as const),
             };
             function getSelectableMuted() {
               return parents.some(
@@ -152,8 +154,8 @@ export default function pixiTreeView(legacy: PixiDevtools) {
                   },
                   sync(patch) {
                     selectableProps.icon = legacy.selection.selectable(node)
-                      ? "selectable"
-                      : "unselectable";
+                      ? "restrict_select_off"
+                      : "restrict_select_on";
                     selectableProps.muted = getSelectableMuted();
                     patch.props = selectableProps;
                   },
@@ -163,9 +165,11 @@ export default function pixiTreeView(legacy: PixiDevtools) {
                   (ref) => {
                     const props = {
                       icon: ref.value.visible
-                        ? ("eye-opened" as const)
-                        : ("eye-closed" as const),
+                        ? ("hide_off" as const)
+                        : ("hide_on" as const),
                       transparent: true,
+                      width: 15,
+                      height: 11,
                       muted: getVisibleMuted(),
                       hint: "",
                     };
@@ -181,8 +185,8 @@ export default function pixiTreeView(legacy: PixiDevtools) {
                         },
                         sync(patch: any) {
                           props.icon = ref.value.visible
-                            ? "eye-opened"
-                            : "eye-closed";
+                            ? "hide_off"
+                            : "hide_on";
                           props.hint = ref.value.visible
                             ? "Hide (h)"
                             : "Show (h)";
@@ -202,7 +206,7 @@ export default function pixiTreeView(legacy: PixiDevtools) {
     () => [
       {
         component: "Warning",
-        props: { icon: "warning", message: "No scene detected." },
+        props: { icon: "error", message: "No scene detected." },
       },
     ],
   );

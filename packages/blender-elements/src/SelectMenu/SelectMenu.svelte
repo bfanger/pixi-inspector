@@ -1,8 +1,9 @@
 <script lang="ts">
   import { tick } from "svelte";
   import Option from "./Option.svelte";
+  import type { Icon } from "../icons";
 
-  type OptionType = string | { value: string; label?: string; icon?: string };
+  type OptionType = string | { value: string; label?: string; icon?: Icon };
 
   type Props = {
     value: string;

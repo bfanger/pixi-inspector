@@ -236,7 +236,7 @@
             {#if "EyeDropper" in window}
               <ToggleButton
                 hint="Pick color using a eye dropper"
-                icon="pipette"
+                icon="eyedropper"
                 onclick={openEyeDropper}
               />
             {/if}

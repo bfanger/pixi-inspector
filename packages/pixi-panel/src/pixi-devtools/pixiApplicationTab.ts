@@ -55,7 +55,12 @@ function tickerPanel(tickerRef: { value: Ticker }) {
                   () => [
                     {
                       component: "ToggleButton",
-                      props: { icon: "pause" },
+                      props: {
+                        icon: "pause",
+                        width: 10,
+                        height: 14,
+                        minWidth: 21,
+                      },
                       events: {
                         onclick() {
                           tickerRef.value.stop();
@@ -66,7 +71,12 @@ function tickerPanel(tickerRef: { value: Ticker }) {
                   () => [
                     {
                       component: "ToggleButton",
-                      props: { icon: "play" },
+                      props: {
+                        icon: "play",
+                        width: 13,
+                        height: 14,
+                        minWidth: 21,
+                      },
                       events: {
                         onclick() {
                           tickerRef.value.start();

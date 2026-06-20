@@ -26,7 +26,7 @@
       <code class="with-copy">
         <div class="copy">
           <ToggleButton
-            icon="copy"
+            icon="copydown"
             hint="Copy to clipboard"
             transparent
             onclick={() => copyToClipboard("globalThis.__PIXI_APP__ = app;")}
@@ -49,7 +49,7 @@
       <code class="with-copy"
         ><div class="copy">
           <ToggleButton
-            icon="copy"
+            icon="copydown"
             hint="Copy to clipboard"
             transparent
             onclick={() =>

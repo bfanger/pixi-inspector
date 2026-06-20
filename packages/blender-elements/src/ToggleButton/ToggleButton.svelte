@@ -3,6 +3,9 @@
 
   type Props = {
     icon?: Icon | undefined;
+    width?: number | undefined;
+    height?: number | undefined;
+    minWidth?: number | undefined;
     label?: string;
     value?: boolean | undefined;
     transparent?: boolean;
@@ -14,11 +17,14 @@
   };
 
   let {
-    icon = undefined,
+    icon,
+    width = 16,
+    height = 16,
+    minWidth,
     label = "",
     value = $bindable(undefined),
     transparent = false,
-    hint = undefined,
+    hint,
     rounded = "all",
     muted = false,
     setValue,
@@ -40,6 +46,7 @@
   class:muted
   class:with-label={label}
   data-rounded={rounded}
+  style:min-width={minWidth ? `${minWidth}px` : undefined}
   title={hint}
   onclick={(e) => {
     e.stopPropagation();
@@ -49,7 +56,13 @@
   ondblclick={(e) => e.stopPropagation()}
 >
   {#if icon}
-    <span class="icon" style="background-image: var(--icon-{icon})"></span>
+    <span
+      class="icon"
+      style:width="{width}px"
+      style:height="{height}px"
+      style:background-image="var(--icon-{icon})"
+      style:margin-inline={minWidth ? "auto" : undefined}
+    ></span>
   {/if}
   {#if label}
     <span class="label">
@@ -69,7 +82,6 @@
     align-items: center;
 
     box-sizing: border-box;
-    min-width: 20px;
     min-height: 20px;
     padding: 1px;
     border: 1px solid transparent;
@@ -128,10 +140,6 @@
   .icon {
     display: inline-block;
     flex-shrink: 0;
-
-    width: 16px;
-    height: 16px;
-
     background: transparent no-repeat center center;
     background-size: contain;
   }

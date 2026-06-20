@@ -110,12 +110,14 @@
       width: 16px;
       height: 16px;
 
-      opacity: 0.5;
-      background: var(--icon-chevron-right) center center no-repeat;
+      opacity: 0.7;
+      background: var(--icon-rightarrow) center center no-repeat;
+      background-size: 7px 11px;
     }
 
     &.expanded::before {
-      background-image: var(--icon-chevron-down);
+      background-image: var(--icon-downarrow-hlt);
+      background-size: 11px 7px;
     }
   }
 

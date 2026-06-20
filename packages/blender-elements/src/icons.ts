@@ -21,6 +21,9 @@ export function css(): string {
       new Blob([data], { type: "image/svg+xml" }),
     );
     cssVars.push(`--icon-${name}: url(${url})`);
+    if (name.includes("_")) {
+      cssVars.push(`--icon-${name.replaceAll("_", "-")}: var(--icon-${name})`);
+    }
   }
   cache = cssVars.join(";\n");
   return cache;

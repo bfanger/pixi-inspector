@@ -43,11 +43,13 @@
     }
 
     &[data-icon="warning"]::before {
-      background-image: var(--icon-warning);
+      background-image: var(--icon-warning-large);
+      background-size: 18px 16px;
     }
 
     &[data-icon="error"]::before {
       background-image: var(--icon-error);
+      background-size: 16px 16px;
     }
   }
 </style>

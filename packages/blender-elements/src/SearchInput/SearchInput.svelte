@@ -7,10 +7,17 @@
     value: string;
     setValue?: (value: string) => void;
     id?: string | undefined;
+    placeholder?: string;
     onclear?: () => void;
   };
 
-  let { value = $bindable(), setValue, id, onclear }: Props = $props();
+  let {
+    value = $bindable(),
+    setValue,
+    id,
+    placeholder,
+    onclear,
+  }: Props = $props();
 
   let text = $state(value);
   let previous = $state(value);
@@ -38,6 +45,7 @@
 <div class="search-input">
   <input
     {id}
+    {placeholder}
     type="text"
     class="input"
     bind:value={text}
@@ -100,7 +108,8 @@
     width: 16px;
     height: 16px;
 
-    background: var(--icon-search) center center no-repeat;
+    background: var(--icon-viewzoom) center center no-repeat;
+    background-size: 16px 16px;
   }
 
   .clear {
@@ -115,7 +124,8 @@
     border: none;
 
     opacity: 0.8;
-    background: var(--icon-cross) center center no-repeat;
+    background: var(--icon-x) center center no-repeat;
+    background-size: 10px 10px;
 
     &:hover {
       opacity: 1;

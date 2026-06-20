@@ -249,12 +249,12 @@
 
     &.left {
       left: 0;
-      background-image: var(--icon-chevron-left);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 6' width='4' height='6'%3E%3Cpath d='M 3 1 L 1 3 L 3 5' fill='none' stroke='%23fff' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
     }
 
     &.right {
       right: 0;
-      background-image: var(--icon-chevron-right);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 6' width='4' height='6'%3E%3Cpath d='M 1 1 L 3 3 L 1 5' fill='none' stroke='%23fff' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
     }
   }
 

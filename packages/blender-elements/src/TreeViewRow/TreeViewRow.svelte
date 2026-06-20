@@ -69,13 +69,19 @@
 >
   {#if expanded === true}
     <ToggleButton
-      icon="expanded"
+      icon="downarrow_hlt"
+      minWidth={16}
+      width={11}
+      height={7}
       transparent
       onclick={() => setExpanded?.(false)}
     />
   {:else if expanded === false}
     <ToggleButton
-      icon="collapsed"
+      icon="rightarrow"
+      width={7}
+      minWidth={16}
+      height={11}
       transparent
       onclick={() => setExpanded?.(true)}
     />
@@ -94,7 +100,7 @@
 
     height: 20px;
     padding-right: 4px;
-    padding-left: calc(var(--indent) * 20px);
+    padding-left: calc(var(--indent) * 16px + 1px);
 
     color: #c2c2c2;
 
@@ -118,7 +124,7 @@
   }
 
   .toggle-spacer {
-    width: 20px;
+    width: 17px;
   }
 
   .label {

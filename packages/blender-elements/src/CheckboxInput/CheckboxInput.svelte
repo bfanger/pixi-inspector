@@ -59,7 +59,8 @@
     box-shadow: 0 1px 1px #0003;
 
     &:checked {
-      background: #4772b3 var(--icon-checkbox) no-repeat center center;
+      background: #4772b3 var(--icon-checkmark) no-repeat center center;
+      background-size: 12px 9px;
     }
 
     &:focus-visible {

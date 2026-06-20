@@ -94,6 +94,7 @@
 
     opacity: 0.8;
     background: center center no-repeat;
+    background-size: 16px 16px;
   }
 
   .active .icon,

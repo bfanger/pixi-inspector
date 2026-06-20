@@ -148,6 +148,7 @@ function initSceneGraph(): UIProtocolInit {
       search: [
         {
           component: "SearchInput",
+          props: { placeholder: "Search" },
           getValue: () => outline.query,
           events: {
             setValue: [
@@ -181,9 +182,9 @@ function initSceneGraph(): UIProtocolInit {
 function propertyTabs(): UIProtocolInit[] {
   const appRef = { value: legacy.app() };
   const allTabs = {
-    scene: { icon: "scene", label: "Scene Properties" },
-    object: { icon: "object", label: "Object Properties" },
-    text: { icon: "text", label: "Text Properties" },
+    scene: { icon: "scene_data", label: "Scene Properties" },
+    object: { icon: "object_data", label: "Object Properties" },
+    text: { icon: "font_data", label: "Text Properties" },
   } as const;
   type TabKey = keyof typeof allTabs;
 

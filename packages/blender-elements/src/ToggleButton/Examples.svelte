@@ -4,7 +4,7 @@
   import ToggleButton from "./ToggleButton.svelte";
 
   let value = $state(false);
-  let icon: Icon = $state("copy");
+  let icon: Icon = $state("copydown");
   let fontStyle: "bold" | "italic" | "small-caps" = $state("bold");
 </script>
 
@@ -16,9 +16,9 @@
   </Panel>
   <Panel title="Toggles in a group">
     <div style="display: inline-flex">
-      <ToggleButton icon="chevron-left" rounded="left" />
-      <ToggleButton icon="eye-opened" bind:value rounded="none" />
-      <ToggleButton icon="chevron-right" rounded="right" />
+      <ToggleButton icon="downarrow_hlt" rounded="left" />
+      <ToggleButton icon="hide_off" bind:value rounded="none" />
+      <ToggleButton icon="rightarrow" rounded="right" />
     </div>
   </Panel>
   <Panel title="Font styles">
@@ -42,7 +42,7 @@
         }}
       />
       <ToggleButton
-        icon="small-caps"
+        icon="small_caps"
         rounded="right"
         label="Small Caps"
         value={fontStyle === "small-caps"}
