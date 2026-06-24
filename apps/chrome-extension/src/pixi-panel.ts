@@ -10,6 +10,24 @@ function createListener(
   setUrls: (urls: string[]) => void,
   setRefresh: (fn: () => void) => void,
 ) {
+  // Discover all iframe URLs by probing the DOM recursively.
+  // This catches nested iframes that getResources/onResourceAdded miss
+  // after navigation (a Chrome DevTools bug with nested cross-origin frames).
+  const discoverFramesCode = `(function() {
+    var urls = [];
+    function walk(doc) {
+      try {
+        var frames = doc.querySelectorAll('iframe');
+        for (var i = 0; i < frames.length; i++) {
+          if (frames[i].src) urls.push(frames[i].src);
+          try { walk(frames[i].contentDocument); } catch(e) {}
+        }
+      } catch(e) {}
+    }
+    walk(document);
+    return JSON.stringify(urls);
+  })()`;
+
   function refresh() {
     chrome.devtools.inspectedWindow.getResources((resources) => {
       let firstDocument = true;
@@ -23,7 +41,20 @@ function createListener(
           }
         }
       }
-      setUrls(Array.from(frameUrls));
+
+      // Also discover nested iframes via DOM traversal
+      chrome.devtools.inspectedWindow.eval(discoverFramesCode, (result) => {
+        if (result) {
+          try {
+            for (const url of JSON.parse(result as unknown as string)) {
+              frameUrls.add(url);
+            }
+          } catch {
+            // Ignore malformed JSON from eval
+          }
+        }
+        setUrls(Array.from(frameUrls));
+      });
     });
   }
   refresh();

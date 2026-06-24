@@ -91,6 +91,17 @@
   function onerror(target: string, err: Error) {
     console.warn(err);
     clearTimeout(restoreTimer);
+
+    // If the error indicates the frame context is gone, disconnect immediately
+    // to prevent further eval calls from corrupting Chrome's frame tracking.
+    if (err.message.includes("Object not found")) {
+      available.delete(target);
+      active = undefined;
+      errorMessage = "";
+      refresh?.();
+      return;
+    }
+
     refresh?.();
     restoreTimer = window.setTimeout(() => {
       errorMessage = err.message;
