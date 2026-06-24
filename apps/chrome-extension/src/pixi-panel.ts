@@ -10,8 +10,6 @@ function createListener(
   setUrls: (urls: string[]) => void,
   setRefresh: (fn: () => void) => void,
 ) {
-  let lastFrameUrls = "";
-
   function refresh() {
     chrome.devtools.inspectedWindow.getResources((resources) => {
       let firstDocument = true;
@@ -25,12 +23,7 @@ function createListener(
           }
         }
       }
-      const urls = Array.from(frameUrls);
-      const key = urls.join("\n");
-      if (key !== lastFrameUrls) {
-        lastFrameUrls = key;
-        setUrls(urls);
-      }
+      setUrls(Array.from(frameUrls));
     });
   }
   refresh();
@@ -44,9 +37,8 @@ function createListener(
   chrome.devtools.inspectedWindow.onResourceAdded.addListener(callback);
 
   // Periodically re-scan for frames that onResourceAdded may have missed
-  // (common with cross-origin iframes loaded after initial page render).
-  // The lastFrameUrls dedup ensures setUrls only fires when the frame list
-  // actually changes, making this a no-op once frames stabilize.
+  // (common with cross-origin iframes loaded after initial page render)
+  // or whose contexts were invalidated by page reload/navigation.
   const rescanInterval = setInterval(refresh, 2_000);
 
   return () => {
