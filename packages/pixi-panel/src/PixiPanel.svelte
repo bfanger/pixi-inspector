@@ -1,6 +1,7 @@
 <script lang="ts">
   import Base from "blender-elements/src/Base.svelte";
   import Warning from "blender-elements/src/Warning/Warning.svelte";
+  import SelectMenu from "blender-elements/src/SelectMenu/SelectMenu.svelte";
   import Connect from "ui-protocol/src/svelte/Connect.svelte";
   import type { BridgeFn } from "ui-protocol/src/types";
   import TriggerProvider from "ui-protocol/src/svelte/TriggerProvider.svelte";
@@ -58,6 +59,11 @@
         for (const target of uniqueTargets) {
           createBridge(target)<string>(`delete ${variable}`);
         }
+        for (const target of available) {
+          if (!uniqueTargets.includes(target)) {
+            removeConnection(target);
+          }
+        }
       },
       (fn) => {
         refresh = fn;
@@ -86,7 +92,7 @@
   function removeConnection(target: string) {
     available.delete(target);
     if (active === target) {
-      active = undefined;
+      active = available.values().next().value;
     }
   }
 
@@ -98,10 +104,6 @@
   function onerror(target: string, err: Error) {
     console.warn(err);
     clearTimeout(restoreTimer);
-    const frameLost = err.message === `Object not found: "${target}"`;
-    if (target.length > 0 && frameLost) {
-      removeConnection(target);
-    }
     refresh?.();
     restoreTimer = window.setTimeout(() => {
       if (active === target) {
@@ -109,10 +111,8 @@
         countdown = 5;
       }
       if (!targets.includes(target)) {
-        removeConnection(target);
-      }
-      if (frameLost) {
         lines = [];
+        removeConnection(target);
       }
     }, 1000);
   }
@@ -136,7 +136,7 @@
 
 <Base>
   {#each targets as target (target)}
-    {#if target !== active}
+    {#if !available.has(target)}
       <TriggerProvider ontrigger={() => addConnection(target)}>
         <Connect
           ui="connect"
@@ -155,17 +155,29 @@
   {:else if active === undefined}
     <Instructions />
   {:else}
-    {#key active}
-      {@const target = active}
-      <Connect
-        ui="pixi"
-        inject={uiLegacy}
-        bridge={createBridge(target)}
-        {onlog}
-        {onrestore}
-        onerror={(err: any) => onerror(target, err)}
-      />
-    {/key}
+    <div class="pixi-panel">
+      {#if available.size > 1}
+        <SelectMenu
+          bind:value={active}
+          options={Array.from(available).map((target) =>
+            target === "" ? { value: "", label: "top" } : target,
+          )}
+        />
+      {/if}
+      <div class="connected-target">
+        {#key active}
+          {@const target = active}
+          <Connect
+            ui="pixi"
+            inject={uiLegacy}
+            bridge={createBridge(target)}
+            {onlog}
+            {onrestore}
+            onerror={(err: any) => onerror(target, err)}
+          />
+        {/key}
+      </div>
+    </div>
   {/if}
   {#if lines.length > 0}
     <div class="log">
@@ -185,6 +197,16 @@
   :global(body) {
     height: 100%;
     margin: 0;
+  }
+
+  .pixi-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .connected-target {
+    flex: 1;
   }
 
   .log {
