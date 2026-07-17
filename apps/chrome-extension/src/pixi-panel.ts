@@ -12,18 +12,13 @@ function createListener(
 ) {
   function refresh() {
     chrome.devtools.inspectedWindow.getResources((resources) => {
-      let firstDocument = true;
-      const frameUrls = new Set([""]);
+      const frameUrls = new Set<string>();
       for (const resource of resources) {
         if ((resource as any).type === "document") {
-          if (firstDocument) {
-            firstDocument = false;
-          } else {
-            frameUrls.add(resource.url);
-          }
+          frameUrls.add(resource.url);
         }
       }
-      setUrls(Array.from(frameUrls));
+      setUrls(Array.from(frameUrls).sort());
     });
   }
   refresh();
@@ -75,10 +70,19 @@ if (WATCH) {
   new EventSource("http://localhost:10808/esbuild").addEventListener(
     "change",
     () => {
+      sendLog("[esbuild] Change detected, reloading...");
       Promise.try(() =>
         chrome.devtools.inspectedWindow.eval("location.reload()"),
       );
       window.location.reload();
     },
   );
+}
+
+function sendLog(...args: any[]) {
+  if (WATCH) {
+    chrome.devtools.inspectedWindow.eval(
+      `console.debug(...${JSON.stringify(args)})`,
+    );
+  }
 }

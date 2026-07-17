@@ -83,6 +83,13 @@
     clearTimeout(restoreTimer);
   }
 
+  function removeConnection(target: string) {
+    available.delete(target);
+    if (active === target) {
+      active = undefined;
+    }
+  }
+
   function onrestore() {
     clearTimeout(restoreTimer);
     lines = [];
@@ -91,20 +98,22 @@
   function onerror(target: string, err: Error) {
     console.warn(err);
     clearTimeout(restoreTimer);
+    const frameLost = err.message === `Object not found: "${target}"`;
+    if (target.length > 0 && frameLost) {
+      removeConnection(target);
+    }
     refresh?.();
     restoreTimer = window.setTimeout(() => {
-      errorMessage = err.message;
-      if (active === target && !targets.includes(target)) {
-        available.delete(target);
-        active = undefined;
+      if (active === target) {
+        errorMessage = err.message;
+        countdown = 5;
       }
-      countdown = 5;
-      setTimeout(() => {
-        if ((errorMessage = err.message)) {
-          errorMessage = "";
-          lines = [];
-        }
-      }, 5_000);
+      if (!targets.includes(target)) {
+        removeConnection(target);
+      }
+      if (frameLost) {
+        lines = [];
+      }
     }, 1000);
   }
 
@@ -114,6 +123,8 @@
 
   $effect(() => {
     if (countdown <= 0) {
+      errorMessage = "";
+      lines = [];
       return;
     }
     countdownTimer = window.setTimeout(() => {
@@ -152,7 +163,7 @@
         bridge={createBridge(target)}
         {onlog}
         {onrestore}
-        onerror={(err) => onerror(target, err)}
+        onerror={(err: any) => onerror(target, err)}
       />
     {/key}
   {/if}
