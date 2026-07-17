@@ -10,7 +10,7 @@
     "esbuild": "^0.28.1",
     "esbuild-svelte": "^0.9.5",
     "pixi-panel": "workspace:*",
-    "svelte": "^5.56.3",
+    "svelte": "^5.56.5",
     "zip-dir": "^2.0.0"
   }
 }

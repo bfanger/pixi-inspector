@@ -9,21 +9,25 @@ export default function defineUI<T extends UIProtocolInit>(init: T): T {
 type AnyProps = Record<string, unknown>;
 
 type InitProps<T extends AnyProps> = {
-  [K in keyof T as K extends "value"
-    ? never
-    : T[K] extends ((...args: any[]) => any) | undefined
+  [
+    K in keyof T as K extends "value"
       ? never
-      : K]: T[K];
+      : T[K] extends ((...args: any[]) => any) | undefined
+        ? never
+        : K
+  ]: T[K];
 };
 
 type InitEvents<T extends AnyProps> = {
-  [K in keyof T as K extends "setValue"
-    ? never
-    : T[K] extends Snippet
+  [
+    K in keyof T as K extends "setValue"
       ? never
-      : T[K] extends ((...args: any[]) => any) | undefined
-        ? K
-        : never]: T[K] | [T[K], TreeEventOptions];
+      : T[K] extends Snippet
+        ? never
+        : T[K] extends ((...args: any[]) => any) | undefined
+          ? K
+          : never
+  ]: T[K] | [T[K], TreeEventOptions];
 } & {
   setValue?: T extends { setValue?: infer TSetValue }
     ? TSetValue | [TSetValue, TreeEventOptions]

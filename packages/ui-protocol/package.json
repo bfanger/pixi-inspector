@@ -8,14 +8,14 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^7.1.2",
+    "@sveltejs/vite-plugin-svelte": "^7.2.0",
     "@types/dat.gui": "^0.7.13",
     "blender-elements": "workspace:*",
     "dat.gui": "^0.7.9",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.10"
   },
   "dependencies": {
-    "svelte": "^5.56.3",
-    "vite": "^8.0.16"
+    "svelte": "^5.56.5",
+    "vite": "^8.1.5"
   }
 }

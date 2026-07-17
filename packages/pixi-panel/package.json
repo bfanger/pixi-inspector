@@ -13,7 +13,7 @@
     "blender-elements": "workspace:*",
     "concurrently": "^10.0.3",
     "esbuild": "^0.28.1",
-    "phaser": "^4.1.0",
+    "phaser": "^4.2.1",
     "pixi.js": "^8.19.0",
     "ui-protocol": "workspace:*"
   }

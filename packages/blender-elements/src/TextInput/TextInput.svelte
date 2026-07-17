@@ -80,8 +80,7 @@
       use:blurOnEnter
       use:revertOnEscape={previous}
       oninput={onInput}
-      onblur={onBlur}
-    ></textarea>
+      onblur={onBlur}></textarea>
   </div>
 {:else}
   <input
