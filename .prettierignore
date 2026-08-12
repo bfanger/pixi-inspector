@@ -5,3 +5,4 @@
 /apps/example-excalibur-project/dist
 /pnpm-lock.yaml
 /.pnpm-store
+/.svelte-check

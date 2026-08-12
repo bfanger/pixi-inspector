@@ -11,6 +11,7 @@ export default defineConfig(
   {
     ignores: [
       ".svelte-kit",
+      ".svelte-check",
       ".vercel",
       "build",
       "node_modules",

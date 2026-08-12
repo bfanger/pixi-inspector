@@ -7,10 +7,10 @@
     "build": "node build.js && node archive.ts"
   },
   "devDependencies": {
-    "esbuild": "^0.28.1",
+    "esbuild": "^0.28.2",
     "esbuild-svelte": "^0.9.5",
     "pixi-panel": "workspace:*",
-    "svelte": "^5.56.6",
+    "svelte": "^5.56.8",
     "zip-dir": "^2.0.0"
   }
 }

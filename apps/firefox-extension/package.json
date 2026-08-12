@@ -10,12 +10,12 @@
     "build": "node build.js && web-ext lint --source-dir build && web-ext build --source-dir build --overwrite-dest && git archive main --format zip > web-ext-artifacts/source.zip"
   },
   "devDependencies": {
-    "concurrently": "^10.0.3",
-    "esbuild": "^0.28.1",
+    "concurrently": "^10.0.4",
+    "esbuild": "^0.28.2",
     "esbuild-svelte": "^0.9.5",
     "pixi-panel": "workspace:*",
-    "svelte": "^5.56.6",
+    "svelte": "^5.56.8",
     "ui-protocol": "workspace:*",
-    "web-ext": "^10.5.0"
+    "web-ext": "^10.6.0"
   }
 }
