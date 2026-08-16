@@ -1,7 +1,7 @@
 import type { Application, BackgroundSystem, Ticker } from "pixi.js";
 import ifController from "ui-protocol/src/controllers/ifController";
 import defineUI from "ui-protocol/src/svelte/defineUI";
-import session from "./session";
+import { session } from "./storage";
 import errorBoundaryController from "ui-protocol/src/controllers/errorBoundaryController";
 import panelController from "ui-protocol/src/controllers/panelController";
 

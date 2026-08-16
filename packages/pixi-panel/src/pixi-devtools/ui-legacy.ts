@@ -13,7 +13,7 @@ import ifController from "ui-protocol/src/controllers/ifController";
 import pixiApplicationTab from "./pixiApplicationTab";
 import { evalListen } from "ui-protocol/src/evalBridge";
 import rootController from "ui-protocol/src/controllers/rootController";
-import session from "./session";
+import { session } from "./storage";
 import pixiTreeView from "./pixiTreeView";
 
 const legacy = pixiDevtools() as PixiDevtools;
