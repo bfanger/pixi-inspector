@@ -19,6 +19,7 @@ import ColorInput from "blender-elements/src/ColorInput/ColorInput.svelte";
 import ToggleButton from "blender-elements/src/ToggleButton/ToggleButton.svelte";
 import TreeViewRow from "blender-elements/src/TreeViewRow/TreeViewRow.svelte";
 import VirtualList from "blender-elements/src/VirtualList/VirtualList.svelte";
+import Toolbar from "blender-elements/src/Toolbar/Toolbar.svelte";
 
 const components = {
   Fragment,
@@ -42,6 +43,7 @@ const components = {
   Tabs,
   TreeViewRow,
   VirtualList,
+  Toolbar,
 } as const;
 
 type BaseComponents = {

@@ -15,6 +15,7 @@ import { evalListen } from "ui-protocol/src/evalBridge";
 import rootController from "ui-protocol/src/controllers/rootController";
 import { session } from "./storage";
 import pixiTreeView from "./pixiTreeView";
+import gizmoToggle from "./gizmoToggle";
 
 const legacy = pixiDevtools() as PixiDevtools;
 legacy.selection = pixiDevtoolsSelection();
@@ -57,6 +58,11 @@ const patched = Symbol("patched");
 export function initLegacyUI(): UIProtocolInit[] {
   let direction: "row" | "column" = "row";
   return [
+    {
+      component: "Toolbar",
+      props: { align: "end" },
+      children: [gizmoToggle()],
+    },
     {
       component: "SplitPanels",
       props: { direction: "column" },

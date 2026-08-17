@@ -4,7 +4,7 @@ const sessionStorageCache = new Map<string, unknown>();
 const localStorageCache = new Map<string, unknown>();
 
 /**
- * Storage backed by sessionStorage, with cached json deserialization  
+ * Storage backed by sessionStorage, with cached JSON deserialization  
  */
 export const session = {
   get<T>(key: string): T | undefined {
@@ -20,7 +20,7 @@ export const session = {
 };
 
 /**
- * Storage backed by localStorage, with cached json deserialization  
+ * Storage backed by localStorage, with cached JSON deserialization  
  */
 export const persistent = {
   get<T>(key: string): T | undefined {

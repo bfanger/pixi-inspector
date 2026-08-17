@@ -2,6 +2,7 @@ import defineElements, {
   type GizmoMoveElement,
 } from "blender-elements/src/gizmos/defineElements";
 import { getScreenLocation, setScreenLocation } from "./pixi-gizmo-fns";
+import { persistent } from "./pixi-devtools/storage";
 
 defineElements();
 const win = window as any;
@@ -15,6 +16,7 @@ gizmoMove.addEventListener("gizmo-drag", (e) => {
 });
 
 function sync() {
+  let hidden = persistent.get("gizmo:hidden");
   if (typeof win.$pixi?.position?.x === "number") {
     const position = getScreenLocation(win.$pixi);
     gizmoMove.setPosition(position.x, position.y);
@@ -22,12 +24,10 @@ function sync() {
       const m = win.$pixi.parent.worldTransform;
       gizmoMove.setAngle(Math.atan2(m.b, m.a));
     }
+  } else if (!win.$pixi || !win.$pixi.parent) {
+    hidden = true;
   }
-  if (!win.$pixi && sync.previous) {
-    gizmoMove.style.display = "none";
-  } else if (win.$pixi && !sync.previous) {
-    gizmoMove.style.display = "";
-  }
+  gizmoMove.style.display = hidden ? "none" : "";
   sync.previous = win.$pixi;
   requestAnimationFrame(sync);
 }
