@@ -207,6 +207,7 @@
 
   .connected-target {
     flex: 1;
+    max-height: 100%;
   }
 
   .log {

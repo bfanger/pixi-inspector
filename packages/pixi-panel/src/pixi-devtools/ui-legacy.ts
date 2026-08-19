@@ -15,7 +15,7 @@ import { evalListen } from "ui-protocol/src/evalBridge";
 import rootController from "ui-protocol/src/controllers/rootController";
 import { session } from "./storage";
 import pixiTreeView from "./pixiTreeView";
-import gizmoToggle from "./gizmoToggle";
+import pixiToolbar from "./pixiToolbar";
 
 const legacy = pixiDevtools() as PixiDevtools;
 legacy.selection = pixiDevtoolsSelection();
@@ -59,54 +59,58 @@ export function initLegacyUI(): UIProtocolInit[] {
   let direction: "row" | "column" = "row";
   return [
     {
-      component: "Toolbar",
+      component: "Region",
       props: { align: "end" },
-      children: [gizmoToggle()],
-    },
-    {
-      component: "SplitPanels",
-      props: { direction: "column" },
-      sync(patch) {
-        patch.props = { direction };
-      },
-      events: {
-        onresize: [
-          (details) => {
-            const size = details as { width: number; height: number };
-            direction = size.width > 500 ? "row" : "column";
+      slots: {
+        toolbar: [pixiToolbar(() => legacy.version() === 8)],
+        children: [
+          {
+            component: "SplitPanels",
+            props: { direction: "column" },
+            sync(patch) {
+              patch.props = { direction };
+            },
+            events: {
+              onresize: [
+                (details) => {
+                  const size = details as { width: number; height: number };
+                  direction = size.width > 500 ? "row" : "column";
+                },
+                { throttle: 100 },
+              ],
+            },
+            children: [
+              {
+                component: "SplitPanel",
+                props: { minWidth: 200, minHeight: 80, size: 2 },
+                children: [
+                  refreshController({
+                    depth: 1,
+                    interval: 1_000,
+                    sync(patch) {
+                      patch.props = {
+                        depth: 1,
+                        interval: outline.query.length === 0 ? 1_000 : 5_000,
+                      };
+                    },
+                  }),
+                  initSceneGraph(),
+                ],
+              },
+              {
+                component: "SplitPanel",
+                props: {
+                  minWidth: 200,
+                  minHeight: 100,
+                  maxHeight: 680,
+                  size: 3,
+                },
+                children: [instructionsFallback(propertyTabs)],
+              },
+            ],
           },
-          { throttle: 100 },
         ],
       },
-      children: [
-        {
-          component: "SplitPanel",
-          props: { minWidth: 200, minHeight: 100, size: 2 },
-          children: [
-            refreshController({
-              depth: 1,
-              interval: 1_000,
-              sync(patch) {
-                patch.props = {
-                  depth: 1,
-                  interval: outline.query.length === 0 ? 1_000 : 5_000,
-                };
-              },
-            }),
-            initSceneGraph(),
-          ],
-        },
-        {
-          component: "SplitPanel",
-          props: {
-            minWidth: 200,
-            minHeight: 200,
-            maxHeight: 680,
-            size: 3,
-          },
-          children: [instructionsFallback(propertyTabs)],
-        },
-      ],
     },
   ];
 }
