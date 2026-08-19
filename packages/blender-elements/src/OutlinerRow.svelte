@@ -154,10 +154,18 @@
     <ToggleButton
       transparent
       icon="downarrow_hlt"
+      width={11}
+      height={7}
       onclick={() => oncollapse()}
     />
   {:else if expanded === false}
-    <ToggleButton transparent icon="rightarrow" onclick={() => onexpand()} />
+    <ToggleButton
+      transparent
+      icon="rightarrow"
+      width={7}
+      height={11}
+      onclick={() => onexpand()}
+    />
   {:else}
     <span class="toggle-spacer"></span>
   {/if}
@@ -166,6 +174,8 @@
     <ToggleButton
       transparent
       icon="restrict_select_off"
+      width={13}
+      height={14}
       hint="Disable right-click selection"
       muted={parentUnselectable}
       onclick={() => onunselectable()}
@@ -174,6 +184,8 @@
     <ToggleButton
       transparent
       icon="restrict_select_on"
+      width={13}
+      height={14}
       hint="Enable right-click selection"
       muted={parentUnselectable}
       onclick={() => onselectable()}
@@ -183,6 +195,8 @@
     <ToggleButton
       transparent
       icon="hide_off"
+      width={15}
+      height={11}
       hint="Hide (h)"
       onclick={() => onhide()}
     />
@@ -190,6 +204,8 @@
     <ToggleButton
       transparent
       icon="hide_on"
+      width={15}
+      height={11}
       hint="Show (h)"
       onclick={() => onshow()}
     />

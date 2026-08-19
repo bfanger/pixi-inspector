@@ -1,9 +1,19 @@
 import type { GameObjects } from "phaser";
-import type { ICanvas, Matrix } from "pixi.js";
+import type { ICanvas, Matrix, Sprite } from "pixi.js";
 import type { PixiDevtools, UniversalNode } from "../types";
-import { gizmoMove } from "../pixi-gizmos";
+import { persistent } from "./storage";
+import { getScreenLocation, setScreenLocation } from "../pixi-gizmo-fns";
+import type GizmoMoveElement from "blender-elements/src/gizmos/gizmo-move";
+import defineElements from "blender-elements/src/gizmos/defineElements";
+
+defineElements();
 
 export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
+  const win = window as { __PIXI_DEVTOOL_OVERLAY?: AbortController };
+  win.__PIXI_DEVTOOL_OVERLAY?.abort();
+  win.__PIXI_DEVTOOL_OVERLAY = new AbortController();
+  const { signal } = win.__PIXI_DEVTOOL_OVERLAY;
+
   function position(
     x: string,
     y: string,
@@ -96,7 +106,7 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
   }
 
   function connect(el: HTMLCanvasElement | ICanvas | undefined) {
-    if (!el) {
+    if (!el || signal.aborted) {
       return () => {};
     }
     const canvas = el as HTMLCanvasElement;
@@ -122,8 +132,19 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
     });
     clipEl.appendChild(overlayEl);
 
-    if (devtools.version() === 8) {
+    const gizmoMove =
+      devtools.version() === 8
+        ? (document.createElement("gizmo-move") as GizmoMoveElement)
+        : undefined;
+    if (gizmoMove) {
+      gizmoMove.addEventListener("gizmo-drag", (e) => {
+        setScreenLocation(
+          devtools.selection.active() as Sprite,
+          (e as CustomEvent).detail,
+        );
+      });
       gizmoMove.style.pointerEvents = "auto";
+      gizmoMove.style.display = "none";
       overlayEl.appendChild(gizmoMove);
     }
 
@@ -277,7 +298,32 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
       } else {
         highlight.style.transform = "scale(0)";
       }
+
+      // Gizmo
+      const localAngle = false;
+      const sprite = activeNode as Sprite;
+      if (
+        !gizmoMove ||
+        !activeNode ||
+        persistent.get("gizmo:hidden") ||
+        !gizmoMove.parentElement ||
+        !sprite.parent ||
+        typeof sprite?.position?.x !== "number"
+      ) {
+        if (gizmoMove) {
+          gizmoMove.style.display = "none";
+        }
+      } else {
+        gizmoMove.style.display = "";
+        const position = getScreenLocation(sprite);
+        gizmoMove.setPosition(position.x, position.y);
+        if (localAngle) {
+          const m = sprite.parent.worldTransform;
+          gizmoMove.setAngle(Math.atan2(m.b, m.a));
+        }
+      }
     }
+
     let parent: HTMLElement | null = canvas;
     while (parent) {
       parent = parent.parentElement;
@@ -288,6 +334,9 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
       }
     }
     return () => {
+      if (gizmoMove) {
+        gizmoMove.style.display = "none";
+      }
       clipEl.remove();
       if (raf) {
         cancelAnimationFrame(raf);
@@ -297,7 +346,7 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
 
   let previous = devtools.canvas();
   let cancel = connect(previous);
-  setInterval(() => {
+  const interval = setInterval(() => {
     const canvas = devtools.canvas();
     if (canvas !== previous) {
       previous = canvas;
@@ -305,4 +354,8 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
       cancel = connect(canvas);
     }
   }, 2500);
+  signal.addEventListener("abort", () => {
+    clearInterval(interval);
+    cancel();
+  });
 }

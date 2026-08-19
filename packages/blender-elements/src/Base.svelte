@@ -24,5 +24,10 @@
 
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+
+    :global(*) {
+      scrollbar-color: #4f4f4f #30303080;
+      scrollbar-width: thin;
+    }
   }
 </style>

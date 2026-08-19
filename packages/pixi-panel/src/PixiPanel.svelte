@@ -146,16 +146,15 @@
       </TriggerProvider>
     {/if}
   {/each}
-
-  {#if errorMessage}
-    <Warning
-      icon="error"
-      message={`${errorMessage} (Retrying in ${countdown} sec)`}
-    />
-  {:else if active === undefined}
-    <Instructions />
-  {:else}
-    <div class="pixi-panel">
+  <div class="pixi-panel">
+    {#if errorMessage}
+      <Warning
+        icon="error"
+        message={`${errorMessage} (Retrying in ${countdown} sec)`}
+      />
+    {:else if active === undefined}
+      <Instructions />
+    {:else}
       {#if available.size > 1}
         <SelectMenu
           bind:value={active}
@@ -177,16 +176,16 @@
           />
         {/key}
       </div>
-    </div>
-  {/if}
-  {#if lines.length > 0}
-    <div class="log">
-      <!-- eslint-disable-next-line svelte/require-each-key -->
-      {#each lines as line}
-        <div class="log-line">{line}</div>
-      {/each}
-    </div>
-  {/if}
+    {/if}
+    {#if lines.length > 0}
+      <div class="log">
+        <!-- eslint-disable-next-line svelte/require-each-key -->
+        {#each lines as line}
+          <div class="log-line">{line}</div>
+        {/each}
+      </div>
+    {/if}
+  </div>
 </Base>
 
 <style>
@@ -207,7 +206,7 @@
 
   .connected-target {
     flex: 1;
-    max-height: 100%;
+    height: 0; /* Content should stretch, but not exceed the available space */
   }
 
   .log {

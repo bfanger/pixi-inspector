@@ -96,6 +96,8 @@
             <ToggleButton
               icon="italic"
               label="Italic"
+              width={12}
+              height={14}
               value={value.fontStyle === "italic"}
               rounded="none"
               setValue={() =>
@@ -124,6 +126,7 @@
 
             <ToggleButton
               icon="small_caps"
+              height={14}
               label="Small Caps"
               value={value.fontVariant === "small-caps"}
               rounded="right"
