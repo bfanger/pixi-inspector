@@ -1,6 +1,6 @@
 import { html } from "../html";
 
-const tools = ["translate"] as const;
+const tools = ["translate", "rotate"] as const;
 type ToolbarItem = (typeof tools)[number];
 
 export default class GizmoToolbarElement extends HTMLElement {
@@ -25,16 +25,27 @@ export default class GizmoToolbarElement extends HTMLElement {
           />
         </svg>
       </button>`,
+      rotate: html`<button class="tool-button">
+        <svg viewBox="0 0 255 255">
+          <path fill="#b3b3b3" d="m98 126 29-29 30 29-30 30z" />
+          <path
+            fill="#e5e5e5"
+            d="m84 179 6 4 5 4 6 3 7 2 6 2 7 1h13l7-1 6-2 7-2 6-3 5-4 6-4 5-4 4-5 4-6 4-5 3-6 2-7 1-4 9-1-2 8-3 7-3 7-4 6-4 6-5 6-6 5-6 4-6 4-7 3-7 3-8 2-7 1h-15l-7-1-8-2-7-3-7-3-6-4-6-4-6-5 6-6zM221 134l-23-37-23 37zM171 74l-6-4-5-4-6-3-7-2-6-2-7-1h-13l-7 1-6 2-7 2-6 3-5 4-6 4-5 4-4 5-4 6-4 5-3 6-2 7-1 4-9 1 2-8 3-7 3-7 4-6 4-6 5-6 6-5 6-4 6-4 7-3 7-3 8-2 7-1h15l7 1 8 2 7 3 7 3 6 4 6 4 6 5-6 6zM34 119l23 37 23-37z"
+          />
+        </svg>
+      </button>`,
     };
-    this.#buttons["translate"].addEventListener("click", () => {
-      if (this.#value === "translate") {
-        this.value = "";
-      } else {
-        this.value = "translate";
-      }
-      this.dispatchEvent(new InputEvent("change", { data: this.#value }));
-    });
-    toolbar.append(this.#buttons["translate"]);
+    for (const tool of Object.keys(this.#buttons) as ToolbarItem[]) {
+      this.#buttons[tool].addEventListener("click", () => {
+        if (this.#value === tool) {
+          this.value = "";
+        } else {
+          this.value = tool;
+        }
+        this.dispatchEvent(new InputEvent("change", { data: this.#value }));
+      });
+      toolbar.append(this.#buttons[tool]);
+    }
 
     this.#shadow = this.attachShadow({ mode: "open" });
     this.#shadow.append(createStylesheet(), toolbar);

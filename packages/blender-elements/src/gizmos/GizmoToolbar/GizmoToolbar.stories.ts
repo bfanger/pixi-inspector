@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/svelte-vite";
 import { faker } from "@faker-js/faker/locale/en";
 import { fn } from "storybook/test";
 import GizmoToolbar from "./GizmoToolbar.svelte";
-const tools = ["translate", ""];
+const tools = ["translate", "rotate", ""];
 const meta: Meta<typeof GizmoToolbar> = {
   title: "Gizmo / Toolbar",
   component: GizmoToolbar,
