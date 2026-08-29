@@ -1,5 +1,8 @@
 import { html } from "../html";
 
+/** Angle delta in degrees */
+export type GizmoRotateEvent = CustomEvent<number>;
+
 export default class GizmoRotateElement extends HTMLElement {
   #root: ShadowRoot;
   #gizmo: HTMLElement;
@@ -9,6 +12,7 @@ export default class GizmoRotateElement extends HTMLElement {
   #from: HTMLElement;
   #to: HTMLElement;
   #line: HTMLElement;
+  #delta: number;
 
   constructor() {
     super();
@@ -19,6 +23,7 @@ export default class GizmoRotateElement extends HTMLElement {
     this.#from = html`<div class="spoke"></div>`;
     this.#to = html`<div class="spoke"></div>`;
     this.#line = html`<div class="line"></div>`;
+    this.#delta = 0;
 
     this.#gizmo = html`<div class="gizmo-rotate idle"></div>`;
     this.#gizmo.append(
@@ -34,18 +39,6 @@ export default class GizmoRotateElement extends HTMLElement {
     this.#root.append(createStylesheet(), this.#gizmo);
 
     this.#ring.addEventListener("mousedown", (e) => this.#dragStart(e));
-  }
-
-  connectedCallback() {
-    if (!this.style.position) {
-      this.style.position = "absolute";
-    }
-  }
-  set value(val: number) {
-    this.setAttribute("value", `${val}`);
-  }
-  get value() {
-    return parseFloat(this.getAttribute("value")!) || 0;
   }
 
   #pointerInfo(e: MouseEvent) {
@@ -67,7 +60,7 @@ export default class GizmoRotateElement extends HTMLElement {
     this.#pie.style.background = `conic-gradient(from ${low + 90}deg, var(--pie) ${sweep}deg, transparent 0%)`;
 
     const rotations = Math.floor(Math.abs(delta) / 360);
-    this.#rotations.style.opacity = `${1 - 0.8 ** rotations}`;
+    this.#rotations.style.opacity = `${1 - 0.5 ** rotations}`;
   }
 
   #dragStart(event: MouseEvent) {
@@ -76,66 +69,59 @@ export default class GizmoRotateElement extends HTMLElement {
     const abortController = new AbortController();
     const { signal } = abortController;
 
-    signal.addEventListener("abort", () => this.#gizmo.classList.add("idle"));
+    signal.addEventListener("abort", () => {
+      this.#gizmo.classList.add("idle");
+      this.dispatchEvent(
+        new CustomEvent("rotate-end", { detail: this.#delta }),
+      );
+    });
 
-    const start = {
-      ...this.#pointerInfo(event),
-      value: this.value,
-    };
-    let total = 0;
+    const start = this.#pointerInfo(event);
     let previous = start.angle;
     this.#gizmo.classList.remove("idle");
+    this.#delta = 0;
     this.#draw(start.angle, 0);
     this.#line.style.transform = `rotate(${start.angle}deg)`;
     this.#line.style.width = `${start.distance}px`;
+    this.dispatchEvent(new CustomEvent("rotate-start", { detail: 0 }));
 
     window.addEventListener(
       "mousemove",
       (e: MouseEvent) => {
         const { angle, distance } = this.#pointerInfo(e);
-        let delta = angle - previous;
-        if (delta > 180) {
-          delta -= 360;
+        let step = angle - previous;
+        if (step > 180) {
+          step -= 360;
         }
-        if (delta < -180) {
-          delta += 360;
+        if (step < -180) {
+          step += 360;
         }
-        total += e.shiftKey ? delta / 10 : delta;
+        this.#delta += e.shiftKey ? step / 10 : step;
         previous = angle;
-        const step = e.shiftKey ? 1 : 5;
-        const snapped = e.ctrlKey ? Math.round(total / step) * step : total;
+        const stepSize = e.shiftKey ? 1 : 5;
+        const snapped = e.ctrlKey
+          ? Math.round(this.#delta / stepSize) * stepSize
+          : this.#delta;
         this.#draw(start.angle, snapped);
         this.#line.style.transform = `rotate(${angle}deg)`;
         this.#line.style.width = `${distance}px`;
 
-        this.value = start.value + snapped;
         this.dispatchEvent(
-          new InputEvent("input", { bubbles: true, composed: true }),
+          new CustomEvent("rotate-value", { detail: snapped }),
         );
       },
       { signal },
     );
-    window.addEventListener(
-      "mouseup",
-      () => {
-        this.dispatchEvent(
-          new InputEvent("change", { bubbles: true, composed: true }),
-        );
-        abortController.abort();
-      },
-      { signal },
-    );
+    window.addEventListener("mouseup", () => abortController.abort(), {
+      signal,
+    });
     window.addEventListener(
       "keydown",
       (e: KeyboardEvent) => {
-        if (e.key !== "Escape") {
-          return;
+        if (e.key === "Escape") {
+          this.#delta = 0;
+          abortController.abort();
         }
-        this.value = start.value;
-        this.dispatchEvent(
-          new InputEvent("input", { bubbles: true, composed: true }),
-        );
-        abortController.abort();
       },
       { signal },
     );
@@ -176,7 +162,7 @@ function createStylesheet() {
         border-radius: 50%;
         pointer-events: none;
         background: var(--pie);
-        opacity: 20%;
+        opacity: 50%;
 
         .idle & {
           display: none;

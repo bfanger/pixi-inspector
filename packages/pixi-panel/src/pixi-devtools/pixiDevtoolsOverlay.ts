@@ -4,6 +4,9 @@ import type { PixiDevtools, UniversalNode } from "../types";
 import { persistent } from "./storage";
 import { getScreenLocation, setScreenLocation } from "../pixi-gizmo-fns";
 import type GizmoMoveElement from "blender-elements/src/gizmos/gizmo-move";
+import type { GizmoMoveEvent } from "blender-elements/src/gizmos/gizmo-move";
+import type GizmoRotateElement from "blender-elements/src/gizmos/gizmo-rotate";
+import type { GizmoRotateEvent } from "blender-elements/src/gizmos/gizmo-rotate";
 import defineElements from "blender-elements/src/gizmos/defineElements";
 
 defineElements();
@@ -132,20 +135,74 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
     });
     clipEl.appendChild(overlayEl);
 
+    const gizmoRotate =
+      devtools.version() === 8
+        ? (document.createElement("gizmo-rotate") as GizmoRotateElement)
+        : undefined;
+    if (gizmoRotate) {
+      gizmoRotate.style.position = "absolute";
+      gizmoRotate.style.pointerEvents = "auto";
+      gizmoRotate.style.display = "none";
+      overlayEl.appendChild(gizmoRotate);
+    }
     const gizmoMove =
       devtools.version() === 8
         ? (document.createElement("gizmo-move") as GizmoMoveElement)
         : undefined;
+    let moveStart: { x: number; y: number } | undefined;
+    let rotateStart: number | undefined;
+
     if (gizmoMove) {
-      gizmoMove.addEventListener("gizmo-drag", (e) => {
-        setScreenLocation(
-          devtools.selection.active() as Sprite,
-          (e as CustomEvent).detail,
-        );
+      gizmoMove.addEventListener("move-start", () => {
+        const sprite = devtools.selection.active() as Sprite;
+        moveStart = getScreenLocation(sprite);
       });
+      gizmoMove.addEventListener("move-value", (e: Event) => {
+        const { x, y } = (e as GizmoMoveEvent).detail;
+        const sprite = devtools.selection.active() as Sprite;
+        if (!moveStart) {
+          return;
+        }
+        setScreenLocation(sprite, {
+          x: moveStart.x + x,
+          y: moveStart.y + y,
+        });
+      });
+      gizmoMove.addEventListener("move-end", (e: Event) => {
+        const { x, y } = (e as GizmoMoveEvent).detail;
+        const sprite = devtools.selection.active() as Sprite;
+        if (moveStart) {
+          setScreenLocation(sprite, {
+            x: moveStart.x + x,
+            y: moveStart.y + y,
+          });
+        }
+        moveStart = undefined;
+      });
+      gizmoMove.style.position = "absolute";
       gizmoMove.style.pointerEvents = "auto";
       gizmoMove.style.display = "none";
       overlayEl.appendChild(gizmoMove);
+    }
+    if (gizmoRotate) {
+      gizmoRotate.addEventListener("rotate-start", () => {
+        rotateStart = (devtools.selection.active() as Sprite)?.rotation ?? 0;
+      });
+      gizmoRotate.addEventListener("rotate-value", (e: Event) => {
+        const sprite = devtools.selection.active() as Sprite;
+        if (rotateStart !== undefined) {
+          sprite.rotation =
+            rotateStart + ((e as GizmoRotateEvent).detail * Math.PI) / 180;
+        }
+      });
+      gizmoRotate.addEventListener("rotate-end", (e: Event) => {
+        const sprite = devtools.selection.active() as Sprite;
+        if (rotateStart !== undefined) {
+          sprite.rotation =
+            rotateStart + ((e as GizmoRotateEvent).detail * Math.PI) / 180;
+        }
+        rotateStart = undefined;
+      });
     }
 
     const highlight = document.createElement("div");
@@ -313,10 +370,31 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
         if (gizmoMove) {
           gizmoMove.style.display = "none";
         }
+        if (gizmoRotate) {
+          gizmoRotate.style.display = "none";
+        }
       } else {
         gizmoMove.style.display = "";
+        if (moveStart) {
+          if (gizmoRotate) {
+            gizmoRotate.style.display = "none";
+          }
+          return;
+        }
+
+        if (gizmoRotate) {
+          gizmoRotate.style.display = "";
+          if (rotateStart) {
+            gizmoMove.style.display = "none";
+          }
+        }
         const position = getScreenLocation(sprite);
-        gizmoMove.setPosition(position.x, position.y);
+        gizmoMove.style.left = `${position.x}px`;
+        gizmoMove.style.top = `${position.y}px`;
+        if (gizmoRotate) {
+          gizmoRotate.style.left = `${position.x}px`;
+          gizmoRotate.style.top = `${position.y}px`;
+        }
         if (localAngle) {
           const m = sprite.parent.worldTransform;
           gizmoMove.setAngle(Math.atan2(m.b, m.a));

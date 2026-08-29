@@ -51,12 +51,6 @@ export default class GizmoToolbarElement extends HTMLElement {
     this.#shadow.append(createStylesheet(), toolbar);
   }
 
-  connectedCallback() {
-    if (!this.style.position) {
-      this.style.position = "absolute";
-    }
-  }
-
   attributeChangedCallback(name: string, _old: string, next: string) {
     if (name === "value") {
       this.value = next as ToolbarItem;
