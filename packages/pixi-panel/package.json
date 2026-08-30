@@ -11,10 +11,10 @@
   },
   "devDependencies": {
     "blender-elements": "workspace:*",
-    "concurrently": "^10.0.4",
+    "concurrently": "^10.0.5",
     "esbuild": "^0.28.2",
     "phaser": "^4.2.1",
-    "pixi.js": "^8.19.0",
+    "pixi.js": "^8.20.1",
     "ui-protocol": "workspace:*"
   }
 }

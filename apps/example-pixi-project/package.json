@@ -5,11 +5,11 @@
     "dev": "vite dev --host"
   },
   "dependencies": {
-    "pixi.js": "^8.19.0"
+    "pixi.js": "^8.20.1"
   },
   "devDependencies": {
     "pixi-panel": "workspace:*",
     "ui-protocol": "workspace:*",
-    "vite": "^8.2.1"
+    "vite": "^8.2.2"
   }
 }
