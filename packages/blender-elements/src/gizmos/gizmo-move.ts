@@ -1,11 +1,14 @@
 import { html } from "../html";
 
 /**
- * The delta movement in pixels
+ * The movement in screen pixels
  */
 export type GizmoMoveData = {
   x: number;
   y: number;
+  from: { x: number; y: number };
+  dx: number;
+  dy: number;
   axis: "x" | "y" | undefined;
 };
 export type GizmoMoveEvent = CustomEvent<GizmoMoveData>;
@@ -16,7 +19,7 @@ export default class GizmoMoveElement extends HTMLElement {
   #arrowX: HTMLElement;
   #arrowY: HTMLElement;
   #ring: HTMLElement;
-  #delta: GizmoMoveData = { x: 0, y: 0, axis: undefined };
+  #dragging: AbortController | undefined;
 
   constructor() {
     super();
@@ -24,7 +27,7 @@ export default class GizmoMoveElement extends HTMLElement {
     this.#arrowX = createArrow("#ff3752", 0);
     this.#arrowY = createArrow("#7fcc1c", -90);
     this.#ring = html`<div class="ring"></div>`;
-    this.#gizmo = html`<div></div>`;
+    this.#gizmo = html`<div class="gizmo-move"></div>`;
     this.#gizmo.append(this.#ring, this.#arrowX, this.#arrowY);
 
     this.#shadow = this.attachShadow({ mode: "open" });
@@ -35,6 +38,10 @@ export default class GizmoMoveElement extends HTMLElement {
     this.#ring.addEventListener("mousedown", (e) => this.#dragStart(e));
   }
 
+  disconnectedCallback() {
+    this.#dragging?.abort();
+  }
+
   getAngle(): number {
     return parseFloat(this.style.rotate) || 0;
   }
@@ -43,34 +50,62 @@ export default class GizmoMoveElement extends HTMLElement {
     this.style.rotate = `${rad}rad`;
   }
 
+  set x(value: number) {
+    if (this.#dragging) {
+      return;
+    }
+    this.#gizmo.style.left = `${value}px`;
+  }
+
+  get x(): number {
+    return parseFloat(this.#gizmo.style.left) || 0;
+  }
+
+  set y(value: number) {
+    if (this.#dragging) {
+      return;
+    }
+    this.#gizmo.style.top = `${value}px`;
+  }
+
+  get y(): number {
+    return parseFloat(this.#gizmo.style.top) || 0;
+  }
+
   #dragStart(event: MouseEvent, axis?: "x" | "y") {
     event.preventDefault();
 
-    const abortController = new AbortController();
-    const { signal } = abortController;
+    this.#dragging = new AbortController();
+    const { signal } = this.#dragging;
 
-    const start = {
-      clientX: event.clientX,
-      clientY: event.clientY,
+    let dx = 0;
+    let dy = 0;
+    const detail: GizmoMoveData = {
+      from: { x: this.x, y: this.y },
+      dx: 0,
+      dy: 0,
+      x: this.x,
+      y: this.y,
+      axis,
     };
-    this.#delta.x = 0;
-    this.#delta.y = 0;
-    this.#delta.axis = axis;
-    let previous = { x: start.clientX, y: start.clientY };
+    let previous = { x: event.clientX, y: event.clientY };
     let angle = this.getAngle();
 
     signal.addEventListener("abort", () => {
       ghost.remove();
       this.#gizmo.style.transform = "";
+      this.#gizmo.style.left = `${detail.x}px`;
+      this.#gizmo.style.top = `${detail.y}px`;
       this.#ring.classList.remove("hidden", "dragging");
       this.#arrowY.classList.remove("hidden", "dragging");
       this.#arrowX.classList.remove("hidden", "dragging");
+      this.#dragging = undefined;
 
-      this.dispatchEvent(new CustomEvent("move-end", { detail: this.#delta }));
+      this.dispatchEvent(new CustomEvent("move-end", { detail }));
     });
 
     const ghost = createGhost(axis);
-    this.#shadow.append(ghost);
+    this.#gizmo.append(ghost);
 
     if (axis === "x") {
       this.#arrowX.classList.add("dragging");
@@ -103,36 +138,42 @@ export default class GizmoMoveElement extends HTMLElement {
         } else if (axis === "y") {
           deltaX = 0;
         }
-
-        this.#delta.x += deltaX;
-        this.#delta.y += deltaY;
+        dx += deltaX;
+        dy += deltaY;
         previous = { x: e.clientX, y: e.clientY };
 
-        const stepSize = e.shiftKey ? 1 : 10;
-        const snapped = e.ctrlKey
-          ? {
-              x: Math.round(this.#delta.x / stepSize) * stepSize,
-              y: Math.round(this.#delta.y / stepSize) * stepSize,
-            }
-          : {
-              x: this.#delta.x,
-              y: this.#delta.y,
-            };
+        const step = e.shiftKey ? 1 : 10;
+        detail.dx = e.ctrlKey ? Math.round(dx / step) * step : dx;
+        detail.dy = e.ctrlKey ? Math.round(dy / step) * step : dy;
+        detail.x = detail.from.x + detail.dx;
+        detail.y = detail.from.y + detail.dy;
 
-        this.#gizmo.style.transform = `translate(${snapped.x}px, ${snapped.y}px)`;
+        this.#gizmo.style.transform = `translate(${detail.dx}px, ${detail.dy}px)`;
         this.dispatchEvent(
           new CustomEvent("move-value", {
-            detail: { ...this.#delta, ...snapped },
+            detail,
           }),
         );
       },
       { signal },
     );
-    window.addEventListener("mouseup", () => abortController.abort(), {
+    window.addEventListener("mouseup", () => this.#dragging?.abort(), {
       signal,
     });
-
-    this.dispatchEvent(new CustomEvent("move-start", { detail: this.#delta }));
+    window.addEventListener(
+      "keydown",
+      (e: KeyboardEvent) => {
+        if (e.key === "Escape") {
+          detail.dx = 0;
+          detail.dy = 0;
+          detail.x = detail.from.x;
+          detail.y = detail.from.y;
+          this.#dragging?.abort();
+        }
+      },
+      { signal },
+    );
+    this.dispatchEvent(new CustomEvent("move-start", { detail }));
   }
 }
 
@@ -169,6 +210,11 @@ function createGhost(axis: "x" | "y" | undefined): HTMLElement {
 function createStylesheet() {
   return html`
     <style>
+      .gizmo-move {
+        position: absolute;
+        isolation: isolate;
+      }
+
       .hidden {
         display: none;
       }

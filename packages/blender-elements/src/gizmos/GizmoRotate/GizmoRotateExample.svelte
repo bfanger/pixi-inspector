@@ -2,8 +2,8 @@
   import { fade } from "svelte/transition";
   import type GizmoRotateElement from "../gizmo-rotate";
   import type { GizmoRotateEvent } from "../gizmo-rotate";
+
   let rotation = $state<number>();
-  let gizmo: GizmoRotateElement;
 </script>
 
 {#if rotation !== undefined}
@@ -13,8 +13,10 @@
 {/if}
 
 <gizmo-rotate
-  bind:this={gizmo}
-  style="position: absolute; top: 200px; left: 200px"
+  {@attach (el: GizmoRotateElement) => {
+    el.x = 200;
+    el.y = 200;
+  }}
   onrotate-start={() => {
     rotation = 0;
   }}

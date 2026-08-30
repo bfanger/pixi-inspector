@@ -135,58 +135,51 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
     });
     clipEl.appendChild(overlayEl);
 
+    const gizmos = document.createElement("div");
+    gizmos.dataset.pixiDevtools = "gizmos";
+    gizmos.hidden = true;
+    overlayEl.appendChild(gizmos);
+
     const gizmoRotate =
       devtools.version() === 8
         ? (document.createElement("gizmo-rotate") as GizmoRotateElement)
         : undefined;
     if (gizmoRotate) {
-      gizmoRotate.style.position = "absolute";
       gizmoRotate.style.pointerEvents = "auto";
-      gizmoRotate.style.display = "none";
-      overlayEl.appendChild(gizmoRotate);
+      gizmos.appendChild(gizmoRotate);
     }
     const gizmoMove =
       devtools.version() === 8
         ? (document.createElement("gizmo-move") as GizmoMoveElement)
         : undefined;
-    let moveStart: { x: number; y: number } | undefined;
     let rotateStart: number | undefined;
 
     if (gizmoMove) {
-      gizmoMove.addEventListener("move-start", () => {
-        const sprite = devtools.selection.active() as Sprite;
-        moveStart = getScreenLocation(sprite);
-      });
-      gizmoMove.addEventListener("move-value", (e: Event) => {
-        const { x, y } = (e as GizmoMoveEvent).detail;
-        const sprite = devtools.selection.active() as Sprite;
-        if (!moveStart) {
-          return;
-        }
-        setScreenLocation(sprite, {
-          x: moveStart.x + x,
-          y: moveStart.y + y,
-        });
-      });
-      gizmoMove.addEventListener("move-end", (e: Event) => {
-        const { x, y } = (e as GizmoMoveEvent).detail;
-        const sprite = devtools.selection.active() as Sprite;
-        if (moveStart) {
-          setScreenLocation(sprite, {
-            x: moveStart.x + x,
-            y: moveStart.y + y,
-          });
-        }
-        moveStart = undefined;
-      });
-      gizmoMove.style.position = "absolute";
       gizmoMove.style.pointerEvents = "auto";
-      gizmoMove.style.display = "none";
-      overlayEl.appendChild(gizmoMove);
+      gizmos.appendChild(gizmoMove);
+      if (gizmoRotate) {
+        gizmoMove.addEventListener("move-start", () => {
+          gizmoRotate.hidden = true;
+        });
+        gizmoMove.addEventListener("move-end", (e) => {
+          const { detail } = e as GizmoMoveEvent;
+          const sprite = devtools.selection.active() as Sprite;
+          setScreenLocation(sprite, { x: detail.x, y: detail.y });
+          gizmoRotate.hidden = false;
+        });
+      }
+      gizmoMove.addEventListener("move-value", (e) => {
+        const { detail } = e as GizmoMoveEvent;
+        const sprite = devtools.selection.active() as Sprite;
+        setScreenLocation(sprite, { x: detail.x, y: detail.y });
+      });
     }
     if (gizmoRotate) {
       gizmoRotate.addEventListener("rotate-start", () => {
         rotateStart = (devtools.selection.active() as Sprite)?.rotation ?? 0;
+        if (gizmoMove) {
+          gizmoMove.hidden = true;
+        }
       });
       gizmoRotate.addEventListener("rotate-value", (e: Event) => {
         const sprite = devtools.selection.active() as Sprite;
@@ -202,6 +195,9 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
             rotateStart + ((e as GizmoRotateEvent).detail * Math.PI) / 180;
         }
         rotateStart = undefined;
+        if (gizmoMove) {
+          gizmoMove.hidden = false;
+        }
       });
     }
 
@@ -363,41 +359,24 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
         !gizmoMove ||
         !activeNode ||
         persistent.get("gizmo:hidden") ||
-        !gizmoMove.parentElement ||
         !sprite.parent ||
         typeof sprite?.position?.x !== "number"
       ) {
-        if (gizmoMove) {
-          gizmoMove.style.display = "none";
-        }
-        if (gizmoRotate) {
-          gizmoRotate.style.display = "none";
-        }
+        gizmos.hidden = true;
       } else {
-        gizmoMove.style.display = "";
-        if (moveStart) {
-          if (gizmoRotate) {
-            gizmoRotate.style.display = "none";
-          }
-          return;
-        }
-
-        if (gizmoRotate) {
-          gizmoRotate.style.display = "";
-          if (rotateStart) {
-            gizmoMove.style.display = "none";
-          }
-        }
+        gizmos.hidden = false;
         const position = getScreenLocation(sprite);
-        gizmoMove.style.left = `${position.x}px`;
-        gizmoMove.style.top = `${position.y}px`;
         if (gizmoRotate) {
-          gizmoRotate.style.left = `${position.x}px`;
-          gizmoRotate.style.top = `${position.y}px`;
+          gizmoRotate.x = position.x;
+          gizmoRotate.y = position.y;
         }
-        if (localAngle) {
-          const m = sprite.parent.worldTransform;
-          gizmoMove.setAngle(Math.atan2(m.b, m.a));
+        if (gizmoMove) {
+          gizmoMove.x = position.x;
+          gizmoMove.y = position.y;
+          if (localAngle) {
+            const m = sprite.parent.worldTransform;
+            gizmoMove.setAngle(Math.atan2(m.b, m.a));
+          }
         }
       }
     }
@@ -413,7 +392,7 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
     }
     return () => {
       if (gizmoMove) {
-        gizmoMove.style.display = "none";
+        // gizmoMove.style.display = "none";
       }
       clipEl.remove();
       if (raf) {

@@ -41,6 +41,22 @@ export default class GizmoRotateElement extends HTMLElement {
     this.#ring.addEventListener("mousedown", (e) => this.#dragStart(e));
   }
 
+  set x(value: number) {
+    this.#gizmo.style.left = `${value}px`;
+  }
+
+  get x(): number {
+    return parseFloat(this.#gizmo.style.left) || 0;
+  }
+
+  set y(value: number) {
+    this.#gizmo.style.top = `${value}px`;
+  }
+
+  get y(): number {
+    return parseFloat(this.#gizmo.style.top) || 0;
+  }
+
   #pointerInfo(e: MouseEvent) {
     const center = this.#gizmo.getBoundingClientRect();
     const angle =
@@ -135,7 +151,10 @@ function createStylesheet() {
         --diameter: 150px;
         --ring: #2c8fff;
         --pie: #cbcbcb;
+
+        position: absolute;
       }
+
       .ring {
         position: absolute;
         top: calc(var(--diameter) / -2 - 3px);
@@ -168,6 +187,7 @@ function createStylesheet() {
           display: none;
         }
       }
+
       .spoke {
         position: absolute;
         top: -1px;
