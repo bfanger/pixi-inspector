@@ -4,7 +4,7 @@ import { createTestControllerTree } from "./createTestControllerTree";
 import createTestConnection from "./createTestConnection";
 import createSender from "../src/createSender";
 
-describe.sequential("sender", () => {
+describe("sender", () => {
   const displayTree = createTestDisplayTree();
   const [controllerTree, game] = createTestControllerTree();
 

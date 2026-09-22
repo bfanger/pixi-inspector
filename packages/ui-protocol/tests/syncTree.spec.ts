@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { applyValues, syncTree } from "../src/tree-fns";
 import { createTestControllerTree } from "./createTestControllerTree";
 
-describe.sequential("syncTree()", () => {
+describe("syncTree()", () => {
   const [controllerTree, game] = createTestControllerTree();
 
   it("should append NumberInput connected to a PlayerLocationController", () => {

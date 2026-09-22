@@ -6,8 +6,8 @@ import { playwright } from "@vitest/browser-playwright";
 export default defineConfig({
   plugins: [svelte(), storybookTest()] as ViteUserConfig["plugins"],
   test: {
+    api: 60808,
     browser: {
-      api: 60808,
       enabled: true,
       headless: true,
       instances: [{ browser: "chromium" }],

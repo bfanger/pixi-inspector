@@ -11,7 +11,7 @@
     "@excaliburjs/plugin-tiled": "0.32.0",
     "excalibur": "0.32.0",
     "excalibur-devtools": "workspace:*",
-    "typescript": "6.0.3",
-    "vite": "8.2.2"
+    "typescript": "6",
+    "vite": "8.3.0"
   }
 }

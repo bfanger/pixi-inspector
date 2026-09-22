@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { applyPatch } from "../src/tree-fns";
 import createTestDisplayTree from "./createTestDisplayTree";
 
-describe.sequential("applyPatch()", () => {
+describe("applyPatch()", () => {
   const displayTree = createTestDisplayTree();
 
   it("should append", () => {

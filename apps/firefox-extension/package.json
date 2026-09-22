@@ -14,7 +14,7 @@
     "esbuild": "^0.28.2",
     "esbuild-svelte": "^0.9.5",
     "pixi-panel": "workspace:*",
-    "svelte": "^5.57.0",
+    "svelte": "^5.57.1",
     "ui-protocol": "workspace:*",
     "web-ext": "^10.6.0"
   }
