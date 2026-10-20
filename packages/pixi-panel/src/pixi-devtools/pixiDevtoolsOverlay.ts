@@ -1,13 +1,9 @@
 import type { GameObjects } from "phaser";
 import type { ICanvas, Matrix, Sprite } from "pixi.js";
 import type { PixiDevtools, UniversalNode } from "../types";
-import { persistent } from "./storage";
-import { getScreenLocation, setScreenLocation } from "../pixi-gizmo-fns";
-import type GizmoMoveElement from "blender-elements/src/gizmos/gizmo-move";
-import type { GizmoMoveEvent } from "blender-elements/src/gizmos/gizmo-move";
-import type GizmoRotateElement from "blender-elements/src/gizmos/gizmo-rotate";
-import type { GizmoRotateEvent } from "blender-elements/src/gizmos/gizmo-rotate";
+
 import defineElements from "blender-elements/src/gizmos/defineElements";
+import pixiDevtoolsGizmos from "./pixiDevtoolsGizmos";
 
 defineElements();
 
@@ -140,66 +136,13 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
     gizmos.hidden = true;
     overlayEl.appendChild(gizmos);
 
-    const gizmoRotate =
+    const updateGizmos =
       devtools.version() === 8
-        ? (document.createElement("gizmo-rotate") as GizmoRotateElement)
+        ? pixiDevtoolsGizmos(
+            gizmos,
+            () => devtools.selection.active() as Sprite,
+          )
         : undefined;
-    if (gizmoRotate) {
-      gizmoRotate.style.pointerEvents = "auto";
-      gizmos.appendChild(gizmoRotate);
-    }
-    const gizmoMove =
-      devtools.version() === 8
-        ? (document.createElement("gizmo-move") as GizmoMoveElement)
-        : undefined;
-    let rotateStart: number | undefined;
-
-    if (gizmoMove) {
-      gizmoMove.style.pointerEvents = "auto";
-      gizmos.appendChild(gizmoMove);
-      if (gizmoRotate) {
-        gizmoMove.addEventListener("move-start", () => {
-          gizmoRotate.hidden = true;
-        });
-        gizmoMove.addEventListener("move-end", (e) => {
-          const { detail } = e as GizmoMoveEvent;
-          const sprite = devtools.selection.active() as Sprite;
-          setScreenLocation(sprite, { x: detail.x, y: detail.y });
-          gizmoRotate.hidden = false;
-        });
-      }
-      gizmoMove.addEventListener("move-value", (e) => {
-        const { detail } = e as GizmoMoveEvent;
-        const sprite = devtools.selection.active() as Sprite;
-        setScreenLocation(sprite, { x: detail.x, y: detail.y });
-      });
-    }
-    if (gizmoRotate) {
-      gizmoRotate.addEventListener("rotate-start", () => {
-        rotateStart = (devtools.selection.active() as Sprite)?.rotation ?? 0;
-        if (gizmoMove) {
-          gizmoMove.hidden = true;
-        }
-      });
-      gizmoRotate.addEventListener("rotate-value", (e: Event) => {
-        const sprite = devtools.selection.active() as Sprite;
-        if (rotateStart !== undefined) {
-          sprite.rotation =
-            rotateStart + ((e as GizmoRotateEvent).detail * Math.PI) / 180;
-        }
-      });
-      gizmoRotate.addEventListener("rotate-end", (e: Event) => {
-        const sprite = devtools.selection.active() as Sprite;
-        if (rotateStart !== undefined) {
-          sprite.rotation =
-            rotateStart + ((e as GizmoRotateEvent).detail * Math.PI) / 180;
-        }
-        rotateStart = undefined;
-        if (gizmoMove) {
-          gizmoMove.hidden = false;
-        }
-      });
-    }
 
     const highlight = document.createElement("div");
     highlight.dataset.pixiDevtools = "highlight";
@@ -351,34 +294,7 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
       } else {
         highlight.style.transform = "scale(0)";
       }
-
-      // Gizmo
-      const localAngle = false;
-      const sprite = activeNode as Sprite;
-      if (
-        !gizmoMove ||
-        !activeNode ||
-        persistent.get("gizmo:hidden") ||
-        !sprite.parent ||
-        typeof sprite?.position?.x !== "number"
-      ) {
-        gizmos.hidden = true;
-      } else {
-        gizmos.hidden = false;
-        const position = getScreenLocation(sprite);
-        if (gizmoRotate) {
-          gizmoRotate.x = position.x;
-          gizmoRotate.y = position.y;
-        }
-        if (gizmoMove) {
-          gizmoMove.x = position.x;
-          gizmoMove.y = position.y;
-          if (localAngle) {
-            const m = sprite.parent.worldTransform;
-            gizmoMove.setAngle(Math.atan2(m.b, m.a));
-          }
-        }
-      }
+      updateGizmos?.(activeNode);
     }
 
     let parent: HTMLElement | null = canvas;
@@ -391,9 +307,6 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
       }
     }
     return () => {
-      if (gizmoMove) {
-        // gizmoMove.style.display = "none";
-      }
       clipEl.remove();
       if (raf) {
         cancelAnimationFrame(raf);

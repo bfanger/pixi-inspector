@@ -46,9 +46,12 @@ import { Application, Assets, Container, Sprite } from "pixi.js";
   container.pivot.x = container.width / 2;
   container.pivot.y = container.height / 2;
 
-  app.ticker.add((time) => {
-    container.rotation -= 0.01 * time.deltaTime;
-  });
+  // Add ?spin=0 to the url to disable the spinning container
+  if (new URLSearchParams(window.location.search).get("spin") !== "0") {
+    app.ticker.add((time) => {
+      container.rotation -= 0.01 * time.deltaTime;
+    });
+  }
 
   const exposeApp = true as boolean;
   if (exposeApp) {

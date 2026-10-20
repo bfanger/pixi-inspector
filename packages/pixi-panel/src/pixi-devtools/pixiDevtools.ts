@@ -4,7 +4,7 @@ import type { UniversalNode } from "../types";
 
 export default function pixiDevtools() {
   const win = window as any;
-  let detectedVersion: number | undefined | null = null;
+  let detectedVersion: 8 | undefined | null = null;
 
   let mode: "PIXI" | "PHASER" | undefined;
 
@@ -193,7 +193,7 @@ export default function pixiDevtools() {
      */
     inVersionRange(start: number, stop?: number) {
       const version = this.version();
-      if (version === undefined || version === -1) {
+      if (version === undefined || version === null) {
         return false;
       }
       if (version < start) {

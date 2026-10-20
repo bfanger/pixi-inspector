@@ -1,6 +1,6 @@
 import { html } from "../html";
 
-const tools = ["translate", "rotate"] as const;
+const tools = ["translate", "rotate", "transform"] as const;
 type ToolbarItem = (typeof tools)[number];
 
 export default class GizmoToolbarElement extends HTMLElement {
@@ -31,6 +31,14 @@ export default class GizmoToolbarElement extends HTMLElement {
           <path
             fill="#e5e5e5"
             d="m84 179 6 4 5 4 6 3 7 2 6 2 7 1h13l7-1 6-2 7-2 6-3 5-4 6-4 5-4 4-5 4-6 4-5 3-6 2-7 1-4 9-1-2 8-3 7-3 7-4 6-4 6-5 6-6 5-6 4-6 4-7 3-7 3-8 2-7 1h-15l-7-1-8-2-7-3-7-3-6-4-6-4-6-5 6-6zM221 134l-23-37-23 37zM171 74l-6-4-5-4-6-3-7-2-6-2-7-1h-13l-7 1-6 2-7 2-6 3-5 4-6 4-5 4-4 5-4 6-4 5-3 6-2 7-1 4-9 1 2-8 3-7 3-7 4-6 4-6 5-6 6-5 6-4 6-4 7-3 7-3 8-2 7-1h15l7 1 8 2 7 3 7 3 6 4 6 4 6 5-6 6zM34 119l23 37 23-37z"
+          />
+        </svg>
+      </button>`,
+      transform: html`<button class="tool-button">
+        <svg viewBox="0 0 255 255">
+          <path
+            fill="#e5e5e5"
+            d="M96 158V95h63v63zM106 198l-7-3-7-3-6-3-6-5-5-5-5-5-5-6-3-6-3-7-3-7-8-6 1 8 3 8 4 7 4 7 4 6 6 6 6 6 6 4 7 4 7 4 8 3 8 1zM56 105l3-7 3-7 3-6 5-6 5-5 5-5 6-5 6-3 7-3 7-3 6-8-8 1-8 3-7 4-7 4-6 4-6 6-6 6-4 6-4 7-4 7-3 8-1 8zM149 55l7 3 7 3 6 3 6 5 5 5 5 5 5 6 3 6 3 7 3 7 8 6-1-8-3-8-4-7-4-7-4-6-6-6-6-6-6-4-7-4-7-4-8-3-8-1zM199 148l-3 7-3 7-3 6-5 6-5 5-5 5-6 5-6 3-7 3-7 3-6 8 8-1 8-3 7-4 7-4 6-4 6-6 6-6 4-6 4-7 4-7 3-8 1-8zM108 180l20 34 19-34zM74 107l-34 20 34 19zM147 73l-20-34-19 34zM181 146l34-19-34-20z"
           />
         </svg>
       </button>`,
@@ -79,6 +87,7 @@ function createStylesheet() {
       .toolbar {
         display: flex;
         flex-direction: column;
+        width: min-content;
       }
       .tool-button {
         width: 28px;
@@ -88,6 +97,9 @@ function createStylesheet() {
         border: none;
         padding: 0;
         border: 1px solid #3a3a3a;
+        &:not(:first-child) {
+          border-top-width: 0;
+        }
 
         &:first-child {
           border-top-left-radius: 3px;
