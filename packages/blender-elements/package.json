@@ -9,18 +9,18 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^10.6.0",
-    "@storybook/addon-docs": "^10.6.0",
-    "@storybook/addon-vitest": "^10.6.0",
-    "@storybook/svelte-vite": "^10.6.0",
-    "@sveltejs/vite-plugin-svelte": "^7.3.0",
-    "@vitest/browser": "^5.0.1",
-    "@vitest/browser-playwright": "^5.0.1",
-    "@vitest/coverage-v8": "^5.0.1",
-    "playwright": "^1.63.0",
-    "storybook": "^10.6.0",
-    "svelte": "^5.57.1",
-    "vite": "^8.3.0",
-    "vitest": "^5.0.1"
+    "@storybook/addon-docs": "^10.6.2",
+    "@storybook/addon-vitest": "^10.6.2",
+    "@storybook/svelte-vite": "^10.6.2",
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "@vitest/browser": "^5.0.5",
+    "@vitest/browser-playwright": "^5.0.5",
+    "@vitest/coverage-v8": "^5.0.5",
+    "playwright": "^1.64.1",
+    "storybook": "^10.6.2",
+    "svelte": "^5.57.2",
+    "vite": "^8.3.4",
+    "vitest": "^5.0.5"
   },
   "dependencies": {
     "math-expression-evaluator": "^2.0.7"
