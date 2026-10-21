@@ -97,6 +97,9 @@ export default class GizmoScaleElement extends HTMLElement {
       scaleY: 1,
     };
 
+    let scale = 1;
+    let previousDistance = startDistance;
+
     const drawLine = (x: number, y: number) => {
       const angle = (Math.atan2(y, x) / Math.PI) * 180;
       this.#line.style.transform = `rotate(${angle}deg)`;
@@ -142,17 +145,25 @@ export default class GizmoScaleElement extends HTMLElement {
               ? y
               : (x * start.x + y * start.y) / startDistance;
 
-        const scale = distance / startDistance;
+        const step = distance - previousDistance;
+        previousDistance = distance;
+        scale += (e.shiftKey ? step / 10 : step) / startDistance;
+
+        const stepSize = e.shiftKey ? 0.02 : 0.1;
+        const snapped = e.ctrlKey
+          ? Math.round(scale / stepSize) * stepSize
+          : scale;
+
         if (axis === "x") {
-          detail.scaleX = scale;
+          detail.scaleX = snapped;
         } else if (axis === "y") {
-          detail.scaleY = scale;
+          detail.scaleY = snapped;
         } else {
-          detail.scaleX = scale;
-          detail.scaleY = scale;
+          detail.scaleX = snapped;
+          detail.scaleY = snapped;
         }
 
-        this.#gizmo.style.setProperty("--scale", String(scale));
+        this.#gizmo.style.setProperty("--scale", String(snapped));
         drawLine(x, y);
 
         this.dispatchEvent(new CustomEvent("scale-value", { detail }));
