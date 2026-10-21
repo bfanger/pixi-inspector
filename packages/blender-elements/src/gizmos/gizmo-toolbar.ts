@@ -1,6 +1,6 @@
 import { html } from "../html";
 
-const tools = ["translate", "rotate", "transform"] as const;
+const tools = ["translate", "rotate", "scale", "transform"] as const;
 type ToolbarItem = (typeof tools)[number];
 
 export default class GizmoToolbarElement extends HTMLElement {
@@ -34,6 +34,15 @@ export default class GizmoToolbarElement extends HTMLElement {
           />
         </svg>
       </button>`,
+      scale: html`<button class="tool-button">
+        <svg viewBox="0 0 255 255">
+          <path fill="#b3b3b3" d="M70 69h115v115h-45v9h54V60H61v54h9z" />
+          <path
+            fill="#e5e5e5"
+            d="M56 198v-72h72v72zM158 102l9 9 8-32-32 8 9 9-21 21 6 6z"
+          />
+        </svg>
+      </button>`,
       transform: html`<button class="tool-button">
         <svg viewBox="0 0 255 255">
           <path
@@ -43,7 +52,7 @@ export default class GizmoToolbarElement extends HTMLElement {
         </svg>
       </button>`,
     };
-    for (const tool of Object.keys(this.#buttons) as ToolbarItem[]) {
+    for (const tool of tools) {
       this.#buttons[tool].addEventListener("click", () => {
         if (this.#value === tool) {
           this.value = "";

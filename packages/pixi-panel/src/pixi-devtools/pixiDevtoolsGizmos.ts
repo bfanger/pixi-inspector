@@ -5,6 +5,8 @@ import type GizmoMoveElement from "blender-elements/src/gizmos/gizmo-move";
 import type { GizmoMoveEvent } from "blender-elements/src/gizmos/gizmo-move";
 import type GizmoRotateElement from "blender-elements/src/gizmos/gizmo-rotate";
 import type { GizmoRotateEvent } from "blender-elements/src/gizmos/gizmo-rotate";
+import type GizmoScaleElement from "blender-elements/src/gizmos/gizmo-scale";
+import type { GizmoScaleEvent } from "blender-elements/src/gizmos/gizmo-scale";
 import type { Sprite } from "pixi.js";
 import type { UniversalNode } from "../types";
 
@@ -35,11 +37,17 @@ export default function pixiDevtoolsGizmos(
   gizmoMove.hidden = true;
 
   gizmos.appendChild(gizmoMove);
+
+  const gizmoScale = document.createElement("gizmo-scale") as GizmoScaleElement;
+  gizmoScale.style.pointerEvents = "auto";
+  gizmoScale.hidden = true;
+  gizmos.appendChild(gizmoScale);
   /** Show gizmo's based on the toolbar setting */
   function restoreVisibility() {
     const active = gizmoToolbar.value;
     gizmoMove.hidden = active !== "translate" && active !== "transform";
     gizmoRotate.hidden = active !== "rotate" && active !== "transform";
+    gizmoScale.hidden = active !== "scale";
   }
   restoreVisibility();
 
@@ -68,6 +76,34 @@ export default function pixiDevtoolsGizmos(
     const { detail } = e as GizmoMoveEvent;
     const sprite = getSprite();
     setScreenLocation(sprite, { x: detail.x, y: detail.y });
+  });
+
+  // Scale events
+  let scaleStart: { x: number; y: number } | undefined;
+  gizmoScale.addEventListener("scale-start", () => {
+    gizmoMove.hidden = true;
+    gizmoRotate.hidden = true;
+    const sprite = getSprite();
+    scaleStart = { x: sprite.scale.x, y: sprite.scale.y };
+  });
+  gizmoScale.addEventListener("scale-value", (e) => {
+    const { detail } = e as GizmoScaleEvent;
+    const sprite = getSprite();
+    if (!scaleStart) {
+      return;
+    }
+    sprite.scale.x = scaleStart.x * detail.scaleX;
+    sprite.scale.y = scaleStart.y * detail.scaleY;
+  });
+  gizmoScale.addEventListener("scale-end", (e) => {
+    const { detail } = e as GizmoScaleEvent;
+    const sprite = getSprite();
+    if (scaleStart) {
+      sprite.scale.x = scaleStart.x * detail.scaleX;
+      sprite.scale.y = scaleStart.y * detail.scaleY;
+      scaleStart = undefined;
+    }
+    restoreVisibility();
   });
 
   // Rotate events
@@ -103,6 +139,8 @@ export default function pixiDevtoolsGizmos(
       gizmoRotate.y = position.y;
       gizmoMove.x = position.x;
       gizmoMove.y = position.y;
+      gizmoScale.x = position.x;
+      gizmoScale.y = position.y;
       if (localAngle && node.parent) {
         const m = node.parent.worldTransform;
         gizmoMove.setAngle(Math.atan2(m.b, m.a));
