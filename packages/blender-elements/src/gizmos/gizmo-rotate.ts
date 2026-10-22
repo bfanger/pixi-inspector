@@ -41,6 +41,13 @@ export default class GizmoRotateElement extends HTMLElement {
     this.#ring.addEventListener("mousedown", (e) => this.#dragStart(e));
   }
 
+  set combined(value: boolean) {
+    this.#gizmo.classList.toggle("combined", value);
+  }
+  get combined(): boolean {
+    return this.#gizmo.classList.contains("combined");
+  }
+
   set x(value: number) {
     this.#gizmo.style.left = `${value}px`;
   }

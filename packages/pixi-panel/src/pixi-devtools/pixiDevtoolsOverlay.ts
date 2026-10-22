@@ -131,19 +131,6 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
     });
     clipEl.appendChild(overlayEl);
 
-    const gizmos = document.createElement("div");
-    gizmos.dataset.pixiDevtools = "gizmos";
-    gizmos.hidden = true;
-    overlayEl.appendChild(gizmos);
-
-    const updateGizmos =
-      devtools.version() === 8
-        ? pixiDevtoolsGizmos(
-            gizmos,
-            () => devtools.selection.active() as Sprite,
-          )
-        : undefined;
-
     const highlight = document.createElement("div");
     highlight.dataset.pixiDevtools = "highlight";
     Object.assign(highlight.style, {
@@ -175,6 +162,19 @@ export default function pixiDevtoolsOverlay(devtools: PixiDevtools) {
     });
     anchor.appendChild(dotEl);
     overlayEl.appendChild(anchor);
+
+    const gizmos = document.createElement("div");
+    gizmos.dataset.pixiDevtools = "gizmos";
+    gizmos.hidden = true;
+    overlayEl.appendChild(gizmos);
+
+    const updateGizmos =
+      devtools.version() === 8
+        ? pixiDevtoolsGizmos(
+            gizmos,
+            () => devtools.selection.active() as Sprite,
+          )
+        : undefined;
 
     function calibrateOverlay() {
       if (!canvas || !("getBoundingClientRect" in canvas)) {

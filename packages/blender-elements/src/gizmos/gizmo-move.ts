@@ -19,16 +19,16 @@ export default class GizmoMoveElement extends HTMLElement {
   #arrowX: HTMLElement;
   #arrowY: HTMLElement;
   #ring: HTMLElement;
-  #dragging: AbortController | undefined;
+  #abortController: AbortController | undefined; // Will be undefined when not dragging
 
   constructor() {
     super();
 
+    this.#gizmo = html`<div class="gizmo-move idle"></div>`;
     this.#arrowX = createArrow("#ff3752", 0);
     this.#arrowY = createArrow("#7fcc1c", -90);
     this.#ring = html`<div class="ring"></div>`;
-    this.#gizmo = html`<div class="gizmo-move"></div>`;
-    this.#gizmo.append(this.#ring, this.#arrowX, this.#arrowY);
+    this.#gizmo.append(this.#arrowX, this.#arrowY, this.#ring);
 
     this.#shadow = this.attachShadow({ mode: "open" });
     this.#shadow.append(createStylesheet(), this.#gizmo);
@@ -39,7 +39,14 @@ export default class GizmoMoveElement extends HTMLElement {
   }
 
   disconnectedCallback() {
-    this.#dragging?.abort();
+    this.#abortController?.abort();
+  }
+
+  set combined(value: boolean) {
+    this.#gizmo.classList.toggle("combined", value);
+  }
+  get combined(): boolean {
+    return this.#gizmo.classList.contains("combined");
   }
 
   getAngle(): number {
@@ -51,7 +58,7 @@ export default class GizmoMoveElement extends HTMLElement {
   }
 
   set x(value: number) {
-    if (this.#dragging) {
+    if (this.#abortController) {
       return;
     }
     this.#gizmo.style.left = `${value}px`;
@@ -62,7 +69,7 @@ export default class GizmoMoveElement extends HTMLElement {
   }
 
   set y(value: number) {
-    if (this.#dragging) {
+    if (this.#abortController) {
       return;
     }
     this.#gizmo.style.top = `${value}px`;
@@ -75,8 +82,9 @@ export default class GizmoMoveElement extends HTMLElement {
   #dragStart(event: MouseEvent, axis?: "x" | "y") {
     event.preventDefault();
 
-    this.#dragging = new AbortController();
-    const { signal } = this.#dragging;
+    this.#abortController?.abort();
+    this.#abortController = new AbortController();
+    const { signal } = this.#abortController;
 
     let dx = 0;
     let dy = 0;
@@ -96,27 +104,26 @@ export default class GizmoMoveElement extends HTMLElement {
       this.#gizmo.style.transform = "";
       this.#gizmo.style.left = `${detail.x}px`;
       this.#gizmo.style.top = `${detail.y}px`;
-      this.#ring.classList.remove("hidden", "dragging");
-      this.#arrowY.classList.remove("hidden", "dragging");
-      this.#arrowX.classList.remove("hidden", "dragging");
-      this.#dragging = undefined;
+      this.#gizmo.classList.add("idle");
+      this.#ring.classList.remove("hidden");
+      this.#arrowY.classList.remove("hidden");
+      this.#arrowX.classList.remove("hidden");
+      this.#abortController = undefined;
 
       this.dispatchEvent(new CustomEvent("move-end", { detail }));
     });
 
     const ghost = createGhost(axis);
     this.#gizmo.append(ghost);
+    this.#gizmo.classList.remove("idle");
 
     if (axis === "x") {
-      this.#arrowX.classList.add("dragging");
       this.#ring.classList.add("hidden");
       this.#arrowY.classList.add("hidden");
     } else if (axis === "y") {
-      this.#arrowY.classList.add("dragging");
       this.#ring.classList.add("hidden");
       this.#arrowX.classList.add("hidden");
     } else {
-      this.#ring.classList.add("dragging");
       this.#arrowX.classList.add("hidden");
       this.#arrowY.classList.add("hidden");
     }
@@ -149,6 +156,7 @@ export default class GizmoMoveElement extends HTMLElement {
         detail.y = detail.from.y + detail.dy;
 
         this.#gizmo.style.transform = `translate(${detail.dx}px, ${detail.dy}px)`;
+        ghost.style.transform = `translate(${-detail.dx}px, ${-detail.dy}px)`;
         this.dispatchEvent(
           new CustomEvent("move-value", {
             detail,
@@ -157,7 +165,7 @@ export default class GizmoMoveElement extends HTMLElement {
       },
       { signal },
     );
-    window.addEventListener("mouseup", () => this.#dragging?.abort(), {
+    window.addEventListener("mouseup", () => this.#abortController?.abort(), {
       signal,
     });
     window.addEventListener(
@@ -168,7 +176,7 @@ export default class GizmoMoveElement extends HTMLElement {
           detail.dy = 0;
           detail.x = detail.from.x;
           detail.y = detail.from.y;
-          this.#dragging?.abort();
+          this.#abortController?.abort();
         }
       },
       { signal },
@@ -194,11 +202,9 @@ function createGhost(axis: "x" | "y" | undefined): HTMLElement {
 
   if (axis === "x") {
     const ghostArrow = createArrow("#808080bf", 0);
-    ghostArrow.classList.add("dragging");
     ghost.append(ghostArrow);
   } else if (axis === "y") {
     const ghostArrow = createArrow("#808080bf", -90);
-    ghostArrow.classList.add("dragging");
     ghost.append(ghostArrow);
   } else {
     ghost.append(html`<div class="ring"></div>`);
@@ -213,6 +219,11 @@ function createStylesheet() {
       .gizmo-move {
         position: absolute;
         isolation: isolate;
+        --line: 100px;
+
+        &.combined {
+          --line: 112px;
+        }
       }
 
       .hidden {
@@ -230,11 +241,12 @@ function createStylesheet() {
         border-radius: 50%;
         color: #fff;
         opacity: 0.75;
+
         &:hover {
           opacity: 1;
         }
 
-        &:not(.dragging) {
+        .idle & {
           filter: drop-shadow(0px 0px 2px #0003);
         }
       }
@@ -252,16 +264,16 @@ function createStylesheet() {
         position: absolute;
         left: 0;
         transform-origin: 0.5px 0.5px;
-        width: 100px;
+        width: var(--line);
         height: 1px;
         opacity: 0.75;
 
         &:hover,
-        &.dragging {
+        .gizmo-move:not(.idle) & {
           opacity: 1;
         }
 
-        &:not(.dragging) .area {
+        .area {
           content: "";
           position: absolute;
           top: -13px;
@@ -270,6 +282,12 @@ function createStylesheet() {
           height: 27px;
           border-top-right-radius: 13px;
           border-bottom-right-radius: 13px;
+
+          .combined & {
+            left: auto;
+            right: 0;
+            width: 32px;
+          }
         }
       }
 
@@ -277,8 +295,8 @@ function createStylesheet() {
         content: "";
         position: absolute;
         top: -1px;
+        left: 15px;
         right: 24px;
-        width: 61px;
         height: 3px;
         background: linear-gradient(
           to bottom,
@@ -287,10 +305,13 @@ function createStylesheet() {
           currentColor 60%,
           transparent 100%
         );
-      }
 
-      .arrow.dragging .line {
-        width: 72px;
+        .combined & {
+          display: none;
+        }
+        .gizmo-move:not(.idle) & {
+          left: 4px;
+        }
       }
 
       .triangle {
@@ -303,7 +324,7 @@ function createStylesheet() {
         border-left: 18px solid currentColor;
       }
 
-      .arrow.dragging .dot {
+      .dot {
         content: "";
         position: absolute;
         top: -3px;
@@ -312,6 +333,10 @@ function createStylesheet() {
         height: 7px;
         border-radius: 50%;
         background: currentColor;
+
+        .idle & {
+          display: none;
+        }
       }
     </style>
   `;

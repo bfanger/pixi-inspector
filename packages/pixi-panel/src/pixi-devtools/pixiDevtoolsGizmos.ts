@@ -31,23 +31,26 @@ export default function pixiDevtoolsGizmos(
   gizmoRotate.hidden = true;
   gizmos.appendChild(gizmoRotate);
 
-  let rotateStart: number | undefined;
   const gizmoMove = document.createElement("gizmo-move") as GizmoMoveElement;
   gizmoMove.style.pointerEvents = "auto";
   gizmoMove.hidden = true;
-
   gizmos.appendChild(gizmoMove);
 
   const gizmoScale = document.createElement("gizmo-scale") as GizmoScaleElement;
   gizmoScale.style.pointerEvents = "auto";
   gizmoScale.hidden = true;
   gizmos.appendChild(gizmoScale);
+
   /** Show gizmo's based on the toolbar setting */
   function restoreVisibility() {
     const active = gizmoToolbar.value;
-    gizmoMove.hidden = active !== "translate" && active !== "transform";
-    gizmoRotate.hidden = active !== "rotate" && active !== "transform";
-    gizmoScale.hidden = active !== "scale";
+    const combined = active === "transform";
+    gizmoMove.combined = combined;
+    gizmoRotate.combined = combined;
+    gizmoScale.combined = combined;
+    gizmoMove.hidden = !combined && active !== "translate";
+    gizmoRotate.hidden = !combined && active !== "rotate";
+    gizmoScale.hidden = !combined && active !== "scale";
   }
   restoreVisibility();
 
@@ -65,11 +68,14 @@ export default function pixiDevtoolsGizmos(
   // Move events
   gizmoMove.addEventListener("move-start", () => {
     gizmoRotate.hidden = true;
+    gizmoScale.hidden = true;
+    gizmos.classList.add("dragging");
   });
   gizmoMove.addEventListener("move-end", (e) => {
     const { detail } = e as GizmoMoveEvent;
     const sprite = getSprite();
     setScreenLocation(sprite, { x: detail.x, y: detail.y });
+    gizmos.classList.remove("dragging");
     restoreVisibility();
   });
   gizmoMove.addEventListener("move-value", (e) => {
@@ -107,9 +113,11 @@ export default function pixiDevtoolsGizmos(
   });
 
   // Rotate events
+  let rotateStart: number | undefined;
   gizmoRotate.addEventListener("rotate-start", () => {
     rotateStart = getSprite()?.rotation ?? 0;
     gizmoMove.hidden = true;
+    gizmoScale.hidden = true;
   });
   gizmoRotate.addEventListener("rotate-value", (e: Event) => {
     const sprite = getSprite();

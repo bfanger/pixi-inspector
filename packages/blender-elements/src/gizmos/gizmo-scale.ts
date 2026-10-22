@@ -17,7 +17,7 @@ export default class GizmoScaleElement extends HTMLElement {
 
   constructor() {
     super();
-    this.#gizmo = html`<div class="gizmo-scale"></div>`;
+    this.#gizmo = html`<div class="gizmo-scale idle"></div>`;
     this.#handleX = createHandle("#ff3752", 0);
     this.#handleY = createHandle("#7fcc1c", -90);
     this.#ring = html`<div class="ring">
@@ -37,6 +37,13 @@ export default class GizmoScaleElement extends HTMLElement {
 
   disconnectedCallback() {
     this.#abort?.abort("disconnected");
+  }
+
+  set combined(value: boolean) {
+    this.#gizmo.classList.toggle("combined", value);
+  }
+  get combined(): boolean {
+    return this.#gizmo.classList.contains("combined");
   }
 
   getAngle(): number {
@@ -110,7 +117,7 @@ export default class GizmoScaleElement extends HTMLElement {
     signal.addEventListener("abort", () => {
       ghost.remove();
       this.#gizmo.style.setProperty("--scale", "1");
-      this.#gizmo.classList.remove("scaling");
+      this.#gizmo.classList.add("idle");
       this.#ring.classList.remove("hidden");
       this.#handleY.classList.remove("hidden");
       this.#handleX.classList.remove("hidden");
@@ -122,7 +129,7 @@ export default class GizmoScaleElement extends HTMLElement {
     const ghost = createGhost(axis);
     this.#gizmo.append(ghost);
 
-    this.#gizmo.classList.add("scaling");
+    this.#gizmo.classList.remove("idle");
     if (axis === "x") {
       this.#ring.classList.add("hidden");
       this.#handleY.classList.add("hidden");
@@ -226,6 +233,9 @@ function createStylesheet() {
         --inner-diameter: 29px;
         --outer-diameter: 180px;
         --scale: 1;
+        &.combined {
+          --line: 63px;
+        }
       }
 
       .hidden {
@@ -246,7 +256,7 @@ function createStylesheet() {
         pointer-events: none;
         filter: drop-shadow(1px 1px 0 #0008);
 
-        :not(.scaling) & {
+        .idle & {
           display: none;
         }
       }
@@ -256,6 +266,12 @@ function createStylesheet() {
         &:hover {
           opacity: 1;
         }
+        .combined & {
+          display: none;
+        }
+        .idle & {
+          filter: drop-shadow(0px 0px 2px #0003);
+        }
       }
       .inner-ring,
       .outer-ring {
@@ -264,10 +280,6 @@ function createStylesheet() {
         border: 2px solid currentColor;
         border-radius: 50%;
         color: #fff;
-      }
-
-      .gizmo-scale:not(.scaling) .ring {
-        filter: drop-shadow(0px 0px 2px #0003);
       }
 
       .inner-ring {
@@ -283,7 +295,8 @@ function createStylesheet() {
         left: calc(var(--outer-diameter) / -2 + 0.5px);
         width: var(--outer-diameter);
         height: var(--outer-diameter);
-        .scaling & {
+
+        .gizmo-scale:not(.idle) & {
           display: none;
         }
       }
@@ -305,17 +318,13 @@ function createStylesheet() {
         width: 100px;
         height: 1px;
         opacity: 0.75;
-
-        &:hover {
+        &:hover,
+        .gizmo-scale:not(.idle) & {
           opacity: 1;
         }
       }
 
-      .scaling .handle {
-        opacity: 1;
-      }
-
-      .gizmo-scale:not(.scaling) .handle .area {
+      .area {
         content: "";
         position: absolute;
         top: -9px;
@@ -338,12 +347,12 @@ function createStylesheet() {
           currentColor 60%,
           transparent 100%
         );
-      }
 
-      .scaling .handle .handle-line {
-        transform: scaleX(var(--scale));
-        transform-origin: left;
-        width: var(--line);
+        .gizmo-scale:not(.idle) & {
+          transform: scaleX(var(--scale));
+          transform-origin: left;
+          width: var(--line);
+        }
       }
 
       .handle-square {
@@ -356,7 +365,7 @@ function createStylesheet() {
         background-color: currentColor;
       }
 
-      .scaling .handle .dot {
+      .dot {
         content: "";
         position: absolute;
         top: -3px;
@@ -365,6 +374,10 @@ function createStylesheet() {
         height: 7px;
         border-radius: 50%;
         background: currentColor;
+
+        .idle & {
+          display: none;
+        }
       }
     </style>
   `;
