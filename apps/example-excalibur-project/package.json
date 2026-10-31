@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "description": "Example Excalibur game",
   "scripts": {
-    "dev": "vite dev --host --port 3009",
-    "build": "vite build"
+    "dev": "vite dev --host --port 3009"
   },
   "license": "BSD-2-Clause",
   "devDependencies": {

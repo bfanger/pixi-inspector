@@ -21,15 +21,36 @@
   let code = "";
   let skipError = false;
 
-  const abortController = new AbortController();
-  const signal = abortController.signal;
+  const destroyController = new AbortController();
+  const destroySignal = destroyController.signal;
 
   onDestroy(() => {
-    abortController.abort("unmounted");
+    destroyController.abort("unmounted");
   });
 
   function log(line: string) {
     untrack(() => onlog?.(line));
+  }
+
+  function sleep(duration: number, signal: AbortSignal): Promise<void> {
+    const { promise, resolve, reject } = Promise.withResolvers<void>();
+    let timer: number | undefined;
+    function cancel() {
+      clearTimeout(timer);
+      requestAnimationFrame(() =>
+        reject(new Error(signal.reason || "sleep() was aborted")),
+      );
+    }
+    if (signal.aborted) {
+      cancel();
+    } else {
+      timer = window.setTimeout(() => {
+        signal.removeEventListener("abort", cancel);
+        requestAnimationFrame(() => resolve());
+      }, duration);
+      signal.addEventListener("abort", cancel, { once: true });
+    }
+    return promise;
   }
 
   async function prepare() {
@@ -44,11 +65,34 @@
     log("Connecting...");
   }
 
-  function reconnect() {
-    if (signal.aborted) {
-      throw new Error(`aborted reconnect: ${signal.reason}`);
+  async function waitForIdle(signal: AbortSignal) {
+    while (!signal.aborted) {
+      const result = await Promise.race<2 | void>([
+        bridge("1 + 1"),
+        sleep(100, signal),
+      ]);
+      if (result === 2) {
+        return;
+      }
+      log("Waiting for page to respond");
+      await sleep(500, signal);
     }
-    const promise = prepare()
+  }
+
+  function reconnect() {
+    if (destroySignal.aborted) {
+      throw new Error(`aborted reconnect: ${destroySignal.reason}`);
+    }
+    const connectController = new AbortController();
+    const signal = connectController.signal;
+    destroySignal.addEventListener(
+      "abort",
+      () => connectController.abort(destroySignal.reason),
+      { once: true },
+    );
+
+    const promise = waitForIdle(signal)
+      .then(() => prepare())
       .then(() => evalConnect(ui, bridge, { signal }))
       .then((result) => {
         if (signal.aborted) {
@@ -62,15 +106,12 @@
     connectionPromise = promise;
 
     const timeout = setTimeout(() => {
-      requestAnimationFrame(() => {
-        if (promise === connectionPromise) {
-          reconnect();
-        }
-      });
-    }, 750);
+      connectController.abort("Connection timed out");
+    }, 5_000);
     promise.finally(() => {
       clearTimeout(timeout);
     });
+
     promise.catch((err) => {
       log(`Connection failed: ${err.message}`);
       console.warn(new Error("Connection failed, retrying...", { cause: err }));
